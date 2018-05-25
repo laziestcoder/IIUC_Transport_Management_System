@@ -3,7 +3,7 @@
 @section('content')
     <div class="jumbotron text-center">
         <h1>{{$title}}</h1>
-        <p>This is the Laravel Application from "Laravel From Scratch"</p>
+        <p>This is the home page of Transport Management System</p>
         @guest
         <p>
             <a class="btn btn-primary btn-lg" href="/login" role="button">Login</a>
