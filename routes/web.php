@@ -60,3 +60,7 @@ Route::get('/', function () {
 Auth::routes();
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::get('/users/confirmation/{token}', 'Auth\RegisterController@confirmation')->name('confirmation');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
