@@ -6,7 +6,9 @@
 @import "variables";
 
 // Bootstrap
+//@import url("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css");
 @import '~bootstrap/scss/bootstrap';
+//@import 'node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
 
 .navbar-laravel {
   background-color: #fff;

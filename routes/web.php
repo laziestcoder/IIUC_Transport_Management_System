@@ -12,5 +12,11 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    $title = "Welcome to IIUC Transport Management Division";
+    return view('pages.index',compact('title'));
 });
+/* Route::get('/', 'PagesController@index'); */
+
+Auth::routes();
+Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+Route::get('/users/confiration/{token}', 'Auth\RegisterController@confirmation')->name('confirmation');
