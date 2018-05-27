@@ -1,10 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-{{-- <div class="jumbotron text-center">
- --}}        <h1>{{$title}}</h1>
-{{-- </div>
- --}}    {!! Form :: open(['action' => ['NoticesController@update', $notice->id ], 'method' => 'POST', 'enctype' => 'multipart/form-data'  ]) !!}
+   <h1>{{$title}}</h1>
+    {!! Form :: open(['action' => ['NoticesController@update', $notice->id ], 'method' => 'POST', 'enctype' => 'multipart/form-data'  ]) !!}
         <div class="form-group">
             {{Form :: label('title','Title')}}
             {{Form :: text('title' , $notice->title, [ 'class' => 'form-control', 'placeholder' => 'Title', ])}}
@@ -18,9 +16,5 @@
         </div>
         {{Form::hidden('_method','PUT')}}
         {{ Form :: submit('Submit',['class' => 'btn btn-primary']) }}
-    
-    
     {!! Form::close() !!}
-
-
 @endsection

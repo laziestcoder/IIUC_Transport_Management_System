@@ -45,7 +45,9 @@
                         </a>
 
                         <ul class="dropdown-menu">
-                          
+                            <li><a href="/notices/create">Profile</a></li>
+                            <li><a href="/notices/create">Settings</a></li>
+                            <li><a href="/notices/create">Management</a></li>
                           <li><a href="/dashboard">Dashboard</a></li>   
                           <li>
                                 <a href="{{ route('logout') }}"

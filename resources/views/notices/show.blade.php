@@ -4,7 +4,7 @@
     <a href="/notices" class="btn btn-default">Go Back</a>
     <h1>{{$notice->title}}</h1>
     <img style="width:20%; height: 20%" src="/storage/cover_images/{{$notice->cover_image}}" alt="{{$notice->title}}">
-    <div>
+    <div class="body">
         {!! $notice->body !!}
     </div>
     <hr>
