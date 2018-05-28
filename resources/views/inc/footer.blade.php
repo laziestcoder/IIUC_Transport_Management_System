@@ -28,7 +28,7 @@
                 <h3 class="project-creator-header text-left">Created by:</h3>
 
                 <ul class="project-creator">
-                    <li>Towfiqul Islam, <span>Dept. of CSE, IIUC</span>
+                    <li><b>Towfiqul Islam</b>, <span>Dept. of CSE, IIUC</span>
                     
                     <a href="http://twitter.com/TowfiqIslam" data-toggle="tooltip" title="Twitter" target="_blank"><i class="fab fa-twitter-square"></i></a>
                     
@@ -38,7 +38,7 @@
                     
                     </li>
 
-                    <li>Sina Ibn Amin, <span>Dept. of CSE, IIUC</span>
+                    <li><b>Sina Ibn Amin</b>, <span>Dept. of CSE, IIUC</span>
                     <a href="http://twitter.com/" data-toggle="tooltip" title="Twitter" target="_blank"><i class="fab fa-twitter-square"></i></a>
                     <a href="http://github.com/" data-toggle="tooltip" title="Github" target="_blank"><i class="fab fa-github-square"></i></a>
                     <a href="http://www.linkedin.com/in/" data-toggle="tooltip" title="LinkedIn" target="_blank"><i class="fab fa-linkedin"></i></a>
@@ -47,7 +47,7 @@
                 <h3 class="project-supervisor-header text-left">Supervised by:</h3>
 
                 <ul class="project-supervisor">
-                    <li>Mohammed Shamsul Alam<br><span>Associate Professor</span><br><span>Dept. of CSE, IIUC</span></li>
+                    <li><b>Mohammed Shamsul Alam</b><br><span>Associate Professor</span><br><span>Dept. of CSE, IIUC</span></li>
                 </ul>
             </div>
         </div>
@@ -59,7 +59,9 @@
         <hr>
         <div class="row">
             <div class="col-md-12">
+                    <hr>
                 <div class="copyright">
+                    <b>Today:</b>{{date("l, d M, Y")}} <b>Time:</b>{{date("h:i A")}}
                     <p>&copy {{ date("Y") }}
                     {{-- <script type="text/JavaScript"> document.write(new Date().getFullYear()); </script> --}}
                     ITMS & Towfiqul Islam | All Rights Reserved</p>

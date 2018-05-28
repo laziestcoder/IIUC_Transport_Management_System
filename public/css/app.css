@@ -8350,14 +8350,136 @@ button.close {
   }
 }
 
-.footer-top-widget-title::before {
 
-  background-color: #ff4444;
-  content: "";
-  height: 22px;
-  left: 0px;
-  position: absolute;
-  top: 0px;
-  width: 5px;
 
+/* Footer Styles*/
+
+
+footer{
 }
+
+.footer-top{
+  background-color: #eeeeee;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.footer-top ul li{
+  color: #898989;
+  line-height: 1.5;
+  position: relative;
+  margin-top: 0;
+  margin-right: 0;
+  margin-left: 0;
+  padding-left: 1.3em;
+  list-style-type: none;
+}
+
+.footer-top-widget-title {
+  color: #777;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  position: relative;
+  text-transform: uppercase;
+  margin-top: 0;
+  margin-right: 0;
+  margin-bottom: 25px;
+  margin-left: 0;
+  padding-left: 28px;
+}
+
+.footer-top-widget-title::before {
+    background-color: #009050;
+    content: "";
+    height: 22px;
+    left: 0px;
+    position: absolute;
+    top: -2px;
+    width: 5px;
+}
+
+ul.footer-top-widget li a{
+  text-decoration: none;
+  color: #606060;
+  font-weight: 500;
+  
+}
+
+ul.footer-top-widget li a:hover{
+  color: #017d9f;
+  transition: all 0.3s;
+  
+}
+
+.project-description{
+  color: #606060;
+  line-height: 1.5;
+  max-width: 400px;
+}
+
+.footer-bottom{
+  background-color: #eeeeee;
+  padding-bottom: 40px;
+}
+
+.footer-bottom{
+  text-align: center;
+}
+.copyright hr { 
+  color:#636b6f;
+  
+}
+
+.copyright p{
+  color: #505050;
+}
+
+
+.project-creator li{
+  color: #505063 !important;
+  font-size: 16px;
+  padding-left: 0 !important;
+  
+  
+}
+
+.project-creator li a{
+  font-size: 16px;
+  margin-left: 5px;
+}
+
+.project-creator li span{
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.project-creator-header,
+.project-supervisor-header{
+  color: #009050;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.project-supervisor li{
+  color: #505063 !important;
+  font-size: 16px;
+  padding-left: 0 !important;
+  line-height: 1.2 !important;
+}
+
+.project-supervisor li:first-child{
+  margin-bottom: 15px;
+}
+
+.project-supervisor li span{
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.project-supervisor li{
+  line-height: 1.5;
+}
+
+
+
