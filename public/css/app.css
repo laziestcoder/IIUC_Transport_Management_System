@@ -8350,3 +8350,14 @@ button.close {
   }
 }
 
+.footer-top-widget-title::before {
+
+  background-color: #ff4444;
+  content: "";
+  height: 22px;
+  left: 0px;
+  position: absolute;
+  top: 0px;
+  width: 5px;
+
+}

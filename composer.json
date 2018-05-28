@@ -7,7 +7,10 @@
     "require": {
         "php": ">=7.2.0",
         "bestmomo/laravel-email-confirmation": "^1.1",
+        "encore/laravel-admin": "^1.5",
         "fideloper/proxy": "~4.0",
+        "laravel-admin-ext/media-manager": "^1.0",
+        "laravel-admin-ext/messages": "@dev",
         "laravel/framework": "5.6.*",
         "laravel/tinker": "~1.0",
         "laravelcollective/html": "^5.4.0",
