@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Route extends Model
+class BusRoute extends Model
 {
     // table name
     protected $table = 'routes';
@@ -14,6 +14,6 @@ class Route extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('admin');
     }
 }

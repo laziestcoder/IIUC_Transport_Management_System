@@ -61,4 +61,5 @@ Route::get('/dashboard', 'DashboardController@index');
 //Route::get('/users/confirmation/{token}', 'Auth\RegisterController@confirmation')->name('confirmation');
 
 //Email Verification 2
-Route::get('/verifyemail/{token}', 'Auth\RegisterController@verify')->name('confirmation');;
+Route::get('/verifyemail/{token}', 'Auth\RegisterController@verify')->name('confirmation');
+Route::resource('/admin/auth/routes','BusRoutesController');
