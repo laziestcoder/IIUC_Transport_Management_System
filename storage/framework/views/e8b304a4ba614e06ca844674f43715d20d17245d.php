@@ -66,7 +66,7 @@
                     <p>&copy <?php echo e(date("Y")); ?>
 
                     
-                    ITMS & Towfiqul Islam | All Rights Reserved</p>
+                    ITMS & <a href="https://github.com/laziestcoder"> Towfiqul Islam </a> | All Rights Reserved</p>
                 </div>
             </div>
         </div>

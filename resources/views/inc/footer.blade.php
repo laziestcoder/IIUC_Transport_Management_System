@@ -64,7 +64,7 @@
                     <b>Today:</b>{{date("l, d M, Y")}} <b>Time:</b>{{date("h:i A")}}
                     <p>&copy {{ date("Y") }}
                     {{-- <script type="text/JavaScript"> document.write(new Date().getFullYear()); </script> --}}
-                    ITMS & Towfiqul Islam | All Rights Reserved</p>
+                    ITMS & <a href="https://github.com/laziestcoder"> Towfiqul Islam </a> | All Rights Reserved</p>
                 </div>
             </div>
         </div>
