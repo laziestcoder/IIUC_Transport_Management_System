@@ -28,7 +28,14 @@ class BusRoutesController extends Controller
      */
     public function index()
     {
-        
+        $BusRoutes =  BusRoute::orderBy('routename')->paginate(20);
+        //$BusRoutes = DB::table('bus_student_information')->paginate(20);
+        $data = array(
+            'title' => 'Bus Route Info',
+            'titleinfo' => 'Route wise Bus and Student information',
+            'BusRoutes' => $BusRoutes,
+        );
+        return view('busroutes.index')->with($data);
     }
 
     /**
@@ -38,13 +45,11 @@ class BusRoutesController extends Controller
      */
     public function create()
     {
-        $title = 'Add Bus Route';
-        $titleInfo = 'Available Bus Routes';
         $BusRoutes =  BusRoute::orderBy('routename')->paginate(20);
         $data = array(
-            'title' => $title,
+            'title' => 'Add Bus Route',
             'BusRoutes' => $BusRoutes,
-            'titleinfo' => $titleInfo
+            'titleinfo' => 'Available Bus Routes',
         );
         return view('BusRoutes.create')->with($data);    
     }
@@ -83,8 +88,14 @@ class BusRoutesController extends Controller
      */
     public function show($id)
     {
-        $BusRoute = BusRoute::find($id);
-        return view('busroutes.show')->with('BusRoute',$BusRoute);
+        $BusRoute = DB::table('bus_student_information')->where('routeid',$id)->paginate(20);
+        $name = DB::table('routes')->where('id',$id)->first()->routename;
+        $data = array (
+            'title' => 'Bus Route Info',
+            'titleinfo' => 'Details Route Info for "'.$name.'"',
+            'BusRoute' => $BusRoute ,
+        );
+        return view('busroutes.show')->with($data);
     }
 
     /**
@@ -95,14 +106,12 @@ class BusRoutesController extends Controller
      */
     public function edit($id)
     {
-        $title = 'Edit Bus Route';
-        $titleInfo = 'Available Bus Routes';
         $BusRoute = BusRoute::find($id);
         $BusRoutes = BusRoute::orderBy('routename')->paginate(20);
         $data = array(
-            'title' => $title,
+            'title' => 'Edit Bus Route',
+            'titleinfo' => 'Available Bus Routes',
             'BusRoutes' => $BusRoutes,
-            'titleinfo' => $titleInfo,
             'BusRoute' => $BusRoute
         );
         //Check for correct user
