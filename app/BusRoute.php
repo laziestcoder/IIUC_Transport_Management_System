@@ -14,6 +14,6 @@ class BusRoute extends Model
 
     public function user()
     {
-        return $this->belongsTo('admin');
+        return $this->belongsTo('Encore\Admin\Facades\Admin');
     }
 }

@@ -62,4 +62,8 @@ Route::get('/dashboard', 'DashboardController@index');
 
 //Email Verification 2
 Route::get('/verifyemail/{token}', 'Auth\RegisterController@verify')->name('confirmation');
+//Admin::routes();
 Route::resource('/admin/auth/routes','BusRoutesController');
+Route::resource('/admin/auth/points','BusPointsController');
+/* Route::get('/admin/auth/notices/create','NoticesController@create');
+Route::get('/admin/auth/notices/create','NoticesController@store'); */

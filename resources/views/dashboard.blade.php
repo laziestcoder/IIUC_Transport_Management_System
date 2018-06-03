@@ -15,26 +15,32 @@
                     @endif
                     <a href="/notices/create" class="btn btn-primary">Create Notice</a>
                     <h3>Your Posted Notices</h3>
+                    <hr>
                     @if( count($notices) >0 )
-                        <table class="table table-striped">
-                            <tr>
-                                <th>Title</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                            @foreach($notices as $notice)
+                        <table class="table table-hover">
+                            <thead>
                                 <tr>
-                                    <td><a href="/notices/{{$notice->id}}">{{$notice->title}}</a></td>
-                                    <td><a href="/notices/{{$notice->id}}/edit" class="btn btn-default">Edit</a></td>
-                                    <td>
-                                        {!! Form::open(['action' => ['NoticesController@destroy', $notice->id], 'method' => 'POST', 'class' => 'pull-right' ]) !!}
-                                            {{Form::hidden('_method','DELETE')}}
-                                            {{Form::submit('Delete', ['class' => 'btn btn-danger']) }}
-                                        {!! Form::close() !!}
-                                    </td>
+                                    <th>Title</th>
+                                    <th>Action</th>
+                                    <th>Created On</th>
                                 </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($notices as $notice)
+                                    <tr>
+                                        <td><a href="/notices/{{$notice->id}}">{{$notice->title}}</a></td>
+                                        <td><a href="/notices/{{$notice->id}}/edit" class="btn btn-default">Edit</a>                    
+                                            {!! Form::open(['action' => ['NoticesController@destroy', $notice->id], 'method' => 'POST','id' =>'delete', 'class' => 'pull','style'=>'display:inline']) !!}
+                                                {{Form::hidden('_method','DELETE')}}
+                                                {{ csrf_field() }}
+                                                {{Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top']) }}
+                                            {!! Form::close() !!}
+                                        </td>
+                                        <td>{{$notice->created_at}}</td>
+                                    </tr>
 
-                            @endforeach
+                                @endforeach
+                            </tbody>
                         </table>
                     @else
                     <p> You have no post </p>
@@ -45,4 +51,18 @@
         </div>
     </div>
 </div>
+<script>        
+        /* $(document).ready(function () {        
+        $('[data-toggle=confirmation]').confirmation({
+            rootSelector: '[data-toggle=confirmation]',
+            onConfirm: function (event, element) {
+                element.closest('form').submit();
+            }
+        });   
+    }); */
+    $("#delete").on("submit", function(){
+         return confirm("Do you want to delete this item?");
+     });
+
+</script>
 @endsection

@@ -1,6 +1,6 @@
 <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,700" rel="stylesheet">
-
+<br><br>
 <div class="footer-top ">
     <div class="container">
         <div class="row">
@@ -62,6 +62,7 @@
                     <hr>
                 <div class="copyright">
                     <b>Today:</b>{{date("l, d M, Y")}} <b>Time:</b>{{date("h:i A")}}
+                    {{-- <div id="time">Time:</div> --}}
                     <p>&copy {{ date("Y") }}
                     {{-- <script type="text/JavaScript"> document.write(new Date().getFullYear()); </script> --}}
                     ITMS & <a href="https://github.com/laziestcoder"> Towfiqul Islam </a> | All Rights Reserved</p>
@@ -70,3 +71,15 @@
         </div>
     </div>
 </div>
+{{-- <script type="text/JavaScript">
+    /* document.write(new Date().gettime()); */
+    $(document).ready(function() {
+    var interval = setInterval(function() {
+        var momentNow = moment();
+        /* $('#date').html(momentNow.format('YYYY MMMM DD') + ' '
+                            + momentNow.format('dddd')
+                            .substring(0,3).toUpperCase()); */
+        $('#time').html("<b>Time: </b> "+momentNow.format('hh:mm:ss A'));
+    }, 100);
+});
+</script> --}}

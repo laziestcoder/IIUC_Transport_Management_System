@@ -1,6 +1,6 @@
 <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,700" rel="stylesheet">
-
+<br><br>
 <div class="footer-top ">
     <div class="container">
         <div class="row">
@@ -63,6 +63,7 @@
                 <div class="copyright">
                     <b>Today:</b><?php echo e(date("l, d M, Y")); ?> <b>Time:</b><?php echo e(date("h:i A")); ?>
 
+                    
                     <p>&copy <?php echo e(date("Y")); ?>
 
                     

@@ -12,16 +12,16 @@
 
     
     <div id="time"></div>
-    <script type="text/JavaScript">
-    /* document.write(new Date().gettime()); */
-    $(document).ready(function() {
-    var interval = setInterval(function() {
-        var momentNow = moment();
-        /* $('#date').html(momentNow.format('YYYY MMMM DD') + ' '
-                            + momentNow.format('dddd')
-                             .substring(0,3).toUpperCase()); */
-        $('#time').html("<b>Time: </b> "+momentNow.format('hh:mm:ss A'));
-    }, 100);
-});
-     </script>
+<script type="text/JavaScript">
+        /* document.write(new Date().gettime()); */
+        $(document).ready(function() {
+        var interval = setInterval(function() {
+            var momentNow = moment();
+            /* $('#date').html(momentNow.format('YYYY MMMM DD') + ' '
+                                + momentNow.format('dddd')
+                                .substring(0,3).toUpperCase()); */
+            $('#time').html("<b>Time: </b> "+momentNow.format('hh:mm:ss A'));
+        }, 100);
+    });
+</script>
 </footer>
