@@ -28,6 +28,7 @@
                 <li><a href="/about">About</a></li>
                 <li><a href="/services">Services</a></li>
                 <li><a href="/notices">Notices</a></li>
+                <li><a href="/admin">Admin Panel</a></li>
               </ul>
 
 

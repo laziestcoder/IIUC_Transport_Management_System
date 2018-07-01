@@ -28,8 +28,8 @@ class BusRoutesController extends Controller
      */
     public function index()
     {
-        $BusRoutes =  BusRoute::orderBy('routename')->paginate(20);
-        //$BusRoutes = DB::table('bus_student_information')->paginate(20);
+        //$BusRoutes =  BusRoute::orderBy('routename')->paginate(20);
+        $BusRoutes = DB::table('bus_student_information')->paginate(25);
         $data = array(
             'title' => 'Bus Route Info',
             'titleinfo' => 'Route wise Bus and Student information',
