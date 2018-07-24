@@ -43,8 +43,8 @@ Route::delete('/hello', function () {
 
 // Pages routing Index, About, Servces
 Route::get('/', 'PagesController@index');
-Route::get('/about', 'PagesController@about');
-Route::get('/services', 'PagesController@services');
+//Route::get('/about', 'PagesController@about');
+//Route::get('/services', 'PagesController@services');
 
 //Notice routing
 //Route::get('/posts','PagesController@posts');
@@ -55,6 +55,7 @@ Route::resource('notices','NoticesController');
 Auth::routes();
 //Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::get('/dashboard', 'DashboardController@index');
+Route::get('/management', 'ManagementController@index');
 
 //User Confirmation Routing
 //Email Verification 1

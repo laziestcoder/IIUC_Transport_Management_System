@@ -8,7 +8,8 @@ class PagesController extends Controller
 {
     public function index(){
         $title = 'Welcome to IIUC Transport Management System';
-        return  view('pages.index',compact('title'));
+        //return  view('pages.index',compact('title'));
+        return  view('iiuctransport.index');
     }
     public function about(){
         $title = 'About Us';

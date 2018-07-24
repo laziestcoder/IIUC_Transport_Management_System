@@ -70,7 +70,9 @@ class AuthController extends Controller
 
         $request->session()->invalidate();
 
-        return redirect(config('admin.route.prefix'));
+        //return redirect(config('admin.route.prefix')); // comented by ITMS Developer
+        config('admin.route.prefix'); //ITMS Developer Edited
+        return redirect('/'); // ITMS Developer Added
     }
 
     /**

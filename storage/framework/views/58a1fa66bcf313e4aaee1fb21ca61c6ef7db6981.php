@@ -47,10 +47,10 @@
                         </a>
 
                         <ul class="dropdown-menu">
-                            <li><a href="/dashboard">Profile</a></li>
-                            <li><a href="/dashboard">Management</a></li>
-                            <li><a href="/dashboard">Settings</a></li>
-                            <li><a href="/dashboard">Statistics</a></li>
+                            <li><a href="/profile" disabled='True'>Profile</a></li>
+                            <li><a href="/management">Management</a></li>
+                            <li><a href="/settings" disabled='True'>Settings</a></li>
+                            <li><a href="/statistics" disabled='True'>Statistics</a></li>
                             <li><a href="/dashboard">Dashboard</a></li>   
                             <li>
                                 <a href="<?php echo e(route('logout')); ?>"

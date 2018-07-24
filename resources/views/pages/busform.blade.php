@@ -1,4 +1,4 @@
-@extends('admin::index')
+{{-- @extends('admin::index')
 
 
 @section('content')
@@ -21,19 +21,20 @@
         {{-- <div class="form-group">
             {{Form::file('cover_image')}}
         </div> --}}
-        {{ Form :: submit('Submit',['class' => 'btn btn-primary']) }}
+       {{--  {{ Form :: submit('Submit',['class' => 'btn btn-primary']) }}
         {!! Form::close() !!}
 
     </section>
     <br><br>
-    <section class="content">            
+    <section class="content">  --}}           
             {{--  @include('admin::partials.error')
                 @include('admin::partials.success')
                 @include('admin::partials.exception')
                 @include('admin::partials.toastr') --}}
 
                 {{-- {!! $content !!} --}}
-
+{{-- 
     </section>
 @endsection
 
+ --}}
