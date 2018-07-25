@@ -1,0 +1,28 @@
+/* .container{
+    width: 100%;
+} */
+/* .navbar-shrink{
+    text-align: center;
+} */
+.navbar-shrink img {
+    height: 25px;
+}
+
+/* #main.row {
+    display: block;
+
+} */
+/* #footer.row {
+    display: block;
+} */
+section{
+    padding: 50px 25px;
+}
+.modal-content {
+    position: absolute;
+}
+header.masthead {
+   
+    background-image: url('/uploads/img/transport-bg.png');
+   
+}

@@ -9,7 +9,7 @@ class PagesController extends Controller
     public function index(){
         $title = 'Welcome to IIUC Transport Management System';
         //return  view('pages.index',compact('title'));
-        return  view('iiuctransport.index');
+        return  view('pages.index',compact('title','Welcome to IIUC Transport Division Website'));
     }
     public function about(){
         $title = 'About Us';
@@ -21,6 +21,6 @@ class PagesController extends Controller
             'services' => ['Transportation', 'Travelling', 'Picnic']
         );
         return  view('pages.services')->with($data);
-    }    
+    }
 
 }

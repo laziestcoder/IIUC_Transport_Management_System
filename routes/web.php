@@ -22,10 +22,10 @@
 });
  */
 
- /* 
+/*
 Route::delete('/hello', function () {
-    //return view('welcome');
-    return "Hello World!";
+   //return view('welcome');
+   return "Hello World!";
 });  */
 
 
@@ -43,8 +43,8 @@ Route::delete('/hello', function () {
 
 // Pages routing Index, About, Servces
 Route::get('/', 'PagesController@index');
-//Route::get('/about', 'PagesController@about');
-//Route::get('/services', 'PagesController@services');
+Route::get('/about', 'PagesController@about');
+Route::get('/services', 'PagesController@services');
 
 //Notice routing
 //Route::get('/posts','PagesController@posts');
