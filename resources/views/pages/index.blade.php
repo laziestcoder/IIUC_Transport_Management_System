@@ -352,7 +352,7 @@
             <div class="col-lg-12">
                 <form id="contactForm" name="sentMessage" novalidate>
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <input class="form-control" id="name" type="text" placeholder="Your Name *" required data-validation-required-message="Please enter your name.">
                                 <p class="help-block text-danger"></p>

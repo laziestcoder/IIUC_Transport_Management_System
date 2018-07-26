@@ -38,18 +38,21 @@
         
         <?php echo $__env->make('common.nav', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>    
 
-        <div class="container">
+        <!-- <div class="container"> -->
             <?php echo $__env->make('inc.messages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 
-            <div id="main" class="row">
+            <!-- <div id="main" class="row"> -->
                 <?php echo $__env->yieldContent('content'); ?>
-            </div>
+            <!-- </div> -->
 
             <footer class="row">
                 <?php echo $__env->make('common.footer', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
             </footer>
-        </div>
+        <!-- </div> -->
     </div>
+
+
+
     <!-- Scripts -->
     
     <script src="<?php echo e(asset('js/app.js')); ?>"></script> 

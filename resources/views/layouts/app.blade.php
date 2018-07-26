@@ -38,18 +38,21 @@
         
         @include('common.nav')    
 
-        <div class="container">
+        <!-- <div class="container"> -->
             @include('inc.messages')
 
-            <div id="main" class="row">
+            <!-- <div id="main" class="row"> -->
                 @yield('content')
-            </div>
+            <!-- </div> -->
 
             <footer class="row">
                 @include('common.footer')
             </footer>
-        </div>
+        <!-- </div> -->
     </div>
+
+
+
     <!-- Scripts -->
     
     <script src="{{ asset('js/app.js') }}"></script> 

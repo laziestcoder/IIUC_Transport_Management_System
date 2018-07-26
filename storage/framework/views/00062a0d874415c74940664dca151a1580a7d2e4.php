@@ -2,7 +2,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark navbar-fixed-top" id="mainNav">
     <div class="container">
         <a class="navbar-brand js-scroll-trigger" href="/">
-            <img src="/uploads/img/iiuc.png" alt="iiuc transport logo">
+            <img src="" alt="IIUC TMD LOGO"> IIUC TMD
         </a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             Menu
@@ -27,7 +27,8 @@
                         <a class="dropdown-item" href="#">Something else here</a>
                     </div>
                 </li>
-                <li class="nav-item"><a class="nav-link" data-toggle="modal" href="#exampleModal1">Login</a></li>
+                <!-- <li class="nav-item"><a class="nav-link" data-toggle="modal" href="#exampleModal1">Login</a></li> -->
+                <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
             </ul>
         </div>
     </div>
