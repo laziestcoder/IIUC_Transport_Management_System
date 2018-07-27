@@ -45,11 +45,13 @@ Route::delete('/hello', function () {
 Route::get('/', 'PagesController@index');
 Route::get('/about', 'PagesController@about');
 Route::get('/services', 'PagesController@services');
+Route::get('/test', 'PagesController@test');
+
 
 //Notice routing
 //Route::get('/posts','PagesController@posts');
 
-Route::resource('notices','NoticesController');
+Route::resource('/','NoticesController');
 
 //Authorization Routing
 Auth::routes();

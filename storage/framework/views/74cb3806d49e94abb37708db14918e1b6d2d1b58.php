@@ -1,10 +1,15 @@
 <?php $__env->startSection('content'); ?>
-<div class="container">
+<header id="home" class="masthead">
+    <div class="container">
+        <div class="intro-text" style="padding-top: 140px; padding-bottom: 200px;">
+        <div class="intro-lead-in" style="font-style: initial"><b>REGISTRATION</b></div>
+            <!-- <div class="intro-heading text-uppercase">It's Nice To Meet You</div> -->
+            <div class="container" style="padding:0px">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
-                <div class="panel-heading">Register</div>
-                <div class="panel-body">
+                <!-- <div class="panel-heading">Register</div> -->
+                <div class="panel-body" style="background:#212529">
                     <?php if(session('confirmation-success')): ?>
                         <div class="alert alert-success">
                             <?php echo e(session('confirmation-success')); ?>
@@ -104,7 +109,7 @@
 
                             <div class="form-group">
                                 <div class="col-md-6 col-md-offset-4">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary" style="background-color: #bababa; border-color: #212529;">
                                         Register
                                     </button>
                                 </div>
@@ -116,6 +121,9 @@
         </div>
     </div>
 </div>
+        </div>
+    </div>
+</header>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

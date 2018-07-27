@@ -1,6 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.userlayout')
 
-@section('content')
+@section('usercontent')
+<h1>Edit Schedule</h1>
+
 <div class="container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">

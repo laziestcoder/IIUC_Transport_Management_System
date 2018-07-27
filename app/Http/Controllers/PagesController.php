@@ -22,5 +22,12 @@ class PagesController extends Controller
         );
         return  view('pages.services')->with($data);
     }
+    public function test(){
+        $data = array (
+            'title' => 'Services',
+            'services' => ['Transportation', 'Travelling', 'Picnic']
+        );
+        return  view('pages.test')->with($data);
+    }
 
 }

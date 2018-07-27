@@ -7,6 +7,11 @@
 .navbar-shrink img {
     height: 25px;
 }
+.navbar-brand {
+    float: left;
+    padding: 0px 0px;
+    display: contents;
+}
 
 /* #main.row {
     display: block;
@@ -21,8 +26,31 @@ section{
 .modal-content {
     position: absolute;
 }
-header.masthead {
-   
-    background-image: url('/uploads/img/transport-bg.png');
-   
+header.masthead {   
+    background-image: url('/storage/img/transport-bg.png');
 }
+.nextBus{
+    /*background:#212529;*/
+    margin-bottom: 250px;
+    text-align:center;
+    height: 100px;
+}
+.nextBus-title{
+    /*background:#212529;*/
+    font-size: 35px;
+    color: yellow;
+
+}
+.nextBus-info{
+    /*background:#212529;*/
+    font-size: 20px;
+    color: yellow;
+}
+.nextBus thead{
+    color:white;
+    font-weight: bold;
+}
+/*.nextBus table{*/
+    /*border-color: yellow;*/
+    /*border-size:20px;*/
+/*}*/

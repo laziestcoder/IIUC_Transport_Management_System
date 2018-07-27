@@ -34,10 +34,10 @@ class NoticesController extends Controller
         $title = 'Notices';
         $notices =  Notice::orderBy('id','desc')->paginate(25);
         $data = array(
-            'title' => $title,
+            'noticetitle' => $title,
             'notices' => $notices
         );
-        return view('notices.index')->with($data);
+        return view('pages.index')->with($data);
     }
 
     /**
