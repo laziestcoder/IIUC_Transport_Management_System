@@ -14,7 +14,7 @@ class Notice extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('Encore\Admin\Facades\Admin');
     }
 
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Encore\Admin\Facades\Admin;
 use App\Notice;
 use DB;
 
@@ -16,7 +17,8 @@ class NoticesController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth', ['except' => ['index','show'] ]);
+        //$this->middleware('admin', ['except' => ['index','show'] ]);
+        $this->middleware('admin');
     }
 
     /**
@@ -24,6 +26,7 @@ class NoticesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index()
     {
         // $posts = Post::all ();
@@ -33,11 +36,14 @@ class NoticesController extends Controller
         // $posts =  Post::orderBy('id','desc')->get();
         $title = 'Notices';
         $notices =  Notice::orderBy('id','desc')->paginate(25);
+        $description = "";
+
         $data = array(
-            'noticetitle' => $title,
-            'notices' => $notices
+            'title' => $title,
+            'notices' => $notices,
+            'description' => $description
         );
-        return view('pages.index')->with($data);
+        return view('notices.index')->with($data);
     }
 
     /**
@@ -97,11 +103,11 @@ class NoticesController extends Controller
         $notice = new notice;
         $notice->title = $request->input('title');
         $notice->body = $request->input('body');
-        $notice->user_id = auth()->user()->id;
+        $notice->user_id = Admin::user()->id;
         $notice->cover_image = $fileNameToStore;
         //$post->cover_image = 'noimage.jpeg';
         $notice->save();
-        return redirect('/notices')->with('success','Notice Created Successfully!');
+        return redirect('/admin/auth/notices')->with('success','Notice Created Successfully!');
     }
 
     /**
@@ -128,8 +134,8 @@ class NoticesController extends Controller
         
         //Check for correct user
 
-        if(auth()->user()->id !== $notice->user_id){
-            return redirect('/notices')->with('error','Unauthorized Access Denied!');
+        if(Admin::user()->id !== $notice->user_id){
+            return redirect('/admin/auth/notices')->with('error','Unauthorized Access Denied!');
 
         }
 
@@ -193,7 +199,7 @@ class NoticesController extends Controller
              $notice->cover_image = $fileNameToStore;
          }
         $notice->save();
-        return redirect('/notices/'.$id)->with('success','Notice Updated Successfully!');
+        return redirect('/admin/auth/notices/'.$id)->with('success','Notice Updated Successfully!');
     }
 
     /**
@@ -209,8 +215,8 @@ class NoticesController extends Controller
 
         //Check for correct user
 
-        if(auth()->user()->id !== $notice->user_id){
-            return redirect('/notices')->with('error','Unauthorized Access Denied!');
+        if(Admin::user()->id !== $notice->user_id){
+            return redirect('/admin/auth/notices')->with('error','Unauthorized Access Denied!');
 
         }
         if($notice->cover_image != 'noimage.jpeg' ){
@@ -219,6 +225,6 @@ class NoticesController extends Controller
         }
 
         $notice->delete();
-        return redirect('/notices')->with('success','Notice Removed Successfully!');
+        return redirect('/admin/auth/notices')->with('success','Notice Removed Successfully!');
     }
 }

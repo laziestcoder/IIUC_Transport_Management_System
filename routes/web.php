@@ -43,15 +43,16 @@ Route::delete('/hello', function () {
 
 // Pages routing Index, About, Servces
 Route::get('/', 'PagesController@index');
-Route::get('/about', 'PagesController@about');
-Route::get('/services', 'PagesController@services');
+//Route::get('/about', 'PagesController@index');
+//Route::get('/services', 'PagesController@index');
 Route::get('/test', 'PagesController@test');
 
 
 //Notice routing
 //Route::get('/posts','PagesController@posts');
 
-Route::resource('/','NoticesController');
+//Route::resource('/','NoticesController');
+
 
 //Authorization Routing
 Auth::routes();
@@ -68,5 +69,6 @@ Route::get('/verifyemail/{token}', 'Auth\RegisterController@verify')->name('conf
 //Admin::routes();
 Route::resource('/admin/auth/routes','BusRoutesController');
 Route::resource('/admin/auth/points','BusPointsController');
+Route::resource('/admin/auth/notices','NoticesController');
 /* Route::get('/admin/auth/notices/create','NoticesController@create');
 Route::get('/admin/auth/notices/create','NoticesController@store'); */

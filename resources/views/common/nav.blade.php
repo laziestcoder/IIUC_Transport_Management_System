@@ -12,10 +12,9 @@
                 <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#home">Home</a></li>
                 <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#services">Emergency</a></li>
                 <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#schedule">Schedule</a></li>
-                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#notice">Notice board</a></li>
+                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#notice">News</a></li>
                 <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#about">About</a></li>
                 <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#contact">Report</a></li>
-                <li class="nav-item"><a class="nav-link" href="/notices">Notices</a></li>
                 <li class="nav-item"><a class="nav-link" href="/admin">Admin Panel</a></li>
                 <li class="nav-item"><a class="nav-link" href="/test">Test</a></li>
 
