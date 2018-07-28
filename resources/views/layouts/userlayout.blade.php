@@ -4,7 +4,7 @@
 <header id="home" class="masthead">
     <div class="container">
         <div class="intro-text" style="padding-top: 140px; padding-bottom: 200px;">
-            <div class="intro-lead-in" style="font-style: initial">Welcome {{ Auth::user()->name }} </div>
+            <div class="intro-lead-in" style="font-style: initial">Welcome <i>{{ Auth::user()->name }} </i></div>
             <!-- <div class="intro-heading text-uppercase">It's Nice To Meet You</div> -->
             <div class="container">
     <div class="row">
@@ -37,10 +37,11 @@
             </div>
         </div>
     </div>
-    <div class="panel-body" style="background:#212529">
         @yield('usercontent')
-    </div>
 </div>
+</div>
+    </div>
+</header>
 <script>        
         /* $(document).ready(function () {        
         $('[data-toggle=confirmation]').confirmation({
@@ -58,7 +59,5 @@
             <!-- <div class="intro-lead" >NEXT BUS<div>
             </br>Male:
             </br>Female: -->
-        </div>
-    </div>
-</header>
+        
 @endsection

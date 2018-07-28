@@ -1,6 +1,6 @@
 <!-- Footer -->
         <div  class="container">
-            <div id="footer" class="row">
+            <div id="footer" class="row" style="background: ghostwhite;">
                 <div class="col-md-4">
                     <span class="copyright">
                         <!-- Copyright &copy; Your Website 2017 -->

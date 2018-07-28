@@ -14,7 +14,7 @@ class DashboardController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except('contact');
     }
 
     /**
@@ -28,4 +28,10 @@ class DashboardController extends Controller
         $user = User::find($user_id);
         return view('dashboard')->with('notices', $user->notices);
     }
+
+    public function contact()
+    {
+        return view('mail.contact_me');
+    }
+
 }

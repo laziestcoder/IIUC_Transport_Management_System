@@ -21,7 +21,8 @@ class CreateUsersTable extends Migration
             $table->integer('userrole');
             $table->boolean('gender')->default(false);
             $table->integer('adminrole')->default(1);
-            $table->boolean('confirmation')->default(false);
+            $table->string('image')->nullable();
+//            $table->boolean('confirmation')->default(false);
             $table->string('token')->nullable();
             $table->rememberToken();
             $table->timestamps();

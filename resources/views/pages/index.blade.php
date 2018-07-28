@@ -6,15 +6,8 @@
             <div class="intro-text">
                 <div class="intro-lead-in" style="padding:10px 0px;">Welcome To IIUC Transport Website!</div>
                 <div class="intro-heading text-uppercase">It's Nice To Meet You</div>
-                <div class="nextBus">
-                    {{--<div class="nextBus-title">--}}
-                    {{--<table class="table table-bordered">--}}
-                    {{--<td>--}}
-                    {{--NEXT BUS--}}
-                    {{--</td>--}}
-                    {{--</table>--}}
-                    {{--</div>--}}
-                    <div class="nextBus nextBus-info">
+                <div class="nextBus" >
+                    <div class="nextBus-info">
                         <table class="table table-responsive-lg">
                             <thead>
                             <td colspan="4">
@@ -132,8 +125,11 @@
                         <li class="timeline-inverted">
                             <div class="timeline-image">
                                 <h4>Be Part
-                                    <br>Of Our
-                                    <br>Story!</h4>
+                                    <br>
+                                    Of Our
+                                    <br>
+                                    Story!
+                                </h4>
                             </div>
                         </li>
                     </ul>
@@ -159,7 +155,7 @@
                     <?php $count = 0; ?>
                     @foreach($notices as $notice)
                         <?php $count = $count + 1; ?>
-                        @if($count<=9)
+                        @if($count<=12)
                             <div class="col-md-4 col-sm-6 portfolio-item">
                                 <a class="portfolio-link" data-toggle="modal" href="#portfolioModal{{$count}}">
                                     <div class="portfolio-hover">
@@ -167,10 +163,17 @@
                                             <i class="fa fa-plus fa-3x"></i>
                                         </div>
                                     </div>
-                                    <img class="img-fluid" src="/storage/cover_images/{{$notice->cover_image}}" alt="{{$notice->title}}"> </a>
+                                    <img class="img-fluid" src="/storage/cover_images/{{$notice->cover_image}}"
+                                         alt="{{$notice->title}}"> </a>
                                 <div class="portfolio-caption">
                                     <h4>{{$notice->title}}</h4>
-                                    <p class="text-muted">Posted By: {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}</p>
+                                    <p class="text-muted">    
+                                    By:
+                                    <i> 
+                                        {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}
+                                    </i><br>
+                                    At: {{$notice->created_at}}
+                                    </p>
                                 </div>
                             </div>
 
@@ -291,22 +294,27 @@
             </div> -->
             <div class="col-sm-6">
                 <div class="team-member">
-                    <img class="mx-auto rounded-circle" src="/storage/img/team/2.jpg" alt=""></img>
-                    <h4>Towfiqul Islam</h4>
+                    <img class="mx-auto rounded-circle" src="/storage/img/team/1.jpg" alt="Towfiqul Islam">
+                    <h4>Towfiqul Islam</h4><span>Dept. of CSE, IIUC</span>
                     <p class="text-muted">Full-Stack Developer</p>
                     <ul class="list-inline social-buttons">
                         <li class="list-inline-item">
-                            <a href="#">
+                            <a href="http://twitter.com/TowfiqIslam">
                                 <i class="fa fa-twitter"></i>
                             </a>
                         </li>
                         <li class="list-inline-item">
-                            <a href="#">
+                            <a href="http://github.com/laziestcoder">
+                                <i class="fa fa-github"></i>
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="http://facebook.com/towfiq.106">
                                 <i class="fa fa-facebook"></i>
                             </a>
                         </li>
                         <li class="list-inline-item">
-                            <a href="#">
+                            <a href="http://www.linkedin.com/in/towfiq106/">
                                 <i class="fa fa-linkedin"></i>
                             </a>
                         </li>
@@ -316,37 +324,45 @@
 
             <div class="col-sm-6">
                 <div class="team-member">
-                    <img class="mx-auto rounded-circle" src="/storage/img/team/3.jpg" alt=""></img>
-                    <h4>Sina Ibn Amin </h4>
+                    <img class="mx-auto rounded-circle" src="/storage/img/team/2.jpg" alt="Sina Ibn Amin">
+                    <h4>Sina Ibn Amin </h4><span>Dept. of CSE, IIUC</span>
                     <p class="text-muted">UI/UX Designer</p>
                     <ul class="list-inline social-buttons">
                         <li class="list-inline-item">
-                            <a href="#">
+                            <a href="http://twitter.com/TowfiqIslam">
                                 <i class="fa fa-twitter"></i>
                             </a>
                         </li>
                         <li class="list-inline-item">
-                            <a href="#">
+                            <a href="http://github.com/sinaibnamin">
+                                <i class="fa fa-github"></i>
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="http://www.facebook.com/sinaibnamin">
                                 <i class="fa fa-facebook"></i>
                             </a>
                         </li>
                         <li class="list-inline-item">
-                            <a href="#">
+                            <a href="http://www.linkedin.com/in/towfiq106/">
                                 <i class="fa fa-linkedin"></i>
                             </a>
                         </li>
                     </ul>
                 </div>
             </div>
-
         </div>
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
-                <p class="large text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut eaque,
-                    laboriosam veritatis, quos non quis ad perspiciatis, totam corporis ea, alias ut unde.</p>
+                <p class="large text-muted">
+                This project is developed to automate the transport management system and to reduce hassles
+                    regarding transportation. This version is an early release and is being observed to
+                    improve the facilities.<br>If you have any query, don't hesitate to contact:<br>
+                    <b>info@itms.com || itms@gmail.com</b>
+                </p>
             </div>
         </div>
-        </div>
+
     </section>
 
     <!-- Clients -->
@@ -386,7 +402,7 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2 class="section-heading text-uppercase">Report A Problem</h2>
-                    <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
+                    <h3 class="section-subheading text-muted">You can complain us through this message box</h3>
                 </div>
             </div>
             <div class="row">
@@ -440,7 +456,7 @@
         <?php $count = 0; ?>
         @foreach($notices as $notice)
             <?php $count = $count + 1; ?>
-            @if($count<=9)
+            @if($count<=12)
                 <div class="portfolio-modal modal fade" id="portfolioModal{{$count}}" tabindex="-1" role="dialog"
                      aria-hidden="true">
                     <div class="modal-dialog">
@@ -458,9 +474,11 @@
                                             <!-- Project Details Go Here -->
 
                                             <h2 class="text-uppercase">{{$notice->title}}</h2>
-                                            <p class="item-intro text-muted">Posted By: {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}</p>
+                                            <p class="item-intro text-muted">Posted
+                                                By: {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}</p>
                                             <img class="img-fluid d-block mx-auto"
-                                                 src="/storage/cover_images/{{$notice->cover_image}}" alt="{{$notice->title}}">
+                                                 src="/storage/cover_images/{{$notice->cover_image}}"
+                                                 alt="{{$notice->title}}">
                                             <p>{{$notice->body}}</p>
                                             <ul class="list-inline">
                                                 <li>Date: {{$notice->created_at}}</li>

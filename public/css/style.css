@@ -4,9 +4,24 @@
 /* .navbar-shrink{
     text-align: center;
 } */
-.navbar-shrink img {
-    height: 25px;
+.navbar-nav {
+    float: right;
+    margin: auto;
 }
+#mainNav {
+    padding-top: 10px;
+    padding-bottom: 10px; 
+}
+nav img {
+    display: block;
+    height: 100px;
+}
+.navbar-shrink img {
+    height: 50px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
 .navbar-brand {
     float: left;
     padding: 0px 0px;
@@ -20,37 +35,89 @@
 /* #footer.row {
     display: block;
 } */
-section{
+section {
     padding: 50px 25px;
 }
+
 .modal-content {
     position: absolute;
 }
-header.masthead {   
+
+header.masthead {
     background-image: url('/storage/img/transport-bg.png');
 }
-.nextBus{
-    /*background:#212529;*/
-    margin-bottom: 250px;
-    text-align:center;
-    height: 100px;
+header.masthead .intro-text {
+    padding-top: 180px;
 }
-.nextBus-title{
-    /*background:#212529;*/
-    font-size: 35px;
-    color: yellow;
 
+.nextBus {
+    /* position: absolute; */
+    /* background: #000000; */
+    /* box-sizing: border-box; */
+    /* margin-bottom: 250px; */
+    /* margin-left: 250px; */
+    /* padding: 0px 250px 0px 200px; */
+    text-align: center;
+    margin: auto;
+    /* height: 100px; */
+    width: 550px;
 }
-.nextBus-info{
+/* .nextBus table {
+    width: 100%;
+
+} */
+.nextBus-title {
     /*background:#212529;*/
     font-size: 20px;
     color: yellow;
+
 }
-.nextBus thead{
-    color:white;
+
+.nextBus-info {
+    background:#212529;
+    font-size: 18px;
+    color: yellow;
+}
+
+.nextBus thead {
+    color: white;
     font-weight: bold;
 }
+
 /*.nextBus table{*/
-    /*border-color: yellow;*/
-    /*border-size:20px;*/
+/*border-color: yellow;*/
+/*border-size:20px;*/
 /*}*/
+.userinfo {
+    /*display: inline-block;*/
+    width: 90%;
+    text-align: initial;
+}
+
+
+.userrouteinfo {
+
+    /*float: right;*/
+    width: 90%;
+    text-align: center;
+}
+/* .userrouteinfo table{
+    align: center;
+} */
+.userrouteinfo .table td{
+    border-color: #bababa ;
+}
+
+.userrouteinfo table thead {
+    /*float: right;*/
+    color: yellow;
+    font-weight: bold;
+}
+.userRouteForm{
+    color: black;
+}
+.userrouteinfo h3 {
+    text-align: initial;
+}
+
+

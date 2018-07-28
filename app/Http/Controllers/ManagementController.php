@@ -30,14 +30,14 @@ class ManagementController extends Controller
     {
         $user_id = auth()->user()->id;
         $user = User::find($user_id);
-        $title = 'Bus Route';
-        $titleInfo = 'Bus Stop Points';
+        $routetitle = 'Bus Route';
+        $pointtitle = 'Bus Stop Points';
         $BusRoutes = BusRoute::orderBy('routename')->get();
         $BusPoints = BusPoint::orderBy('pointname')->get();
         $data = array(
-            'title' => $title,
+            'routetitle' => $routetitle,
             'BusRoutes' => $BusRoutes,
-            'titleinfo' => $titleInfo,
+            'pointtitle' => $pointtitle,
             'BusPoints' => $BusPoints,
             'user'      => $user,
         );
@@ -65,7 +65,7 @@ class ManagementController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return true;
     }
 
     /**

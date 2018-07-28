@@ -1,75 +1,94 @@
 <?php $__env->startSection('usercontent'); ?>
-    <h1>Edit Schedule</h1>
+    <div class="panel-body" style="background:#212529">
+        <h1>Edit Schedule</h1>
+    </div>
+    <hr>
+    <div class="panel-body" style="background:#212529">
+        <?php if(session('status')): ?>
+            <div class="alert alert-success">
+                <?php echo e(session('status')); ?>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-11">
-                <div class="panel panel-default">
-                    
+            </div>
+        <?php endif; ?>
+        <div class="container">
+            <div class="userinfo">
+                <b><h3>Basic Info:</h3></b><hr>
 
-                    <div class="panel-body" style="height:100%;background:black">
-                        <?php if(session('status')): ?>
-                            <div class="alert alert-success">
-                                <?php echo e(session('status')); ?>
+                <table class="table-active">
+                    <thead class="">
+                    <tr>
+                        <td>
+                            Name: <?php echo e(Auth::user()->name); ?>
 
-                            </div>
-                        <?php endif; ?>
-                         <form action="" method="post">
-                            <table size="width:100%">
-                                <tr>
-                                    <td>Route</td>
-                                    <td>:</td>
-                                    <td><input size="30" type="text" name="route" id="route" placeholder="Select Your Route" /></td>
-                                </tr>
+                        </td>
+                        <td>
+                            Gender: <?php echo e(Auth::user()->gender == 0 ? 'Male' : 'Female'); ?>
 
-                                <tr>
-                                    <td>Pick Up Point</td>
-                                    <td>:</td>
-                                    <td><input size="30" type="text" name="point" id="routepoint" placeholder="Enter Your Pick Up Point" /></td>
-                                </tr>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            ID: <?php echo e(Auth::user()->id); ?>
 
-                                <tr>
-                                    <td>Day</td>
-                                    <td>:</td>
-                                    <td><input size="30" type="text" name="day" id="day" placeholder="Enter Your Day" /></td>
-                                </tr>
+                        </td>
+                        <td>
+                            Registered
+                            As: <?php echo e(Auth::user()->userrole == 1 ? 'Student' : ( Auth::user()->userrole == 2 ? 'Faculty Member' :(Auth::user()->userrole == 3 ? 'Officer/Staff' : 'undefined'))); ?>
 
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td><button type="submit" name="submit" id="studentsubmit" value="submit">Submit</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Email: <?php echo e(Auth::user()->email); ?>
 
-                        <?php echo Form :: open(['action' => 'BusPointsController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data' ]); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Contact: <?php echo e(Auth::user()->contact ? Auth::user()->contact : 'none'); ?>
 
-                        <div class="form-group">
-                            <?php echo e(Form :: label('title','Bus Route Name')); ?>
+                        </td>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <br><br>
+        <div class="container">
+            <div class="userrouteinfo">
+                <b><h3>Transport Schedule</h3></b>
+                <hr>
+                <?php echo Form :: open(['action' => 'BusPointsController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data' ]); ?>
 
-                            
-                            <?php if(count( $BusRoutes ) > 0 ): ?>
-                                <select name="routename" required="True">
-                                    <option value="" disabled="true" selected="true" required>Select A Route Name
-                                    </option>
-                                    <?php $__currentLoopData = $BusRoutes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($route->id); ?>"><?php echo e($route->routename); ?></option>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </select>
-                            <?php else: ?>
-                                <select name="routename">
-                                    <option value="" disabled="true" selected="true">No Route Added</option>
-                                </select>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="form-group">
-                            <?php echo e(Form :: label('title','Bus Stop Point')); ?>
-
-                            
-                            <?php if(count( $BusPoints ) > 0 /* && $BusPoints->routeid == $route->routename */ ): ?>
-                                <select name="pointname" required="True">
+                <table class="table table-bordered">
+                    <thead class="">
+                    <tr>
+                        <td>
+                            Day
+                        </td>
+                        <td>
+                            Pick Up Point
+                        </td>
+                        <td>
+                            Pick Up Time
+                        </td>
+                        <td>
+                            Drop Point
+                        </td>
+                        <td>
+                            Leaving Time
+                        </td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            Saturday
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                            <?php if(count( $BusPoints ) > 0  ): ?>
+                                <select name="pointnamesatp" required="True">
                                     <option value="" disabled="true" selected="true" required>Select A Point Name
                                     </option>
                                     <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -78,21 +97,319 @@
                                 </select>
                             <?php else: ?>
                                 <select name="pointname">
-                                    <option value="" disabled="true" selected="true">No Point Added</option>
+                                    <option value="" disabled="true" selected="true">No Point Available</option>
                                 </select>
                             <?php endif; ?>
-                        </div>
-                        
-                        <?php echo e(Form :: submit('Submit',['class' => 'btn btn-primary'])); ?>
+                            </div>
+                        </td>
+                        <td>
+                            Pick Up Time
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnamesatd" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Leaving Time
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Sunday
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnamesunp" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Pick Up Time
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnamesund" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Leaving Time
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Monday
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnamemonp" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Pick Up Time
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnamemond" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Leaving Time
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Tuesday
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnametuep" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Pick Up Time
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnametued" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Leaving Time
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Wednesday
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnamewedp" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Pick Up Time
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnamewedd" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Leaving Time
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Thursday
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnamethup" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Pick Up Time
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnamethud" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Leaving Time
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Friday
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnamefrip" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Pick Up Time
+                        </td>
+                        <td>
+                            <div class="userRouteForm">
+                                <?php if(count( $BusPoints ) > 0  ): ?>
+                                    <select name="pointnamefrid" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                <?php else: ?>
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            Leaving Time
+                        </td>
+                    </tr>
 
-                        <?php echo Form::close(); ?>
+                    </tbody>
+                </table>
+                <?php echo e(Form :: submit('Submit',['class' => 'btn btn-primary'])); ?>
 
+                <?php echo Form::close(); ?>
 
-                    </div>
-                </div>
             </div>
         </div>
     </div>
+
+
+
+
     <script>
         /* $(document).ready(function () {        
         $('[data-toggle=confirmation]').confirmation({
@@ -108,5 +425,101 @@
 
     </script>
 <?php $__env->stopSection(); ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <?php echo $__env->make('layouts.userlayout', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

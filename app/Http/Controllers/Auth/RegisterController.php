@@ -58,6 +58,7 @@ class RegisterController extends Controller
             'password' => 'required|string|min:6|confirmed',
             'userrole' => 'required|integer',
             'gender' => 'required|boolean',
+            'image' => 'image|nullable|max:1999'
         ]);
     }
 
@@ -75,6 +76,7 @@ class RegisterController extends Controller
             'password' => bcrypt($data['password']),
             'userrole' => $data['userrole'],
             'gender' => $data['gender'],
+//            'image' => $data['image'],
             'token' => base64_encode($data['email']).str_random(5),
         ]);
     }

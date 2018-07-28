@@ -47,6 +47,10 @@ Route::get('/', 'PagesController@index');
 //Route::get('/services', 'PagesController@index');
 Route::get('/test', 'PagesController@test');
 
+// Report A Problem
+//Route::get('/contact-msg', ['as'=>'contact-msg','uses'=>'DashboardController@contact']);
+Route::post('/contact-msg', ['as'=>'contact-msg','uses'=>'DashboardController@contact']);
+//Route::post('product_catalog',['as' => 'storeProduct', 'uses' => 'front\ProductCatalogController@storeProduct']);
 
 //Notice routing
 //Route::get('/posts','PagesController@posts');
@@ -58,7 +62,7 @@ Route::get('/test', 'PagesController@test');
 Auth::routes();
 //Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::get('/dashboard', 'DashboardController@index');
-Route::get('/management', 'ManagementController@index');
+Route::resource('/management', 'ManagementController');
 
 //User Confirmation Routing
 //Email Verification 1
@@ -66,6 +70,8 @@ Route::get('/management', 'ManagementController@index');
 
 //Email Verification 2
 Route::get('/verifyemail/{token}', 'Auth\RegisterController@verify')->name('confirmation');
+
+
 //Admin::routes();
 Route::resource('/admin/auth/routes','BusRoutesController');
 Route::resource('/admin/auth/points','BusPointsController');
