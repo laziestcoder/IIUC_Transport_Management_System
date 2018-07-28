@@ -12,11 +12,11 @@
 namespace Symfony\Component\HttpKernel\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Client;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Client;
 use Symfony\Component\HttpKernel\Tests\Fixtures\TestClient;
 
 /**
@@ -40,7 +40,7 @@ class ClientTest extends TestCase
         $this->assertEquals('www.example.com', $client->getRequest()->getHost(), '->doRequest() uses the request handler to make the request');
 
         $client->request('GET', 'http://www.example.com/?parameter=http://google.com');
-        $this->assertEquals('http://www.example.com/?parameter='.urlencode('http://google.com'), $client->getRequest()->getUri(), '->doRequest() uses the request handler to make the request');
+        $this->assertEquals('http://www.example.com/?parameter=' . urlencode('http://google.com'), $client->getRequest()->getUri(), '->doRequest() uses the request handler to make the request');
     }
 
     public function testGetScript()
@@ -63,14 +63,14 @@ class ClientTest extends TestCase
         $response = new Response();
         $response->headers->setCookie($cookie1 = new Cookie('foo', 'bar', \DateTime::createFromFormat('j-M-Y H:i:s T', '15-Feb-2009 20:00:00 GMT')->format('U'), '/foo', 'http://example.com', true, true));
         $domResponse = $m->invoke($client, $response);
-        $this->assertSame((string) $cookie1, $domResponse->getHeader('Set-Cookie'));
+        $this->assertSame((string)$cookie1, $domResponse->getHeader('Set-Cookie'));
 
         $response = new Response();
         $response->headers->setCookie($cookie1 = new Cookie('foo', 'bar', \DateTime::createFromFormat('j-M-Y H:i:s T', '15-Feb-2009 20:00:00 GMT')->format('U'), '/foo', 'http://example.com', true, true));
         $response->headers->setCookie($cookie2 = new Cookie('foo1', 'bar1', \DateTime::createFromFormat('j-M-Y H:i:s T', '15-Feb-2009 20:00:00 GMT')->format('U'), '/foo', 'http://example.com', true, true));
         $domResponse = $m->invoke($client, $response);
-        $this->assertSame((string) $cookie1, $domResponse->getHeader('Set-Cookie'));
-        $this->assertSame(array((string) $cookie1, (string) $cookie2), $domResponse->getHeader('Set-Cookie', false));
+        $this->assertSame((string)$cookie1, $domResponse->getHeader('Set-Cookie'));
+        $this->assertSame(array((string)$cookie1, (string)$cookie2), $domResponse->getHeader('Set-Cookie', false));
     }
 
     public function testFilterResponseSupportsStreamedResponses()
@@ -93,7 +93,7 @@ class ClientTest extends TestCase
     {
         $source = tempnam(sys_get_temp_dir(), 'source');
         file_put_contents($source, '1');
-        $target = sys_get_temp_dir().'/sf.moved.file';
+        $target = sys_get_temp_dir() . '/sf.moved.file';
         @unlink($target);
 
         $kernel = new TestHttpKernel();
@@ -152,13 +152,11 @@ class ClientTest extends TestCase
             ->getMockBuilder('Symfony\Component\HttpFoundation\File\UploadedFile')
             ->setConstructorArgs(array($source, 'original', 'mime/original', 123, UPLOAD_ERR_OK, true))
             ->setMethods(array('getSize'))
-            ->getMock()
-        ;
+            ->getMock();
 
         $file->expects($this->once())
             ->method('getSize')
-            ->will($this->returnValue(INF))
-        ;
+            ->will($this->returnValue(INF));
 
         $client->request('POST', '/', array(), array($file));
 

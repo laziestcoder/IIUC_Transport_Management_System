@@ -25,7 +25,7 @@ class SyntaxErrorException extends ParseException
 {
     /**
      * @param string $expectedValue
-     * @param Token  $foundToken
+     * @param Token $foundToken
      *
      * @return self
      */

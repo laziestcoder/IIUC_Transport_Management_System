@@ -16,15 +16,15 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\DependencyInjection\ResettableServicePass;
 use Symfony\Component\HttpKernel\DependencyInjection\ServicesResetter;
-use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Tests\Fixtures\KernelForTest;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\Tests\Fixtures\KernelForOverrideName;
+use Symfony\Component\HttpKernel\Tests\Fixtures\KernelForTest;
 use Symfony\Component\HttpKernel\Tests\Fixtures\KernelWithoutBundles;
 use Symfony\Component\HttpKernel\Tests\Fixtures\ResettableService;
 
@@ -33,7 +33,7 @@ class KernelTest extends TestCase
     public static function tearDownAfterClass()
     {
         $fs = new Filesystem();
-        $fs->remove(__DIR__.'/Fixtures/cache');
+        $fs->remove(__DIR__ . '/Fixtures/cache');
     }
 
     public function testConstructor()
@@ -67,26 +67,28 @@ class KernelTest extends TestCase
     public function testInitializeContainerClearsOldContainers()
     {
         $fs = new Filesystem();
-        $legacyContainerDir = __DIR__.'/Fixtures/cache/custom/ContainerA123456';
+        $legacyContainerDir = __DIR__ . '/Fixtures/cache/custom/ContainerA123456';
         $fs->mkdir($legacyContainerDir);
-        touch($legacyContainerDir.'.legacy');
+        touch($legacyContainerDir . '.legacy');
 
         $kernel = new CustomProjectDirKernel();
         $kernel->boot();
 
-        $containerDir = __DIR__.'/Fixtures/cache/custom/'.substr(get_class($kernel->getContainer()), 0, 16);
-        $this->assertTrue(unlink(__DIR__.'/Fixtures/cache/custom/FixturesCustomDebugProjectContainer.php.meta'));
+        $containerDir = __DIR__ . '/Fixtures/cache/custom/' . substr(get_class($kernel->getContainer()), 0, 16);
+        $this->assertTrue(unlink(__DIR__ . '/Fixtures/cache/custom/FixturesCustomDebugProjectContainer.php.meta'));
         $this->assertFileExists($containerDir);
-        $this->assertFileNotExists($containerDir.'.legacy');
+        $this->assertFileNotExists($containerDir . '.legacy');
 
-        $kernel = new CustomProjectDirKernel(function ($container) { $container->register('foo', 'stdClass')->setPublic(true); });
+        $kernel = new CustomProjectDirKernel(function ($container) {
+            $container->register('foo', 'stdClass')->setPublic(true);
+        });
         $kernel->boot();
 
         $this->assertFileExists($containerDir);
-        $this->assertFileExists($containerDir.'.legacy');
+        $this->assertFileExists($containerDir . '.legacy');
 
         $this->assertFileNotExists($legacyContainerDir);
-        $this->assertFileNotExists($legacyContainerDir.'.legacy');
+        $this->assertFileNotExists($legacyContainerDir . '.legacy');
     }
 
     public function testBootInitializesBundlesAndContainer()
@@ -98,6 +100,33 @@ class KernelTest extends TestCase
             ->method('initializeContainer');
 
         $kernel->boot();
+    }
+
+    /**
+     * Returns a mock for the abstract kernel.
+     *
+     * @param array $methods Additional methods to mock (besides the abstract ones)
+     * @param array $bundles Bundles to register
+     *
+     * @return Kernel
+     */
+    protected function getKernel(array $methods = array(), array $bundles = array())
+    {
+        $methods[] = 'registerBundles';
+
+        $kernel = $this
+            ->getMockBuilder('Symfony\Component\HttpKernel\Kernel')
+            ->setMethods($methods)
+            ->setConstructorArgs(array('test', false))
+            ->getMockForAbstractClass();
+        $kernel->expects($this->any())
+            ->method('registerBundles')
+            ->will($this->returnValue($bundles));
+        $p = new \ReflectionProperty($kernel, 'rootDir');
+        $p->setAccessible(true);
+        $p->setValue($kernel, __DIR__ . '/Fixtures');
+
+        return $kernel;
     }
 
     public function testBootSetsTheContainerToTheBundles()
@@ -121,6 +150,19 @@ class KernelTest extends TestCase
         $kernel->boot();
 
         $this->assertTrue($kernel->isBooted());
+    }
+
+    protected function getKernelForTest(array $methods = array())
+    {
+        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\Tests\Fixtures\KernelForTest')
+            ->setConstructorArgs(array('test', false))
+            ->setMethods($methods)
+            ->getMock();
+        $p = new \ReflectionProperty($kernel, 'rootDir');
+        $p->setAccessible(true);
+        $p->setValue($kernel, __DIR__ . '/Fixtures');
+
+        return $kernel;
     }
 
     public function testClassCacheIsNotLoadedByDefault()
@@ -299,7 +341,7 @@ EOF;
     {
         $kernel = new KernelForTest('test', true);
 
-        $this->assertEquals(__DIR__.DIRECTORY_SEPARATOR.'Fixtures', realpath($kernel->getRootDir()));
+        $this->assertEquals(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures', realpath($kernel->getRootDir()));
     }
 
     public function testGetName()
@@ -359,10 +401,45 @@ EOF;
         $kernel
             ->expects($this->once())
             ->method('getBundle')
-            ->will($this->returnValue($this->getBundle(__DIR__.'/Fixtures/Bundle1Bundle')))
-        ;
+            ->will($this->returnValue($this->getBundle(__DIR__ . '/Fixtures/Bundle1Bundle')));
 
         $kernel->locateResource('@Bundle1Bundle/config/routing.xml');
+    }
+
+    /**
+     * Returns a mock for the BundleInterface.
+     *
+     * @return BundleInterface
+     */
+    protected function getBundle($dir = null, $parent = null, $className = null, $bundleName = null)
+    {
+        $bundle = $this
+            ->getMockBuilder('Symfony\Component\HttpKernel\Bundle\BundleInterface')
+            ->setMethods(array('getPath', 'getParent', 'getName'))
+            ->disableOriginalConstructor();
+
+        if ($className) {
+            $bundle->setMockClassName($className);
+        }
+
+        $bundle = $bundle->getMockForAbstractClass();
+
+        $bundle
+            ->expects($this->any())
+            ->method('getName')
+            ->will($this->returnValue(null === $bundleName ? get_class($bundle) : $bundleName));
+
+        $bundle
+            ->expects($this->any())
+            ->method('getPath')
+            ->will($this->returnValue($dir));
+
+        $bundle
+            ->expects($this->any())
+            ->method('getParent')
+            ->will($this->returnValue($parent));
+
+        return $bundle;
     }
 
     public function testLocateResourceReturnsTheFirstThatMatches()
@@ -371,10 +448,9 @@ EOF;
         $kernel
             ->expects($this->once())
             ->method('getBundle')
-            ->will($this->returnValue($this->getBundle(__DIR__.'/Fixtures/Bundle1Bundle')))
-        ;
+            ->will($this->returnValue($this->getBundle(__DIR__ . '/Fixtures/Bundle1Bundle')));
 
-        $this->assertEquals(__DIR__.'/Fixtures/Bundle1Bundle/foo.txt', $kernel->locateResource('@Bundle1Bundle/foo.txt'));
+        $this->assertEquals(__DIR__ . '/Fixtures/Bundle1Bundle/foo.txt', $kernel->locateResource('@Bundle1Bundle/foo.txt'));
     }
 
     public function testLocateResourceIgnoresDirOnNonResource()
@@ -383,12 +459,11 @@ EOF;
         $kernel
             ->expects($this->once())
             ->method('getBundle')
-            ->will($this->returnValue($this->getBundle(__DIR__.'/Fixtures/Bundle1Bundle')))
-        ;
+            ->will($this->returnValue($this->getBundle(__DIR__ . '/Fixtures/Bundle1Bundle')));
 
         $this->assertEquals(
-            __DIR__.'/Fixtures/Bundle1Bundle/foo.txt',
-            $kernel->locateResource('@Bundle1Bundle/foo.txt', __DIR__.'/Fixtures')
+            __DIR__ . '/Fixtures/Bundle1Bundle/foo.txt',
+            $kernel->locateResource('@Bundle1Bundle/foo.txt', __DIR__ . '/Fixtures')
         );
     }
 
@@ -398,12 +473,11 @@ EOF;
         $kernel
             ->expects($this->once())
             ->method('getBundle')
-            ->will($this->returnValue($this->getBundle(__DIR__.'/Fixtures/FooBundle', null, null, 'FooBundle')))
-        ;
+            ->will($this->returnValue($this->getBundle(__DIR__ . '/Fixtures/FooBundle', null, null, 'FooBundle')));
 
         $this->assertEquals(
-            __DIR__.'/Fixtures/Resources/FooBundle/foo.txt',
-            $kernel->locateResource('@FooBundle/Resources/foo.txt', __DIR__.'/Fixtures/Resources')
+            __DIR__ . '/Fixtures/Resources/FooBundle/foo.txt',
+            $kernel->locateResource('@FooBundle/Resources/foo.txt', __DIR__ . '/Fixtures/Resources')
         );
     }
 
@@ -413,31 +487,29 @@ EOF;
         $kernel
             ->expects($this->exactly(2))
             ->method('getBundle')
-            ->will($this->returnValue($this->getBundle(__DIR__.'/Fixtures/FooBundle', null, null, 'FooBundle')))
-        ;
+            ->will($this->returnValue($this->getBundle(__DIR__ . '/Fixtures/FooBundle', null, null, 'FooBundle')));
 
         $this->assertEquals(
-            __DIR__.'/Fixtures/Resources/FooBundle/',
-            $kernel->locateResource('@FooBundle/Resources/', __DIR__.'/Fixtures/Resources')
+            __DIR__ . '/Fixtures/Resources/FooBundle/',
+            $kernel->locateResource('@FooBundle/Resources/', __DIR__ . '/Fixtures/Resources')
         );
         $this->assertEquals(
-            __DIR__.'/Fixtures/Resources/FooBundle',
-            $kernel->locateResource('@FooBundle/Resources', __DIR__.'/Fixtures/Resources')
+            __DIR__ . '/Fixtures/Resources/FooBundle',
+            $kernel->locateResource('@FooBundle/Resources', __DIR__ . '/Fixtures/Resources')
         );
 
         $kernel = $this->getKernel(array('getBundle'));
         $kernel
             ->expects($this->exactly(2))
             ->method('getBundle')
-            ->will($this->returnValue($this->getBundle(__DIR__.'/Fixtures/Bundle1Bundle', null, null, 'Bundle1Bundle')))
-        ;
+            ->will($this->returnValue($this->getBundle(__DIR__ . '/Fixtures/Bundle1Bundle', null, null, 'Bundle1Bundle')));
 
         $this->assertEquals(
-            __DIR__.'/Fixtures/Bundle1Bundle/Resources/',
+            __DIR__ . '/Fixtures/Bundle1Bundle/Resources/',
             $kernel->locateResource('@Bundle1Bundle/Resources/')
         );
         $this->assertEquals(
-            __DIR__.'/Fixtures/Bundle1Bundle/Resources',
+            __DIR__ . '/Fixtures/Bundle1Bundle/Resources',
             $kernel->locateResource('@Bundle1Bundle/Resources')
         );
     }
@@ -508,8 +580,8 @@ EOF;
 
     public function testKernelRootDirNameStartingWithANumber()
     {
-        $dir = __DIR__.'/Fixtures/123';
-        require_once $dir.'/Kernel123.php';
+        $dir = __DIR__ . '/Fixtures/123';
+        require_once $dir . '/Kernel123.php';
         $kernel = new \Symfony\Component\HttpKernel\Tests\Fixtures\_123\Kernel123('dev', true);
         $this->assertEquals('_123', $kernel->getName());
     }
@@ -525,28 +597,30 @@ EOF;
 
     public function testKernelReset()
     {
-        (new Filesystem())->remove(__DIR__.'/Fixtures/cache');
+        (new Filesystem())->remove(__DIR__ . '/Fixtures/cache');
 
         $kernel = new CustomProjectDirKernel();
         $kernel->boot();
 
         $containerClass = get_class($kernel->getContainer());
         $containerFile = (new \ReflectionClass($kernel->getContainer()))->getFileName();
-        unlink(__DIR__.'/Fixtures/cache/custom/FixturesCustomDebugProjectContainer.php.meta');
+        unlink(__DIR__ . '/Fixtures/cache/custom/FixturesCustomDebugProjectContainer.php.meta');
 
         $kernel = new CustomProjectDirKernel();
         $kernel->boot();
 
         $this->assertInstanceOf($containerClass, $kernel->getContainer());
         $this->assertFileExists($containerFile);
-        unlink(__DIR__.'/Fixtures/cache/custom/FixturesCustomDebugProjectContainer.php.meta');
+        unlink(__DIR__ . '/Fixtures/cache/custom/FixturesCustomDebugProjectContainer.php.meta');
 
-        $kernel = new CustomProjectDirKernel(function ($container) { $container->register('foo', 'stdClass')->setPublic(true); });
+        $kernel = new CustomProjectDirKernel(function ($container) {
+            $container->register('foo', 'stdClass')->setPublic(true);
+        });
         $kernel->boot();
 
         $this->assertNotInstanceOf($containerClass, $kernel->getContainer());
         $this->assertFileExists($containerFile);
-        $this->assertFileExists(dirname($containerFile).'.legacy');
+        $this->assertFileExists(dirname($containerFile) . '.legacy');
     }
 
     public function testKernelPass()
@@ -587,88 +661,6 @@ EOF;
         $kernel->handle($request);
 
         $this->assertEquals(1, ResettableService::$counter);
-    }
-
-    /**
-     * Returns a mock for the BundleInterface.
-     *
-     * @return BundleInterface
-     */
-    protected function getBundle($dir = null, $parent = null, $className = null, $bundleName = null)
-    {
-        $bundle = $this
-            ->getMockBuilder('Symfony\Component\HttpKernel\Bundle\BundleInterface')
-            ->setMethods(array('getPath', 'getParent', 'getName'))
-            ->disableOriginalConstructor()
-        ;
-
-        if ($className) {
-            $bundle->setMockClassName($className);
-        }
-
-        $bundle = $bundle->getMockForAbstractClass();
-
-        $bundle
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue(null === $bundleName ? get_class($bundle) : $bundleName))
-        ;
-
-        $bundle
-            ->expects($this->any())
-            ->method('getPath')
-            ->will($this->returnValue($dir))
-        ;
-
-        $bundle
-            ->expects($this->any())
-            ->method('getParent')
-            ->will($this->returnValue($parent))
-        ;
-
-        return $bundle;
-    }
-
-    /**
-     * Returns a mock for the abstract kernel.
-     *
-     * @param array $methods Additional methods to mock (besides the abstract ones)
-     * @param array $bundles Bundles to register
-     *
-     * @return Kernel
-     */
-    protected function getKernel(array $methods = array(), array $bundles = array())
-    {
-        $methods[] = 'registerBundles';
-
-        $kernel = $this
-            ->getMockBuilder('Symfony\Component\HttpKernel\Kernel')
-            ->setMethods($methods)
-            ->setConstructorArgs(array('test', false))
-            ->getMockForAbstractClass()
-        ;
-        $kernel->expects($this->any())
-            ->method('registerBundles')
-            ->will($this->returnValue($bundles))
-        ;
-        $p = new \ReflectionProperty($kernel, 'rootDir');
-        $p->setAccessible(true);
-        $p->setValue($kernel, __DIR__.'/Fixtures');
-
-        return $kernel;
-    }
-
-    protected function getKernelForTest(array $methods = array())
-    {
-        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\Tests\Fixtures\KernelForTest')
-            ->setConstructorArgs(array('test', false))
-            ->setMethods($methods)
-            ->getMock();
-        $p = new \ReflectionProperty($kernel, 'rootDir');
-        $p->setAccessible(true);
-        $p->setValue($kernel, __DIR__.'/Fixtures');
-
-        return $kernel;
     }
 }
 
@@ -717,7 +709,7 @@ class CustomProjectDirKernel extends Kernel
 
     public function getRootDir()
     {
-        return __DIR__.'/Fixtures';
+        return __DIR__ . '/Fixtures';
     }
 
     protected function build(ContainerBuilder $container)

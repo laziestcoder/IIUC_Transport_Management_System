@@ -11,7 +11,7 @@
          stopOnFailure="false"
          syntaxCheck="true"
          verbose="true">
->
+    >
     <testsuites>
         <testsuite name="Mockery Test Suite">
             <directory suffix="Test.php">./tests</directory>
@@ -20,9 +20,14 @@
             <exclude>./tests/Mockery/MockingParameterAndReturnTypesTest.php</exclude>
             <exclude>./tests/Mockery/Generator/StringManipulation/Pass/MagicMethodTypeHintsPassTest.php</exclude>
             <exclude>./tests/Mockery/Php72LanguageFeaturesTest.php</exclude>
-            <file phpVersion="7.0.0-dev" phpVersionOperator="&lt;">./tests/Mockery/MockingOldStyleConstructorTest.php</file>
-            <file phpVersion="7.0.0-dev" phpVersionOperator=">=">./tests/Mockery/MockingParameterAndReturnTypesTest.php</file>
-            <file phpVersion="7.0.0-dev" phpVersionOperator=">=">./tests/Mockery/Generator/StringManipulation/Pass/MagicMethodTypeHintsPassTest.php</file>
+            <file phpVersion="7.0.0-dev" phpVersionOperator="&lt;">./tests/Mockery/MockingOldStyleConstructorTest.php
+            </file>
+            <file phpVersion="7.0.0-dev" phpVersionOperator=">=">
+                ./tests/Mockery/MockingParameterAndReturnTypesTest.php
+            </file>
+            <file phpVersion="7.0.0-dev" phpVersionOperator=">=">
+                ./tests/Mockery/Generator/StringManipulation/Pass/MagicMethodTypeHintsPassTest.php
+            </file>
             <file phpVersion="7.2.0-dev" phpVersionOperator=">=">./tests/Mockery/Php72LanguageFeaturesTest.php</file>
         </testsuite>
     </testsuites>

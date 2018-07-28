@@ -13,10 +13,10 @@ namespace Symfony\Component\Console\Command;
 
 use Symfony\Component\Console\Helper\DescriptorHelper;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * ListCommand displays the list of all available commands for the application.
@@ -25,6 +25,14 @@ use Symfony\Component\Console\Input\InputDefinition;
  */
 class ListCommand extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getNativeDefinition()
+    {
+        return $this->createDefinition();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -51,16 +59,19 @@ It's also possible to get raw list of commands (useful for embedding command run
 
   <info>php %command.full_name% --raw</info>
 EOF
-            )
-        ;
+            );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getNativeDefinition()
+    private function createDefinition()
     {
-        return $this->createDefinition();
+        return new InputDefinition(array(
+            new InputArgument('namespace', InputArgument::OPTIONAL, 'The namespace name'),
+            new InputOption('raw', null, InputOption::VALUE_NONE, 'To output raw command list'),
+            new InputOption('format', null, InputOption::VALUE_REQUIRED, 'The output format (txt, xml, json, or md)', 'txt'),
+        ));
     }
 
     /**
@@ -73,18 +84,6 @@ EOF
             'format' => $input->getOption('format'),
             'raw_text' => $input->getOption('raw'),
             'namespace' => $input->getArgument('namespace'),
-        ));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    private function createDefinition()
-    {
-        return new InputDefinition(array(
-            new InputArgument('namespace', InputArgument::OPTIONAL, 'The namespace name'),
-            new InputOption('raw', null, InputOption::VALUE_NONE, 'To output raw command list'),
-            new InputOption('format', null, InputOption::VALUE_REQUIRED, 'The output format (txt, xml, json, or md)', 'txt'),
         ));
     }
 }

@@ -76,6 +76,18 @@ class ControllerResolver implements ControllerResolverInterface
     }
 
     /**
+     * Returns an instantiated controller.
+     *
+     * @param string $class A class name
+     *
+     * @return object
+     */
+    protected function instantiateController($class)
+    {
+        return new $class();
+    }
+
+    /**
      * Returns a callable for the given controller.
      *
      * @param string $controller A Controller string
@@ -97,18 +109,6 @@ class ControllerResolver implements ControllerResolverInterface
         }
 
         return array($this->instantiateController($class), $method);
-    }
-
-    /**
-     * Returns an instantiated controller.
-     *
-     * @param string $class A class name
-     *
-     * @return object
-     */
-    protected function instantiateController($class)
-    {
-        return new $class();
     }
 
     private function getControllerError($callable)

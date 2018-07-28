@@ -29,6 +29,14 @@ class Thanks implements EventSubscriberInterface, PluginInterface
     private $io;
     private $displayReminder = 0;
 
+    public static function getSubscribedEvents()
+    {
+        return [
+            PackageEvents::POST_PACKAGE_UPDATE => 'enableReminder',
+            ScriptEvents::POST_UPDATE_CMD => 'displayReminder',
+        ];
+    }
+
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->io = $io;
@@ -80,13 +88,5 @@ class Thanks implements EventSubscriberInterface, PluginInterface
         $this->io->writeError('What about running <comment>composer thanks</> now?');
         $this->io->writeError(sprintf('This will spread some %s by sending a %s to the GitHub repositories of your fellow package maintainers.', $love, $star));
         $this->io->writeError('');
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return [
-            PackageEvents::POST_PACKAGE_UPDATE => 'enableReminder',
-            ScriptEvents::POST_UPDATE_CMD => 'displayReminder',
-        ];
     }
 }

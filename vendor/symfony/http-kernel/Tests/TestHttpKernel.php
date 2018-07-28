@@ -11,12 +11,12 @@
 
 namespace Symfony\Component\HttpKernel\Tests;
 
-use Symfony\Component\HttpKernel\Controller\ArgumentResolverInterface;
-use Symfony\Component\HttpKernel\HttpKernel;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolverInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpKernel\HttpKernel;
 
 class TestHttpKernel extends HttpKernel implements ControllerResolverInterface, ArgumentResolverInterface
 {
@@ -37,6 +37,6 @@ class TestHttpKernel extends HttpKernel implements ControllerResolverInterface, 
 
     public function callController(Request $request)
     {
-        return new Response('Request: '.$request->getRequestUri());
+        return new Response('Request: ' . $request->getRequestUri());
     }
 }

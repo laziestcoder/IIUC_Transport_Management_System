@@ -40,8 +40,8 @@ final class Fqsen
         $matches = array();
         $result = preg_match(
             '/^\\\\([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff\\\\]*)?(?:[:]{2}\\$?([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*))?(?:\\(\\))?$/',
-                $fqsen,
-                $matches
+            $fqsen,
+            $matches
         );
 
         if ($result === 0) {

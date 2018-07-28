@@ -45,6 +45,18 @@ class FileLinkFormatter implements \Serializable
         $this->urlFormat = $urlFormat;
     }
 
+    /**
+     * @internal
+     */
+    public static function generateUrlFormat(UrlGeneratorInterface $router, $routeName, $queryString)
+    {
+        try {
+            return $router->generate($routeName) . $queryString;
+        } catch (ExceptionInterface $e) {
+            return null;
+        }
+    }
+
     public function format($file, $line)
     {
         if ($fmt = $this->getFileLinkFormat()) {
@@ -61,28 +73,6 @@ class FileLinkFormatter implements \Serializable
         return false;
     }
 
-    public function serialize()
-    {
-        return serialize($this->getFileLinkFormat());
-    }
-
-    public function unserialize($serialized)
-    {
-        $this->fileLinkFormat = unserialize($serialized, array('allowed_classes' => false));
-    }
-
-    /**
-     * @internal
-     */
-    public static function generateUrlFormat(UrlGeneratorInterface $router, $routeName, $queryString)
-    {
-        try {
-            return $router->generate($routeName).$queryString;
-        } catch (ExceptionInterface $e) {
-            return null;
-        }
-    }
-
     private function getFileLinkFormat()
     {
         if ($this->fileLinkFormat) {
@@ -96,10 +86,20 @@ class FileLinkFormatter implements \Serializable
                 }
 
                 return array(
-                    $request->getSchemeAndHttpHost().$request->getBaseUrl().$this->urlFormat,
-                    $this->baseDir.DIRECTORY_SEPARATOR, '',
+                    $request->getSchemeAndHttpHost() . $request->getBaseUrl() . $this->urlFormat,
+                    $this->baseDir . DIRECTORY_SEPARATOR, '',
                 );
             }
         }
+    }
+
+    public function serialize()
+    {
+        return serialize($this->getFileLinkFormat());
+    }
+
+    public function unserialize($serialized)
+    {
+        $this->fileLinkFormat = unserialize($serialized, array('allowed_classes' => false));
     }
 }

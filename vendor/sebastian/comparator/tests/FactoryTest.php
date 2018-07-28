@@ -80,7 +80,7 @@ class FactoryTest extends TestCase
     public function testGetComparatorFor($a, $b, $expected)
     {
         $factory = new Factory;
-        $actual  = $factory->getComparatorFor($a, $b);
+        $actual = $factory->getComparatorFor($a, $b);
         $this->assertInstanceOf($expected, $actual);
     }
 
@@ -94,10 +94,10 @@ class FactoryTest extends TestCase
         $factory = new Factory;
         $factory->register($comparator);
 
-        $a        = new TestClass;
-        $b        = new TestClass;
+        $a = new TestClass;
+        $b = new TestClass;
         $expected = 'SebastianBergmann\\Comparator\\TestClassComparator';
-        $actual   = $factory->getComparatorFor($a, $b);
+        $actual = $factory->getComparatorFor($a, $b);
 
         $factory->unregister($comparator);
         $this->assertInstanceOf($expected, $actual);
@@ -114,10 +114,10 @@ class FactoryTest extends TestCase
         $factory->register($comparator);
         $factory->unregister($comparator);
 
-        $a        = new TestClass;
-        $b        = new TestClass;
+        $a = new TestClass;
+        $b = new TestClass;
         $expected = 'SebastianBergmann\\Comparator\\ObjectComparator';
-        $actual   = $factory->getComparatorFor($a, $b);
+        $actual = $factory->getComparatorFor($a, $b);
 
         $this->assertInstanceOf($expected, $actual);
     }

@@ -9,7 +9,7 @@
          failOnWarning="true"
 >
     <php>
-        <ini name="error_reporting" value="-1" />
+        <ini name="error_reporting" value="-1"/>
     </php>
 
     <testsuites>
@@ -33,7 +33,9 @@
         <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener">
             <arguments>
                 <array>
-                    <element key="time-sensitive"><string>Symfony\Component\Console</string></element>
+                    <element key="time-sensitive">
+                        <string>Symfony\Component\Console</string>
+                    </element>
                 </array>
             </arguments>
         </listener>

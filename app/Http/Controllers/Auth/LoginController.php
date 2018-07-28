@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-//use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Validation\Rule;
-use Illuminate\Http\Request;
 use Bestmomo\LaravelEmailConfirmation\Traits\AuthenticatesUsers;
+
+//use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
@@ -42,31 +41,31 @@ class LoginController extends Controller
 
 
     // Automatic login prevent
-    
+
     /**
      * Validate the user login request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return void
      */
-     /* protected function validateLogin(Request $request)
-    {
-        $this->validate
-        ($request, 
-            [
-                $this->username() => 
-                [
-                    'required','string',
-                    Rule::exists('users')->where(function($query){
-                        $query->where('confirmation',true);
-                    })
-                ],
-                'password' => 'required|string',
-            ], $this->validationError());
-    }  */
+    /* protected function validateLogin(Request $request)
+   {
+       $this->validate
+       ($request,
+           [
+               $this->username() =>
+               [
+                   'required','string',
+                   Rule::exists('users')->where(function($query){
+                       $query->where('confirmation',true);
+                   })
+               ],
+               'password' => 'required|string',
+           ], $this->validationError());
+   }  */
     /**
      * Get the validation error for login
-     * 
+     *
      * @return array
      */
 

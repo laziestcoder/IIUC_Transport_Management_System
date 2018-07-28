@@ -3,8 +3,8 @@
 namespace Fideloper\Proxy;
 
 use Closure;
-use Illuminate\Http\Request;
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Http\Request;
 
 class TrustProxies
 {
@@ -43,7 +43,7 @@ class TrustProxies
      * Handle an incoming request.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
+     * @param \Closure $next
      *
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      *
@@ -55,6 +55,16 @@ class TrustProxies
         $this->setTrustedProxyIpAddresses($request);
 
         return $next($request);
+    }
+
+    /**
+     * Retrieve trusted header name(s), falling back to defaults if config not set.
+     *
+     * @return array
+     */
+    protected function getTrustedHeaderNames()
+    {
+        return $this->headers ?: $this->config->get('trustedproxy.headers');
     }
 
     /**
@@ -82,11 +92,11 @@ class TrustProxies
      * Specify the IP addresses to trust explicitly.
      *
      * @param \Illuminate\Http\Request $request
-     * @param array                    $trustedIps
+     * @param array $trustedIps
      */
     private function setTrustedProxyIpAddressesToSpecificIps(Request $request, $trustedIps)
     {
-        $request->setTrustedProxies((array) $trustedIps, $this->getTrustedHeaderNames());
+        $request->setTrustedProxies((array)$trustedIps, $this->getTrustedHeaderNames());
     }
 
     /**
@@ -97,15 +107,5 @@ class TrustProxies
     private function setTrustedProxyIpAddressesToTheCallingIp(Request $request)
     {
         $request->setTrustedProxies([$request->server->get('REMOTE_ADDR')], $this->getTrustedHeaderNames());
-    }
-
-    /**
-     * Retrieve trusted header name(s), falling back to defaults if config not set.
-     *
-     * @return array
-     */
-    protected function getTrustedHeaderNames()
-    {
-        return $this->headers ?: $this->config->get('trustedproxy.headers');
     }
 }

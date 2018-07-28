@@ -23,7 +23,7 @@ class PluralizationRules
     /**
      * Returns the plural position to use for the given locale and number.
      *
-     * @param int    $number The number
+     * @param int $number The number
      * @param string $locale The locale
      *
      * @return int The plural position
@@ -190,8 +190,8 @@ class PluralizationRules
     /**
      * Overrides the default plural rule for a given locale.
      *
-     * @param callable $rule   A PHP callable
-     * @param string   $locale The locale
+     * @param callable $rule A PHP callable
+     * @param string $locale The locale
      */
     public static function set(callable $rule, $locale)
     {

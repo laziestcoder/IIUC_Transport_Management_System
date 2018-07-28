@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Encore\Admin\Facades\Admin;
 use App\BusRoute;
 use DB;
+use Encore\Admin\Facades\Admin;
+use Illuminate\Http\Request;
 
 
 class BusRoutesController extends Controller
@@ -45,19 +44,19 @@ class BusRoutesController extends Controller
      */
     public function create()
     {
-        $BusRoutes =  BusRoute::orderBy('routename')->paginate(20);
+        $BusRoutes = BusRoute::orderBy('routename')->paginate(20);
         $data = array(
             'title' => 'Add Bus Route',
             'BusRoutes' => $BusRoutes,
             'titleinfo' => 'Available Bus Routes',
         );
-        return view('BusRoutes.create')->with($data);    
+        return view('BusRoutes.create')->with($data);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -71,29 +70,29 @@ class BusRoutesController extends Controller
         $BusRoute->routename = $request->input('routename');
         $BusRoute->user_id = Admin::user()->id;
         $BusRoute->save();
-        $success = array (
+        $success = array(
             'title' => 'Add Route for Bus',
             'message' => 'Bus Route Created Successfully!'
         );
         $name = $BusRoute->routename;
-        return redirect('/admin/auth/routes/create')->with('success','"'.$name.'" => Bus Route Created Successfully!');
+        return redirect('/admin/auth/routes/create')->with('success', '"' . $name . '" => Bus Route Created Successfully!');
         //return redirect('/admin/auth/routes/create')->with('success');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $BusRoute = DB::table('bus_student_information')->where('routeid',$id)->paginate(20);
-        $name = DB::table('routes')->where('id',$id)->first()->routename;
-        $data = array (
+        $BusRoute = DB::table('bus_student_information')->where('routeid', $id)->paginate(20);
+        $name = DB::table('routes')->where('id', $id)->first()->routename;
+        $data = array(
             'title' => 'Bus Route Info',
-            'titleinfo' => 'Details Route Info for "'.$name.'"',
-            'BusRoute' => $BusRoute ,
+            'titleinfo' => 'Details Route Info for "' . $name . '"',
+            'BusRoute' => $BusRoute,
         );
         return view('busroutes.show')->with($data);
     }
@@ -101,7 +100,7 @@ class BusRoutesController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -119,26 +118,26 @@ class BusRoutesController extends Controller
         {
             return redirect('/admin/auth/routes/create')->with('error','Unauthorized Access Denied!');
         } */
-        return view('busroutes.edit')->with($data); 
+        return view('busroutes.edit')->with($data);
 
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        
-       /*  $data = array(
-            'title' => $title,
-            'posts' => $posts
-        );
-        return view('posts.update')->with($data); */
-        
+
+        /*  $data = array(
+             'title' => $title,
+             'posts' => $posts
+         );
+         return view('posts.update')->with($data); */
+
         $this->validate($request, [
             'routename' => 'required|string',
         ]);
@@ -147,29 +146,28 @@ class BusRoutesController extends Controller
         $name = $BusRoute->routename;
         $BusRoute->routename = $request->input('routename');
         $name2 = $BusRoute->routename;
-        if(Admin::user()->id !== $BusRoute->user_id){
+        if (Admin::user()->id !== $BusRoute->user_id) {
             $BusRoute->user_id = Admin::user()->id;
         }
         $BusRoute->save();
-        return redirect('/admin/auth/routes/create/')->with('success','"'.$name.'" => Updated to "'.$name2.'". Bus Route Updated Successfully!');
+        return redirect('/admin/auth/routes/create/')->with('success', '"' . $name . '" => Updated to "' . $name2 . '". Bus Route Updated Successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        
+
         $BusRoute = BusRoute::find($id);
 
         //Check for correct user
 
-        if(Admin::user()->id !== $BusRoute->user_id)
-        {
-            return redirect('/admin/auth/routes/create/')->with('error','Unauthorized Access Denied!');
+        if (Admin::user()->id !== $BusRoute->user_id) {
+            return redirect('/admin/auth/routes/create/')->with('error', 'Unauthorized Access Denied!');
         }
         /* if($BusRoute->cover_image != 'noimage.jpeg' ){
             //Delete Image From Windows Directory
@@ -177,18 +175,17 @@ class BusRoutesController extends Controller
         } */
         $points = DB::table('points')->where('routeid', $id)->first();
         $name = $BusRoute->routename;
-        if($points){
-            if($points->routeid == $id){
-                return redirect('/admin/auth/routes/create/')->with('error', '"'.$name.'" => This Bus Route has assigned one or more bus stop point. Delete all bus stop point related to the route. Then delete the route.');
+        if ($points) {
+            if ($points->routeid == $id) {
+                return redirect('/admin/auth/routes/create/')->with('error', '"' . $name . '" => This Bus Route has assigned one or more bus stop point. Delete all bus stop point related to the route. Then delete the route.');
+            } else {
+                return redirect('/admin/auth/routes/create/')->with('error', '"' . $name . '" => Something went worng!!');
+
             }
-            else{
-                return redirect('/admin/auth/routes/create/')->with('error', '"'.$name.'" => Something went worng!!');
-            
-            }
-        }else{
+        } else {
             $BusRoute->delete();
-            return redirect('/admin/auth/routes/create/')->with('success','"'.$name.'" => Bus Route Removed Successfully!');
+            return redirect('/admin/auth/routes/create/')->with('success', '"' . $name . '" => Bus Route Removed Successfully!');
         }
-        
+
     }
 }

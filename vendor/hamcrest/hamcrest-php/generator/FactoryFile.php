@@ -84,11 +84,6 @@ abstract class FactoryFile
         }
     }
 
-    public function generateImport(FactoryMethod $method)
-    {
-        return $this->indent . self::INDENT . "require_once '" . $method->getClass()->getFile() . "';" . PHP_EOL;
-    }
-
     public function generateCall(FactoryMethod $method)
     {
         $code = '';
@@ -113,6 +108,11 @@ abstract class FactoryFile
     public function generateClosing()
     {
         return $this->indent . '}' . PHP_EOL;
+    }
+
+    public function generateImport(FactoryMethod $method)
+    {
+        return $this->indent . self::INDENT . "require_once '" . $method->getClass()->getFile() . "';" . PHP_EOL;
     }
 
     public function write()

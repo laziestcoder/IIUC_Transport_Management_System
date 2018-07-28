@@ -59,7 +59,7 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
      *
      * @param string|null $foreground The style foreground color name
      * @param string|null $background The style background color name
-     * @param array       $options    The style options
+     * @param array $options The style options
      */
     public function __construct(string $foreground = null, string $background = null, array $options = array())
     {
@@ -127,6 +127,18 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setOptions(array $options)
+    {
+        $this->options = array();
+
+        foreach ($options as $option) {
+            $this->setOption($option);
+        }
+    }
+
+    /**
      * Sets some specific style option.
      *
      * @param string $option The option name
@@ -168,18 +180,6 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
         $pos = array_search(static::$availableOptions[$option], $this->options);
         if (false !== $pos) {
             unset($this->options[$pos]);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setOptions(array $options)
-    {
-        $this->options = array();
-
-        foreach ($options as $option) {
-            $this->setOption($option);
         }
     }
 

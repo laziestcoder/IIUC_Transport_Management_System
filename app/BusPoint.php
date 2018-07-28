@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class BusPoint extends Model
 {
     // table name
-    protected $table = 'points';
-    // primary key
-    protected $primaryKey = 'id';
     public $timestamps = true;
+    // primary key
+    protected $table = 'points';
+    protected $primaryKey = 'id';
 
     public function user()
     {

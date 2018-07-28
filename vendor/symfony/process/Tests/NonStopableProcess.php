@@ -26,7 +26,7 @@ function handleSignal($signal)
             $name = 'SIGINT';
             break;
         default:
-            $name = $signal.' (unknown)';
+            $name = $signal . ' (unknown)';
             break;
     }
 
@@ -38,7 +38,7 @@ pcntl_signal(SIGINT, 'handleSignal');
 
 echo 'received ';
 
-$duration = isset($argv[1]) ? (int) $argv[1] : 3;
+$duration = isset($argv[1]) ? (int)$argv[1] : 3;
 $start = microtime(true);
 
 while ($duration > (microtime(true) - $start)) {

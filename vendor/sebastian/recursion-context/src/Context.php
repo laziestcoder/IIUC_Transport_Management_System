@@ -31,7 +31,7 @@ final class Context
      */
     public function __construct()
     {
-        $this->arrays  = array();
+        $this->arrays = array();
         $this->objects = new \SplObjectStorage;
     }
 
@@ -58,28 +58,6 @@ final class Context
     }
 
     /**
-     * Checks if the given value exists within the context.
-     *
-     * @param array|object $value The value to check.
-     *
-     * @return int|string|false The string or integer ID of the stored value if it has already been seen, or false if the value is not stored.
-     *
-     * @throws InvalidArgumentException Thrown if $value is not an array or object
-     */
-    public function contains(&$value)
-    {
-        if (is_array($value)) {
-            return $this->containsArray($value);
-        } elseif (is_object($value)) {
-            return $this->containsObject($value);
-        }
-
-        throw new InvalidArgumentException(
-            'Only arrays and objects are supported'
-        );
-    }
-
-    /**
      * @param array $array
      *
      * @return bool|int
@@ -92,7 +70,7 @@ final class Context
             return $key;
         }
 
-        $key            = count($this->arrays);
+        $key = count($this->arrays);
         $this->arrays[] = &$array;
 
         if (!isset($array[PHP_INT_MAX]) && !isset($array[PHP_INT_MAX - 1])) {
@@ -116,6 +94,18 @@ final class Context
     }
 
     /**
+     * @param array $array
+     *
+     * @return int|false
+     */
+    private function containsArray(array &$array)
+    {
+        $end = array_slice($array, -2);
+
+        return isset($end[1]) && $end[1] === $this->objects ? $end[0] : false;
+    }
+
+    /**
      * @param object $object
      *
      * @return string
@@ -130,15 +120,25 @@ final class Context
     }
 
     /**
-     * @param array $array
+     * Checks if the given value exists within the context.
      *
-     * @return int|false
+     * @param array|object $value The value to check.
+     *
+     * @return int|string|false The string or integer ID of the stored value if it has already been seen, or false if the value is not stored.
+     *
+     * @throws InvalidArgumentException Thrown if $value is not an array or object
      */
-    private function containsArray(array &$array)
+    public function contains(&$value)
     {
-        $end = array_slice($array, -2);
+        if (is_array($value)) {
+            return $this->containsArray($value);
+        } elseif (is_object($value)) {
+            return $this->containsObject($value);
+        }
 
-        return isset($end[1]) && $end[1] === $this->objects ? $end[0] : false;
+        throw new InvalidArgumentException(
+            'Only arrays and objects are supported'
+        );
     }
 
     /**

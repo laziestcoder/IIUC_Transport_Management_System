@@ -13,16 +13,6 @@ trait ConfigAwareTrait
     protected $config;
 
     /**
-     * Set the config.
-     *
-     * @param Config|array|null $config
-     */
-    protected function setConfig($config)
-    {
-        $this->config = $config ? Util::ensureConfig($config) : new Config;
-    }
-
-    /**
      * Get the Config.
      *
      * @return Config config object
@@ -30,6 +20,16 @@ trait ConfigAwareTrait
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     * Set the config.
+     *
+     * @param Config|array|null $config
+     */
+    protected function setConfig($config)
+    {
+        $this->config = $config ? Util::ensureConfig($config) : new Config;
     }
 
     /**

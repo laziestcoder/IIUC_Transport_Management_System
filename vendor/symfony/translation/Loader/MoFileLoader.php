@@ -140,6 +140,6 @@ class MoFileLoader extends FileLoader
         $result = unpack($isBigEndian ? 'N1' : 'V1', fread($stream, 4));
         $result = current($result);
 
-        return (int) substr($result, -8);
+        return (int)substr($result, -8);
     }
 }

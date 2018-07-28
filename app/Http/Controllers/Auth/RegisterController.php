@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-//use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Http\Request;
-use Mail;
-use Illuminate\Auth\Events\Registered;
-use App\Jobs\SendVerificationEmail;
+use App\User;
 use Bestmomo\LaravelEmailConfirmation\Traits\RegistersUsers;
+use Illuminate\Support\Facades\Validator;
+use Mail;
+
+//use Illuminate\Foundation\Auth\RegistersUsers;
 
 class RegisterController extends Controller
 {
@@ -47,7 +45,7 @@ class RegisterController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
+     * @param  array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
@@ -65,7 +63,7 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
+     * @param  array $data
      * @return \App\User
      */
     protected function create(array $data)
@@ -77,7 +75,7 @@ class RegisterController extends Controller
             'userrole' => $data['userrole'],
             'gender' => $data['gender'],
 //            'image' => $data['image'],
-            'token' => base64_encode($data['email']).str_random(5),
+            'token' => base64_encode($data['email']) . str_random(5),
         ]);
     }
     // Account activation process
@@ -122,11 +120,11 @@ class RegisterController extends Controller
 
     // Activation email and confirmation
     /**
-    * Handle a registration request for the application.
-    *
-    * @param \Illuminate\Http\Request $request
-    * @return \Illuminate\Http\Response
-    */
+     * Handle a registration request for the application.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
 
     /* public function register(Request $request)
 
@@ -138,11 +136,11 @@ class RegisterController extends Controller
     } */
 
     /**
-    * Handle a registration request for the application.
-    *
-    * @param $token
-    * @return \Illuminate\Http\Response
-    */
+     * Handle a registration request for the application.
+     *
+     * @param $token
+     * @return \Illuminate\Http\Response
+     */
 
     /* public function verify($token)
     {

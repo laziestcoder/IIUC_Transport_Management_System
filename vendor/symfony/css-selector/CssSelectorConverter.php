@@ -43,8 +43,7 @@ class CssSelectorConverter
             ->registerParserShortcut(new EmptyStringParser())
             ->registerParserShortcut(new ElementParser())
             ->registerParserShortcut(new ClassParser())
-            ->registerParserShortcut(new HashParser())
-        ;
+            ->registerParserShortcut(new HashParser());
     }
 
     /**
@@ -54,7 +53,7 @@ class CssSelectorConverter
      * expression with the $prefix parameter.
      *
      * @param string $cssExpr The CSS expression
-     * @param string $prefix  An optional prefix for the XPath expression
+     * @param string $prefix An optional prefix for the XPath expression
      *
      * @return string
      */

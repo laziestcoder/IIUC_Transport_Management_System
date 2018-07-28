@@ -27,6 +27,96 @@ use Symfony\Component\Console\Input\InputOption;
 class XmlDescriptor extends Descriptor
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function describeInputArgument(InputArgument $argument, array $options = array())
+    {
+        $this->writeDocument($this->getInputArgumentDocument($argument));
+    }
+
+    /**
+     * Writes DOM document.
+     *
+     * @return \DOMDocument|string
+     */
+    private function writeDocument(\DOMDocument $dom)
+    {
+        $dom->formatOutput = true;
+        $this->write($dom->saveXML());
+    }
+
+    private function getInputArgumentDocument(InputArgument $argument): \DOMDocument
+    {
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+
+        $dom->appendChild($objectXML = $dom->createElement('argument'));
+        $objectXML->setAttribute('name', $argument->getName());
+        $objectXML->setAttribute('is_required', $argument->isRequired() ? 1 : 0);
+        $objectXML->setAttribute('is_array', $argument->isArray() ? 1 : 0);
+        $objectXML->appendChild($descriptionXML = $dom->createElement('description'));
+        $descriptionXML->appendChild($dom->createTextNode($argument->getDescription()));
+
+        $objectXML->appendChild($defaultsXML = $dom->createElement('defaults'));
+        $defaults = is_array($argument->getDefault()) ? $argument->getDefault() : (is_bool($argument->getDefault()) ? array(var_export($argument->getDefault(), true)) : ($argument->getDefault() ? array($argument->getDefault()) : array()));
+        foreach ($defaults as $default) {
+            $defaultsXML->appendChild($defaultXML = $dom->createElement('default'));
+            $defaultXML->appendChild($dom->createTextNode($default));
+        }
+
+        return $dom;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function describeInputOption(InputOption $option, array $options = array())
+    {
+        $this->writeDocument($this->getInputOptionDocument($option));
+    }
+
+    private function getInputOptionDocument(InputOption $option): \DOMDocument
+    {
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+
+        $dom->appendChild($objectXML = $dom->createElement('option'));
+        $objectXML->setAttribute('name', '--' . $option->getName());
+        $pos = strpos($option->getShortcut(), '|');
+        if (false !== $pos) {
+            $objectXML->setAttribute('shortcut', '-' . substr($option->getShortcut(), 0, $pos));
+            $objectXML->setAttribute('shortcuts', '-' . str_replace('|', '|-', $option->getShortcut()));
+        } else {
+            $objectXML->setAttribute('shortcut', $option->getShortcut() ? '-' . $option->getShortcut() : '');
+        }
+        $objectXML->setAttribute('accept_value', $option->acceptValue() ? 1 : 0);
+        $objectXML->setAttribute('is_value_required', $option->isValueRequired() ? 1 : 0);
+        $objectXML->setAttribute('is_multiple', $option->isArray() ? 1 : 0);
+        $objectXML->appendChild($descriptionXML = $dom->createElement('description'));
+        $descriptionXML->appendChild($dom->createTextNode($option->getDescription()));
+
+        if ($option->acceptValue()) {
+            $defaults = is_array($option->getDefault()) ? $option->getDefault() : (is_bool($option->getDefault()) ? array(var_export($option->getDefault(), true)) : ($option->getDefault() ? array($option->getDefault()) : array()));
+            $objectXML->appendChild($defaultsXML = $dom->createElement('defaults'));
+
+            if (!empty($defaults)) {
+                foreach ($defaults as $default) {
+                    $defaultsXML->appendChild($defaultXML = $dom->createElement('default'));
+                    $defaultXML->appendChild($dom->createTextNode($default));
+                }
+            }
+        }
+
+        return $dom;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function describeInputDefinition(InputDefinition $definition, array $options = array())
+    {
+        $this->writeDocument($this->getInputDefinitionDocument($definition));
+    }
+
+    /**
      * @return \DOMDocument
      */
     public function getInputDefinitionDocument(InputDefinition $definition)
@@ -45,6 +135,24 @@ class XmlDescriptor extends Descriptor
         }
 
         return $dom;
+    }
+
+    /**
+     * Appends document children to parent node.
+     */
+    private function appendDocument(\DOMNode $parentNode, \DOMNode $importedParent)
+    {
+        foreach ($importedParent->childNodes as $childNode) {
+            $parentNode->appendChild($parentNode->ownerDocument->importNode($childNode, true));
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function describeCommand(Command $command, array $options = array())
+    {
+        $this->writeDocument($this->getCommandDocument($command));
     }
 
     /**
@@ -78,6 +186,14 @@ class XmlDescriptor extends Descriptor
         $this->appendDocument($commandXML, $definitionXML->getElementsByTagName('definition')->item(0));
 
         return $dom;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function describeApplication(Application $application, array $options = array())
+    {
+        $this->writeDocument($this->getApplicationDocument($application, isset($options['namespace']) ? $options['namespace'] : null));
     }
 
     /**
@@ -120,122 +236,6 @@ class XmlDescriptor extends Descriptor
                 foreach ($namespaceDescription['commands'] as $name) {
                     $namespaceArrayXML->appendChild($commandXML = $dom->createElement('command'));
                     $commandXML->appendChild($dom->createTextNode($name));
-                }
-            }
-        }
-
-        return $dom;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function describeInputArgument(InputArgument $argument, array $options = array())
-    {
-        $this->writeDocument($this->getInputArgumentDocument($argument));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function describeInputOption(InputOption $option, array $options = array())
-    {
-        $this->writeDocument($this->getInputOptionDocument($option));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function describeInputDefinition(InputDefinition $definition, array $options = array())
-    {
-        $this->writeDocument($this->getInputDefinitionDocument($definition));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function describeCommand(Command $command, array $options = array())
-    {
-        $this->writeDocument($this->getCommandDocument($command));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function describeApplication(Application $application, array $options = array())
-    {
-        $this->writeDocument($this->getApplicationDocument($application, isset($options['namespace']) ? $options['namespace'] : null));
-    }
-
-    /**
-     * Appends document children to parent node.
-     */
-    private function appendDocument(\DOMNode $parentNode, \DOMNode $importedParent)
-    {
-        foreach ($importedParent->childNodes as $childNode) {
-            $parentNode->appendChild($parentNode->ownerDocument->importNode($childNode, true));
-        }
-    }
-
-    /**
-     * Writes DOM document.
-     *
-     * @return \DOMDocument|string
-     */
-    private function writeDocument(\DOMDocument $dom)
-    {
-        $dom->formatOutput = true;
-        $this->write($dom->saveXML());
-    }
-
-    private function getInputArgumentDocument(InputArgument $argument): \DOMDocument
-    {
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-
-        $dom->appendChild($objectXML = $dom->createElement('argument'));
-        $objectXML->setAttribute('name', $argument->getName());
-        $objectXML->setAttribute('is_required', $argument->isRequired() ? 1 : 0);
-        $objectXML->setAttribute('is_array', $argument->isArray() ? 1 : 0);
-        $objectXML->appendChild($descriptionXML = $dom->createElement('description'));
-        $descriptionXML->appendChild($dom->createTextNode($argument->getDescription()));
-
-        $objectXML->appendChild($defaultsXML = $dom->createElement('defaults'));
-        $defaults = is_array($argument->getDefault()) ? $argument->getDefault() : (is_bool($argument->getDefault()) ? array(var_export($argument->getDefault(), true)) : ($argument->getDefault() ? array($argument->getDefault()) : array()));
-        foreach ($defaults as $default) {
-            $defaultsXML->appendChild($defaultXML = $dom->createElement('default'));
-            $defaultXML->appendChild($dom->createTextNode($default));
-        }
-
-        return $dom;
-    }
-
-    private function getInputOptionDocument(InputOption $option): \DOMDocument
-    {
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-
-        $dom->appendChild($objectXML = $dom->createElement('option'));
-        $objectXML->setAttribute('name', '--'.$option->getName());
-        $pos = strpos($option->getShortcut(), '|');
-        if (false !== $pos) {
-            $objectXML->setAttribute('shortcut', '-'.substr($option->getShortcut(), 0, $pos));
-            $objectXML->setAttribute('shortcuts', '-'.str_replace('|', '|-', $option->getShortcut()));
-        } else {
-            $objectXML->setAttribute('shortcut', $option->getShortcut() ? '-'.$option->getShortcut() : '');
-        }
-        $objectXML->setAttribute('accept_value', $option->acceptValue() ? 1 : 0);
-        $objectXML->setAttribute('is_value_required', $option->isValueRequired() ? 1 : 0);
-        $objectXML->setAttribute('is_multiple', $option->isArray() ? 1 : 0);
-        $objectXML->appendChild($descriptionXML = $dom->createElement('description'));
-        $descriptionXML->appendChild($dom->createTextNode($option->getDescription()));
-
-        if ($option->acceptValue()) {
-            $defaults = is_array($option->getDefault()) ? $option->getDefault() : (is_bool($option->getDefault()) ? array(var_export($option->getDefault(), true)) : ($option->getDefault() ? array($option->getDefault()) : array()));
-            $objectXML->appendChild($defaultsXML = $dom->createElement('defaults'));
-
-            if (!empty($defaults)) {
-                foreach ($defaults as $default) {
-                    $defaultsXML->appendChild($defaultXML = $dom->createElement('default'));
-                    $defaultXML->appendChild($dom->createTextNode($default));
                 }
             }
         }

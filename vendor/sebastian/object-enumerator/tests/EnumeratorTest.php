@@ -10,8 +10,8 @@
 
 namespace SebastianBergmann\ObjectEnumerator;
 
-use SebastianBergmann\ObjectEnumerator\Fixtures\ExceptionThrower;
 use PHPUnit\Framework\TestCase;
+use SebastianBergmann\ObjectEnumerator\Fixtures\ExceptionThrower;
 
 /**
  * @covers SebastianBergmann\ObjectEnumerator\Enumerator
@@ -22,11 +22,6 @@ class EnumeratorTest extends TestCase
      * @var Enumerator
      */
     private $enumerator;
-
-    protected function setUp()
-    {
-        $this->enumerator = new Enumerator;
-    }
 
     public function testEnumeratesSingleObject()
     {
@@ -135,5 +130,10 @@ class EnumeratorTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         $this->enumerator->enumerate([], '');
+    }
+
+    protected function setUp()
+    {
+        $this->enumerator = new Enumerator;
     }
 }

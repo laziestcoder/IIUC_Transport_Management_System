@@ -30,7 +30,7 @@ class TimeController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -41,7 +41,7 @@ class TimeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Time  $time
+     * @param  \App\Time $time
      * @return \Illuminate\Http\Response
      */
     public function show(Time $time)
@@ -52,7 +52,7 @@ class TimeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Time  $time
+     * @param  \App\Time $time
      * @return \Illuminate\Http\Response
      */
     public function edit(Time $time)
@@ -63,8 +63,8 @@ class TimeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Time  $time
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Time $time
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Time $time)
@@ -75,7 +75,7 @@ class TimeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Time  $time
+     * @param  \App\Time $time
      * @return \Illuminate\Http\Response
      */
     public function destroy(Time $time)

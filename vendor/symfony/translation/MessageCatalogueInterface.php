@@ -48,16 +48,16 @@ interface MessageCatalogueInterface
     /**
      * Sets a message translation.
      *
-     * @param string $id          The message id
+     * @param string $id The message id
      * @param string $translation The messages translation
-     * @param string $domain      The domain name
+     * @param string $domain The domain name
      */
     public function set($id, $translation, $domain = 'messages');
 
     /**
      * Checks if a message has a translation.
      *
-     * @param string $id     The message id
+     * @param string $id The message id
      * @param string $domain The domain name
      *
      * @return bool true if the message has a translation, false otherwise
@@ -67,7 +67,7 @@ interface MessageCatalogueInterface
     /**
      * Checks if a message has a translation (it does not take into account the fallback mechanism).
      *
-     * @param string $id     The message id
+     * @param string $id The message id
      * @param string $domain The domain name
      *
      * @return bool true if the message has a translation, false otherwise
@@ -77,7 +77,7 @@ interface MessageCatalogueInterface
     /**
      * Gets a message translation.
      *
-     * @param string $id     The message id
+     * @param string $id The message id
      * @param string $domain The domain name
      *
      * @return string The message translation
@@ -87,16 +87,16 @@ interface MessageCatalogueInterface
     /**
      * Sets translations for a given domain.
      *
-     * @param array  $messages An array of translations
-     * @param string $domain   The domain name
+     * @param array $messages An array of translations
+     * @param string $domain The domain name
      */
     public function replace($messages, $domain = 'messages');
 
     /**
      * Adds translations for a given domain.
      *
-     * @param array  $messages An array of translations
-     * @param string $domain   The domain name
+     * @param array $messages An array of translations
+     * @param string $domain The domain name
      */
     public function add($messages, $domain = 'messages');
 

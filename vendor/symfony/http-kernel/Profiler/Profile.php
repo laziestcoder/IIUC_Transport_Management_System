@@ -49,13 +49,31 @@ class Profile
     }
 
     /**
-     * Sets the token.
+     * Returns the parent profile.
      *
-     * @param string $token The token
+     * @return self
      */
-    public function setToken($token)
+    public function getParent()
     {
-        $this->token = $token;
+        return $this->parent;
+    }
+
+    /**
+     * Sets the parent token.
+     */
+    public function setParent(self $parent)
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * Returns the parent token.
+     *
+     * @return null|string The parent token
+     */
+    public function getParentToken()
+    {
+        return $this->parent ? $this->parent->getToken() : null;
     }
 
     /**
@@ -69,31 +87,13 @@ class Profile
     }
 
     /**
-     * Sets the parent token.
-     */
-    public function setParent(self $parent)
-    {
-        $this->parent = $parent;
-    }
-
-    /**
-     * Returns the parent profile.
+     * Sets the token.
      *
-     * @return self
+     * @param string $token The token
      */
-    public function getParent()
+    public function setToken($token)
     {
-        return $this->parent;
-    }
-
-    /**
-     * Returns the parent token.
-     *
-     * @return null|string The parent token
-     */
-    public function getParentToken()
-    {
-        return $this->parent ? $this->parent->getToken() : null;
+        $this->token = $token;
     }
 
     /**
@@ -169,19 +169,19 @@ class Profile
     }
 
     /**
-     * @param int $statusCode
-     */
-    public function setStatusCode($statusCode)
-    {
-        $this->statusCode = $statusCode;
-    }
-
-    /**
      * @return int
      */
     public function getStatusCode()
     {
         return $this->statusCode;
+    }
+
+    /**
+     * @param int $statusCode
+     */
+    public function setStatusCode($statusCode)
+    {
+        $this->statusCode = $statusCode;
     }
 
     /**

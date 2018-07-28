@@ -16,16 +16,13 @@ class IndexTest extends TestCase
         $this->visit('admin/')
             ->see('Dashboard')
             ->see('Description...')
-
             ->see('Environment')
             ->see('PHP version')
             ->see('Laravel version')
-
             ->see('Available extensions')
             ->seeLink('laravel-admin-ext/helpers', 'https://github.com/laravel-admin-extensions/helpers')
             ->seeLink('laravel-admin-ext/backup', 'https://github.com/laravel-admin-extensions/backup')
             ->seeLink('laravel-admin-ext/media-manager', 'https://github.com/laravel-admin-extensions/media-manager')
-
             ->see('Dependencies')
             ->see('php')
             ->see('>=7.0.0')

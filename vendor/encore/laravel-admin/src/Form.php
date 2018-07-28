@@ -53,7 +53,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @method Field\Number         number($column, $label = '')
  * @method Field\Currency       currency($column, $label = '')
  * @method Field\HasMany        hasMany($relationName, $callback)
- * @method Field\SwitchField    switch($column, $label = '')
+ * @method Field\SwitchField    switch ($column, $label = '')
  * @method Field\Display        display($column, $label = '')
  * @method Field\Rate           rate($column, $label = '')
  * @method Field\Divide         divider()
@@ -71,101 +71,87 @@ use Symfony\Component\HttpFoundation\Response;
 class Form
 {
     /**
-     * Eloquent model of the form.
-     *
-     * @var Model
+     * Remove flag in `has many` form.
      */
-    protected $model;
-
-    /**
-     * @var \Illuminate\Validation\Validator
-     */
-    protected $validator;
-
-    /**
-     * @var Builder
-     */
-    protected $builder;
-
-    /**
-     * Submitted callback.
-     *
-     * @var Closure
-     */
-    protected $submitted;
-
-    /**
-     * Saving callback.
-     *
-     * @var Closure
-     */
-    protected $saving;
-
-    /**
-     * Saved callback.
-     *
-     * @var Closure
-     */
-    protected $saved;
-
-    /**
-     * Data for save to current model from input.
-     *
-     * @var array
-     */
-    protected $updates = [];
-
-    /**
-     * Data for save to model's relations from input.
-     *
-     * @var array
-     */
-    protected $relations = [];
-
-    /**
-     * Input data.
-     *
-     * @var array
-     */
-    protected $inputs = [];
-
+    const REMOVE_FLAG_NAME = '_remove_';
     /**
      * Available fields.
      *
      * @var array
      */
     public static $availableFields = [];
-
-    /**
-     * Ignored saving fields.
-     *
-     * @var array
-     */
-    protected $ignored = [];
-
     /**
      * Collected field assets.
      *
      * @var array
      */
     protected static $collectedAssets = [];
-
-    /**
-     * @var Form\Tab
-     */
-    protected $tab = null;
-
-    /**
-     * Remove flag in `has many` form.
-     */
-    const REMOVE_FLAG_NAME = '_remove_';
-
     /**
      * Field rows in form.
      *
      * @var array
      */
     public $rows = [];
+    /**
+     * Eloquent model of the form.
+     *
+     * @var Model
+     */
+    protected $model;
+    /**
+     * @var \Illuminate\Validation\Validator
+     */
+    protected $validator;
+    /**
+     * @var Builder
+     */
+    protected $builder;
+    /**
+     * Submitted callback.
+     *
+     * @var Closure
+     */
+    protected $submitted;
+    /**
+     * Saving callback.
+     *
+     * @var Closure
+     */
+    protected $saving;
+    /**
+     * Saved callback.
+     *
+     * @var Closure
+     */
+    protected $saved;
+    /**
+     * Data for save to current model from input.
+     *
+     * @var array
+     */
+    protected $updates = [];
+    /**
+     * Data for save to model's relations from input.
+     *
+     * @var array
+     */
+    protected $relations = [];
+    /**
+     * Input data.
+     *
+     * @var array
+     */
+    protected $inputs = [];
+    /**
+     * Ignored saving fields.
+     *
+     * @var array
+     */
+    protected $ignored = [];
+    /**
+     * @var Form\Tab
+     */
+    protected $tab = null;
 
     /**
      * Create a new form instance.
@@ -183,33 +169,132 @@ class Form
     }
 
     /**
-     * @param Field $field
+     * Register builtin fields.
      *
-     * @return $this
+     * @return void
      */
-    public function pushField(Field $field)
+    public static function registerBuiltinFields()
     {
-        $field->setForm($this);
+        $map = [
+            'button' => \Encore\Admin\Form\Field\Button::class,
+            'checkbox' => \Encore\Admin\Form\Field\Checkbox::class,
+            'color' => \Encore\Admin\Form\Field\Color::class,
+            'currency' => \Encore\Admin\Form\Field\Currency::class,
+            'date' => \Encore\Admin\Form\Field\Date::class,
+            'dateRange' => \Encore\Admin\Form\Field\DateRange::class,
+            'datetime' => \Encore\Admin\Form\Field\Datetime::class,
+            'dateTimeRange' => \Encore\Admin\Form\Field\DatetimeRange::class,
+            'datetimeRange' => \Encore\Admin\Form\Field\DatetimeRange::class,
+            'decimal' => \Encore\Admin\Form\Field\Decimal::class,
+            'display' => \Encore\Admin\Form\Field\Display::class,
+            'divider' => \Encore\Admin\Form\Field\Divide::class,
+            'divide' => \Encore\Admin\Form\Field\Divide::class,
+            'embeds' => \Encore\Admin\Form\Field\Embeds::class,
+            'editor' => \Encore\Admin\Form\Field\Editor::class,
+            'email' => \Encore\Admin\Form\Field\Email::class,
+            'file' => \Encore\Admin\Form\Field\File::class,
+            'hasMany' => \Encore\Admin\Form\Field\HasMany::class,
+            'hidden' => \Encore\Admin\Form\Field\Hidden::class,
+            'id' => \Encore\Admin\Form\Field\Id::class,
+            'image' => \Encore\Admin\Form\Field\Image::class,
+            'ip' => \Encore\Admin\Form\Field\Ip::class,
+            'map' => \Encore\Admin\Form\Field\Map::class,
+            'mobile' => \Encore\Admin\Form\Field\Mobile::class,
+            'month' => \Encore\Admin\Form\Field\Month::class,
+            'multipleSelect' => \Encore\Admin\Form\Field\MultipleSelect::class,
+            'number' => \Encore\Admin\Form\Field\Number::class,
+            'password' => \Encore\Admin\Form\Field\Password::class,
+            'radio' => \Encore\Admin\Form\Field\Radio::class,
+            'rate' => \Encore\Admin\Form\Field\Rate::class,
+            'select' => \Encore\Admin\Form\Field\Select::class,
+            'slider' => \Encore\Admin\Form\Field\Slider::class,
+            'switch' => \Encore\Admin\Form\Field\SwitchField::class,
+            'text' => \Encore\Admin\Form\Field\Text::class,
+            'textarea' => \Encore\Admin\Form\Field\Textarea::class,
+            'time' => \Encore\Admin\Form\Field\Time::class,
+            'timeRange' => \Encore\Admin\Form\Field\TimeRange::class,
+            'url' => \Encore\Admin\Form\Field\Url::class,
+            'year' => \Encore\Admin\Form\Field\Year::class,
+            'html' => \Encore\Admin\Form\Field\Html::class,
+            'tags' => \Encore\Admin\Form\Field\Tags::class,
+            'icon' => \Encore\Admin\Form\Field\Icon::class,
+            'multipleFile' => \Encore\Admin\Form\Field\MultipleFile::class,
+            'multipleImage' => \Encore\Admin\Form\Field\MultipleImage::class,
+            'captcha' => \Encore\Admin\Form\Field\Captcha::class,
+            'listbox' => \Encore\Admin\Form\Field\Listbox::class,
+        ];
 
-        $this->builder->fields()->push($field);
-
-        return $this;
+        foreach ($map as $abstract => $class) {
+            static::extend($abstract, $class);
+        }
     }
 
     /**
-     * @return Model
+     * Register custom field.
+     *
+     * @param string $abstract
+     * @param string $class
+     *
+     * @return void
      */
-    public function model()
+    public static function extend($abstract, $class)
     {
-        return $this->model;
+        static::$availableFields[$abstract] = $class;
     }
 
     /**
-     * @return Builder
+     * Remove registered field.
+     *
+     * @param array|string $abstract
      */
-    public function builder()
+    public static function forget($abstract)
     {
-        return $this->builder;
+        array_forget(static::$availableFields, $abstract);
+    }
+
+    /**
+     * Collect assets required by registered field.
+     *
+     * @return array
+     */
+    public static function collectFieldAssets()
+    {
+        if (!empty(static::$collectedAssets)) {
+            return static::$collectedAssets;
+        }
+
+        $css = collect();
+        $js = collect();
+
+        foreach (static::$availableFields as $field) {
+            if (!method_exists($field, 'getAssets')) {
+                continue;
+            }
+
+            $assets = call_user_func([$field, 'getAssets']);
+
+            $css->push(array_get($assets, 'css'));
+            $js->push(array_get($assets, 'js'));
+        }
+
+        return static::$collectedAssets = [
+            'css' => $css->flatten()->unique()->filter()->toArray(),
+            'js' => $js->flatten()->unique()->filter()->toArray(),
+        ];
+    }
+
+    /**
+     * Don't snake case attributes.
+     *
+     * @param Model $model
+     *
+     * @return void
+     */
+    protected static function doNotSnakeAttributes(Model $model)
+    {
+        $class = get_class($model);
+
+        $class::$snakeAttributes = false;
     }
 
     /**
@@ -230,6 +315,60 @@ class Form
     }
 
     /**
+     * Set all fields value in form.
+     *
+     * @param $id
+     *
+     * @return void
+     */
+    protected function setFieldValue($id)
+    {
+        $relations = $this->getRelations();
+
+        $this->model = $this->model->with($relations)->findOrFail($id);
+
+//        static::doNotSnakeAttributes($this->model);
+
+        $data = $this->model->toArray();
+
+        $this->builder->fields()->each(function (Field $field) use ($data) {
+            $field->fill($data);
+        });
+    }
+
+    /**
+     * Get all relations of model from callable.
+     *
+     * @return array
+     */
+    public function getRelations()
+    {
+        $relations = $columns = [];
+
+        foreach ($this->builder->fields() as $field) {
+            $columns[] = $field->column();
+        }
+
+        foreach (array_flatten($columns) as $column) {
+            if (str_contains($column, '.')) {
+                list($relation) = explode('.', $column);
+
+                if (method_exists($this->model, $relation) &&
+                    $this->model->$relation() instanceof Relation
+                ) {
+                    $relations[] = $relation;
+                }
+            } elseif (method_exists($this->model, $column) &&
+                !method_exists(Model::class, $column)
+            ) {
+                $relations[] = $column;
+            }
+        }
+
+        return array_unique($relations);
+    }
+
+    /**
      * @param $id
      *
      * @return $this
@@ -247,7 +386,7 @@ class Form
     /**
      * Use tab to split form.
      *
-     * @param string  $title
+     * @param string $title
      * @param Closure $content
      *
      * @return $this
@@ -356,39 +495,47 @@ class Form
     }
 
     /**
-     * Get RedirectResponse after store.
+     * Get validation messages.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @param array $input
+     *
+     * @return MessageBag|bool
      */
-    protected function redirectAfterStore()
+    protected function validationMessages($input)
     {
-        admin_toastr(trans('admin.save_succeeded'));
+        $failedValidators = [];
 
-        $url = Input::get(Builder::PREVIOUS_URL_KEY) ?: $this->resource(0);
+        foreach ($this->builder->fields() as $field) {
+            if (!$validator = $field->getValidator($input)) {
+                continue;
+            }
 
-        return redirect($url);
+            if (($validator instanceof Validator) && !$validator->passes()) {
+                $failedValidators[] = $validator;
+            }
+        }
+
+        $message = $this->mergeValidationMessages($failedValidators);
+
+        return $message->any() ? $message : false;
     }
 
     /**
-     * Get ajax response.
+     * Merge validation messages from input validators.
      *
-     * @param string $message
+     * @param \Illuminate\Validation\Validator[] $validators
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return MessageBag
      */
-    protected function ajaxResponse($message)
+    protected function mergeValidationMessages($validators)
     {
-        $request = Request::capture();
+        $messageBag = new MessageBag();
 
-        // ajax but not pjax
-        if ($request->ajax() && !$request->pjax()) {
-            return response()->json([
-                'status'  => true,
-                'message' => $message,
-            ]);
+        foreach ($validators as $validator) {
+            $messageBag = $messageBag->merge($validator->messages());
         }
 
-        return false;
+        return $messageBag;
     }
 
     /**
@@ -416,6 +563,18 @@ class Form
     }
 
     /**
+     * Call submitted callback.
+     *
+     * @return mixed
+     */
+    protected function callSubmitted()
+    {
+        if ($this->submitted instanceof Closure) {
+            return call_user_func($this->submitted, $this);
+        }
+    }
+
+    /**
      * Remove ignored fields from input.
      *
      * @param array $input
@@ -427,6 +586,18 @@ class Form
         array_forget($input, $this->ignored);
 
         return $input;
+    }
+
+    /**
+     * Call saving callback.
+     *
+     * @return mixed
+     */
+    protected function callSaving()
+    {
+        if ($this->saving instanceof Closure) {
+            return call_user_func($this->saving, $this);
+        }
     }
 
     /**
@@ -454,193 +625,76 @@ class Form
     }
 
     /**
-     * Call submitted callback.
+     * Prepare input data for insert.
      *
-     * @return mixed
-     */
-    protected function callSubmitted()
-    {
-        if ($this->submitted instanceof Closure) {
-            return call_user_func($this->submitted, $this);
-        }
-    }
-
-    /**
-     * Call saving callback.
-     *
-     * @return mixed
-     */
-    protected function callSaving()
-    {
-        if ($this->saving instanceof Closure) {
-            return call_user_func($this->saving, $this);
-        }
-    }
-
-    /**
-     * Callback after saving a Model.
-     *
-     * @param Closure|null $callback
-     *
-     * @return mixed|null
-     */
-    protected function complete(Closure $callback = null)
-    {
-        if ($callback instanceof Closure) {
-            return $callback($this);
-        }
-    }
-
-    /**
-     * Handle update.
-     *
-     * @param int $id
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function update($id, $data = null)
-    {
-        $data = ($data) ?: Input::all();
-
-        $isEditable = $this->isEditable($data);
-
-        $data = $this->handleEditable($data);
-
-        $data = $this->handleFileDelete($data);
-
-        if ($this->handleOrderable($id, $data)) {
-            return response([
-                'status'  => true,
-                'message' => trans('admin.update_succeeded'),
-            ]);
-        }
-
-        /* @var Model $this->model */
-        $this->model = $this->model->with($this->getRelations())->findOrFail($id);
-
-        $this->setFieldOriginalValue();
-
-        // Handle validation errors.
-        if ($validationMessages = $this->validationMessages($data)) {
-            if (!$isEditable) {
-                return back()->withInput()->withErrors($validationMessages);
-            } else {
-                return response()->json(['errors' => array_dot($validationMessages->getMessages())], 422);
-            }
-        }
-
-        if (($response = $this->prepare($data)) instanceof Response) {
-            return $response;
-        }
-
-        DB::transaction(function () {
-            $updates = $this->prepareUpdate($this->updates);
-
-            foreach ($updates as $column => $value) {
-                /* @var Model $this->model */
-                $this->model->setAttribute($column, $value);
-            }
-
-            $this->model->save();
-
-            $this->updateRelation($this->relations);
-        });
-
-        if (($result = $this->complete($this->saved)) instanceof Response) {
-            return $result;
-        }
-
-        if ($response = $this->ajaxResponse(trans('admin.update_succeeded'))) {
-            return $response;
-        }
-
-        return $this->redirectAfterUpdate();
-    }
-
-    /**
-     * Get RedirectResponse after update.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    protected function redirectAfterUpdate()
-    {
-        admin_toastr(trans('admin.update_succeeded'));
-
-        $url = Input::get(Builder::PREVIOUS_URL_KEY) ?: $this->resource(-1);
-
-        return redirect($url);
-    }
-
-    /**
-     * Check if request is from editable.
-     *
-     * @param array $input
-     *
-     * @return bool
-     */
-    protected function isEditable(array $input = [])
-    {
-        return array_key_exists('_editable', $input);
-    }
-
-    /**
-     * Handle editable update.
-     *
-     * @param array $input
+     * @param $inserts
      *
      * @return array
      */
-    protected function handleEditable(array $input = [])
+    protected function prepareInsert($inserts)
     {
-        if (array_key_exists('_editable', $input)) {
-            $name = $input['name'];
-            $value = $input['value'];
-
-            array_forget($input, ['pk', 'value', 'name']);
-            array_set($input, $name, $value);
+        if ($this->isHasOneRelation($inserts)) {
+            $inserts = array_dot($inserts);
         }
 
-        return $input;
+        foreach ($inserts as $column => $value) {
+            if (is_null($field = $this->getFieldByColumn($column))) {
+                unset($inserts[$column]);
+                continue;
+            }
+
+            $inserts[$column] = $field->prepare($value);
+        }
+
+        $prepared = [];
+
+        foreach ($inserts as $key => $value) {
+            array_set($prepared, $key, $value);
+        }
+
+        return $prepared;
     }
 
     /**
-     * @param array $input
+     * Is input data is has-one relation.
      *
-     * @return array
-     */
-    protected function handleFileDelete(array $input = [])
-    {
-        if (array_key_exists(Field::FILE_DELETE_FLAG, $input)) {
-            $input[Field::FILE_DELETE_FLAG] = $input['key'];
-            unset($input['key']);
-        }
-
-        Input::replace($input);
-
-        return $input;
-    }
-
-    /**
-     * Handle orderable update.
-     *
-     * @param int   $id
-     * @param array $input
+     * @param array $inserts
      *
      * @return bool
      */
-    protected function handleOrderable($id, array $input = [])
+    protected function isHasOneRelation($inserts)
     {
-        if (array_key_exists('_orderable', $input)) {
-            $model = $this->model->find($id);
+        $first = current($inserts);
 
-            if ($model instanceof Sortable) {
-                $input['_orderable'] == 1 ? $model->moveOrderUp() : $model->moveOrderDown();
-
-                return true;
-            }
+        if (!is_array($first)) {
+            return false;
         }
 
-        return false;
+        if (is_array(current($first))) {
+            return false;
+        }
+
+        return Arr::isAssoc($first);
+    }
+
+    /**
+     * Find field object by column.
+     *
+     * @param $column
+     *
+     * @return mixed
+     */
+    protected function getFieldByColumn($column)
+    {
+        return $this->builder->fields()->first(
+            function (Field $field) use ($column) {
+                if (is_array($field->column())) {
+                    return in_array($column, $field->column());
+                }
+
+                return $field->column() == $column;
+            }
+        );
     }
 
     /**
@@ -733,7 +787,7 @@ class Form
      * Prepare input data for update.
      *
      * @param array $updates
-     * @param bool  $oneToOneRelation If column is one-to-one relation.
+     * @param bool $oneToOneRelation If column is one-to-one relation.
      *
      * @return array
      */
@@ -771,13 +825,13 @@ class Form
 
     /**
      * @param string|array $columns
-     * @param bool         $oneToOneRelation
+     * @param bool $oneToOneRelation
      *
      * @return bool
      */
     protected function invalidColumn($columns, $oneToOneRelation = false)
     {
-        foreach ((array) $columns as $column) {
+        foreach ((array)$columns as $column) {
             if ((!$oneToOneRelation && Str::contains($column, '.')) ||
                 ($oneToOneRelation && !Str::contains($column, '.'))) {
                 return true;
@@ -788,56 +842,276 @@ class Form
     }
 
     /**
-     * Prepare input data for insert.
+     * @param array $data
+     * @param string|array $columns
      *
-     * @param $inserts
-     *
-     * @return array
+     * @return array|mixed
      */
-    protected function prepareInsert($inserts)
+    protected function getDataByColumn($data, $columns)
     {
-        if ($this->isHasOneRelation($inserts)) {
-            $inserts = array_dot($inserts);
+        if (is_string($columns)) {
+            return array_get($data, $columns);
         }
 
-        foreach ($inserts as $column => $value) {
-            if (is_null($field = $this->getFieldByColumn($column))) {
-                unset($inserts[$column]);
-                continue;
+        if (is_array($columns)) {
+            $value = [];
+            foreach ($columns as $name => $column) {
+                if (!array_has($data, $column)) {
+                    continue;
+                }
+                $value[$name] = array_get($data, $column);
             }
 
-            $inserts[$column] = $field->prepare($value);
+            return $value;
         }
-
-        $prepared = [];
-
-        foreach ($inserts as $key => $value) {
-            array_set($prepared, $key, $value);
-        }
-
-        return $prepared;
     }
 
     /**
-     * Is input data is has-one relation.
+     * @return Model
+     */
+    public function model()
+    {
+        return $this->model;
+    }
+
+    /**
+     * Callback after saving a Model.
      *
-     * @param array $inserts
+     * @param Closure|null $callback
+     *
+     * @return mixed|null
+     */
+    protected function complete(Closure $callback = null)
+    {
+        if ($callback instanceof Closure) {
+            return $callback($this);
+        }
+    }
+
+    /**
+     * Get ajax response.
+     *
+     * @param string $message
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    protected function ajaxResponse($message)
+    {
+        $request = Request::capture();
+
+        // ajax but not pjax
+        if ($request->ajax() && !$request->pjax()) {
+            return response()->json([
+                'status' => true,
+                'message' => $message,
+            ]);
+        }
+
+        return false;
+    }
+
+    /**
+     * Get RedirectResponse after store.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function redirectAfterStore()
+    {
+        admin_toastr(trans('admin.save_succeeded'));
+
+        $url = Input::get(Builder::PREVIOUS_URL_KEY) ?: $this->resource(0);
+
+        return redirect($url);
+    }
+
+    /**
+     * Get current resource route url.
+     *
+     * @param int $slice
+     *
+     * @return string
+     */
+    public function resource($slice = -2)
+    {
+        $segments = explode('/', trim(app('request')->getUri(), '/'));
+
+        if ($slice != 0) {
+            $segments = array_slice($segments, 0, $slice);
+        }
+        // # fix #1768
+        if ($segments[0] == 'http:' && config('admin.secure') == true) {
+            $segments[0] = 'https:';
+        }
+
+        return implode('/', $segments);
+    }
+
+    /**
+     * Handle update.
+     *
+     * @param int $id
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function update($id, $data = null)
+    {
+        $data = ($data) ?: Input::all();
+
+        $isEditable = $this->isEditable($data);
+
+        $data = $this->handleEditable($data);
+
+        $data = $this->handleFileDelete($data);
+
+        if ($this->handleOrderable($id, $data)) {
+            return response([
+                'status' => true,
+                'message' => trans('admin.update_succeeded'),
+            ]);
+        }
+
+        /* @var Model $this ->model */
+        $this->model = $this->model->with($this->getRelations())->findOrFail($id);
+
+        $this->setFieldOriginalValue();
+
+        // Handle validation errors.
+        if ($validationMessages = $this->validationMessages($data)) {
+            if (!$isEditable) {
+                return back()->withInput()->withErrors($validationMessages);
+            } else {
+                return response()->json(['errors' => array_dot($validationMessages->getMessages())], 422);
+            }
+        }
+
+        if (($response = $this->prepare($data)) instanceof Response) {
+            return $response;
+        }
+
+        DB::transaction(function () {
+            $updates = $this->prepareUpdate($this->updates);
+
+            foreach ($updates as $column => $value) {
+                /* @var Model $this ->model */
+                $this->model->setAttribute($column, $value);
+            }
+
+            $this->model->save();
+
+            $this->updateRelation($this->relations);
+        });
+
+        if (($result = $this->complete($this->saved)) instanceof Response) {
+            return $result;
+        }
+
+        if ($response = $this->ajaxResponse(trans('admin.update_succeeded'))) {
+            return $response;
+        }
+
+        return $this->redirectAfterUpdate();
+    }
+
+    /**
+     * Check if request is from editable.
+     *
+     * @param array $input
      *
      * @return bool
      */
-    protected function isHasOneRelation($inserts)
+    protected function isEditable(array $input = [])
     {
-        $first = current($inserts);
+        return array_key_exists('_editable', $input);
+    }
 
-        if (!is_array($first)) {
-            return false;
+    /**
+     * Handle editable update.
+     *
+     * @param array $input
+     *
+     * @return array
+     */
+    protected function handleEditable(array $input = [])
+    {
+        if (array_key_exists('_editable', $input)) {
+            $name = $input['name'];
+            $value = $input['value'];
+
+            array_forget($input, ['pk', 'value', 'name']);
+            array_set($input, $name, $value);
         }
 
-        if (is_array(current($first))) {
-            return false;
+        return $input;
+    }
+
+    /**
+     * @param array $input
+     *
+     * @return array
+     */
+    protected function handleFileDelete(array $input = [])
+    {
+        if (array_key_exists(Field::FILE_DELETE_FLAG, $input)) {
+            $input[Field::FILE_DELETE_FLAG] = $input['key'];
+            unset($input['key']);
         }
 
-        return Arr::isAssoc($first);
+        Input::replace($input);
+
+        return $input;
+    }
+
+    /**
+     * Handle orderable update.
+     *
+     * @param int $id
+     * @param array $input
+     *
+     * @return bool
+     */
+    protected function handleOrderable($id, array $input = [])
+    {
+        if (array_key_exists('_orderable', $input)) {
+            $model = $this->model->find($id);
+
+            if ($model instanceof Sortable) {
+                $input['_orderable'] == 1 ? $model->moveOrderUp() : $model->moveOrderDown();
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Set original data for each field.
+     *
+     * @return void
+     */
+    protected function setFieldOriginalValue()
+    {
+//        static::doNotSnakeAttributes($this->model);
+
+        $values = $this->model->toArray();
+
+        $this->builder->fields()->each(function (Field $field) use ($values) {
+            $field->setOriginal($values);
+        });
+    }
+
+    /**
+     * Get RedirectResponse after update.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function redirectAfterUpdate()
+    {
+        admin_toastr(trans('admin.update_succeeded'));
+
+        $url = Input::get(Builder::PREVIOUS_URL_KEY) ?: $this->resource(-1);
+
+        return redirect($url);
     }
 
     /**
@@ -885,182 +1159,9 @@ class Form
      */
     public function ignore($fields)
     {
-        $this->ignored = array_merge($this->ignored, (array) $fields);
+        $this->ignored = array_merge($this->ignored, (array)$fields);
 
         return $this;
-    }
-
-    /**
-     * @param array        $data
-     * @param string|array $columns
-     *
-     * @return array|mixed
-     */
-    protected function getDataByColumn($data, $columns)
-    {
-        if (is_string($columns)) {
-            return array_get($data, $columns);
-        }
-
-        if (is_array($columns)) {
-            $value = [];
-            foreach ($columns as $name => $column) {
-                if (!array_has($data, $column)) {
-                    continue;
-                }
-                $value[$name] = array_get($data, $column);
-            }
-
-            return $value;
-        }
-    }
-
-    /**
-     * Find field object by column.
-     *
-     * @param $column
-     *
-     * @return mixed
-     */
-    protected function getFieldByColumn($column)
-    {
-        return $this->builder->fields()->first(
-            function (Field $field) use ($column) {
-                if (is_array($field->column())) {
-                    return in_array($column, $field->column());
-                }
-
-                return $field->column() == $column;
-            }
-        );
-    }
-
-    /**
-     * Set original data for each field.
-     *
-     * @return void
-     */
-    protected function setFieldOriginalValue()
-    {
-//        static::doNotSnakeAttributes($this->model);
-
-        $values = $this->model->toArray();
-
-        $this->builder->fields()->each(function (Field $field) use ($values) {
-            $field->setOriginal($values);
-        });
-    }
-
-    /**
-     * Set all fields value in form.
-     *
-     * @param $id
-     *
-     * @return void
-     */
-    protected function setFieldValue($id)
-    {
-        $relations = $this->getRelations();
-
-        $this->model = $this->model->with($relations)->findOrFail($id);
-
-//        static::doNotSnakeAttributes($this->model);
-
-        $data = $this->model->toArray();
-
-        $this->builder->fields()->each(function (Field $field) use ($data) {
-            $field->fill($data);
-        });
-    }
-
-    /**
-     * Don't snake case attributes.
-     *
-     * @param Model $model
-     *
-     * @return void
-     */
-    protected static function doNotSnakeAttributes(Model $model)
-    {
-        $class = get_class($model);
-
-        $class::$snakeAttributes = false;
-    }
-
-    /**
-     * Get validation messages.
-     *
-     * @param array $input
-     *
-     * @return MessageBag|bool
-     */
-    protected function validationMessages($input)
-    {
-        $failedValidators = [];
-
-        foreach ($this->builder->fields() as $field) {
-            if (!$validator = $field->getValidator($input)) {
-                continue;
-            }
-
-            if (($validator instanceof Validator) && !$validator->passes()) {
-                $failedValidators[] = $validator;
-            }
-        }
-
-        $message = $this->mergeValidationMessages($failedValidators);
-
-        return $message->any() ? $message : false;
-    }
-
-    /**
-     * Merge validation messages from input validators.
-     *
-     * @param \Illuminate\Validation\Validator[] $validators
-     *
-     * @return MessageBag
-     */
-    protected function mergeValidationMessages($validators)
-    {
-        $messageBag = new MessageBag();
-
-        foreach ($validators as $validator) {
-            $messageBag = $messageBag->merge($validator->messages());
-        }
-
-        return $messageBag;
-    }
-
-    /**
-     * Get all relations of model from callable.
-     *
-     * @return array
-     */
-    public function getRelations()
-    {
-        $relations = $columns = [];
-
-        foreach ($this->builder->fields() as $field) {
-            $columns[] = $field->column();
-        }
-
-        foreach (array_flatten($columns) as $column) {
-            if (str_contains($column, '.')) {
-                list($relation) = explode('.', $column);
-
-                if (method_exists($this->model, $relation) &&
-                    $this->model->$relation() instanceof Relation
-                ) {
-                    $relations[] = $relation;
-                }
-            } elseif (method_exists($this->model, $column) &&
-                !method_exists(Model::class, $column)
-            ) {
-                $relations[] = $column;
-            }
-        }
-
-        return array_unique($relations);
     }
 
     /**
@@ -1078,6 +1179,14 @@ class Form
     }
 
     /**
+     * @return Builder
+     */
+    public function builder()
+    {
+        return $this->builder;
+    }
+
+    /**
      * Set field and label width in current form.
      *
      * @param int $fieldWidth
@@ -1088,7 +1197,7 @@ class Form
     public function setWidth($fieldWidth = 8, $labelWidth = 2)
     {
         $this->builder()->fields()->each(function ($field) use ($fieldWidth, $labelWidth) {
-            /* @var Field $field  */
+            /* @var Field $field */
             $field->setWidth($fieldWidth, $labelWidth);
         });
 
@@ -1174,192 +1283,6 @@ class Form
     }
 
     /**
-     * Get current resource route url.
-     *
-     * @param int $slice
-     *
-     * @return string
-     */
-    public function resource($slice = -2)
-    {
-        $segments = explode('/', trim(app('request')->getUri(), '/'));
-
-        if ($slice != 0) {
-            $segments = array_slice($segments, 0, $slice);
-        }
-        // # fix #1768
-        if ($segments[0] == 'http:' && config('admin.secure') == true) {
-            $segments[0] = 'https:';
-        }
-
-        return implode('/', $segments);
-    }
-
-    /**
-     * Render the form contents.
-     *
-     * @return string
-     */
-    public function render()
-    {
-        try {
-            return $this->builder->render();
-        } catch (\Exception $e) {
-            return Handler::renderException($e);
-        }
-    }
-
-    /**
-     * Get or set input data.
-     *
-     * @param string $key
-     * @param null   $value
-     *
-     * @return array|mixed
-     */
-    public function input($key, $value = null)
-    {
-        if (is_null($value)) {
-            return array_get($this->inputs, $key);
-        }
-
-        return array_set($this->inputs, $key, $value);
-    }
-
-    /**
-     * Register builtin fields.
-     *
-     * @return void
-     */
-    public static function registerBuiltinFields()
-    {
-        $map = [
-            'button'         => \Encore\Admin\Form\Field\Button::class,
-            'checkbox'       => \Encore\Admin\Form\Field\Checkbox::class,
-            'color'          => \Encore\Admin\Form\Field\Color::class,
-            'currency'       => \Encore\Admin\Form\Field\Currency::class,
-            'date'           => \Encore\Admin\Form\Field\Date::class,
-            'dateRange'      => \Encore\Admin\Form\Field\DateRange::class,
-            'datetime'       => \Encore\Admin\Form\Field\Datetime::class,
-            'dateTimeRange'  => \Encore\Admin\Form\Field\DatetimeRange::class,
-            'datetimeRange'  => \Encore\Admin\Form\Field\DatetimeRange::class,
-            'decimal'        => \Encore\Admin\Form\Field\Decimal::class,
-            'display'        => \Encore\Admin\Form\Field\Display::class,
-            'divider'        => \Encore\Admin\Form\Field\Divide::class,
-            'divide'         => \Encore\Admin\Form\Field\Divide::class,
-            'embeds'         => \Encore\Admin\Form\Field\Embeds::class,
-            'editor'         => \Encore\Admin\Form\Field\Editor::class,
-            'email'          => \Encore\Admin\Form\Field\Email::class,
-            'file'           => \Encore\Admin\Form\Field\File::class,
-            'hasMany'        => \Encore\Admin\Form\Field\HasMany::class,
-            'hidden'         => \Encore\Admin\Form\Field\Hidden::class,
-            'id'             => \Encore\Admin\Form\Field\Id::class,
-            'image'          => \Encore\Admin\Form\Field\Image::class,
-            'ip'             => \Encore\Admin\Form\Field\Ip::class,
-            'map'            => \Encore\Admin\Form\Field\Map::class,
-            'mobile'         => \Encore\Admin\Form\Field\Mobile::class,
-            'month'          => \Encore\Admin\Form\Field\Month::class,
-            'multipleSelect' => \Encore\Admin\Form\Field\MultipleSelect::class,
-            'number'         => \Encore\Admin\Form\Field\Number::class,
-            'password'       => \Encore\Admin\Form\Field\Password::class,
-            'radio'          => \Encore\Admin\Form\Field\Radio::class,
-            'rate'           => \Encore\Admin\Form\Field\Rate::class,
-            'select'         => \Encore\Admin\Form\Field\Select::class,
-            'slider'         => \Encore\Admin\Form\Field\Slider::class,
-            'switch'         => \Encore\Admin\Form\Field\SwitchField::class,
-            'text'           => \Encore\Admin\Form\Field\Text::class,
-            'textarea'       => \Encore\Admin\Form\Field\Textarea::class,
-            'time'           => \Encore\Admin\Form\Field\Time::class,
-            'timeRange'      => \Encore\Admin\Form\Field\TimeRange::class,
-            'url'            => \Encore\Admin\Form\Field\Url::class,
-            'year'           => \Encore\Admin\Form\Field\Year::class,
-            'html'           => \Encore\Admin\Form\Field\Html::class,
-            'tags'           => \Encore\Admin\Form\Field\Tags::class,
-            'icon'           => \Encore\Admin\Form\Field\Icon::class,
-            'multipleFile'   => \Encore\Admin\Form\Field\MultipleFile::class,
-            'multipleImage'  => \Encore\Admin\Form\Field\MultipleImage::class,
-            'captcha'        => \Encore\Admin\Form\Field\Captcha::class,
-            'listbox'        => \Encore\Admin\Form\Field\Listbox::class,
-        ];
-
-        foreach ($map as $abstract => $class) {
-            static::extend($abstract, $class);
-        }
-    }
-
-    /**
-     * Register custom field.
-     *
-     * @param string $abstract
-     * @param string $class
-     *
-     * @return void
-     */
-    public static function extend($abstract, $class)
-    {
-        static::$availableFields[$abstract] = $class;
-    }
-
-    /**
-     * Remove registered field.
-     *
-     * @param array|string $abstract
-     */
-    public static function forget($abstract)
-    {
-        array_forget(static::$availableFields, $abstract);
-    }
-
-    /**
-     * Find field class.
-     *
-     * @param string $method
-     *
-     * @return bool|mixed
-     */
-    public static function findFieldClass($method)
-    {
-        $class = array_get(static::$availableFields, $method);
-
-        if (class_exists($class)) {
-            return $class;
-        }
-
-        return false;
-    }
-
-    /**
-     * Collect assets required by registered field.
-     *
-     * @return array
-     */
-    public static function collectFieldAssets()
-    {
-        if (!empty(static::$collectedAssets)) {
-            return static::$collectedAssets;
-        }
-
-        $css = collect();
-        $js = collect();
-
-        foreach (static::$availableFields as $field) {
-            if (!method_exists($field, 'getAssets')) {
-                continue;
-            }
-
-            $assets = call_user_func([$field, 'getAssets']);
-
-            $css->push(array_get($assets, 'css'));
-            $js->push(array_get($assets, 'js'));
-        }
-
-        return static::$collectedAssets = [
-            'css' => $css->flatten()->unique()->filter()->toArray(),
-            'js'  => $js->flatten()->unique()->filter()->toArray(),
-        ];
-    }
-
-    /**
      * Getter.
      *
      * @param string $name
@@ -1383,10 +1306,27 @@ class Form
     }
 
     /**
+     * Get or set input data.
+     *
+     * @param string $key
+     * @param null $value
+     *
+     * @return array|mixed
+     */
+    public function input($key, $value = null)
+    {
+        if (is_null($value)) {
+            return array_get($this->inputs, $key);
+        }
+
+        return array_set($this->inputs, $key, $value);
+    }
+
+    /**
      * Generate a Field object and add to form builder if Field exists.
      *
      * @param string $method
-     * @param array  $arguments
+     * @param array $arguments
      *
      * @return Field|void
      */
@@ -1404,6 +1344,38 @@ class Form
     }
 
     /**
+     * Find field class.
+     *
+     * @param string $method
+     *
+     * @return bool|mixed
+     */
+    public static function findFieldClass($method)
+    {
+        $class = array_get(static::$availableFields, $method);
+
+        if (class_exists($class)) {
+            return $class;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param Field $field
+     *
+     * @return $this
+     */
+    public function pushField(Field $field)
+    {
+        $field->setForm($this);
+
+        $this->builder->fields()->push($field);
+
+        return $this;
+    }
+
+    /**
      * Render the contents of the form when casting to string.
      *
      * @return string
@@ -1411,5 +1383,19 @@ class Form
     public function __toString()
     {
         return $this->render();
+    }
+
+    /**
+     * Render the form contents.
+     *
+     * @return string
+     */
+    public function render()
+    {
+        try {
+            return $this->builder->render();
+        } catch (\Exception $e) {
+            return Handler::renderException($e);
+        }
     }
 }

@@ -67,7 +67,16 @@ class Mockery
      */
     public static function globalHelpers()
     {
-        require_once __DIR__.'/helpers.php';
+        require_once __DIR__ . '/helpers.php';
+    }
+
+    /**
+     * @param string $type
+     * @return bool
+     */
+    public static function isBuiltInType($type)
+    {
+        return in_array($type, \Mockery::builtInTypes());
     }
 
     /**
@@ -96,15 +105,6 @@ class Mockery
     }
 
     /**
-     * @param string $type
-     * @return bool
-     */
-    public static function isBuiltInType($type)
-    {
-        return in_array($type, \Mockery::builtInTypes());
-    }
-
-    /**
      * Static shortcut to \Mockery\Container::mock().
      *
      * @param array ...$args
@@ -114,6 +114,104 @@ class Mockery
     public static function mock(...$args)
     {
         return call_user_func_array(array(self::getContainer(), 'mock'), $args);
+    }
+
+    /**
+     * Lazy loader and getter for
+     * the container property.
+     *
+     * @return Mockery\Container
+     */
+    public static function getContainer()
+    {
+        if (is_null(self::$_container)) {
+            self::$_container = new Mockery\Container(self::getGenerator(), self::getLoader());
+        }
+
+        return self::$_container;
+    }
+
+    /**
+     * Set the container.
+     *
+     * @param \Mockery\Container $container
+     *
+     * @return \Mockery\Container
+     */
+    public static function setContainer(Mockery\Container $container)
+    {
+        return self::$_container = $container;
+    }
+
+    /**
+     * Lazy loader method and getter for
+     * the generator property.
+     *
+     * @return Generator
+     */
+    public static function getGenerator()
+    {
+        if (is_null(self::$_generator)) {
+            self::$_generator = self::getDefaultGenerator();
+        }
+
+        return self::$_generator;
+    }
+
+    /**
+     * Setter for the $_generator static propery.
+     *
+     * @param \Mockery\Generator\Generator $generator
+     */
+    public static function setGenerator(Generator $generator)
+    {
+        self::$_generator = $generator;
+    }
+
+    /**
+     * Creates and returns a default generator
+     * used inside this class.
+     *
+     * @return CachingGenerator
+     */
+    public static function getDefaultGenerator()
+    {
+        return new CachingGenerator(StringManipulationGenerator::withDefaultPasses());
+    }
+
+    /**
+     * Lazy loader method and getter for
+     * the $_loader property.
+     *
+     * @return Loader
+     */
+    public static function getLoader()
+    {
+        if (is_null(self::$_loader)) {
+            self::$_loader = self::getDefaultLoader();
+        }
+
+        return self::$_loader;
+    }
+
+    /**
+     * Setter for the $_loader static property.
+     *
+     * @param Loader $loader
+     */
+    public static function setLoader(Loader $loader)
+    {
+        self::$_loader = $loader;
+    }
+
+    /**
+     * Gets an EvalLoader to be used as default.
+     *
+     * @return EvalLoader
+     */
+    public static function getDefaultLoader()
+    {
+        return new EvalLoader();
     }
 
     /**
@@ -138,25 +236,6 @@ class Mockery
      */
     public static function instanceMock(...$args)
     {
-        return call_user_func_array(array(self::getContainer(), 'mock'), $args);
-    }
-
-    /**
-     * Static shortcut to \Mockery\Container::mock(), first argument names the mock.
-     *
-     * @param array ...$args
-     *
-     * @return \Mockery\MockInterface
-     */
-    public static function namedMock(...$args)
-    {
-        $name = array_shift($args);
-
-        $builder = new MockConfigurationBuilder();
-        $builder->setName($name);
-
-        array_unshift($args, $builder);
-
         return call_user_func_array(array(self::getContainer(), 'mock'), $args);
     }
 
@@ -210,104 +289,6 @@ class Mockery
     public static function fetchMock($name)
     {
         return self::$_container->fetchMock($name);
-    }
-
-    /**
-     * Lazy loader and getter for
-     * the container property.
-     *
-     * @return Mockery\Container
-     */
-    public static function getContainer()
-    {
-        if (is_null(self::$_container)) {
-            self::$_container = new Mockery\Container(self::getGenerator(), self::getLoader());
-        }
-
-        return self::$_container;
-    }
-
-    /**
-     * Setter for the $_generator static propery.
-     *
-     * @param \Mockery\Generator\Generator $generator
-     */
-    public static function setGenerator(Generator $generator)
-    {
-        self::$_generator = $generator;
-    }
-
-    /**
-     * Lazy loader method and getter for
-     * the generator property.
-     *
-     * @return Generator
-     */
-    public static function getGenerator()
-    {
-        if (is_null(self::$_generator)) {
-            self::$_generator = self::getDefaultGenerator();
-        }
-
-        return self::$_generator;
-    }
-
-    /**
-     * Creates and returns a default generator
-     * used inside this class.
-     *
-     * @return CachingGenerator
-     */
-    public static function getDefaultGenerator()
-    {
-        return new CachingGenerator(StringManipulationGenerator::withDefaultPasses());
-    }
-
-    /**
-     * Setter for the $_loader static property.
-     *
-     * @param Loader $loader
-     */
-    public static function setLoader(Loader $loader)
-    {
-        self::$_loader = $loader;
-    }
-
-    /**
-     * Lazy loader method and getter for
-     * the $_loader property.
-     *
-     * @return Loader
-     */
-    public static function getLoader()
-    {
-        if (is_null(self::$_loader)) {
-            self::$_loader = self::getDefaultLoader();
-        }
-
-        return self::$_loader;
-    }
-
-    /**
-     * Gets an EvalLoader to be used as default.
-     *
-     * @return EvalLoader
-     */
-    public static function getDefaultLoader()
-    {
-        return new EvalLoader();
-    }
-
-    /**
-     * Set the container.
-     *
-     * @param \Mockery\Container $container
-     *
-     * @return \Mockery\Container
-     */
-    public static function setContainer(Mockery\Container $container)
-    {
-        return self::$_container = $container;
     }
 
     /**
@@ -499,21 +480,6 @@ class Mockery
     }
 
     /**
-     * Lazy loader and Getter for the global
-     * configuration container.
-     *
-     * @return \Mockery\Configuration
-     */
-    public static function getConfiguration()
-    {
-        if (is_null(self::$_config)) {
-            self::$_config = new \Mockery\Configuration();
-        }
-
-        return self::$_config;
-    }
-
-    /**
      * Utility method to format method name and arguments into a string.
      *
      * @param string $method
@@ -547,7 +513,7 @@ class Mockery
     private static function formatArgument($argument, $depth = 0)
     {
         if ($argument instanceof MatcherAbstract) {
-            return (string) $argument;
+            return (string)$argument;
         }
 
         if (is_object($argument)) {
@@ -569,10 +535,10 @@ class Mockery
                     $sample[] = "$key => $value";
                 }
 
-                $argument = "[".implode(", ", $sample)."]";
+                $argument = "[" . implode(", ", $sample) . "]";
             }
 
-            return ((strlen($argument) > 1000) ? substr($argument, 0, 1000).'...]' : $argument);
+            return ((strlen($argument) > 1000) ? substr($argument, 0, 1000) . '...]' : $argument);
         }
 
         if (is_bool($argument)) {
@@ -587,7 +553,7 @@ class Mockery
             return 'NULL';
         }
 
-        return "'".(string) $argument."'";
+        return "'" . (string)$argument . "'";
     }
 
     /**
@@ -817,6 +783,34 @@ class Mockery
     }
 
     /**
+     * Lazy loader and Getter for the global
+     * configuration container.
+     *
+     * @return \Mockery\Configuration
+     */
+    public static function getConfiguration()
+    {
+        if (is_null(self::$_config)) {
+            self::$_config = new \Mockery\Configuration();
+        }
+
+        return self::$_config;
+    }
+
+    /**
+     * Checks if the passed array representing a demeter
+     * chain with the method names is empty.
+     *
+     * @param array $methodNames
+     *
+     * @return bool
+     */
+    private static function noMoreElementsInChain(array $methodNames)
+    {
+        return empty($methodNames);
+    }
+
+    /**
      * Gets a new demeter configured
      * mock from the container.
      *
@@ -832,7 +826,8 @@ class Mockery
         $parent,
         $method,
         Mockery\ExpectationInterface $exp
-    ) {
+    )
+    {
         $newMockName = 'demeter_' . md5($parent) . '_' . $method;
 
         if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
@@ -850,7 +845,7 @@ class Mockery
                 $parRefMethodRetType = $parRefMethod->getReturnType();
 
                 if ($parRefMethodRetType !== null) {
-                    $mock = self::namedMock($newMockName, (string) $parRefMethodRetType);
+                    $mock = self::namedMock($newMockName, (string)$parRefMethodRetType);
                     $exp->andReturn($mock);
 
                     return $mock;
@@ -865,6 +860,25 @@ class Mockery
     }
 
     /**
+     * Static shortcut to \Mockery\Container::mock(), first argument names the mock.
+     *
+     * @param array ...$args
+     *
+     * @return \Mockery\MockInterface
+     */
+    public static function namedMock(...$args)
+    {
+        $name = array_shift($args);
+
+        $builder = new MockConfigurationBuilder();
+        $builder->setName($name);
+
+        array_unshift($args, $builder);
+
+        return call_user_func_array(array(self::getContainer(), 'mock'), $args);
+    }
+
+    /**
      * Gets an specific demeter mock from
      * the ones kept by the container.
      *
@@ -876,34 +890,17 @@ class Mockery
     private static function getExistingDemeterMock(
         Mockery\Container $container,
         $demeterMockKey
-    ) {
+    )
+    {
         $mocks = $container->getMocks();
         $mock = $mocks[$demeterMockKey];
 
         return $mock;
     }
 
-    /**
-     * Checks if the passed array representing a demeter
-     * chain with the method names is empty.
-     *
-     * @param array $methodNames
-     *
-     * @return bool
-     */
-    private static function noMoreElementsInChain(array $methodNames)
-    {
-        return empty($methodNames);
-    }
-
     public static function declareClass($fqn)
     {
         return static::declareType($fqn, "class");
-    }
-
-    public static function declareInterface($fqn)
-    {
-        return static::declareType($fqn, "interface");
     }
 
     private static function declareType($fqn, $type)
@@ -917,10 +914,10 @@ class Mockery
             $shortName = trim(array_pop($parts));
             $namespace = implode("\\", $parts);
 
-            $targetCode.= "namespace $namespace;\n";
+            $targetCode .= "namespace $namespace;\n";
         }
 
-        $targetCode.= "$type $shortName {} ";
+        $targetCode .= "$type $shortName {} ";
 
         /*
          * We could eval here, but it doesn't play well with the way
@@ -941,5 +938,10 @@ class Mockery
     public static function registerFileForCleanUp($fileName)
     {
         self::$_filesToCleanUp[] = $fileName;
+    }
+
+    public static function declareInterface($fqn)
+    {
+        return static::declareType($fqn, "interface");
     }
 }

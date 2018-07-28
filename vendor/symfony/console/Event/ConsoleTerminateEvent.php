@@ -32,16 +32,6 @@ class ConsoleTerminateEvent extends ConsoleEvent
     }
 
     /**
-     * Sets the exit code.
-     *
-     * @param int $exitCode The command exit code
-     */
-    public function setExitCode($exitCode)
-    {
-        $this->exitCode = (int) $exitCode;
-    }
-
-    /**
      * Gets the exit code.
      *
      * @return int The command exit code
@@ -49,5 +39,15 @@ class ConsoleTerminateEvent extends ConsoleEvent
     public function getExitCode()
     {
         return $this->exitCode;
+    }
+
+    /**
+     * Sets the exit code.
+     *
+     * @param int $exitCode The command exit code
+     */
+    public function setExitCode($exitCode)
+    {
+        $this->exitCode = (int)$exitCode;
     }
 }

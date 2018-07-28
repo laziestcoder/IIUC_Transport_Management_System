@@ -13,28 +13,28 @@ namespace Symfony\Component\HttpKernel;
 
 use Symfony\Bridge\ProxyManager\LazyProxy\Instantiator\RuntimeInstantiator;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
+use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\Config\Loader\DelegatingLoader;
+use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\ClosureLoader;
+use Symfony\Component\DependencyInjection\Loader\DirectoryLoader;
+use Symfony\Component\DependencyInjection\Loader\GlobFileLoader;
 use Symfony\Component\DependencyInjection\Loader\IniFileLoader;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
-use Symfony\Component\DependencyInjection\Loader\GlobFileLoader;
-use Symfony\Component\DependencyInjection\Loader\DirectoryLoader;
-use Symfony\Component\DependencyInjection\Loader\ClosureLoader;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
 use Symfony\Component\HttpKernel\DependencyInjection\AddAnnotatedClassesToCachePass;
-use Symfony\Component\Config\Loader\LoaderResolver;
-use Symfony\Component\Config\Loader\DelegatingLoader;
-use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
 
 /**
  * The Kernel is the heart of the Symfony system.
@@ -45,11 +45,18 @@ use Symfony\Component\Config\ConfigCache;
  */
 abstract class Kernel implements KernelInterface, RebootableInterface, TerminableInterface
 {
+    const VERSION = '4.0.10';
+    const VERSION_ID = 40010;
+    const MAJOR_VERSION = 4;
+    const MINOR_VERSION = 0;
+    const RELEASE_VERSION = 10;
+    const EXTRA_VERSION = '';
+    const END_OF_MAINTENANCE = '07/2018';
+    const END_OF_LIFE = '01/2019';
     /**
      * @var BundleInterface[]
      */
     protected $bundles = array();
-
     protected $container;
     protected $rootDir;
     protected $environment;
@@ -57,32 +64,70 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     protected $booted = false;
     protected $name;
     protected $startTime;
-
     private $projectDir;
     private $warmupDir;
     private $requestStackSize = 0;
     private $resetServices = false;
 
-    const VERSION = '4.0.10';
-    const VERSION_ID = 40010;
-    const MAJOR_VERSION = 4;
-    const MINOR_VERSION = 0;
-    const RELEASE_VERSION = 10;
-    const EXTRA_VERSION = '';
-
-    const END_OF_MAINTENANCE = '07/2018';
-    const END_OF_LIFE = '01/2019';
-
-    public function __construct(string $environment, bool $debug)
+    /**
+     * Removes comments from a PHP source string.
+     *
+     * We don't use the PHP php_strip_whitespace() function
+     * as we want the content to be readable and well-formatted.
+     *
+     * @param string $source A PHP string
+     *
+     * @return string The PHP string with the comments removed
+     */
+    public static function stripComments($source)
     {
-        $this->environment = $environment;
-        $this->debug = $debug;
-        $this->rootDir = $this->getRootDir();
-        $this->name = $this->getName();
-
-        if ($this->debug) {
-            $this->startTime = microtime(true);
+        if (!function_exists('token_get_all')) {
+            return $source;
         }
+
+        $rawChunk = '';
+        $output = '';
+        $tokens = token_get_all($source);
+        $ignoreSpace = false;
+        for ($i = 0; isset($tokens[$i]); ++$i) {
+            $token = $tokens[$i];
+            if (!isset($token[1]) || 'b"' === $token) {
+                $rawChunk .= $token;
+            } elseif (T_START_HEREDOC === $token[0]) {
+                $output .= $rawChunk . $token[1];
+                do {
+                    $token = $tokens[++$i];
+                    $output .= isset($token[1]) && 'b"' !== $token ? $token[1] : $token;
+                } while (T_END_HEREDOC !== $token[0]);
+                $rawChunk = '';
+            } elseif (T_WHITESPACE === $token[0]) {
+                if ($ignoreSpace) {
+                    $ignoreSpace = false;
+
+                    continue;
+                }
+
+                // replace multiple new lines with a single newline
+                $rawChunk .= preg_replace(array('/\n{2,}/S'), "\n", $token[1]);
+            } elseif (in_array($token[0], array(T_COMMENT, T_DOC_COMMENT))) {
+                $ignoreSpace = true;
+            } else {
+                $rawChunk .= $token[1];
+
+                // The PHP-open tag already has a new-line
+                if (T_OPEN_TAG === $token[0]) {
+                    $ignoreSpace = true;
+                }
+            }
+        }
+
+        $output .= $rawChunk;
+
+        // PHP 7 memory manager will not release after token_get_all(), see https://bugs.php.net/70098
+        unset($tokens, $rawChunk);
+        gc_mem_caches();
+
+        return $output;
     }
 
     public function __clone()
@@ -95,6 +140,45 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
         $this->container = null;
         $this->requestStackSize = 0;
         $this->resetServices = false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function reboot($warmupDir)
+    {
+        $this->shutdown();
+        $this->warmupDir = $warmupDir;
+        $this->boot();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function shutdown()
+    {
+        if (false === $this->booted) {
+            return;
+        }
+
+        $this->booted = false;
+
+        foreach ($this->getBundles() as $bundle) {
+            $bundle->shutdown();
+            $bundle->setContainer(null);
+        }
+
+        $this->container = null;
+        $this->requestStackSize = 0;
+        $this->resetServices = false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBundles()
+    {
+        return $this->bundles;
     }
 
     /**
@@ -133,265 +217,6 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function reboot($warmupDir)
-    {
-        $this->shutdown();
-        $this->warmupDir = $warmupDir;
-        $this->boot();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function terminate(Request $request, Response $response)
-    {
-        if (false === $this->booted) {
-            return;
-        }
-
-        if ($this->getHttpKernel() instanceof TerminableInterface) {
-            $this->getHttpKernel()->terminate($request, $response);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function shutdown()
-    {
-        if (false === $this->booted) {
-            return;
-        }
-
-        $this->booted = false;
-
-        foreach ($this->getBundles() as $bundle) {
-            $bundle->shutdown();
-            $bundle->setContainer(null);
-        }
-
-        $this->container = null;
-        $this->requestStackSize = 0;
-        $this->resetServices = false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
-    {
-        $this->boot();
-        ++$this->requestStackSize;
-        $this->resetServices = true;
-
-        try {
-            return $this->getHttpKernel()->handle($request, $type, $catch);
-        } finally {
-            --$this->requestStackSize;
-        }
-    }
-
-    /**
-     * Gets a HTTP kernel from the container.
-     *
-     * @return HttpKernel
-     */
-    protected function getHttpKernel()
-    {
-        return $this->container->get('http_kernel');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBundles()
-    {
-        return $this->bundles;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBundle($name)
-    {
-        if (!isset($this->bundles[$name])) {
-            throw new \InvalidArgumentException(sprintf('Bundle "%s" does not exist or it is not enabled. Maybe you forgot to add it in the registerBundles() method of your %s.php file?', $name, get_class($this)));
-        }
-
-        return $this->bundles[$name];
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \RuntimeException if a custom resource is hidden by a resource in a derived bundle
-     */
-    public function locateResource($name, $dir = null, $first = true)
-    {
-        if ('@' !== $name[0]) {
-            throw new \InvalidArgumentException(sprintf('A resource name must start with @ ("%s" given).', $name));
-        }
-
-        if (false !== strpos($name, '..')) {
-            throw new \RuntimeException(sprintf('File name "%s" contains invalid characters (..).', $name));
-        }
-
-        $bundleName = substr($name, 1);
-        $path = '';
-        if (false !== strpos($bundleName, '/')) {
-            list($bundleName, $path) = explode('/', $bundleName, 2);
-        }
-
-        $isResource = 0 === strpos($path, 'Resources') && null !== $dir;
-        $overridePath = substr($path, 9);
-        $resourceBundle = null;
-        $bundle = $this->getBundle($bundleName);
-        $files = array();
-
-        if ($isResource && file_exists($file = $dir.'/'.$bundle->getName().$overridePath)) {
-            if (null !== $resourceBundle) {
-                throw new \RuntimeException(sprintf('"%s" resource is hidden by a resource from the "%s" derived bundle. Create a "%s" file to override the bundle resource.',
-                    $file,
-                    $resourceBundle,
-                    $dir.'/'.$bundle->getName().$overridePath
-                ));
-            }
-
-            $files[] = $file;
-        }
-
-        if (file_exists($file = $bundle->getPath().'/'.$path)) {
-            if ($first && !$isResource) {
-                return $file;
-            }
-            $files[] = $file;
-            $resourceBundle = $bundle->getName();
-        }
-
-        if (count($files) > 0) {
-            return $first && $isResource ? $files[0] : $files;
-        }
-
-        throw new \InvalidArgumentException(sprintf('Unable to find file "%s".', $name));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        if (null === $this->name) {
-            $this->name = preg_replace('/[^a-zA-Z0-9_]+/', '', basename($this->rootDir));
-            if (ctype_digit($this->name[0])) {
-                $this->name = '_'.$this->name;
-            }
-        }
-
-        return $this->name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEnvironment()
-    {
-        return $this->environment;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isDebug()
-    {
-        return $this->debug;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRootDir()
-    {
-        if (null === $this->rootDir) {
-            $r = new \ReflectionObject($this);
-            $this->rootDir = dirname($r->getFileName());
-        }
-
-        return $this->rootDir;
-    }
-
-    /**
-     * Gets the application root dir (path of the project's composer file).
-     *
-     * @return string The project root dir
-     */
-    public function getProjectDir()
-    {
-        if (null === $this->projectDir) {
-            $r = new \ReflectionObject($this);
-            $dir = $rootDir = dirname($r->getFileName());
-            while (!file_exists($dir.'/composer.json')) {
-                if ($dir === dirname($dir)) {
-                    return $this->projectDir = $rootDir;
-                }
-                $dir = dirname($dir);
-            }
-            $this->projectDir = $dir;
-        }
-
-        return $this->projectDir;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
-     * @internal
-     */
-    public function setAnnotatedClassCache(array $annotatedClasses)
-    {
-        file_put_contents(($this->warmupDir ?: $this->getCacheDir()).'/annotations.map', sprintf('<?php return %s;', var_export($annotatedClasses, true)));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStartTime()
-    {
-        return $this->debug ? $this->startTime : -INF;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCacheDir()
-    {
-        return $this->rootDir.'/cache/'.$this->environment;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getLogDir()
-    {
-        return $this->rootDir.'/logs';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCharset()
-    {
-        return 'UTF-8';
-    }
-
-    /**
      * Initializes bundles.
      *
      * @throws \LogicException if two bundles share a common name
@@ -410,37 +235,6 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     }
 
     /**
-     * The extension point similar to the Bundle::build() method.
-     *
-     * Use this method to register compiler passes and manipulate the container during the building process.
-     */
-    protected function build(ContainerBuilder $container)
-    {
-    }
-
-    /**
-     * Gets the container class.
-     *
-     * @return string The container class
-     */
-    protected function getContainerClass()
-    {
-        return $this->name.ucfirst($this->environment).($this->debug ? 'Debug' : '').'ProjectContainer';
-    }
-
-    /**
-     * Gets the container's base class.
-     *
-     * All names except Container must be fully qualified.
-     *
-     * @return string
-     */
-    protected function getContainerBaseClass()
-    {
-        return 'Container';
-    }
-
-    /**
      * Initializes the service container.
      *
      * The cached version of the service container is used when fresh, otherwise the
@@ -450,7 +244,7 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     {
         $class = $this->getContainerClass();
         $cacheDir = $this->warmupDir ?: $this->getCacheDir();
-        $cache = new ConfigCache($cacheDir.'/'.$class.'.php', $this->debug);
+        $cache = new ConfigCache($cacheDir . '/' . $class . '.php', $this->debug);
         $oldContainer = null;
         if ($fresh = $cache->isFresh()) {
             // Silence E_WARNING to ignore "include" failures - don't use "@" to prevent silencing fatal errors
@@ -515,8 +309,8 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
             if ($this->debug && true !== $previousHandler) {
                 restore_error_handler();
 
-                file_put_contents($cacheDir.'/'.$class.'Deprecations.log', serialize(array_values($collectedLogs)));
-                file_put_contents($cacheDir.'/'.$class.'Compiler.log', null !== $container ? implode("\n", $container->getCompiler()->getLog()) : '');
+                file_put_contents($cacheDir . '/' . $class . 'Deprecations.log', serialize(array_values($collectedLogs)));
+                file_put_contents($cacheDir . '/' . $class . 'Compiler.log', null !== $container ? implode("\n", $container->getCompiler()->getLog()) : '');
             }
         }
 
@@ -542,19 +336,97 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
             // but on a next dump of the container.
             static $legacyContainers = array();
             $oldContainerDir = dirname($oldContainer->getFileName());
-            $legacyContainers[$oldContainerDir.'.legacy'] = true;
-            foreach (glob(dirname($oldContainerDir).DIRECTORY_SEPARATOR.'*.legacy') as $legacyContainer) {
+            $legacyContainers[$oldContainerDir . '.legacy'] = true;
+            foreach (glob(dirname($oldContainerDir) . DIRECTORY_SEPARATOR . '*.legacy') as $legacyContainer) {
                 if (!isset($legacyContainers[$legacyContainer]) && @unlink($legacyContainer)) {
                     (new Filesystem())->remove(substr($legacyContainer, 0, -7));
                 }
             }
 
-            touch($oldContainerDir.'.legacy');
+            touch($oldContainerDir . '.legacy');
         }
 
         if ($this->container->has('cache_warmer')) {
             $this->container->get('cache_warmer')->warmUp($this->container->getParameter('kernel.cache_dir'));
         }
+    }
+
+    /**
+     * Gets the container class.
+     *
+     * @return string The container class
+     */
+    protected function getContainerClass()
+    {
+        return $this->name . ucfirst($this->environment) . ($this->debug ? 'Debug' : '') . 'ProjectContainer';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCacheDir()
+    {
+        return $this->rootDir . '/cache/' . $this->environment;
+    }
+
+    /**
+     * Builds the service container.
+     *
+     * @return ContainerBuilder The compiled service container
+     *
+     * @throws \RuntimeException
+     */
+    protected function buildContainer()
+    {
+        foreach (array('cache' => $this->warmupDir ?: $this->getCacheDir(), 'logs' => $this->getLogDir()) as $name => $dir) {
+            if (!is_dir($dir)) {
+                if (false === @mkdir($dir, 0777, true) && !is_dir($dir)) {
+                    throw new \RuntimeException(sprintf("Unable to create the %s directory (%s)\n", $name, $dir));
+                }
+            } elseif (!is_writable($dir)) {
+                throw new \RuntimeException(sprintf("Unable to write in the %s directory (%s)\n", $name, $dir));
+            }
+        }
+
+        $container = $this->getContainerBuilder();
+        $container->addObjectResource($this);
+        $this->prepareContainer($container);
+
+        if (null !== $cont = $this->registerContainerConfiguration($this->getContainerLoader($container))) {
+            $container->merge($cont);
+        }
+
+        $container->addCompilerPass(new AddAnnotatedClassesToCachePass($this));
+
+        return $container;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLogDir()
+    {
+        return $this->rootDir . '/logs';
+    }
+
+    /**
+     * Gets a new ContainerBuilder instance used to build the service container.
+     *
+     * @return ContainerBuilder
+     */
+    protected function getContainerBuilder()
+    {
+        $container = new ContainerBuilder();
+        $container->getParameterBag()->add($this->getKernelParameters());
+
+        if ($this instanceof CompilerPassInterface) {
+            $container->addCompilerPass($this, PassConfig::TYPE_BEFORE_OPTIMIZATION, -10000);
+        }
+        if (class_exists('ProxyManager\Configuration') && class_exists('Symfony\Bridge\ProxyManager\LazyProxy\Instantiator\RuntimeInstantiator')) {
+            $container->setProxyInstantiator(new RuntimeInstantiator());
+        }
+
+        return $container;
     }
 
     /**
@@ -591,35 +463,33 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     }
 
     /**
-     * Builds the service container.
+     * Gets the application root dir (path of the project's composer file).
      *
-     * @return ContainerBuilder The compiled service container
-     *
-     * @throws \RuntimeException
+     * @return string The project root dir
      */
-    protected function buildContainer()
+    public function getProjectDir()
     {
-        foreach (array('cache' => $this->warmupDir ?: $this->getCacheDir(), 'logs' => $this->getLogDir()) as $name => $dir) {
-            if (!is_dir($dir)) {
-                if (false === @mkdir($dir, 0777, true) && !is_dir($dir)) {
-                    throw new \RuntimeException(sprintf("Unable to create the %s directory (%s)\n", $name, $dir));
+        if (null === $this->projectDir) {
+            $r = new \ReflectionObject($this);
+            $dir = $rootDir = dirname($r->getFileName());
+            while (!file_exists($dir . '/composer.json')) {
+                if ($dir === dirname($dir)) {
+                    return $this->projectDir = $rootDir;
                 }
-            } elseif (!is_writable($dir)) {
-                throw new \RuntimeException(sprintf("Unable to write in the %s directory (%s)\n", $name, $dir));
+                $dir = dirname($dir);
             }
+            $this->projectDir = $dir;
         }
 
-        $container = $this->getContainerBuilder();
-        $container->addObjectResource($this);
-        $this->prepareContainer($container);
+        return $this->projectDir;
+    }
 
-        if (null !== $cont = $this->registerContainerConfiguration($this->getContainerLoader($container))) {
-            $container->merge($cont);
-        }
-
-        $container->addCompilerPass(new AddAnnotatedClassesToCachePass($this));
-
-        return $container;
+    /**
+     * {@inheritdoc}
+     */
+    public function getCharset()
+    {
+        return 'UTF-8';
     }
 
     /**
@@ -653,62 +523,12 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     }
 
     /**
-     * Gets a new ContainerBuilder instance used to build the service container.
+     * The extension point similar to the Bundle::build() method.
      *
-     * @return ContainerBuilder
+     * Use this method to register compiler passes and manipulate the container during the building process.
      */
-    protected function getContainerBuilder()
+    protected function build(ContainerBuilder $container)
     {
-        $container = new ContainerBuilder();
-        $container->getParameterBag()->add($this->getKernelParameters());
-
-        if ($this instanceof CompilerPassInterface) {
-            $container->addCompilerPass($this, PassConfig::TYPE_BEFORE_OPTIMIZATION, -10000);
-        }
-        if (class_exists('ProxyManager\Configuration') && class_exists('Symfony\Bridge\ProxyManager\LazyProxy\Instantiator\RuntimeInstantiator')) {
-            $container->setProxyInstantiator(new RuntimeInstantiator());
-        }
-
-        return $container;
-    }
-
-    /**
-     * Dumps the service container to PHP code in the cache.
-     *
-     * @param ConfigCache      $cache     The config cache
-     * @param ContainerBuilder $container The service container
-     * @param string           $class     The name of the class to generate
-     * @param string           $baseClass The name of the container's base class
-     */
-    protected function dumpContainer(ConfigCache $cache, ContainerBuilder $container, $class, $baseClass)
-    {
-        // cache the container
-        $dumper = new PhpDumper($container);
-
-        if (class_exists('ProxyManager\Configuration') && class_exists('Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper')) {
-            $dumper->setProxyDumper(new ProxyDumper());
-        }
-
-        $content = $dumper->dump(array(
-            'class' => $class,
-            'base_class' => $baseClass,
-            'file' => $cache->getPath(),
-            'as_files' => true,
-            'debug' => $this->debug,
-            'build_time' => $container->hasParameter('kernel.container_build_time') ? $container->getParameter('kernel.container_build_time') : time(),
-        ));
-
-        $rootCode = array_pop($content);
-        $dir = dirname($cache->getPath()).'/';
-        $fs = new Filesystem();
-
-        foreach ($content as $file => $code) {
-            $fs->dumpFile($dir.$file, $code);
-            @chmod($dir.$file, 0666 & ~umask());
-        }
-        @unlink(dirname($dir.$file).'.legacy');
-
-        $cache->write($rootCode, $container->getResources());
     }
 
     /**
@@ -733,64 +553,200 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     }
 
     /**
-     * Removes comments from a PHP source string.
+     * Dumps the service container to PHP code in the cache.
      *
-     * We don't use the PHP php_strip_whitespace() function
-     * as we want the content to be readable and well-formatted.
-     *
-     * @param string $source A PHP string
-     *
-     * @return string The PHP string with the comments removed
+     * @param ConfigCache $cache The config cache
+     * @param ContainerBuilder $container The service container
+     * @param string $class The name of the class to generate
+     * @param string $baseClass The name of the container's base class
      */
-    public static function stripComments($source)
+    protected function dumpContainer(ConfigCache $cache, ContainerBuilder $container, $class, $baseClass)
     {
-        if (!function_exists('token_get_all')) {
-            return $source;
+        // cache the container
+        $dumper = new PhpDumper($container);
+
+        if (class_exists('ProxyManager\Configuration') && class_exists('Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper')) {
+            $dumper->setProxyDumper(new ProxyDumper());
         }
 
-        $rawChunk = '';
-        $output = '';
-        $tokens = token_get_all($source);
-        $ignoreSpace = false;
-        for ($i = 0; isset($tokens[$i]); ++$i) {
-            $token = $tokens[$i];
-            if (!isset($token[1]) || 'b"' === $token) {
-                $rawChunk .= $token;
-            } elseif (T_START_HEREDOC === $token[0]) {
-                $output .= $rawChunk.$token[1];
-                do {
-                    $token = $tokens[++$i];
-                    $output .= isset($token[1]) && 'b"' !== $token ? $token[1] : $token;
-                } while (T_END_HEREDOC !== $token[0]);
-                $rawChunk = '';
-            } elseif (T_WHITESPACE === $token[0]) {
-                if ($ignoreSpace) {
-                    $ignoreSpace = false;
+        $content = $dumper->dump(array(
+            'class' => $class,
+            'base_class' => $baseClass,
+            'file' => $cache->getPath(),
+            'as_files' => true,
+            'debug' => $this->debug,
+            'build_time' => $container->hasParameter('kernel.container_build_time') ? $container->getParameter('kernel.container_build_time') : time(),
+        ));
 
-                    continue;
-                }
+        $rootCode = array_pop($content);
+        $dir = dirname($cache->getPath()) . '/';
+        $fs = new Filesystem();
 
-                // replace multiple new lines with a single newline
-                $rawChunk .= preg_replace(array('/\n{2,}/S'), "\n", $token[1]);
-            } elseif (in_array($token[0], array(T_COMMENT, T_DOC_COMMENT))) {
-                $ignoreSpace = true;
-            } else {
-                $rawChunk .= $token[1];
+        foreach ($content as $file => $code) {
+            $fs->dumpFile($dir . $file, $code);
+            @chmod($dir . $file, 0666 & ~umask());
+        }
+        @unlink(dirname($dir . $file) . '.legacy');
 
-                // The PHP-open tag already has a new-line
-                if (T_OPEN_TAG === $token[0]) {
-                    $ignoreSpace = true;
-                }
+        $cache->write($rootCode, $container->getResources());
+    }
+
+    /**
+     * Gets the container's base class.
+     *
+     * All names except Container must be fully qualified.
+     *
+     * @return string
+     */
+    protected function getContainerBaseClass()
+    {
+        return 'Container';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function terminate(Request $request, Response $response)
+    {
+        if (false === $this->booted) {
+            return;
+        }
+
+        if ($this->getHttpKernel() instanceof TerminableInterface) {
+            $this->getHttpKernel()->terminate($request, $response);
+        }
+    }
+
+    /**
+     * Gets a HTTP kernel from the container.
+     *
+     * @return HttpKernel
+     */
+    protected function getHttpKernel()
+    {
+        return $this->container->get('http_kernel');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
+    {
+        $this->boot();
+        ++$this->requestStackSize;
+        $this->resetServices = true;
+
+        try {
+            return $this->getHttpKernel()->handle($request, $type, $catch);
+        } finally {
+            --$this->requestStackSize;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \RuntimeException if a custom resource is hidden by a resource in a derived bundle
+     */
+    public function locateResource($name, $dir = null, $first = true)
+    {
+        if ('@' !== $name[0]) {
+            throw new \InvalidArgumentException(sprintf('A resource name must start with @ ("%s" given).', $name));
+        }
+
+        if (false !== strpos($name, '..')) {
+            throw new \RuntimeException(sprintf('File name "%s" contains invalid characters (..).', $name));
+        }
+
+        $bundleName = substr($name, 1);
+        $path = '';
+        if (false !== strpos($bundleName, '/')) {
+            list($bundleName, $path) = explode('/', $bundleName, 2);
+        }
+
+        $isResource = 0 === strpos($path, 'Resources') && null !== $dir;
+        $overridePath = substr($path, 9);
+        $resourceBundle = null;
+        $bundle = $this->getBundle($bundleName);
+        $files = array();
+
+        if ($isResource && file_exists($file = $dir . '/' . $bundle->getName() . $overridePath)) {
+            if (null !== $resourceBundle) {
+                throw new \RuntimeException(sprintf('"%s" resource is hidden by a resource from the "%s" derived bundle. Create a "%s" file to override the bundle resource.',
+                    $file,
+                    $resourceBundle,
+                    $dir . '/' . $bundle->getName() . $overridePath
+                ));
             }
+
+            $files[] = $file;
         }
 
-        $output .= $rawChunk;
+        if (file_exists($file = $bundle->getPath() . '/' . $path)) {
+            if ($first && !$isResource) {
+                return $file;
+            }
+            $files[] = $file;
+            $resourceBundle = $bundle->getName();
+        }
 
-        // PHP 7 memory manager will not release after token_get_all(), see https://bugs.php.net/70098
-        unset($tokens, $rawChunk);
-        gc_mem_caches();
+        if (count($files) > 0) {
+            return $first && $isResource ? $files[0] : $files;
+        }
 
-        return $output;
+        throw new \InvalidArgumentException(sprintf('Unable to find file "%s".', $name));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBundle($name)
+    {
+        if (!isset($this->bundles[$name])) {
+            throw new \InvalidArgumentException(sprintf('Bundle "%s" does not exist or it is not enabled. Maybe you forgot to add it in the registerBundles() method of your %s.php file?', $name, get_class($this)));
+        }
+
+        return $this->bundles[$name];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isDebug()
+    {
+        return $this->debug;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * @internal
+     */
+    public function setAnnotatedClassCache(array $annotatedClasses)
+    {
+        file_put_contents(($this->warmupDir ?: $this->getCacheDir()) . '/annotations.map', sprintf('<?php return %s;', var_export($annotatedClasses, true)));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStartTime()
+    {
+        return $this->debug ? $this->startTime : -INF;
     }
 
     public function serialize()
@@ -803,5 +759,45 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
         list($environment, $debug) = unserialize($data, array('allowed_classes' => false));
 
         $this->__construct($environment, $debug);
+    }
+
+    public function __construct(string $environment, bool $debug)
+    {
+        $this->environment = $environment;
+        $this->debug = $debug;
+        $this->rootDir = $this->getRootDir();
+        $this->name = $this->getName();
+
+        if ($this->debug) {
+            $this->startTime = microtime(true);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRootDir()
+    {
+        if (null === $this->rootDir) {
+            $r = new \ReflectionObject($this);
+            $this->rootDir = dirname($r->getFileName());
+        }
+
+        return $this->rootDir;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        if (null === $this->name) {
+            $this->name = preg_replace('/[^a-zA-Z0-9_]+/', '', basename($this->rootDir));
+            if (ctype_digit($this->name[0])) {
+                $this->name = '_' . $this->name;
+            }
+        }
+
+        return $this->name;
     }
 }

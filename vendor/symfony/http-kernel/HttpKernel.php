@@ -11,13 +11,15 @@
 
 namespace Symfony\Component\HttpKernel;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Exception\RequestExceptionInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolverInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerArgumentsEvent;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
@@ -25,11 +27,9 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
-use Symfony\Component\HttpFoundation\Exception\RequestExceptionInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * HttpKernel notifies events to convert a Request object to a Response one.
@@ -79,37 +79,12 @@ class HttpKernel implements HttpKernelInterface, TerminableInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function terminate(Request $request, Response $response)
-    {
-        $this->dispatcher->dispatch(KernelEvents::TERMINATE, new PostResponseEvent($this, $request, $response));
-    }
-
-    /**
-     * @internal
-     */
-    public function terminateWithException(\Exception $exception, Request $request = null)
-    {
-        if (!$request = $request ?: $this->requestStack->getMasterRequest()) {
-            throw $exception;
-        }
-
-        $response = $this->handleException($exception, $request, self::MASTER_REQUEST);
-
-        $response->sendHeaders();
-        $response->sendContent();
-
-        $this->terminate($request, $response);
-    }
-
-    /**
      * Handles a request to convert it to a response.
      *
      * Exceptions are not caught.
      *
      * @param Request $request A Request instance
-     * @param int     $type    The type of the request (one of HttpKernelInterface::MASTER_REQUEST or HttpKernelInterface::SUB_REQUEST)
+     * @param int $type The type of the request (one of HttpKernelInterface::MASTER_REQUEST or HttpKernelInterface::SUB_REQUEST)
      *
      * @return Response A Response instance
      *
@@ -173,8 +148,8 @@ class HttpKernel implements HttpKernelInterface, TerminableInterface
      * Filters a response object.
      *
      * @param Response $response A Response instance
-     * @param Request  $request  An error message in case the response is not a Response object
-     * @param int      $type     The type of the request (one of HttpKernelInterface::MASTER_REQUEST or HttpKernelInterface::SUB_REQUEST)
+     * @param Request $request An error message in case the response is not a Response object
+     * @param int $type The type of the request (one of HttpKernelInterface::MASTER_REQUEST or HttpKernelInterface::SUB_REQUEST)
      *
      * @return Response The filtered Response instance
      *
@@ -204,12 +179,46 @@ class HttpKernel implements HttpKernelInterface, TerminableInterface
         $this->requestStack->pop();
     }
 
+    private function varToString($var): string
+    {
+        if (is_object($var)) {
+            return sprintf('Object(%s)', get_class($var));
+        }
+
+        if (is_array($var)) {
+            $a = array();
+            foreach ($var as $k => $v) {
+                $a[] = sprintf('%s => %s', $k, $this->varToString($v));
+            }
+
+            return sprintf('Array(%s)', implode(', ', $a));
+        }
+
+        if (is_resource($var)) {
+            return sprintf('Resource(%s)', get_resource_type($var));
+        }
+
+        if (null === $var) {
+            return 'null';
+        }
+
+        if (false === $var) {
+            return 'false';
+        }
+
+        if (true === $var) {
+            return 'true';
+        }
+
+        return (string)$var;
+    }
+
     /**
      * Handles an exception by trying to convert it to a Response.
      *
-     * @param \Exception $e       An \Exception instance
-     * @param Request    $request A Request instance
-     * @param int        $type    The type of the request (one of HttpKernelInterface::MASTER_REQUEST or HttpKernelInterface::SUB_REQUEST)
+     * @param \Exception $e An \Exception instance
+     * @param Request $request A Request instance
+     * @param int $type The type of the request (one of HttpKernelInterface::MASTER_REQUEST or HttpKernelInterface::SUB_REQUEST)
      *
      * @throws \Exception
      */
@@ -248,37 +257,28 @@ class HttpKernel implements HttpKernelInterface, TerminableInterface
         }
     }
 
-    private function varToString($var): string
+    /**
+     * @internal
+     */
+    public function terminateWithException(\Exception $exception, Request $request = null)
     {
-        if (is_object($var)) {
-            return sprintf('Object(%s)', get_class($var));
+        if (!$request = $request ?: $this->requestStack->getMasterRequest()) {
+            throw $exception;
         }
 
-        if (is_array($var)) {
-            $a = array();
-            foreach ($var as $k => $v) {
-                $a[] = sprintf('%s => %s', $k, $this->varToString($v));
-            }
+        $response = $this->handleException($exception, $request, self::MASTER_REQUEST);
 
-            return sprintf('Array(%s)', implode(', ', $a));
-        }
+        $response->sendHeaders();
+        $response->sendContent();
 
-        if (is_resource($var)) {
-            return sprintf('Resource(%s)', get_resource_type($var));
-        }
+        $this->terminate($request, $response);
+    }
 
-        if (null === $var) {
-            return 'null';
-        }
-
-        if (false === $var) {
-            return 'false';
-        }
-
-        if (true === $var) {
-            return 'true';
-        }
-
-        return (string) $var;
+    /**
+     * {@inheritdoc}
+     */
+    public function terminate(Request $request, Response $response)
+    {
+        $this->dispatcher->dispatch(KernelEvents::TERMINATE, new PostResponseEvent($this, $request, $response));
     }
 }

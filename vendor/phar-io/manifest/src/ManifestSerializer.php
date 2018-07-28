@@ -15,20 +15,23 @@ use PharIo\Version\Version;
 use PharIo\Version\VersionConstraint;
 use XMLWriter;
 
-class ManifestSerializer {
+class ManifestSerializer
+{
     /**
      * @var XMLWriter
      */
     private $xmlWriter;
 
-    public function serializeToFile(Manifest $manifest, $filename) {
+    public function serializeToFile(Manifest $manifest, $filename)
+    {
         file_put_contents(
             $filename,
             $this->serializeToString($manifest)
         );
     }
 
-    public function serializeToString(Manifest $manifest) {
+    public function serializeToString(Manifest $manifest)
+    {
         $this->startDocument();
 
         $this->addContains($manifest->getName(), $manifest->getVersion(), $manifest->getType());
@@ -39,7 +42,8 @@ class ManifestSerializer {
         return $this->finishDocument();
     }
 
-    private function startDocument() {
+    private function startDocument()
+    {
         $xmlWriter = new XMLWriter();
         $xmlWriter->openMemory();
         $xmlWriter->setIndent(true);
@@ -51,51 +55,58 @@ class ManifestSerializer {
         $this->xmlWriter = $xmlWriter;
     }
 
-    private function finishDocument() {
-        $this->xmlWriter->endElement();
-        $this->xmlWriter->endDocument();
-
-        return $this->xmlWriter->outputMemory();
-    }
-
-    private function addContains($name, Version $version, Type $type) {
+    private function addContains($name, Version $version, Type $type)
+    {
         $this->xmlWriter->startElement('contains');
         $this->xmlWriter->writeAttribute('name', $name);
         $this->xmlWriter->writeAttribute('version', $version->getVersionString());
 
         switch (true) {
-            case $type->isApplication(): {
-                $this->xmlWriter->writeAttribute('type', 'application');
-                break;
-            }
+            case $type->isApplication():
+                {
+                    $this->xmlWriter->writeAttribute('type', 'application');
+                    break;
+                }
 
-            case $type->isLibrary(): {
-                $this->xmlWriter->writeAttribute('type', 'library');
-                break;
-            }
+            case $type->isLibrary():
+                {
+                    $this->xmlWriter->writeAttribute('type', 'library');
+                    break;
+                }
 
-            case $type->isExtension(): {
-                /* @var $type Extension */
-                $this->xmlWriter->writeAttribute('type', 'extension');
-                $this->addExtension($type->getApplicationName(), $type->getVersionConstraint());
-                break;
-            }
+            case $type->isExtension():
+                {
+                    /* @var $type Extension */
+                    $this->xmlWriter->writeAttribute('type', 'extension');
+                    $this->addExtension($type->getApplicationName(), $type->getVersionConstraint());
+                    break;
+                }
 
-            default: {
-                $this->xmlWriter->writeAttribute('type', 'custom');
-            }
+            default:
+                {
+                    $this->xmlWriter->writeAttribute('type', 'custom');
+                }
         }
 
         $this->xmlWriter->endElement();
     }
 
-    private function addCopyright(CopyrightInformation $copyrightInformation) {
+    private function addExtension($application, VersionConstraint $versionConstraint)
+    {
+        $this->xmlWriter->startElement('extension');
+        $this->xmlWriter->writeAttribute('for', $application);
+        $this->xmlWriter->writeAttribute('compatible', $versionConstraint->asString());
+        $this->xmlWriter->endElement();
+    }
+
+    private function addCopyright(CopyrightInformation $copyrightInformation)
+    {
         $this->xmlWriter->startElement('copyright');
 
-        foreach($copyrightInformation->getAuthors() as $author) {
+        foreach ($copyrightInformation->getAuthors() as $author) {
             $this->xmlWriter->startElement('author');
             $this->xmlWriter->writeAttribute('name', $author->getName());
-            $this->xmlWriter->writeAttribute('email', (string) $author->getEmail());
+            $this->xmlWriter->writeAttribute('email', (string)$author->getEmail());
             $this->xmlWriter->endElement();
         }
 
@@ -109,18 +120,19 @@ class ManifestSerializer {
         $this->xmlWriter->endElement();
     }
 
-    private function addRequirements(RequirementCollection $requirementCollection) {
+    private function addRequirements(RequirementCollection $requirementCollection)
+    {
         $phpRequirement = new AnyVersionConstraint();
-        $extensions     = [];
+        $extensions = [];
 
-        foreach($requirementCollection as $requirement) {
+        foreach ($requirementCollection as $requirement) {
             if ($requirement instanceof PhpVersionRequirement) {
                 $phpRequirement = $requirement->getVersionConstraint();
                 continue;
             }
 
             if ($requirement instanceof PhpExtensionRequirement) {
-                $extensions[] = (string) $requirement;
+                $extensions[] = (string)$requirement;
             }
         }
 
@@ -128,7 +140,7 @@ class ManifestSerializer {
         $this->xmlWriter->startElement('php');
         $this->xmlWriter->writeAttribute('version', $phpRequirement->asString());
 
-        foreach($extensions as $extension) {
+        foreach ($extensions as $extension) {
             $this->xmlWriter->startElement('ext');
             $this->xmlWriter->writeAttribute('name', $extension);
             $this->xmlWriter->endElement();
@@ -138,13 +150,14 @@ class ManifestSerializer {
         $this->xmlWriter->endElement();
     }
 
-    private function addBundles(BundledComponentCollection $bundledComponentCollection) {
+    private function addBundles(BundledComponentCollection $bundledComponentCollection)
+    {
         if (count($bundledComponentCollection) === 0) {
             return;
         }
         $this->xmlWriter->startElement('bundles');
 
-        foreach($bundledComponentCollection as $bundledComponent) {
+        foreach ($bundledComponentCollection as $bundledComponent) {
             $this->xmlWriter->startElement('component');
             $this->xmlWriter->writeAttribute('name', $bundledComponent->getName());
             $this->xmlWriter->writeAttribute('version', $bundledComponent->getVersion()->getVersionString());
@@ -154,10 +167,11 @@ class ManifestSerializer {
         $this->xmlWriter->endElement();
     }
 
-    private function addExtension($application, VersionConstraint $versionConstraint) {
-        $this->xmlWriter->startElement('extension');
-        $this->xmlWriter->writeAttribute('for', $application);
-        $this->xmlWriter->writeAttribute('compatible', $versionConstraint->asString());
+    private function finishDocument()
+    {
         $this->xmlWriter->endElement();
+        $this->xmlWriter->endDocument();
+
+        return $this->xmlWriter->outputMemory();
     }
 }

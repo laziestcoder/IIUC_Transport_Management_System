@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Encore\Admin\Facades\Admin;
-use App\BusRoute;
 use App\BusPoint;
+use App\BusRoute;
 use DB;
+use Encore\Admin\Facades\Admin;
+use Illuminate\Http\Request;
 
 class BusPointsController extends Controller
 {
@@ -28,7 +27,7 @@ class BusPointsController extends Controller
      */
     public function index()
     {
-        
+
     }
 
     /**
@@ -50,13 +49,13 @@ class BusPointsController extends Controller
         );
         //dd($data);
         //return view('buspoints.create',compact('data')); 
-        return view('buspoints.create')->with($data);   
+        return view('buspoints.create')->with($data);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -71,15 +70,15 @@ class BusPointsController extends Controller
         $BusPoint->pointname = $request->input('pointname');
         $BusPoint->routeid = $request->input('routename');
         $BusPoint->user_id = Admin::user()->id;
-        
+
         $BusPoint->save();
-        return redirect('/admin/auth/points/create')->with('success','Bus Stop Point Created Successfully!');
+        return redirect('/admin/auth/points/create')->with('success', 'Bus Stop Point Created Successfully!');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -91,7 +90,7 @@ class BusPointsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -113,26 +112,26 @@ class BusPointsController extends Controller
         {
             return redirect('/admin/auth/routes/create')->with('error','Unauthorized Access Denied!');
         } */
-        return view('buspoints.edit')->with($data); 
+        return view('buspoints.edit')->with($data);
 
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        
-       /*  $data = array(
-            'title' => $title,
-            'posts' => $posts
-        );
-        return view('posts.update')->with($data); */
-        
+
+        /*  $data = array(
+             'title' => $title,
+             'posts' => $posts
+         );
+         return view('posts.update')->with($data); */
+
         $this->validate($request, [
             'routename' => 'required|integer',
             'pointname' => 'required|string'
@@ -141,29 +140,28 @@ class BusPointsController extends Controller
         $BusPoint = BusPoint::find($id);
         $BusPoint->pointname = $request->input('pointname');
         $BusPoint->routeid = $request->input('routename');
-        if(Admin::user()->id !== $BusPoint->user_id){
+        if (Admin::user()->id !== $BusPoint->user_id) {
             $BusPoint->user_id = Admin::user()->id;
         }
         $BusPoint->save();
-        return redirect('/admin/auth/points/create/')->with('success','Bus Stop Point Updated Successfully!');
+        return redirect('/admin/auth/points/create/')->with('success', 'Bus Stop Point Updated Successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        
+
         $BusPoint = BusPoint::find($id);
 
         //Check for correct user
 
-        if(Admin::user()->id !== $BusPoint->user_id)
-        {
-            return redirect('/admin/auth/points/create/')->with('error','Unauthorized Access Denied!');
+        if (Admin::user()->id !== $BusPoint->user_id) {
+            return redirect('/admin/auth/points/create/')->with('error', 'Unauthorized Access Denied!');
         }
         /* if($BusRoute->cover_image != 'noimage.jpeg' ){
             //Delete Image From Windows Directory
@@ -171,7 +169,7 @@ class BusPointsController extends Controller
         } */
 
         $BusPoint->delete();
-        return redirect('/admin/auth/points/create/')->with('success','Bus Stop Point Removed Successfully!');
+        return redirect('/admin/auth/points/create/')->with('success', 'Bus Stop Point Removed Successfully!');
     }
 
     /* public function adminName($id){

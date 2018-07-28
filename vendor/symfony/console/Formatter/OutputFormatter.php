@@ -25,6 +25,36 @@ class OutputFormatter implements OutputFormatterInterface
     private $styleStack;
 
     /**
+     * Initializes console output formatter.
+     *
+     * @param bool $decorated Whether this formatter should actually decorate strings
+     * @param OutputFormatterStyleInterface[] $styles Array of "name => FormatterStyle" instances
+     */
+    public function __construct(bool $decorated = false, array $styles = array())
+    {
+        $this->decorated = $decorated;
+
+        $this->setStyle('error', new OutputFormatterStyle('white', 'red'));
+        $this->setStyle('info', new OutputFormatterStyle('green'));
+        $this->setStyle('comment', new OutputFormatterStyle('yellow'));
+        $this->setStyle('question', new OutputFormatterStyle('black', 'cyan'));
+
+        foreach ($styles as $name => $style) {
+            $this->setStyle($name, $style);
+        }
+
+        $this->styleStack = new OutputFormatterStyleStack();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setStyle($name, OutputFormatterStyleInterface $style)
+    {
+        $this->styles[strtolower($name)] = $style;
+    }
+
+    /**
      * Escapes "<" special char in given text.
      *
      * @param string $text Text to escape
@@ -60,60 +90,6 @@ class OutputFormatter implements OutputFormatterInterface
     }
 
     /**
-     * Initializes console output formatter.
-     *
-     * @param bool                            $decorated Whether this formatter should actually decorate strings
-     * @param OutputFormatterStyleInterface[] $styles    Array of "name => FormatterStyle" instances
-     */
-    public function __construct(bool $decorated = false, array $styles = array())
-    {
-        $this->decorated = $decorated;
-
-        $this->setStyle('error', new OutputFormatterStyle('white', 'red'));
-        $this->setStyle('info', new OutputFormatterStyle('green'));
-        $this->setStyle('comment', new OutputFormatterStyle('yellow'));
-        $this->setStyle('question', new OutputFormatterStyle('black', 'cyan'));
-
-        foreach ($styles as $name => $style) {
-            $this->setStyle($name, $style);
-        }
-
-        $this->styleStack = new OutputFormatterStyleStack();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setDecorated($decorated)
-    {
-        $this->decorated = (bool) $decorated;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isDecorated()
-    {
-        return $this->decorated;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setStyle($name, OutputFormatterStyleInterface $style)
-    {
-        $this->styles[strtolower($name)] = $style;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasStyle($name)
-    {
-        return isset($this->styles[strtolower($name)]);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getStyle($name)
@@ -128,9 +104,17 @@ class OutputFormatter implements OutputFormatterInterface
     /**
      * {@inheritdoc}
      */
+    public function hasStyle($name)
+    {
+        return isset($this->styles[strtolower($name)]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function format($message)
     {
-        $message = (string) $message;
+        $message = (string)$message;
         $offset = 0;
         $output = '';
         $tagRegex = '[a-z][a-z0-9,_=;-]*+';
@@ -176,11 +160,27 @@ class OutputFormatter implements OutputFormatterInterface
     }
 
     /**
-     * @return OutputFormatterStyleStack
+     * Applies current style from stack to text, if must be applied.
      */
-    public function getStyleStack()
+    private function applyCurrentStyle(string $text): string
     {
-        return $this->styleStack;
+        return $this->isDecorated() && strlen($text) > 0 ? $this->styleStack->getCurrent()->apply($text) : $text;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isDecorated()
+    {
+        return $this->decorated;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setDecorated($decorated)
+    {
+        $this->decorated = (bool)$decorated;
     }
 
     /**
@@ -221,10 +221,10 @@ class OutputFormatter implements OutputFormatterInterface
     }
 
     /**
-     * Applies current style from stack to text, if must be applied.
+     * @return OutputFormatterStyleStack
      */
-    private function applyCurrentStyle(string $text): string
+    public function getStyleStack()
     {
-        return $this->isDecorated() && strlen($text) > 0 ? $this->styleStack->getCurrent()->apply($text) : $text;
+        return $this->styleStack;
     }
 }

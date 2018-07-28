@@ -12,8 +12,8 @@
 namespace Symfony\Component\EventDispatcher\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -63,10 +63,12 @@ class RegisterListenersPass implements CompilerPassInterface
                 }
 
                 if (!isset($event['method'])) {
-                    $event['method'] = 'on'.preg_replace_callback(array(
-                        '/(?<=\b)[a-z]/i',
-                        '/[^a-z0-9]/i',
-                    ), function ($matches) { return strtoupper($matches[0]); }, $event['event']);
+                    $event['method'] = 'on' . preg_replace_callback(array(
+                            '/(?<=\b)[a-z]/i',
+                            '/[^a-z0-9]/i',
+                        ), function ($matches) {
+                            return strtoupper($matches[0]);
+                        }, $event['event']);
                     $event['method'] = preg_replace('/[^a-z0-9]/i', '', $event['method']);
                 }
 
@@ -114,19 +116,18 @@ class RegisterListenersPass implements CompilerPassInterface
  */
 class ExtractingEventDispatcher extends EventDispatcher implements EventSubscriberInterface
 {
-    public $listeners = array();
-
     public static $subscriber;
-
-    public function addListener($eventName, $listener, $priority = 0)
-    {
-        $this->listeners[] = array($eventName, $listener[1], $priority);
-    }
+    public $listeners = array();
 
     public static function getSubscribedEvents()
     {
         $callback = array(self::$subscriber, 'getSubscribedEvents');
 
         return $callback();
+    }
+
+    public function addListener($eventName, $listener, $priority = 0)
+    {
+        $this->listeners[] = array($eventName, $listener[1], $priority);
     }
 }

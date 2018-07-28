@@ -1,34 +1,126 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>Welcome!</title>
     <style>
-        body { background: #F5F5F5; font: 18px/1.5 sans-serif; }
-        h1, h2 { line-height: 1.2; margin: 0 0 .5em; }
-        h1 { font-size: 36px; }
-        h2 { font-size: 21px; margin-bottom: 1em; }
-        p { margin: 0 0 1em 0; }
-        a { color: #0000F0; }
-        a:hover { text-decoration: none; }
-        code { background: #F5F5F5; max-width: 100px; padding: 2px 6px; word-wrap: break-word; }
-        #wrapper { background: #FFF; margin: 1em auto; max-width: 800px; width: 95%; }
-        #container { padding: 2em; }
-        #welcome, #status { margin-bottom: 2em; }
-        #welcome h1 span { display: block; font-size: 75%; }
-        #comment { font-size: 14px; text-align: center; color: #777777; background: #FEFFEA; padding: 10px; }
-        #comment p { margin-bottom: 0; }
-        #icon-status, #icon-book { float: left; height: 64px; margin-right: 1em; margin-top: -4px; width: 64px; }
-        #icon-book { display: none; }
+        body {
+            background: #F5F5F5;
+            font: 18px/1.5 sans-serif;
+        }
+
+        h1, h2 {
+            line-height: 1.2;
+            margin: 0 0 .5em;
+        }
+
+        h1 {
+            font-size: 36px;
+        }
+
+        h2 {
+            font-size: 21px;
+            margin-bottom: 1em;
+        }
+
+        p {
+            margin: 0 0 1em 0;
+        }
+
+        a {
+            color: #0000F0;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        code {
+            background: #F5F5F5;
+            max-width: 100px;
+            padding: 2px 6px;
+            word-wrap: break-word;
+        }
+
+        #wrapper {
+            background: #FFF;
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+        }
+
+        #container {
+            padding: 2em;
+        }
+
+        #welcome, #status {
+            margin-bottom: 2em;
+        }
+
+        #welcome h1 span {
+            display: block;
+            font-size: 75%;
+        }
+
+        #comment {
+            font-size: 14px;
+            text-align: center;
+            color: #777777;
+            background: #FEFFEA;
+            padding: 10px;
+        }
+
+        #comment p {
+            margin-bottom: 0;
+        }
+
+        #icon-status, #icon-book {
+            float: left;
+            height: 64px;
+            margin-right: 1em;
+            margin-top: -4px;
+            width: 64px;
+        }
+
+        #icon-book {
+            display: none;
+        }
 
         @media (min-width: 768px) {
-            #wrapper { width: 80%; margin: 2em auto; }
-            #icon-book { display: inline-block; }
-            #status a, #next a { display: block; }
+            #wrapper {
+                width: 80%;
+                margin: 2em auto;
+            }
 
-            @-webkit-keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
-            @keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
-            .sf-toolbar { opacity: 0; -webkit-animation: fade-in 1s .2s forwards; animation: fade-in 1s .2s forwards;}
+            #icon-book {
+                display: inline-block;
+            }
+
+            #status a, #next a {
+                display: block;
+            }
+
+            @-webkit-keyframes fade-in {
+                0% {
+                    opacity: 0;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+            @keyframes fade-in {
+                0% {
+                    opacity: 0;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+            .sf-toolbar {
+                opacity: 0;
+                -webkit-animation: fade-in 1s .2s forwards;
+                animation: fade-in 1s .2s forwards;
+            }
         }
     </style>
 </head>
@@ -41,7 +133,11 @@
 
         <div id="status">
             <p>
-                <svg id="icon-status" width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z" fill="#759E1A"/></svg>
+                <svg id="icon-status" width="1792" height="1792" viewBox="0 0 1792 1792"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z"
+                          fill="#759E1A"/>
+                </svg>
 
                 Your application is now ready. You can start working on it at:<br>
                 <code><?php echo $baseDir; ?></code>
@@ -51,7 +147,8 @@
         <div id="next">
             <h2>What's next?</h2>
             <p>
-                <svg id="icon-book" version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="-12.5 9 64 64" enable-background="new -12.5 9 64 64" xml:space="preserve">
+                <svg id="icon-book" version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                     viewBox="-12.5 9 64 64" enable-background="new -12.5 9 64 64" xml:space="preserve">
                     <path fill="#AAA" d="M6.8,40.8c2.4,0.8,4.5-0.7,4.9-2.5c0.2-1.2-0.3-2.1-1.3-3.2l-0.8-0.8c-0.4-0.5-0.6-1.3-0.2-1.9
                         c0.4-0.5,0.9-0.8,1.8-0.5c1.3,0.4,1.9,1.3,2.9,2.2c-0.4,1.4-0.7,2.9-0.9,4.2l-0.2,1c-0.7,4-1.3,6.2-2.7,7.5
                         c-0.3,0.3-0.7,0.5-1.3,0.6c-0.3,0-0.4-0.3-0.4-0.3c0-0.3,0.2-0.3,0.3-0.4c0.2-0.1,0.5-0.3,0.4-0.8c0-0.7-0.6-1.3-1.3-1.3

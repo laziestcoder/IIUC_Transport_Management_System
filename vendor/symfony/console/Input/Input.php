@@ -90,7 +90,7 @@ abstract class Input implements InputInterface, StreamableInputInterface
      */
     public function setInteractive($interactive)
     {
-        $this->interactive = (bool) $interactive;
+        $this->interactive = (bool)$interactive;
     }
 
     /**
@@ -188,16 +188,16 @@ abstract class Input implements InputInterface, StreamableInputInterface
     /**
      * {@inheritdoc}
      */
-    public function setStream($stream)
+    public function getStream()
     {
-        $this->stream = $stream;
+        return $this->stream;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getStream()
+    public function setStream($stream)
     {
-        return $this->stream;
+        $this->stream = $stream;
     }
 }

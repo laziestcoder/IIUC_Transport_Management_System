@@ -57,13 +57,13 @@ class FactoryParameter
         return $code;
     }
 
-    public function getInvocation()
-    {
-        return '$' . $this->reflector->name;
-    }
-
     public function getMethod()
     {
         return $this->method;
+    }
+
+    public function getInvocation()
+    {
+        return '$' . $this->reflector->name;
     }
 }

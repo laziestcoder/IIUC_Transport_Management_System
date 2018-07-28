@@ -8,7 +8,8 @@
     <div class="panel-body" style="background:#212529">
         <div class="container">
             <div class="userinfo">
-                <b><h3>Basic Info:</h3></b><hr>
+                <b><h3>Basic Info:</h3></b>
+                <hr>
                 <table class="table-active">
                     <thead class="">
                     <tr>
@@ -24,7 +25,8 @@
                             ID: {{Auth::user()->id}}
                         </td>
                         <td>
-                            Registered As: {{Auth::user()->userrole == 1 ? 'Student' : ( Auth::user()->userrole == 2 ? 'Faculty Member' :(Auth::user()->userrole == 3 ? 'Officer/Staff' : 'undefined')) }}
+                            Registered
+                            As: {{Auth::user()->userrole == 1 ? 'Student' : ( Auth::user()->userrole == 2 ? 'Faculty Member' :(Auth::user()->userrole == 3 ? 'Officer/Staff' : 'undefined')) }}
                         </td>
                     </tr>
                     <tr>

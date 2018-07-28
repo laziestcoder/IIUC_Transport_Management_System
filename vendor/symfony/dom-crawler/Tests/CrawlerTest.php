@@ -69,6 +69,23 @@ class CrawlerTest extends TestCase
         $this->assertEquals('Foo', $crawler->filterXPath('//body')->text(), '->add() adds nodes from a string');
     }
 
+    protected function createDomDocument()
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML('<html><div class="foo"></div></html>');
+
+        return $dom;
+    }
+
+    protected function createNodeList()
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML('<html><div class="foo"></div></html>');
+        $domxpath = new \DOMXPath($dom);
+
+        return $domxpath->query('//div');
+    }
+
     /**
      * @expectedException \InvalidArgumentException
      */
@@ -86,6 +103,58 @@ class CrawlerTest extends TestCase
     {
         $crawler = $this->createTestCrawler();
         $crawler->addHtmlContent('<html><div class="foo"></html>', 'UTF-8');
+    }
+
+    public function createTestCrawler($uri = null)
+    {
+        $dom = new \DOMDocument();
+        $dom->loadHTML('
+            <html>
+                <body>
+                    <a href="foo">Foo</a>
+                    <a href="/foo">   Fabien\'s Foo   </a>
+                    <a href="/foo">Fabien"s Foo</a>
+                    <a href="/foo">\' Fabien"s Foo</a>
+
+                    <a href="/bar"><img alt="Bar"/></a>
+                    <a href="/bar"><img alt="   Fabien\'s Bar   "/></a>
+                    <a href="/bar"><img alt="Fabien&quot;s Bar"/></a>
+                    <a href="/bar"><img alt="\' Fabien&quot;s Bar"/></a>
+
+                    <a href="?get=param">GetLink</a>
+
+                    <a href="/example">Klausi|Claudiu</a>
+
+                    <form action="foo" id="FooFormId">
+                        <input type="text" value="TextValue" name="TextName" />
+                        <input type="submit" value="FooValue" name="FooName" id="FooId" />
+                        <input type="button" value="BarValue" name="BarName" id="BarId" />
+                        <button value="ButtonValue" name="ButtonName" id="ButtonId" />
+                    </form>
+
+                    <input type="submit" value="FooBarValue" name="FooBarName" form="FooFormId" />
+                    <input type="text" value="FooTextValue" name="FooTextName" form="FooFormId" />
+
+                    <ul class="first">
+                        <li class="first">One</li>
+                        <li>Two</li>
+                        <li>Three</li>
+                    </ul>
+                    <ul>
+                        <li>One Bis</li>
+                        <li>Two Bis</li>
+                        <li>Three Bis</li>
+                    </ul>
+                    <div id="parent">
+                        <div id="child"></div>
+                        <div id="child2" xmlns:foo="http://example.com"></div>
+                    </div>
+                    <div id="sibling"><img /></div>
+                </body>
+            </html>
+        ');
+
+        return new Crawler($dom, $uri);
     }
 
     public function testAddHtmlContent()
@@ -129,7 +198,7 @@ class CrawlerTest extends TestCase
     public function testAddHtmlContentUnsupportedCharset()
     {
         $crawler = new Crawler();
-        $crawler->addHtmlContent(file_get_contents(__DIR__.'/Fixtures/windows-1250.html'), 'Windows-1250');
+        $crawler->addHtmlContent(file_get_contents(__DIR__ . '/Fixtures/windows-1250.html'), 'Windows-1250');
 
         $this->assertEquals('Žťčýů', $crawler->filterXPath('//p')->text());
     }
@@ -161,7 +230,7 @@ class CrawlerTest extends TestCase
     </body>
 </html>
 EOF
-        , 'UTF-8');
+            , 'UTF-8');
 
         $errors = libxml_get_errors();
         $this->assertCount(1, $errors);
@@ -202,7 +271,7 @@ EOF
     </body>
 </html>
 EOF
-        , 'UTF-8');
+            , 'UTF-8');
 
         $this->assertGreaterThan(1, libxml_get_errors());
 
@@ -311,7 +380,7 @@ EOF
     public function testEach()
     {
         $data = $this->createTestCrawler()->filterXPath('//ul[1]/li')->each(function ($node, $i) {
-            return $i.'-'.$node->text();
+            return $i . '-' . $node->text();
         });
 
         $this->assertEquals(array('0-One', '1-Two', '2-Three'), $data, '->each() executes an anonymous function on each node of the list');
@@ -465,6 +534,23 @@ EOF
         $crawler = $this->createTestXmlCrawler()->filterXPath('//default:entry/default:id');
         $this->assertCount(1, $crawler, '->filterXPath() automatically registers a namespace');
         $this->assertSame('tag:youtube.com,2008:video:kgZRZmEc9j4', $crawler->text());
+    }
+
+    protected function createTestXmlCrawler($uri = null)
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>
+            <entry xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:yt="http://gdata.youtube.com/schemas/2007">
+                <id>tag:youtube.com,2008:video:kgZRZmEc9j4</id>
+                <yt:accessControl action="comment" permission="allowed"/>
+                <yt:accessControl action="videoRespond" permission="moderated"/>
+                <media:group>
+                    <media:title type="plain">Chordates - CrashCourse Biology #24</media:title>
+                    <yt:aspectRatio>widescreen</yt:aspectRatio>
+                </media:group>
+                <media:category label="Music" scheme="http://gdata.youtube.com/schemas/2007/categories.cat">Music</media:category>
+            </entry>';
+
+        return new Crawler($xml, $uri);
     }
 
     public function testFilterXPathWithCustomDefaultNamespace()
@@ -1029,7 +1115,7 @@ HTML;
      */
     public function testBaseTag($baseValue, $linkValue, $expectedUri, $currentUri = null, $description = null)
     {
-        $crawler = new Crawler('<html><base href="'.$baseValue.'"><a href="'.$linkValue.'"></a></html>', $currentUri);
+        $crawler = new Crawler('<html><base href="' . $baseValue . '"><a href="' . $linkValue . '"></a></html>', $currentUri);
         $this->assertEquals($expectedUri, $crawler->filterXPath('//a')->link()->getUri(), $description);
     }
 
@@ -1049,7 +1135,7 @@ HTML;
      */
     public function testBaseTagWithForm($baseValue, $actionValue, $expectedUri, $currentUri = null, $description = null)
     {
-        $crawler = new Crawler('<html><base href="'.$baseValue.'"><form method="post" action="'.$actionValue.'"><button type="submit" name="submit"/></form></html>', $currentUri);
+        $crawler = new Crawler('<html><base href="' . $baseValue . '"><form method="post" action="' . $actionValue . '"><button type="submit" name="submit"/></form></html>', $currentUri);
         $this->assertEquals($expectedUri, $crawler->filterXPath('//button')->form()->getUri(), $description);
     }
 
@@ -1115,91 +1201,5 @@ HTML;
     public function testEvaluateThrowsAnExceptionIfDocumentIsEmpty()
     {
         (new Crawler())->evaluate('//form/input[1]');
-    }
-
-    public function createTestCrawler($uri = null)
-    {
-        $dom = new \DOMDocument();
-        $dom->loadHTML('
-            <html>
-                <body>
-                    <a href="foo">Foo</a>
-                    <a href="/foo">   Fabien\'s Foo   </a>
-                    <a href="/foo">Fabien"s Foo</a>
-                    <a href="/foo">\' Fabien"s Foo</a>
-
-                    <a href="/bar"><img alt="Bar"/></a>
-                    <a href="/bar"><img alt="   Fabien\'s Bar   "/></a>
-                    <a href="/bar"><img alt="Fabien&quot;s Bar"/></a>
-                    <a href="/bar"><img alt="\' Fabien&quot;s Bar"/></a>
-
-                    <a href="?get=param">GetLink</a>
-
-                    <a href="/example">Klausi|Claudiu</a>
-
-                    <form action="foo" id="FooFormId">
-                        <input type="text" value="TextValue" name="TextName" />
-                        <input type="submit" value="FooValue" name="FooName" id="FooId" />
-                        <input type="button" value="BarValue" name="BarName" id="BarId" />
-                        <button value="ButtonValue" name="ButtonName" id="ButtonId" />
-                    </form>
-
-                    <input type="submit" value="FooBarValue" name="FooBarName" form="FooFormId" />
-                    <input type="text" value="FooTextValue" name="FooTextName" form="FooFormId" />
-
-                    <ul class="first">
-                        <li class="first">One</li>
-                        <li>Two</li>
-                        <li>Three</li>
-                    </ul>
-                    <ul>
-                        <li>One Bis</li>
-                        <li>Two Bis</li>
-                        <li>Three Bis</li>
-                    </ul>
-                    <div id="parent">
-                        <div id="child"></div>
-                        <div id="child2" xmlns:foo="http://example.com"></div>
-                    </div>
-                    <div id="sibling"><img /></div>
-                </body>
-            </html>
-        ');
-
-        return new Crawler($dom, $uri);
-    }
-
-    protected function createTestXmlCrawler($uri = null)
-    {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>
-            <entry xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:yt="http://gdata.youtube.com/schemas/2007">
-                <id>tag:youtube.com,2008:video:kgZRZmEc9j4</id>
-                <yt:accessControl action="comment" permission="allowed"/>
-                <yt:accessControl action="videoRespond" permission="moderated"/>
-                <media:group>
-                    <media:title type="plain">Chordates - CrashCourse Biology #24</media:title>
-                    <yt:aspectRatio>widescreen</yt:aspectRatio>
-                </media:group>
-                <media:category label="Music" scheme="http://gdata.youtube.com/schemas/2007/categories.cat">Music</media:category>
-            </entry>';
-
-        return new Crawler($xml, $uri);
-    }
-
-    protected function createDomDocument()
-    {
-        $dom = new \DOMDocument();
-        $dom->loadXML('<html><div class="foo"></div></html>');
-
-        return $dom;
-    }
-
-    protected function createNodeList()
-    {
-        $dom = new \DOMDocument();
-        $dom->loadXML('<html><div class="foo"></div></html>');
-        $domxpath = new \DOMXPath($dom);
-
-        return $domxpath->query('//div');
     }
 }

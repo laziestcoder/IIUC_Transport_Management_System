@@ -53,7 +53,7 @@ class ArrayInput extends Input
      */
     public function hasParameterOption($values, $onlyParams = false)
     {
-        $values = (array) $values;
+        $values = (array)$values;
 
         foreach ($this->parameters as $k => $v) {
             if (!is_int($k)) {
@@ -77,7 +77,7 @@ class ArrayInput extends Input
      */
     public function getParameterOption($values, $default = false, $onlyParams = false)
     {
-        $values = (array) $values;
+        $values = (array)$values;
 
         foreach ($this->parameters as $k => $v) {
             if ($onlyParams && ('--' === $k || (is_int($k) && '--' === $v))) {
@@ -108,10 +108,10 @@ class ArrayInput extends Input
             if ($param && '-' === $param[0]) {
                 if (is_array($val)) {
                     foreach ($val as $v) {
-                        $params[] = $param.('' != $v ? '='.$this->escapeToken($v) : '');
+                        $params[] = $param . ('' != $v ? '=' . $this->escapeToken($v) : '');
                     }
                 } else {
-                    $params[] = $param.('' != $val ? '='.$this->escapeToken($val) : '');
+                    $params[] = $param . ('' != $val ? '=' . $this->escapeToken($val) : '');
                 }
             } else {
                 $params[] = is_array($val) ? implode(' ', array_map(array($this, 'escapeToken'), $val)) : $this->escapeToken($val);
@@ -141,27 +141,10 @@ class ArrayInput extends Input
     }
 
     /**
-     * Adds a short option value.
-     *
-     * @param string $shortcut The short option key
-     * @param mixed  $value    The value for the option
-     *
-     * @throws InvalidOptionException When option given doesn't exist
-     */
-    private function addShortOption($shortcut, $value)
-    {
-        if (!$this->definition->hasShortcut($shortcut)) {
-            throw new InvalidOptionException(sprintf('The "-%s" option does not exist.', $shortcut));
-        }
-
-        $this->addLongOption($this->definition->getOptionForShortcut($shortcut)->getName(), $value);
-    }
-
-    /**
      * Adds a long option value.
      *
-     * @param string $name  The long option key
-     * @param mixed  $value The value for the option
+     * @param string $name The long option key
+     * @param mixed $value The value for the option
      *
      * @throws InvalidOptionException When option given doesn't exist
      * @throws InvalidOptionException When a required value is missing
@@ -188,10 +171,27 @@ class ArrayInput extends Input
     }
 
     /**
+     * Adds a short option value.
+     *
+     * @param string $shortcut The short option key
+     * @param mixed $value The value for the option
+     *
+     * @throws InvalidOptionException When option given doesn't exist
+     */
+    private function addShortOption($shortcut, $value)
+    {
+        if (!$this->definition->hasShortcut($shortcut)) {
+            throw new InvalidOptionException(sprintf('The "-%s" option does not exist.', $shortcut));
+        }
+
+        $this->addLongOption($this->definition->getOptionForShortcut($shortcut)->getName(), $value);
+    }
+
+    /**
      * Adds an argument value.
      *
-     * @param string $name  The argument name
-     * @param mixed  $value The value for the argument
+     * @param string $name The argument name
+     * @param mixed $value The value for the argument
      *
      * @throws InvalidArgumentException When argument given doesn't exist
      */

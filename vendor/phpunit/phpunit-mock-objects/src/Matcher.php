@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Framework\MockObject;
 
 use PHPUnit\Framework\ExpectationFailedException;
@@ -135,8 +136,8 @@ class Matcher implements MatcherInvocation
 
         if ($this->afterMatchBuilderId !== null) {
             $builder = $invocation->getObject()
-                                  ->__phpunit_getInvocationMocker()
-                                  ->lookupId($this->afterMatchBuilderId);
+                ->__phpunit_getInvocationMocker()
+                ->lookupId($this->afterMatchBuilderId);
 
             if (!$builder) {
                 throw new RuntimeException(
@@ -192,8 +193,8 @@ class Matcher implements MatcherInvocation
     {
         if ($this->afterMatchBuilderId !== null) {
             $builder = $invocation->getObject()
-                                  ->__phpunit_getInvocationMocker()
-                                  ->lookupId($this->afterMatchBuilderId);
+                ->__phpunit_getInvocationMocker()
+                ->lookupId($this->afterMatchBuilderId);
 
             if (!$builder) {
                 throw new RuntimeException(
@@ -271,7 +272,7 @@ class Matcher implements MatcherInvocation
                 $this->parametersMatcher = new AnyParameters;
             }
 
-            $invocationIsAny   = $this->invocationMatcher instanceof AnyInvokedCount;
+            $invocationIsAny = $this->invocationMatcher instanceof AnyInvokedCount;
             $invocationIsNever = $this->invocationMatcher instanceof InvokedCount && $this->invocationMatcher->isNever();
 
             if (!$invocationIsAny && !$invocationIsNever) {

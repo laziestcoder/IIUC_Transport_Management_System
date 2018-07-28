@@ -10,71 +10,60 @@ use Illuminate\Database\Eloquent\Model;
 class Tree implements Renderable
 {
     /**
-     * @var array
-     */
-    protected $items = [];
-
-    /**
-     * @var string
-     */
-    protected $elementId = 'tree-';
-
-    /**
-     * @var Model
-     */
-    protected $model;
-
-    /**
-     * @var \Closure
-     */
-    protected $queryCallback;
-
-    /**
-     * View of tree to render.
-     *
-     * @var string
-     */
-    protected $view = [
-        'tree'   => 'admin::tree',
-        'branch' => 'admin::tree.branch',
-    ];
-
-    /**
-     * @var \Closure
-     */
-    protected $callback;
-
-    /**
-     * @var null
-     */
-    protected $branchCallback = null;
-
-    /**
      * @var bool
      */
     public $useCreate = true;
-
     /**
      * @var bool
      */
     public $useSave = true;
-
     /**
      * @var bool
      */
     public $useRefresh = true;
-
-    /**
-     * @var array
-     */
-    protected $nestableOptions = [];
-
     /**
      * Header tools.
      *
      * @var Tools
      */
     public $tools;
+    /**
+     * @var array
+     */
+    protected $items = [];
+    /**
+     * @var string
+     */
+    protected $elementId = 'tree-';
+    /**
+     * @var Model
+     */
+    protected $model;
+    /**
+     * @var \Closure
+     */
+    protected $queryCallback;
+    /**
+     * View of tree to render.
+     *
+     * @var string
+     */
+    protected $view = [
+        'tree' => 'admin::tree',
+        'branch' => 'admin::tree.branch',
+    ];
+    /**
+     * @var \Closure
+     */
+    protected $callback;
+    /**
+     * @var null
+     */
+    protected $branchCallback = null;
+    /**
+     * @var array
+     */
+    protected $nestableOptions = [];
 
     /**
      * Menu constructor.
@@ -213,6 +202,57 @@ class Tree implements Renderable
     }
 
     /**
+     * Set view of tree.
+     *
+     * @param string $view
+     */
+    public function setView($view)
+    {
+        $this->view = $view;
+    }
+
+    /**
+     * Setup grid tools.
+     *
+     * @param Closure $callback
+     *
+     * @return void
+     */
+    public function tools(Closure $callback)
+    {
+        call_user_func($callback, $this->tools);
+    }
+
+    /**
+     * Get the string contents of the grid view.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->render();
+    }
+
+    /**
+     * Render a tree.
+     *
+     * @return \Illuminate\Http\JsonResponse|string
+     */
+    public function render()
+    {
+        Admin::script($this->script());
+
+        view()->share([
+            'path' => $this->path,
+            'keyName' => $this->model->getKeyName(),
+            'branchView' => $this->view['branch'],
+            'branchCallback' => $this->branchCallback,
+        ]);
+
+        return view($this->view['tree'], $this->variables())->render();
+    }
+
+    /**
      * Build tree grid scripts.
      *
      * @return string
@@ -300,13 +340,20 @@ SCRIPT;
     }
 
     /**
-     * Set view of tree.
+     * Variables in tree template.
      *
-     * @param string $view
+     * @return array
      */
-    public function setView($view)
+    public function variables()
     {
-        $this->view = $view;
+        return [
+            'id' => $this->elementId,
+            'tools' => $this->tools->render(),
+            'items' => $this->getItems(),
+            'useCreate' => $this->useCreate,
+            'useSave' => $this->useSave,
+            'useRefresh' => $this->useRefresh,
+        ];
     }
 
     /**
@@ -317,63 +364,5 @@ SCRIPT;
     public function getItems()
     {
         return $this->model->withQuery($this->queryCallback)->toTree();
-    }
-
-    /**
-     * Variables in tree template.
-     *
-     * @return array
-     */
-    public function variables()
-    {
-        return [
-            'id'         => $this->elementId,
-            'tools'      => $this->tools->render(),
-            'items'      => $this->getItems(),
-            'useCreate'  => $this->useCreate,
-            'useSave'    => $this->useSave,
-            'useRefresh' => $this->useRefresh,
-        ];
-    }
-
-    /**
-     * Setup grid tools.
-     *
-     * @param Closure $callback
-     *
-     * @return void
-     */
-    public function tools(Closure $callback)
-    {
-        call_user_func($callback, $this->tools);
-    }
-
-    /**
-     * Render a tree.
-     *
-     * @return \Illuminate\Http\JsonResponse|string
-     */
-    public function render()
-    {
-        Admin::script($this->script());
-
-        view()->share([
-            'path'           => $this->path,
-            'keyName'        => $this->model->getKeyName(),
-            'branchView'     => $this->view['branch'],
-            'branchCallback' => $this->branchCallback,
-        ]);
-
-        return view($this->view['tree'], $this->variables())->render();
-    }
-
-    /**
-     * Get the string contents of the grid view.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->render();
     }
 }

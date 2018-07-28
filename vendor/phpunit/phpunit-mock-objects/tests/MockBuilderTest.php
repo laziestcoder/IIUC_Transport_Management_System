@@ -8,8 +8,8 @@
  * file that was distributed with this source code.
  */
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockBuilder;
+use PHPUnit\Framework\TestCase;
 
 class MockBuilderTest extends TestCase
 {
@@ -31,8 +31,8 @@ class MockBuilderTest extends TestCase
     public function testMethodsToMockCanBeSpecified()
     {
         $mock = $this->getMockBuilder(Mockable::class)
-                     ->setMethods(['mockableMethod'])
-                     ->getMock();
+            ->setMethods(['mockableMethod'])
+            ->getMock();
 
         $this->assertNull($mock->mockableMethod());
         $this->assertTrue($mock->anotherMockableMethod());
@@ -68,8 +68,8 @@ class MockBuilderTest extends TestCase
     public function testMockClassNameCanBeSpecified()
     {
         $mock = $this->getMockBuilder(Mockable::class)
-                     ->setMockClassName('ACustomClassName')
-                     ->getMock();
+            ->setMockClassName('ACustomClassName')
+            ->getMock();
 
         $this->assertInstanceOf(ACustomClassName::class, $mock);
     }
@@ -77,8 +77,8 @@ class MockBuilderTest extends TestCase
     public function testConstructorArgumentsCanBeSpecified()
     {
         $mock = $this->getMockBuilder(Mockable::class)
-                     ->setConstructorArgs([23, 42])
-                     ->getMock();
+            ->setConstructorArgs([23, 42])
+            ->getMock();
 
         $this->assertEquals([23, 42], $mock->constructorArgs);
     }
@@ -86,8 +86,8 @@ class MockBuilderTest extends TestCase
     public function testOriginalConstructorCanBeDisabled()
     {
         $mock = $this->getMockBuilder(Mockable::class)
-                     ->disableOriginalConstructor()
-                     ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->assertNull($mock->constructorArgs);
     }
@@ -95,7 +95,7 @@ class MockBuilderTest extends TestCase
     public function testByDefaultOriginalCloneIsPreserved()
     {
         $mock = $this->getMockBuilder(Mockable::class)
-                     ->getMock();
+            ->getMock();
 
         $cloned = clone $mock;
 
@@ -105,11 +105,11 @@ class MockBuilderTest extends TestCase
     public function testOriginalCloneCanBeDisabled()
     {
         $mock = $this->getMockBuilder(Mockable::class)
-                     ->disableOriginalClone()
-                     ->getMock();
+            ->disableOriginalClone()
+            ->getMock();
 
         $mock->cloned = false;
-        $cloned       = clone $mock;
+        $cloned = clone $mock;
 
         $this->assertFalse($cloned->cloned);
     }
@@ -117,12 +117,12 @@ class MockBuilderTest extends TestCase
     public function testProvidesAFluentInterface()
     {
         $spec = $this->getMockBuilder(Mockable::class)
-                     ->setMethods(['mockableMethod'])
-                     ->setConstructorArgs([])
-                     ->setMockClassName('DummyClassName')
-                     ->disableOriginalConstructor()
-                     ->disableOriginalClone()
-                     ->disableAutoload();
+            ->setMethods(['mockableMethod'])
+            ->setConstructorArgs([])
+            ->setMockClassName('DummyClassName')
+            ->disableOriginalConstructor()
+            ->disableOriginalClone()
+            ->disableAutoload();
 
         $this->assertInstanceOf(MockBuilder::class, $spec);
     }

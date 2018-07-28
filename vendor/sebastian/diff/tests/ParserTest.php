@@ -16,9 +16,9 @@ use SebastianBergmann\Diff\Utils\FileUtils;
 /**
  * @covers SebastianBergmann\Diff\Parser
  *
- * @uses SebastianBergmann\Diff\Chunk
- * @uses SebastianBergmann\Diff\Diff
- * @uses SebastianBergmann\Diff\Line
+ * @uses   SebastianBergmann\Diff\Chunk
+ * @uses   SebastianBergmann\Diff\Diff
+ * @uses   SebastianBergmann\Diff\Line
  */
 final class ParserTest extends TestCase
 {
@@ -26,11 +26,6 @@ final class ParserTest extends TestCase
      * @var Parser
      */
     private $parser;
-
-    protected function setUp(): void
-    {
-        $this->parser = new Parser;
-    }
 
     public function testParse(): void
     {
@@ -171,5 +166,10 @@ A;
                 \unserialize(FileUtils::getFileContent(__DIR__ . '/fixtures/serialized_diff.bin')),
             ],
         ];
+    }
+
+    protected function setUp(): void
+    {
+        $this->parser = new Parser;
     }
 }

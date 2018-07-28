@@ -6,7 +6,7 @@
             <div class="intro-text">
                 <div class="intro-lead-in" style="padding:10px 0px;">Welcome To IIUC Transport Website!</div>
                 <div class="intro-heading text-uppercase">It's Nice To Meet You</div>
-                <div class="nextBus" >
+                <div class="nextBus">
                     <div class="nextBus-info">
                         <table class="table table-responsive-lg">
                             <thead>
@@ -48,7 +48,7 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2 id="schedule" class="section-heading text-uppercase">Today's Bus Schedule</h2>
-                    <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
+                    <h3 class="section-subheading text-muted">Here is today's bus schedule</h3>
                 </div>
             </div>
             <div class="row">
@@ -167,12 +167,12 @@
                                          alt="{{$notice->title}}"> </a>
                                 <div class="portfolio-caption">
                                     <h4>{{$notice->title}}</h4>
-                                    <p class="text-muted">    
-                                    By:
-                                    <i> 
-                                        {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}
-                                    </i><br>
-                                    At: {{$notice->created_at}}
+                                    <p class="text-muted">
+                                        By:
+                                        <i>
+                                            {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}
+                                        </i><br>
+                                        At: {{$notice->created_at}}
                                     </p>
                                 </div>
                             </div>
@@ -203,29 +203,26 @@
                 <div class="col-md-4">
                     <span class="fa-stack fa-4x">
               <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-shopping-cart fa-stack-1x fa-inverse"></i>
+              <i class="fa fa-mobile fa-stack-1x fa-inverse"></i>
             </span>
                     <h4 class="service-heading">Md. Iqbal</h4>
-                    <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam
-                        architecto quo inventore harum ex magni, dicta impedit.</p>
+                    <p class="text-muted">Description</p>
                 </div>
                 <div class="col-md-4">
                     <span class="fa-stack fa-4x">
               <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-laptop fa-stack-1x fa-inverse"></i>
+              <i class="fa fa-mobile fa-stack-1x fa-inverse"></i>
             </span>
                     <h4 class="service-heading">Md. Habib</h4>
-                    <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam
-                        architecto quo inventore harum ex magni, dicta impedit.</p>
+                    <p class="text-muted">Description</p>
                 </div>
                 <div class="col-md-4">
                     <span class="fa-stack fa-4x">
               <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-lock fa-stack-1x fa-inverse"></i>
+              <i class="fa fa-mobile fa-stack-1x fa-inverse"></i>
             </span>
                     <h4 class="service-heading">Md. Shabuj</h4>
-                    <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam
-                        architecto quo inventore harum ex magni, dicta impedit.</p>
+                    <p class="text-muted">Description</p>
                 </div>
             </div>
         </div>
@@ -355,7 +352,7 @@
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
                 <p class="large text-muted">
-                This project is developed to automate the transport management system and to reduce hassles
+                    This project is developed to automate the transport management system and to reduce hassles
                     regarding transportation. This version is an early release and is being observed to
                     improve the facilities.<br>If you have any query, don't hesitate to contact:<br>
                     <b>info@itms.com || itms@gmail.com</b>

@@ -44,7 +44,7 @@ class UserSettingTest extends TestCase
         File::cleanDirectory(public_path('uploads/images'));
 
         $this->visit('admin/auth/setting')
-            ->attach(__DIR__.'/assets/test.jpg', 'avatar')
+            ->attach(__DIR__ . '/assets/test.jpg', 'avatar')
             ->press('Save')
             ->seePageIs('admin/auth/setting');
 
@@ -56,7 +56,7 @@ class UserSettingTest extends TestCase
     public function testUpdatePasswordConfirmation()
     {
         $data = [
-            'password'              => '123456',
+            'password' => '123456',
             'password_confirmation' => '123',
         ];
 
@@ -69,7 +69,7 @@ class UserSettingTest extends TestCase
     public function testUpdatePassword()
     {
         $data = [
-            'password'              => '123456',
+            'password' => '123456',
             'password_confirmation' => '123456',
         ];
 

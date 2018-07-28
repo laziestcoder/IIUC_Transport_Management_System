@@ -27,21 +27,13 @@ class MessageCatalogue implements MessageCatalogueInterface, MetadataAwareInterf
     private $parent;
 
     /**
-     * @param string $locale   The locale
-     * @param array  $messages An array of messages classified by domain
+     * @param string $locale The locale
+     * @param array $messages An array of messages classified by domain
      */
     public function __construct(?string $locale, array $messages = array())
     {
         $this->locale = $locale;
         $this->messages = $messages;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getLocale()
-    {
-        return $this->locale;
     }
 
     /**
@@ -70,6 +62,18 @@ class MessageCatalogue implements MessageCatalogueInterface, MetadataAwareInterf
     public function set($id, $translation, $domain = 'messages')
     {
         $this->add(array($id => $translation), $domain);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function add($messages, $domain = 'messages')
+    {
+        if (!isset($this->messages[$domain])) {
+            $this->messages[$domain] = $messages;
+        } else {
+            $this->messages[$domain] = array_replace($this->messages[$domain], $messages);
+        }
     }
 
     /**
@@ -125,18 +129,6 @@ class MessageCatalogue implements MessageCatalogueInterface, MetadataAwareInterf
     /**
      * {@inheritdoc}
      */
-    public function add($messages, $domain = 'messages')
-    {
-        if (!isset($this->messages[$domain])) {
-            $this->messages[$domain] = $messages;
-        } else {
-            $this->messages[$domain] = array_replace($this->messages[$domain], $messages);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function addCatalogue(MessageCatalogueInterface $catalogue)
     {
         if ($catalogue->getLocale() !== $this->locale) {
@@ -154,6 +146,28 @@ class MessageCatalogue implements MessageCatalogueInterface, MetadataAwareInterf
         if ($catalogue instanceof MetadataAwareInterface) {
             $metadata = $catalogue->getMetadata('', '');
             $this->addMetadata($metadata);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addResource(ResourceInterface $resource)
+    {
+        $this->resources[$resource->__toString()] = $resource;
+    }
+
+    /**
+     * Adds current values with the new values.
+     *
+     * @param array $values Values to add
+     */
+    private function addMetadata(array $values)
+    {
+        foreach ($values as $domain => $keys) {
+            foreach ($keys as $key => $value) {
+                $this->setMetadata($key, $value, $domain);
+            }
         }
     }
 
@@ -192,6 +206,14 @@ class MessageCatalogue implements MessageCatalogueInterface, MetadataAwareInterf
     /**
      * {@inheritdoc}
      */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getFallbackCatalogue()
     {
         return $this->fallbackCatalogue;
@@ -203,14 +225,6 @@ class MessageCatalogue implements MessageCatalogueInterface, MetadataAwareInterf
     public function getResources()
     {
         return array_values($this->resources);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addResource(ResourceInterface $resource)
-    {
-        $this->resources[$resource->__toString()] = $resource;
     }
 
     /**
@@ -252,20 +266,6 @@ class MessageCatalogue implements MessageCatalogueInterface, MetadataAwareInterf
             unset($this->metadata[$domain]);
         } else {
             unset($this->metadata[$domain][$key]);
-        }
-    }
-
-    /**
-     * Adds current values with the new values.
-     *
-     * @param array $values Values to add
-     */
-    private function addMetadata(array $values)
-    {
-        foreach ($values as $domain => $keys) {
-            foreach ($keys as $key => $value) {
-                $this->setMetadata($key, $value, $domain);
-            }
         }
     }
 }

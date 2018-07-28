@@ -11,8 +11,8 @@
 
 namespace Symfony\Component\Console\Output;
 
-use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Formatter\OutputFormatter;
+use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 
 /**
  * Base class for output classes.
@@ -33,8 +33,8 @@ abstract class Output implements OutputInterface
     private $formatter;
 
     /**
-     * @param int                           $verbosity The verbosity level (one of the VERBOSITY constants in OutputInterface)
-     * @param bool                          $decorated Whether to decorate messages
+     * @param int $verbosity The verbosity level (one of the VERBOSITY constants in OutputInterface)
+     * @param bool $decorated Whether to decorate messages
      * @param OutputFormatterInterface|null $formatter Output formatter instance (null to use default OutputFormatter)
      */
     public function __construct(?int $verbosity = self::VERBOSITY_NORMAL, bool $decorated = false, OutputFormatterInterface $formatter = null)
@@ -47,17 +47,17 @@ abstract class Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function setFormatter(OutputFormatterInterface $formatter)
+    public function getFormatter()
     {
-        $this->formatter = $formatter;
+        return $this->formatter;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getFormatter()
+    public function setFormatter(OutputFormatterInterface $formatter)
     {
-        return $this->formatter;
+        $this->formatter = $formatter;
     }
 
     /**
@@ -74,22 +74,6 @@ abstract class Output implements OutputInterface
     public function isDecorated()
     {
         return $this->formatter->isDecorated();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setVerbosity($level)
-    {
-        $this->verbosity = (int) $level;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getVerbosity()
-    {
-        return $this->verbosity;
     }
 
     /**
@@ -137,7 +121,7 @@ abstract class Output implements OutputInterface
      */
     public function write($messages, $newline = false, $options = self::OUTPUT_NORMAL)
     {
-        $messages = (array) $messages;
+        $messages = (array)$messages;
 
         $types = self::OUTPUT_NORMAL | self::OUTPUT_RAW | self::OUTPUT_PLAIN;
         $type = $types & $options ?: self::OUTPUT_NORMAL;
@@ -166,10 +150,26 @@ abstract class Output implements OutputInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getVerbosity()
+    {
+        return $this->verbosity;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setVerbosity($level)
+    {
+        $this->verbosity = (int)$level;
+    }
+
+    /**
      * Writes a message to the output.
      *
      * @param string $message A message to write to the output
-     * @param bool   $newline Whether to add a newline or not
+     * @param bool $newline Whether to add a newline or not
      */
     abstract protected function doWrite($message, $newline);
 }

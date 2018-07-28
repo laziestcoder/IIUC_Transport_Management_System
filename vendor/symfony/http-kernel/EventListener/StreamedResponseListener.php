@@ -11,10 +11,10 @@
 
 namespace Symfony\Component\HttpKernel\EventListener;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * StreamedResponseListener is responsible for sending the Response
@@ -24,6 +24,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class StreamedResponseListener implements EventSubscriberInterface
 {
+    public static function getSubscribedEvents()
+    {
+        return array(
+            KernelEvents::RESPONSE => array('onKernelResponse', -1024),
+        );
+    }
+
     /**
      * Filters the Response.
      */
@@ -38,12 +45,5 @@ class StreamedResponseListener implements EventSubscriberInterface
         if ($response instanceof StreamedResponse) {
             $response->send();
         }
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return array(
-            KernelEvents::RESPONSE => array('onKernelResponse', -1024),
-        );
     }
 }

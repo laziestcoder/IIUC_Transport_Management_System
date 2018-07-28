@@ -8,7 +8,8 @@
             <div class="row">
                 <div class="col-lg-8">
                     <h1><?php echo e($notice->title); ?></h1>
-                    <img style="width:60%; height:60%" src="/storage/cover_images/<?php echo e($notice->cover_image); ?>"
+                    <img style="width:60%; height:60%"
+                         src="/storage/cover_images/<?php echo e($notice->cover_image); ?>"
                          alt="<?php echo e($notice->title); ?>">
                     <?php echo $notice->body; ?>
 
@@ -18,17 +19,17 @@
 
                         by <?php echo e(DB::table('admin_users')->where('id', $notice->user_id)->first()->name); ?></small>
                     <hr>
-                    <?php if(Admin::user()): ?>
-                        <?php if(Admin::user()->id == $notice->user_id): ?>
+                    <?php if (Admin::user()): ?>
+                        <?php if (Admin::user()->id == $notice->user_id): ?>
                             <a href="/admin/auth/notices/<?php echo e($notice->id); ?>/edit" class="btn btn-default">Edit</a>
-                            
-                            <?php echo Form::open(['action' => ['NoticesController@destroy', $notice->id], 'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline'  ]); ?>
 
-                            <?php echo e(Form::hidden('_method','DELETE')); ?>
+                            <?php echo Form::open(['action' => ['NoticesController@destroy', $notice->id], 'method' => 'POST', 'class' => 'pull', 'id' => 'delete', 'style' => 'display:inline']); ?>
+
+                            <?php echo e(Form::hidden('_method', 'DELETE')); ?>
 
                             <?php echo e(csrf_field()); ?>
 
-                            <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top'])); ?>
+                            <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle' => 'confirmation', 'data-placement' => 'top'])); ?>
 
                             <?php echo Form::close(); ?>
 

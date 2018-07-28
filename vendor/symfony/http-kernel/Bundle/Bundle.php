@@ -11,10 +11,10 @@
 
 namespace Symfony\Component\HttpKernel\Bundle;
 
+use Symfony\Component\Console\Application;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
 /**
@@ -98,6 +98,53 @@ abstract class Bundle implements BundleInterface
     }
 
     /**
+     * Creates the bundle's container extension.
+     *
+     * @return ExtensionInterface|null
+     */
+    protected function createContainerExtension()
+    {
+        if (class_exists($class = $this->getContainerExtensionClass())) {
+            return new $class();
+        }
+    }
+
+    /**
+     * Returns the bundle's container extension class.
+     *
+     * @return string
+     */
+    protected function getContainerExtensionClass()
+    {
+        $basename = preg_replace('/Bundle$/', '', $this->getName());
+
+        return $this->getNamespace() . '\\DependencyInjection\\' . $basename . 'Extension';
+    }
+
+    /**
+     * Returns the bundle name (the class short name).
+     *
+     * @return string The Bundle name
+     */
+    final public function getName()
+    {
+        if (null === $this->name) {
+            $this->parseClassName();
+        }
+
+        return $this->name;
+    }
+
+    private function parseClassName()
+    {
+        $pos = strrpos(static::class, '\\');
+        $this->namespace = false === $pos ? '' : substr(static::class, 0, $pos);
+        if (null === $this->name) {
+            $this->name = false === $pos ? static::class : substr(static::class, $pos + 1);
+        }
+    }
+
+    /**
      * Gets the Bundle namespace.
      *
      * @return string The Bundle namespace
@@ -126,54 +173,7 @@ abstract class Bundle implements BundleInterface
         return $this->path;
     }
 
-    /**
-     * Returns the bundle name (the class short name).
-     *
-     * @return string The Bundle name
-     */
-    final public function getName()
-    {
-        if (null === $this->name) {
-            $this->parseClassName();
-        }
-
-        return $this->name;
-    }
-
     public function registerCommands(Application $application)
     {
-    }
-
-    /**
-     * Returns the bundle's container extension class.
-     *
-     * @return string
-     */
-    protected function getContainerExtensionClass()
-    {
-        $basename = preg_replace('/Bundle$/', '', $this->getName());
-
-        return $this->getNamespace().'\\DependencyInjection\\'.$basename.'Extension';
-    }
-
-    /**
-     * Creates the bundle's container extension.
-     *
-     * @return ExtensionInterface|null
-     */
-    protected function createContainerExtension()
-    {
-        if (class_exists($class = $this->getContainerExtensionClass())) {
-            return new $class();
-        }
-    }
-
-    private function parseClassName()
-    {
-        $pos = strrpos(static::class, '\\');
-        $this->namespace = false === $pos ? '' : substr(static::class, 0, $pos);
-        if (null === $this->name) {
-            $this->name = false === $pos ? static::class : substr(static::class, $pos + 1);
-        }
     }
 }

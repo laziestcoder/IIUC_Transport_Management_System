@@ -19,7 +19,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                 __DIR__ . '/plugins' => public_path('vendor/unisharp/laravel-ckeditor/plugins'),
             ],
             'ckeditor'
-        ); 
+        );
     }
 
     public function register()

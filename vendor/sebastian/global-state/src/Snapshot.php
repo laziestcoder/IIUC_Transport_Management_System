@@ -127,66 +127,6 @@ class Snapshot
         $this->traits = \get_declared_traits();
     }
 
-    public function blacklist(): Blacklist
-    {
-        return $this->blacklist;
-    }
-
-    public function globalVariables(): array
-    {
-        return $this->globalVariables;
-    }
-
-    public function superGlobalVariables(): array
-    {
-        return $this->superGlobalVariables;
-    }
-
-    public function superGlobalArrays(): array
-    {
-        return $this->superGlobalArrays;
-    }
-
-    public function staticAttributes(): array
-    {
-        return $this->staticAttributes;
-    }
-
-    public function iniSettings(): array
-    {
-        return $this->iniSettings;
-    }
-
-    public function includedFiles(): array
-    {
-        return $this->includedFiles;
-    }
-
-    public function constants(): array
-    {
-        return $this->constants;
-    }
-
-    public function functions(): array
-    {
-        return $this->functions;
-    }
-
-    public function interfaces(): array
-    {
-        return $this->interfaces;
-    }
-
-    public function classes(): array
-    {
-        return $this->classes;
-    }
-
-    public function traits(): array
-    {
-        return $this->traits;
-    }
-
     /**
      * Creates a snapshot user-defined constants.
      */
@@ -246,73 +186,6 @@ class Snapshot
     }
 
     /**
-     * Creates a snapshot of all global and super-global variables.
-     */
-    private function snapshotGlobals()
-    {
-        $superGlobalArrays = $this->superGlobalArrays();
-
-        foreach ($superGlobalArrays as $superGlobalArray) {
-            $this->snapshotSuperGlobalArray($superGlobalArray);
-        }
-
-        foreach (\array_keys($GLOBALS) as $key) {
-            if ($key != 'GLOBALS' &&
-                !\in_array($key, $superGlobalArrays) &&
-                $this->canBeSerialized($GLOBALS[$key]) &&
-                !$this->blacklist->isGlobalVariableBlacklisted($key)) {
-                $this->globalVariables[$key] = \unserialize(\serialize($GLOBALS[$key]));
-            }
-        }
-    }
-
-    /**
-     * Creates a snapshot a super-global variable array.
-     */
-    private function snapshotSuperGlobalArray(string $superGlobalArray)
-    {
-        $this->superGlobalVariables[$superGlobalArray] = [];
-
-        if (isset($GLOBALS[$superGlobalArray]) && \is_array($GLOBALS[$superGlobalArray])) {
-            foreach ($GLOBALS[$superGlobalArray] as $key => $value) {
-                $this->superGlobalVariables[$superGlobalArray][$key] = \unserialize(\serialize($value));
-            }
-        }
-    }
-
-    /**
-     * Creates a snapshot of all static attributes in user-defined classes.
-     */
-    private function snapshotStaticAttributes()
-    {
-        foreach ($this->classes as $className) {
-            $class    = new ReflectionClass($className);
-            $snapshot = [];
-
-            foreach ($class->getProperties() as $attribute) {
-                if ($attribute->isStatic()) {
-                    $name = $attribute->getName();
-
-                    if ($this->blacklist->isStaticAttributeBlacklisted($className, $name)) {
-                        continue;
-                    }
-
-                    $attribute->setAccessible(true);
-                    $value = $attribute->getValue();
-
-                    if ($this->canBeSerialized($value)) {
-                        $snapshot[$name] = \unserialize(\serialize($value));
-                    }
-                }
-            }
-
-            if (!empty($snapshot)) {
-                $this->staticAttributes[$className] = $snapshot;
-            }
-        }
-    }
-
-    /**
      * Returns a list of all super-global variable arrays.
      */
     private function setupSuperGlobalArrays()
@@ -343,6 +216,46 @@ class Snapshot
     }
 
     /**
+     * Creates a snapshot of all global and super-global variables.
+     */
+    private function snapshotGlobals()
+    {
+        $superGlobalArrays = $this->superGlobalArrays();
+
+        foreach ($superGlobalArrays as $superGlobalArray) {
+            $this->snapshotSuperGlobalArray($superGlobalArray);
+        }
+
+        foreach (\array_keys($GLOBALS) as $key) {
+            if ($key != 'GLOBALS' &&
+                !\in_array($key, $superGlobalArrays) &&
+                $this->canBeSerialized($GLOBALS[$key]) &&
+                !$this->blacklist->isGlobalVariableBlacklisted($key)) {
+                $this->globalVariables[$key] = \unserialize(\serialize($GLOBALS[$key]));
+            }
+        }
+    }
+
+    public function superGlobalArrays(): array
+    {
+        return $this->superGlobalArrays;
+    }
+
+    /**
+     * Creates a snapshot a super-global variable array.
+     */
+    private function snapshotSuperGlobalArray(string $superGlobalArray)
+    {
+        $this->superGlobalVariables[$superGlobalArray] = [];
+
+        if (isset($GLOBALS[$superGlobalArray]) && \is_array($GLOBALS[$superGlobalArray])) {
+            foreach ($GLOBALS[$superGlobalArray] as $key => $value) {
+                $this->superGlobalVariables[$superGlobalArray][$key] = \unserialize(\serialize($value));
+            }
+        }
+    }
+
+    /**
      * @todo Implement this properly
      */
     private function canBeSerialized($variable): bool
@@ -364,5 +277,92 @@ class Snapshot
         } while ($class = $class->getParentClass());
 
         return true;
+    }
+
+    /**
+     * Creates a snapshot of all static attributes in user-defined classes.
+     */
+    private function snapshotStaticAttributes()
+    {
+        foreach ($this->classes as $className) {
+            $class = new ReflectionClass($className);
+            $snapshot = [];
+
+            foreach ($class->getProperties() as $attribute) {
+                if ($attribute->isStatic()) {
+                    $name = $attribute->getName();
+
+                    if ($this->blacklist->isStaticAttributeBlacklisted($className, $name)) {
+                        continue;
+                    }
+
+                    $attribute->setAccessible(true);
+                    $value = $attribute->getValue();
+
+                    if ($this->canBeSerialized($value)) {
+                        $snapshot[$name] = \unserialize(\serialize($value));
+                    }
+                }
+            }
+
+            if (!empty($snapshot)) {
+                $this->staticAttributes[$className] = $snapshot;
+            }
+        }
+    }
+
+    public function blacklist(): Blacklist
+    {
+        return $this->blacklist;
+    }
+
+    public function globalVariables(): array
+    {
+        return $this->globalVariables;
+    }
+
+    public function superGlobalVariables(): array
+    {
+        return $this->superGlobalVariables;
+    }
+
+    public function staticAttributes(): array
+    {
+        return $this->staticAttributes;
+    }
+
+    public function iniSettings(): array
+    {
+        return $this->iniSettings;
+    }
+
+    public function includedFiles(): array
+    {
+        return $this->includedFiles;
+    }
+
+    public function constants(): array
+    {
+        return $this->constants;
+    }
+
+    public function functions(): array
+    {
+        return $this->functions;
+    }
+
+    public function interfaces(): array
+    {
+        return $this->interfaces;
+    }
+
+    public function classes(): array
+    {
+        return $this->classes;
+    }
+
+    public function traits(): array
+    {
+        return $this->traits;
     }
 }

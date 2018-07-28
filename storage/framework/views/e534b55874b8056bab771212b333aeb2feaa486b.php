@@ -22,21 +22,36 @@
     <div class="box-body table-responsive no-padding">
         <table class="table table-hover">
             <tr>
-                <?php $__currentLoopData = $grid->columns(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $column): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <th><?php echo e($column->getLabel()); ?><?php echo $column->sorter(); ?></th>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php $__currentLoopData = $grid->columns();
+                $__env->addLoop($__currentLoopData);
+                foreach ($__currentLoopData as $column): $__env->incrementLoopIndices();
+                    $loop = $__env->getLastLoop(); ?>
+                    <th><?php echo e($column->getLabel()); ?><?php echo $column->sorter(); ?></th>
+                <?php endforeach;
+                $__env->popLoop();
+                $loop = $__env->getLastLoop(); ?>
             </tr>
 
-            <?php $__currentLoopData = $grid->rows(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <tr <?php echo $row->getRowAttributes(); ?>>
-                <?php $__currentLoopData = $grid->columnNames; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <td <?php echo $row->getColumnAttributes($name); ?>>
-                    <?php echo $row->column($name); ?>
+            <?php $__currentLoopData = $grid->rows();
+            $__env->addLoop($__currentLoopData);
+            foreach ($__currentLoopData as $row): $__env->incrementLoopIndices();
+                $loop = $__env->getLastLoop(); ?>
+                <tr <?php echo $row->getRowAttributes(); ?>>
+                    <?php $__currentLoopData = $grid->columnNames;
+                    $__env->addLoop($__currentLoopData);
+                    foreach ($__currentLoopData as $name): $__env->incrementLoopIndices();
+                        $loop = $__env->getLastLoop(); ?>
+                        <td <?php echo $row->getColumnAttributes($name); ?>>
+                            <?php echo $row->column($name); ?>
 
-                </td>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            </tr>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </td>
+                    <?php endforeach;
+                    $__env->popLoop();
+                    $loop = $__env->getLastLoop(); ?>
+                </tr>
+            <?php endforeach;
+            $__env->popLoop();
+            $loop = $__env->getLastLoop(); ?>
 
             <?php echo $grid->renderFooter(); ?>
 

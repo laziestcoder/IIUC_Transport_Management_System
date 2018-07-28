@@ -48,6 +48,36 @@ class ContainerControllerResolver extends ControllerResolver
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function instantiateController($class)
+    {
+        if ($this->container->has($class)) {
+            return $this->container->get($class);
+        }
+
+        try {
+            return parent::instantiateController($class);
+        } catch (\ArgumentCountError $e) {
+        }
+
+        $this->throwExceptionIfControllerWasRemoved($class, $e);
+
+        throw $e;
+    }
+
+    /**
+     * @param string $controller
+     * @param \Exception|\Throwable|null $previous
+     */
+    private function throwExceptionIfControllerWasRemoved($controller, $previous = null)
+    {
+        if ($this->container instanceof Container && isset($this->container->getRemovedIds()[$controller])) {
+            throw new \LogicException(sprintf('Controller "%s" cannot be fetched from the container because it is private. Did you forget to tag the service with "controller.service_arguments"?', $controller), 0, $previous);
+        }
+    }
+
+    /**
      * Returns a callable for the given controller.
      *
      * @param string $controller A Controller string
@@ -85,35 +115,5 @@ class ContainerControllerResolver extends ControllerResolver
         }
 
         return $service;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function instantiateController($class)
-    {
-        if ($this->container->has($class)) {
-            return $this->container->get($class);
-        }
-
-        try {
-            return parent::instantiateController($class);
-        } catch (\ArgumentCountError $e) {
-        }
-
-        $this->throwExceptionIfControllerWasRemoved($class, $e);
-
-        throw $e;
-    }
-
-    /**
-     * @param string                     $controller
-     * @param \Exception|\Throwable|null $previous
-     */
-    private function throwExceptionIfControllerWasRemoved($controller, $previous = null)
-    {
-        if ($this->container instanceof Container && isset($this->container->getRemovedIds()[$controller])) {
-            throw new \LogicException(sprintf('Controller "%s" cannot be fetched from the container because it is private. Did you forget to tag the service with "controller.service_arguments"?', $controller), 0, $previous);
-        }
     }
 }

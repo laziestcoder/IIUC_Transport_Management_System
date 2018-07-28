@@ -24,9 +24,6 @@ namespace Symfony\Component\Debug;
  */
 class DebugClassLoader
 {
-    private $classLoader;
-    private $isFinder;
-    private $loaded = array();
     private static $caseCheck;
     private static $checkedClasses = array();
     private static $final = array();
@@ -35,6 +32,9 @@ class DebugClassLoader
     private static $internal = array();
     private static $internalMethods = array();
     private static $darwinCache = array('/' => array('/', array()));
+    private $classLoader;
+    private $isFinder;
+    private $loaded = array();
 
     public function __construct(callable $classLoader)
     {
@@ -47,7 +47,7 @@ class DebugClassLoader
             $dir = substr($file, 0, 1 + $i);
             $file = substr($file, 1 + $i);
             $test = strtoupper($file) === $file ? strtolower($file) : strtoupper($file);
-            $test = realpath($dir.$test);
+            $test = realpath($dir . $test);
 
             if (false === $test || false === $i) {
                 // filesystem is case sensitive
@@ -63,16 +63,6 @@ class DebugClassLoader
                 self::$caseCheck = 0;
             }
         }
-    }
-
-    /**
-     * Gets the wrapped class loader.
-     *
-     * @return callable The wrapped class loader
-     */
-    public function getClassLoader()
-    {
-        return $this->classLoader;
     }
 
     /**
@@ -121,6 +111,16 @@ class DebugClassLoader
 
             spl_autoload_register($function);
         }
+    }
+
+    /**
+     * Gets the wrapped class loader.
+     *
+     * @return callable The wrapped class loader
+     */
+    public function getClassLoader()
+    {
+        return $this->classLoader;
     }
 
     /**
@@ -194,7 +194,7 @@ class DebugClassLoader
             // Detect annotations on the class
             if (false !== $doc = $refl->getDocComment()) {
                 foreach (array('final', 'deprecated', 'internal') as $annotation) {
-                    if (false !== \strpos($doc, $annotation) && preg_match('#\n \* @'.$annotation.'(?:( .+?)\.?)?\r?\n \*(?: @|/$)#s', $doc, $notice)) {
+                    if (false !== \strpos($doc, $annotation) && preg_match('#\n \* @' . $annotation . '(?:( .+?)\.?)?\r?\n \*(?: @|/$)#s', $doc, $notice)) {
                         self::${$annotation}[$name] = isset($notice[1]) ? preg_replace('#\s*\r?\n \* +#', ' ', $notice[1]) : '';
                     }
                 }
@@ -271,9 +271,9 @@ class DebugClassLoader
                 }
 
                 foreach (array('final', 'internal') as $annotation) {
-                    if (false !== \strpos($doc, $annotation) && preg_match('#\n\s+\* @'.$annotation.'(?:( .+?)\.?)?\r?\n\s+\*(?: @|/$)#s', $doc, $notice)) {
+                    if (false !== \strpos($doc, $annotation) && preg_match('#\n\s+\* @' . $annotation . '(?:( .+?)\.?)?\r?\n\s+\*(?: @|/$)#s', $doc, $notice)) {
                         $message = isset($notice[1]) ? preg_replace('#\s*\r?\n \* +#', ' ', $notice[1]) : '';
-                        self::${$annotation.'Methods'}[$name][$method->name] = array($name, $message);
+                        self::${$annotation . 'Methods'}[$name][$method->name] = array($name, $message);
                     }
                 }
             }
@@ -288,7 +288,7 @@ class DebugClassLoader
                 throw new \RuntimeException(sprintf('The autoloader expected class "%s" to be defined in file "%s". The file was found but the class was not in it, the class name or namespace probably has a typo.', $class, $file));
             }
             if (self::$caseCheck) {
-                $real = explode('\\', $class.strrchr($file, '.'));
+                $real = explode('\\', $class . strrchr($file, '.'));
                 $tail = explode(DIRECTORY_SEPARATOR, str_replace('/', DIRECTORY_SEPARATOR, $file));
 
                 $i = count($tail) - 1;
@@ -302,7 +302,7 @@ class DebugClassLoader
                 array_splice($tail, 0, $i + 1);
             }
             if (self::$caseCheck && $tail) {
-                $tail = DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, $tail);
+                $tail = DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $tail);
                 $tailLen = strlen($tail);
                 $real = $refl->getFileName();
 
@@ -323,7 +323,7 @@ class DebugClassLoader
                         } else {
                             $dir = getcwd();
                             chdir($real);
-                            $real = getcwd().'/';
+                            $real = getcwd() . '/';
                             chdir($dir);
 
                             $dir = $real;
@@ -367,7 +367,7 @@ class DebugClassLoader
                 }
 
                 if (0 === substr_compare($real, $tail, -$tailLen, $tailLen, true)
-                  && 0 !== substr_compare($real, $tail, -$tailLen, $tailLen, false)
+                    && 0 !== substr_compare($real, $tail, -$tailLen, $tailLen, false)
                 ) {
                     throw new \RuntimeException(sprintf('Case mismatch between class and real file names: "%s" vs "%s" in "%s".', substr($tail, -$tailLen + 1), substr($real, -$tailLen + 1), substr($real, 0, -$tailLen + 1)));
                 }
@@ -378,7 +378,7 @@ class DebugClassLoader
     /**
      * `class_implements` includes interfaces from the parents so we have to manually exclude them.
      *
-     * @param string       $class
+     * @param string $class
      * @param string|false $parent
      *
      * @return string[]

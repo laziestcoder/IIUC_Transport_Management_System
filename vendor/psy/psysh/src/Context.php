@@ -36,6 +36,18 @@ class Context
     private $boundClass;
 
     /**
+     * Check whether a variable name is a magic variable.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public static function isSpecialVariableName($name)
+    {
+        return in_array($name, self::$specialNames) || in_array($name, self::$commandScopeNames);
+    }
+
+    /**
      * Get a context variable.
      *
      * @throws InvalidArgumentException If the variable is not found in the current context
@@ -148,16 +160,6 @@ class Context
     }
 
     /**
-     * Set the most recent return value.
-     *
-     * @param mixed $value
-     */
-    public function setReturnValue($value)
-    {
-        $this->returnValue = $value;
-    }
-
-    /**
      * Get the most recent return value.
      *
      * @return mixed
@@ -168,13 +170,13 @@ class Context
     }
 
     /**
-     * Set the most recent Exception.
+     * Set the most recent return value.
      *
-     * @param \Exception $e
+     * @param mixed $value
      */
-    public function setLastException(\Exception $e)
+    public function setReturnValue($value)
     {
-        $this->lastException = $e;
+        $this->returnValue = $value;
     }
 
     /**
@@ -194,13 +196,13 @@ class Context
     }
 
     /**
-     * Set the most recent output from evaluated code.
+     * Set the most recent Exception.
      *
-     * @param string $lastStdout
+     * @param \Exception $e
      */
-    public function setLastStdout($lastStdout)
+    public function setLastException(\Exception $e)
     {
-        $this->lastStdout = $lastStdout;
+        $this->lastException = $e;
     }
 
     /**
@@ -220,6 +222,26 @@ class Context
     }
 
     /**
+     * Set the most recent output from evaluated code.
+     *
+     * @param string $lastStdout
+     */
+    public function setLastStdout($lastStdout)
+    {
+        $this->lastStdout = $lastStdout;
+    }
+
+    /**
+     * Get the bound object ($this variable) for the interactive shell.
+     *
+     * @return object|null
+     */
+    public function getBoundObject()
+    {
+        return $this->boundObject;
+    }
+
+    /**
      * Set the bound object ($this variable) for the interactive shell.
      *
      * Note that this unsets the bound class, if any exists.
@@ -233,13 +255,13 @@ class Context
     }
 
     /**
-     * Get the bound object ($this variable) for the interactive shell.
+     * Get the bound class (self) for the interactive shell.
      *
-     * @return object|null
+     * @return string|null
      */
-    public function getBoundObject()
+    public function getBoundClass()
     {
-        return $this->boundObject;
+        return $this->boundClass;
     }
 
     /**
@@ -256,13 +278,13 @@ class Context
     }
 
     /**
-     * Get the bound class (self) for the interactive shell.
+     * Get command-scope magic variables: $__class, $__file, etc.
      *
-     * @return string|null
+     * @return array
      */
-    public function getBoundClass()
+    public function getCommandScopeVariables()
     {
-        return $this->boundClass;
+        return $this->commandScopeVariables;
     }
 
     /**
@@ -284,16 +306,6 @@ class Context
     }
 
     /**
-     * Get command-scope magic variables: $__class, $__file, etc.
-     *
-     * @return array
-     */
-    public function getCommandScopeVariables()
-    {
-        return $this->commandScopeVariables;
-    }
-
-    /**
      * Get unused command-scope magic variables names: __class, __file, etc.
      *
      * This is used by the shell to unset old command-scope variables after a
@@ -304,17 +316,5 @@ class Context
     public function getUnusedCommandScopeVariableNames()
     {
         return array_diff(self::$commandScopeNames, array_keys($this->commandScopeVariables));
-    }
-
-    /**
-     * Check whether a variable name is a magic variable.
-     *
-     * @param string $name
-     *
-     * @return bool
-     */
-    public static function isSpecialVariableName($name)
-    {
-        return in_array($name, self::$specialNames) || in_array($name, self::$commandScopeNames);
     }
 }

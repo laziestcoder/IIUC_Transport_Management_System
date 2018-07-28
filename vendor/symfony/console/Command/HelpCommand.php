@@ -13,8 +13,8 @@ namespace Symfony\Component\Console\Command;
 
 use Symfony\Component\Console\Helper\DescriptorHelper;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -25,6 +25,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class HelpCommand extends Command
 {
     private $command;
+
+    public function setCommand(Command $command)
+    {
+        $this->command = $command;
+    }
 
     /**
      * {@inheritdoc}
@@ -52,13 +57,7 @@ You can also output the help in other formats by using the <comment>--format</co
 
 To display the list of available commands, please use the <info>list</info> command.
 EOF
-            )
-        ;
-    }
-
-    public function setCommand(Command $command)
-    {
-        $this->command = $command;
+            );
     }
 
     /**

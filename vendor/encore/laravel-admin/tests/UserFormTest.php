@@ -40,28 +40,27 @@ class UserFormTest extends TestCase
     public function testSubmitForm()
     {
         $data = [
-            'username'              => 'John Doe',
-            'email'                 => 'hello@world.com',
-            'mobile'                => '13421234123',
-            'password'              => '123456',
+            'username' => 'John Doe',
+            'email' => 'hello@world.com',
+            'mobile' => '13421234123',
+            'password' => '123456',
             'password_confirmation' => '123456',
             //"avatar"   => "test.jpg",
             'profile' => [
                 'first_name' => 'John',
-                'last_name'  => 'Doe',
-                'postcode'   => '123456',
-                'address'    => 'Jinshajiang RD',
-                'latitude'   => '131.2123123456',
-                'longitude'  => '21.342123456',
-                'color'      => '#ffffff',
-                'start_at'   => date('Y-m-d H:i:s', time()),
-                'end_at'     => date('Y-m-d H:i:s', time()),
+                'last_name' => 'Doe',
+                'postcode' => '123456',
+                'address' => 'Jinshajiang RD',
+                'latitude' => '131.2123123456',
+                'longitude' => '21.342123456',
+                'color' => '#ffffff',
+                'start_at' => date('Y-m-d H:i:s', time()),
+                'end_at' => date('Y-m-d H:i:s', time()),
             ],
         ];
 
         $this->visit('admin/users/create')
-            ->attach(__DIR__.'/assets/test.jpg', 'avatar')
-
+            ->attach(__DIR__ . '/assets/test.jpg', 'avatar')
             ->submitForm('Submit', $data)
             ->seePageIs('admin/users')
             ->seeInElement('td', 1)
@@ -96,17 +95,7 @@ class UserFormTest extends TestCase
 
         $avatar = UserModel::first()->avatar;
 
-        $this->assertFileExists(public_path('uploads/'.$avatar));
-    }
-
-    protected function seedsTable($count = 100)
-    {
-        factory(\Tests\Models\User::class, $count)
-            ->create()
-            ->each(function ($u) {
-                $u->profile()->save(factory(\Tests\Models\Profile::class)->make());
-                $u->tags()->saveMany(factory(\Tests\Models\Tag::class, 5)->make());
-            });
+        $this->assertFileExists(public_path('uploads/' . $avatar));
     }
 
     public function testEditForm()
@@ -135,6 +124,16 @@ class UserFormTest extends TestCase
 
         $this->assertCount(50, $this->crawler()->filter("select[name='tags[]'] option"));
         $this->assertCount(5, $this->crawler()->filter("select[name='tags[]'] option[selected]"));
+    }
+
+    protected function seedsTable($count = 100)
+    {
+        factory(\Tests\Models\User::class, $count)
+            ->create()
+            ->each(function ($u) {
+                $u->profile()->save(factory(\Tests\Models\Profile::class)->make());
+                $u->tags()->saveMany(factory(\Tests\Models\Tag::class, 5)->make());
+            });
     }
 
     public function testUpdateForm()

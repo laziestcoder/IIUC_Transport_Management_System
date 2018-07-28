@@ -30,7 +30,7 @@ class HelperInfoController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -41,7 +41,7 @@ class HelperInfoController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Helper  $helper
+     * @param  \App\Helper $helper
      * @return \Illuminate\Http\Response
      */
     public function show(Helper $helper)
@@ -52,7 +52,7 @@ class HelperInfoController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Helper  $helper
+     * @param  \App\Helper $helper
      * @return \Illuminate\Http\Response
      */
     public function edit(Helper $helper)
@@ -63,8 +63,8 @@ class HelperInfoController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Helper  $helper
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Helper $helper
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Helper $helper)
@@ -75,7 +75,7 @@ class HelperInfoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Helper  $helper
+     * @param  \App\Helper $helper
      * @return \Illuminate\Http\Response
      */
     public function destroy(Helper $helper)

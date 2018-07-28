@@ -1,6 +1,7 @@
 <div class="<?php echo e($viewClass['form-group']); ?> <?php echo !$errors->has($errorKey) ? '' : 'has-error'; ?>">
 
-    <label for="<?php echo e($id); ?>" class="<?php echo e($viewClass['label']); ?> control-label"><?php echo e($label); ?></label>
+    <label for="<?php echo e($id); ?>"
+           class="<?php echo e($viewClass['label']); ?> control-label"><?php echo e($label); ?></label>
 
     <div class="<?php echo e($viewClass['field']); ?>">
 

@@ -39,7 +39,7 @@ class Finder implements \IteratorAggregate, \Countable
 {
     const IGNORE_VCS_FILES = 1;
     const IGNORE_DOT_FILES = 2;
-
+    private static $vcsPatterns = array('.svn', '_svn', 'CVS', '_darcs', '.arch-params', '.monotone', '.bzr', '.git', '.hg');
     private $mode = 0;
     private $names = array();
     private $notNames = array();
@@ -59,8 +59,6 @@ class Finder implements \IteratorAggregate, \Countable
     private $notPaths = array();
     private $ignoreUnreadableDirs = false;
 
-    private static $vcsPatterns = array('.svn', '_svn', 'CVS', '_darcs', '.arch-params', '.monotone', '.bzr', '.git', '.hg');
-
     public function __construct()
     {
         $this->ignore = static::IGNORE_VCS_FILES | static::IGNORE_DOT_FILES;
@@ -74,6 +72,22 @@ class Finder implements \IteratorAggregate, \Countable
     public static function create()
     {
         return new static();
+    }
+
+    /**
+     * Adds VCS patterns.
+     *
+     * @see ignoreVCS()
+     *
+     * @param string|string[] $pattern VCS patterns to ignore
+     */
+    public static function addVCSPattern($pattern)
+    {
+        foreach ((array)$pattern as $p) {
+            self::$vcsPatterns[] = $p;
+        }
+
+        self::$vcsPatterns = array_unique(self::$vcsPatterns);
     }
 
     /**
@@ -309,7 +323,7 @@ class Finder implements \IteratorAggregate, \Countable
      */
     public function exclude($dirs)
     {
-        $this->exclude = array_merge($this->exclude, (array) $dirs);
+        $this->exclude = array_merge($this->exclude, (array)$dirs);
 
         return $this;
     }
@@ -356,22 +370,6 @@ class Finder implements \IteratorAggregate, \Countable
         }
 
         return $this;
-    }
-
-    /**
-     * Adds VCS patterns.
-     *
-     * @see ignoreVCS()
-     *
-     * @param string|string[] $pattern VCS patterns to ignore
-     */
-    public static function addVCSPattern($pattern)
-    {
-        foreach ((array) $pattern as $p) {
-            self::$vcsPatterns[] = $p;
-        }
-
-        self::$vcsPatterns = array_unique(self::$vcsPatterns);
     }
 
     /**
@@ -520,7 +518,7 @@ class Finder implements \IteratorAggregate, \Countable
      */
     public function ignoreUnreadableDirs($ignore = true)
     {
-        $this->ignoreUnreadableDirs = (bool) $ignore;
+        $this->ignoreUnreadableDirs = (bool)$ignore;
 
         return $this;
     }
@@ -538,7 +536,7 @@ class Finder implements \IteratorAggregate, \Countable
     {
         $resolvedDirs = array();
 
-        foreach ((array) $dirs as $dir) {
+        foreach ((array)$dirs as $dir) {
             if (is_dir($dir)) {
                 $resolvedDirs[] = $this->normalizeDir($dir);
             } elseif ($glob = glob($dir, (defined('GLOB_BRACE') ? GLOB_BRACE : 0) | GLOB_ONLYDIR)) {
@@ -554,34 +552,15 @@ class Finder implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Returns an Iterator for the current Finder configuration.
+     * Normalizes given directory names by removing trailing slashes.
      *
-     * This method implements the IteratorAggregate interface.
+     * @param string $dir
      *
-     * @return \Iterator|SplFileInfo[] An iterator
-     *
-     * @throws \LogicException if the in() method has not been called
+     * @return string
      */
-    public function getIterator()
+    private function normalizeDir($dir)
     {
-        if (0 === count($this->dirs) && 0 === count($this->iterators)) {
-            throw new \LogicException('You must call one of in() or append() methods before iterating over a Finder.');
-        }
-
-        if (1 === count($this->dirs) && 0 === count($this->iterators)) {
-            return $this->searchInDirectory($this->dirs[0]);
-        }
-
-        $iterator = new \AppendIterator();
-        foreach ($this->dirs as $dir) {
-            $iterator->append($this->searchInDirectory($dir));
-        }
-
-        foreach ($this->iterators as $it) {
-            $iterator->append($it);
-        }
-
-        return $iterator;
+        return rtrim($dir, '/' . \DIRECTORY_SEPARATOR);
     }
 
     /**
@@ -629,13 +608,34 @@ class Finder implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Counts all the results collected by the iterators.
+     * Returns an Iterator for the current Finder configuration.
      *
-     * @return int
+     * This method implements the IteratorAggregate interface.
+     *
+     * @return \Iterator|SplFileInfo[] An iterator
+     *
+     * @throws \LogicException if the in() method has not been called
      */
-    public function count()
+    public function getIterator()
     {
-        return iterator_count($this->getIterator());
+        if (0 === count($this->dirs) && 0 === count($this->iterators)) {
+            throw new \LogicException('You must call one of in() or append() methods before iterating over a Finder.');
+        }
+
+        if (1 === count($this->dirs) && 0 === count($this->iterators)) {
+            return $this->searchInDirectory($this->dirs[0]);
+        }
+
+        $iterator = new \AppendIterator();
+        foreach ($this->dirs as $dir) {
+            $iterator->append($this->searchInDirectory($dir));
+        }
+
+        foreach ($this->iterators as $it) {
+            $iterator->append($it);
+        }
+
+        return $iterator;
     }
 
     private function searchInDirectory(string $dir): \Iterator
@@ -725,14 +725,12 @@ class Finder implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Normalizes given directory names by removing trailing slashes.
+     * Counts all the results collected by the iterators.
      *
-     * @param string $dir
-     *
-     * @return string
+     * @return int
      */
-    private function normalizeDir($dir)
+    public function count()
     {
-        return rtrim($dir, '/'.\DIRECTORY_SEPARATOR);
+        return iterator_count($this->getIterator());
     }
 }

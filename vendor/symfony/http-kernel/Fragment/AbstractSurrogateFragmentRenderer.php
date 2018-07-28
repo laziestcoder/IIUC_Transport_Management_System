@@ -32,9 +32,9 @@ abstract class AbstractSurrogateFragmentRenderer extends RoutableFragmentRendere
      * The "fallback" strategy when surrogate is not available should always be an
      * instance of InlineFragmentRenderer.
      *
-     * @param SurrogateInterface        $surrogate      An Surrogate instance
+     * @param SurrogateInterface $surrogate An Surrogate instance
      * @param FragmentRendererInterface $inlineStrategy The inline strategy to use when the surrogate is not supported
-     * @param UriSigner                 $signer
+     * @param UriSigner $signer
      */
     public function __construct(SurrogateInterface $surrogate = null, FragmentRendererInterface $inlineStrategy, UriSigner $signer = null)
     {
@@ -83,18 +83,6 @@ abstract class AbstractSurrogateFragmentRenderer extends RoutableFragmentRendere
         return new Response($tag);
     }
 
-    private function generateSignedFragmentUri($uri, Request $request): string
-    {
-        if (null === $this->signer) {
-            throw new \LogicException('You must use a URI when using the ESI rendering strategy or set a URL signer.');
-        }
-
-        // we need to sign the absolute URI, but want to return the path only.
-        $fragmentUri = $this->signer->sign($this->generateFragmentUri($uri, $request, true));
-
-        return substr($fragmentUri, strlen($request->getSchemeAndHttpHost()));
-    }
-
     private function containsNonScalars(array $values): bool
     {
         foreach ($values as $value) {
@@ -106,5 +94,17 @@ abstract class AbstractSurrogateFragmentRenderer extends RoutableFragmentRendere
         }
 
         return false;
+    }
+
+    private function generateSignedFragmentUri($uri, Request $request): string
+    {
+        if (null === $this->signer) {
+            throw new \LogicException('You must use a URI when using the ESI rendering strategy or set a URL signer.');
+        }
+
+        // we need to sign the absolute URI, but want to return the path only.
+        $fragmentUri = $this->signer->sign($this->generateFragmentUri($uri, $request, true));
+
+        return substr($fragmentUri, strlen($request->getSchemeAndHttpHost()));
     }
 }

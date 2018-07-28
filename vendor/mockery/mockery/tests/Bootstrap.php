@@ -30,7 +30,7 @@ function isAbsolutePath($path)
     return ($path[0] === DIRECTORY_SEPARATOR) || (preg_match($windowsPattern, $path) === 1);
 }
 
-$root    = realpath(dirname(dirname(__FILE__)));
+$root = realpath(dirname(dirname(__FILE__)));
 $composerVendorDirectory = getenv("COMPOSER_VENDOR_DIR") ?: "vendor";
 
 if (!isAbsolutePath($composerVendorDirectory)) {

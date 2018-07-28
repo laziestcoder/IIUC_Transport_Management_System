@@ -32,9 +32,9 @@ abstract class RedirectableUrlMatcher extends UrlMatcher implements Redirectable
             }
 
             try {
-                $parameters = parent::match($pathinfo.'/');
+                $parameters = parent::match($pathinfo . '/');
 
-                return array_replace($parameters, $this->redirect($pathinfo.'/', isset($parameters['_route']) ? $parameters['_route'] : null));
+                return array_replace($parameters, $this->redirect($pathinfo . '/', isset($parameters['_route']) ? $parameters['_route'] : null));
             } catch (ResourceNotFoundException $e2) {
                 throw $e;
             }

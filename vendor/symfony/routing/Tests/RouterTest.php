@@ -12,21 +12,15 @@
 namespace Symfony\Component\Routing\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Router;
-use Symfony\Component\HttpFoundation\Request;
 
 class RouterTest extends TestCase
 {
     private $router = null;
 
     private $loader = null;
-
-    protected function setUp()
-    {
-        $this->loader = $this->getMockBuilder('Symfony\Component\Config\Loader\LoaderInterface')->getMock();
-        $this->router = new Router($this->loader, 'routing.yml');
-    }
 
     public function testSetOptionsWithSupportedOptions()
     {
@@ -159,5 +153,11 @@ class RouterTest extends TestCase
         $p->setValue($this->router, $matcher);
 
         $this->router->matchRequest(Request::create('/'));
+    }
+
+    protected function setUp()
+    {
+        $this->loader = $this->getMockBuilder('Symfony\Component\Config\Loader\LoaderInterface')->getMock();
+        $this->router = new Router($this->loader, 'routing.yml');
     }
 }

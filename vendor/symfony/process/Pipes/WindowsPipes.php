@@ -11,8 +11,8 @@
 
 namespace Symfony\Component\Process\Pipes;
 
-use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\RuntimeException;
+use Symfony\Component\Process\Process;
 
 /**
  * WindowsPipes implementation uses temporary files as handles.
@@ -50,8 +50,10 @@ class WindowsPipes extends AbstractPipes
             $tmpCheck = false;
             $tmpDir = sys_get_temp_dir();
             $lastError = 'unknown reason';
-            set_error_handler(function ($type, $msg) use (&$lastError) { $lastError = $msg; });
-            for ($i = 0;; ++$i) {
+            set_error_handler(function ($type, $msg) use (&$lastError) {
+                $lastError = $msg;
+            });
+            for ($i = 0; ; ++$i) {
                 foreach ($pipes as $pipe => $name) {
                     $file = sprintf('%s\\sf_proc_%02X.%s', $tmpDir, $i, $name);
                     if (file_exists($file) && !unlink($file)) {
@@ -86,6 +88,31 @@ class WindowsPipes extends AbstractPipes
     {
         $this->close();
         $this->removeFiles();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function close()
+    {
+        parent::close();
+        foreach ($this->fileHandles as $handle) {
+            fclose($handle);
+        }
+        $this->fileHandles = array();
+    }
+
+    /**
+     * Removes temporary files.
+     */
+    private function removeFiles()
+    {
+        foreach ($this->files as $filename) {
+            if (file_exists($filename)) {
+                @unlink($filename);
+            }
+        }
+        $this->files = array();
     }
 
     /**
@@ -167,30 +194,5 @@ class WindowsPipes extends AbstractPipes
     public function areOpen()
     {
         return $this->pipes && $this->fileHandles;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function close()
-    {
-        parent::close();
-        foreach ($this->fileHandles as $handle) {
-            fclose($handle);
-        }
-        $this->fileHandles = array();
-    }
-
-    /**
-     * Removes temporary files.
-     */
-    private function removeFiles()
-    {
-        foreach ($this->files as $filename) {
-            if (file_exists($filename)) {
-                @unlink($filename);
-            }
-        }
-        $this->files = array();
     }
 }

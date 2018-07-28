@@ -11,10 +11,10 @@
 
 namespace Symfony\Component\Translation\Catalogue;
 
-use Symfony\Component\Translation\MessageCatalogue;
-use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Translation\Exception\InvalidArgumentException;
 use Symfony\Component\Translation\Exception\LogicException;
+use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Component\Translation\MessageCatalogueInterface;
 
 /**
  * Base catalogues binary operation class.
@@ -29,12 +29,6 @@ abstract class AbstractOperation implements OperationInterface
     protected $source;
     protected $target;
     protected $result;
-
-    /**
-     * @var null|array The domains affected by this operation
-     */
-    private $domains;
-
     /**
      * This array stores 'all', 'new' and 'obsolete' messages for all valid domains.
      *
@@ -58,6 +52,10 @@ abstract class AbstractOperation implements OperationInterface
      * @var array The array that stores 'all', 'new' and 'obsolete' messages
      */
     protected $messages;
+    /**
+     * @var null|array The domains affected by this operation
+     */
+    private $domains;
 
     /**
      * @throws LogicException
@@ -77,18 +75,6 @@ abstract class AbstractOperation implements OperationInterface
     /**
      * {@inheritdoc}
      */
-    public function getDomains()
-    {
-        if (null === $this->domains) {
-            $this->domains = array_values(array_unique(array_merge($this->source->getDomains(), $this->target->getDomains())));
-        }
-
-        return $this->domains;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getMessages($domain)
     {
         if (!in_array($domain, $this->getDomains())) {
@@ -101,6 +87,26 @@ abstract class AbstractOperation implements OperationInterface
 
         return $this->messages[$domain]['all'];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDomains()
+    {
+        if (null === $this->domains) {
+            $this->domains = array_values(array_unique(array_merge($this->source->getDomains(), $this->target->getDomains())));
+        }
+
+        return $this->domains;
+    }
+
+    /**
+     * Performs operation on source and target catalogues for the given domain and
+     * stores the results.
+     *
+     * @param string $domain The domain which the operation will be performed for
+     */
+    abstract protected function processDomain($domain);
 
     /**
      * {@inheritdoc}
@@ -147,12 +153,4 @@ abstract class AbstractOperation implements OperationInterface
 
         return $this->result;
     }
-
-    /**
-     * Performs operation on source and target catalogues for the given domain and
-     * stores the results.
-     *
-     * @param string $domain The domain which the operation will be performed for
-     */
-    abstract protected function processDomain($domain);
 }

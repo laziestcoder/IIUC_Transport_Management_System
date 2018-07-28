@@ -25,7 +25,7 @@ class FormatterHelper extends Helper
      *
      * @param string $section The section name
      * @param string $message The message
-     * @param string $style   The style to apply to the section
+     * @param string $style The style to apply to the section
      *
      * @return string The format section
      */
@@ -38,8 +38,8 @@ class FormatterHelper extends Helper
      * Formats a message as a block of text.
      *
      * @param string|array $messages The message to write in the block
-     * @param string       $style    The style to apply to the whole block
-     * @param bool         $large    Whether to return a large block
+     * @param string $style The style to apply to the whole block
+     * @param bool $large Whether to return a large block
      *
      * @return string The formatter message
      */
@@ -59,7 +59,7 @@ class FormatterHelper extends Helper
 
         $messages = $large ? array(str_repeat(' ', $len)) : array();
         for ($i = 0; isset($lines[$i]); ++$i) {
-            $messages[] = $lines[$i].str_repeat(' ', $len - $this->strlen($lines[$i]));
+            $messages[] = $lines[$i] . str_repeat(' ', $len - $this->strlen($lines[$i]));
         }
         if ($large) {
             $messages[] = str_repeat(' ', $len);
@@ -76,7 +76,7 @@ class FormatterHelper extends Helper
      * Truncates a message to the given length.
      *
      * @param string $message
-     * @param int    $length
+     * @param int $length
      * @param string $suffix
      *
      * @return string
@@ -90,10 +90,10 @@ class FormatterHelper extends Helper
         }
 
         if (false === $encoding = mb_detect_encoding($message, null, true)) {
-            return substr($message, 0, $length).$suffix;
+            return substr($message, 0, $length) . $suffix;
         }
 
-        return mb_substr($message, 0, $length, $encoding).$suffix;
+        return mb_substr($message, 0, $length, $encoding) . $suffix;
     }
 
     /**

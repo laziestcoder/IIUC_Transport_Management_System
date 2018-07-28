@@ -45,7 +45,8 @@ section {
     @include serif-font;
   }
 }
-@media(min-width:768px) {
+
+@media(min-width: 768px) {
   section {
     padding: 150px 0;
   }
@@ -74,7 +75,7 @@ section {
   }
   &:active,
   &:focus {
-    box-shadow: 0 0 0 0.2rem rgba(254, 209, 55,.5) !important;
+    box-shadow: 0 0 0 0.2rem rgba(254, 209, 55, .5) !important;
   }
 }
 

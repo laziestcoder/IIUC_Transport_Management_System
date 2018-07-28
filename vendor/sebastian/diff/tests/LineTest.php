@@ -22,11 +22,6 @@ final class LineTest extends TestCase
      */
     private $line;
 
-    protected function setUp(): void
-    {
-        $this->line = new Line;
-    }
-
     public function testCanBeCreatedWithoutArguments(): void
     {
         $this->assertInstanceOf(Line::class, $this->line);
@@ -40,5 +35,10 @@ final class LineTest extends TestCase
     public function testContentCanBeRetrieved(): void
     {
         $this->assertSame('', $this->line->getContent());
+    }
+
+    protected function setUp(): void
+    {
+        $this->line = new Line;
     }
 }

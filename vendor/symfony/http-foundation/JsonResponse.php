@@ -24,20 +24,19 @@ namespace Symfony\Component\HttpFoundation;
  */
 class JsonResponse extends Response
 {
+    const DEFAULT_ENCODING_OPTIONS = 15;
     protected $data;
-    protected $callback;
 
     // Encode <, >, ', &, and " characters in the JSON, making it also safe to be embedded into HTML.
     // 15 === JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
-    const DEFAULT_ENCODING_OPTIONS = 15;
-
+    protected $callback;
     protected $encodingOptions = self::DEFAULT_ENCODING_OPTIONS;
 
     /**
-     * @param mixed $data    The response data
-     * @param int   $status  The response status code
+     * @param mixed $data The response data
+     * @param int $status The response status code
      * @param array $headers An array of response headers
-     * @param bool  $json    If the data is already a JSON string
+     * @param bool $json If the data is already a JSON string
      */
     public function __construct($data = null, int $status = 200, array $headers = array(), bool $json = false)
     {
@@ -51,6 +50,72 @@ class JsonResponse extends Response
     }
 
     /**
+     * Sets a raw string containing a JSON document to be sent.
+     *
+     * @param string $json
+     *
+     * @return $this
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function setJson($json)
+    {
+        $this->data = $json;
+
+        return $this->update();
+    }
+
+    /**
+     * Updates the content and headers according to the JSON data and callback.
+     *
+     * @return $this
+     */
+    protected function update()
+    {
+        if (null !== $this->callback) {
+            // Not using application/javascript for compatibility reasons with older browsers.
+            $this->headers->set('Content-Type', 'text/javascript');
+
+            return $this->setContent(sprintf('/**/%s(%s);', $this->callback, $this->data));
+        }
+
+        // Only set the header when there is none or when it equals 'text/javascript' (from a previous update with callback)
+        // in order to not overwrite a custom definition.
+        if (!$this->headers->has('Content-Type') || 'text/javascript' === $this->headers->get('Content-Type')) {
+            $this->headers->set('Content-Type', 'application/json');
+        }
+
+        return $this->setContent($this->data);
+    }
+
+    /**
+     * Sets the data to be sent as JSON.
+     *
+     * @param mixed $data
+     *
+     * @return $this
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function setData($data = array())
+    {
+        try {
+            $data = json_encode($data, $this->encodingOptions);
+        } catch (\Exception $e) {
+            if ('Exception' === get_class($e) && 0 === strpos($e->getMessage(), 'Failed calling ')) {
+                throw $e->getPrevious() ?: $e;
+            }
+            throw $e;
+        }
+
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new \InvalidArgumentException(json_last_error_msg());
+        }
+
+        return $this->setJson($data);
+    }
+
+    /**
      * Factory method for chainability.
      *
      * Example:
@@ -58,8 +123,8 @@ class JsonResponse extends Response
      *     return JsonResponse::create($data, 200)
      *         ->setSharedMaxAge(300);
      *
-     * @param mixed $data    The json response data
-     * @param int   $status  The response status code
+     * @param mixed $data The json response data
+     * @param int $status The response status code
      * @param array $headers An array of response headers
      *
      * @return static
@@ -96,7 +161,7 @@ class JsonResponse extends Response
             $pattern = '/^[$_\p{L}][$_\p{L}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\x{200C}\x{200D}]*(?:\[(?:"(?:\\\.|[^"\\\])*"|\'(?:\\\.|[^\'\\\])*\'|\d+)\])*?$/u';
             $reserved = array(
                 'break', 'do', 'instanceof', 'typeof', 'case', 'else', 'new', 'var', 'catch', 'finally', 'return', 'void', 'continue', 'for', 'switch', 'while',
-                'debugger', 'function', 'this', 'with', 'default', 'if', 'throw', 'delete', 'in', 'try', 'class', 'enum', 'extends', 'super',  'const', 'export',
+                'debugger', 'function', 'this', 'with', 'default', 'if', 'throw', 'delete', 'in', 'try', 'class', 'enum', 'extends', 'super', 'const', 'export',
                 'import', 'implements', 'let', 'private', 'public', 'yield', 'interface', 'package', 'protected', 'static', 'null', 'true', 'false',
             );
             $parts = explode('.', $callback);
@@ -110,49 +175,6 @@ class JsonResponse extends Response
         $this->callback = $callback;
 
         return $this->update();
-    }
-
-    /**
-     * Sets a raw string containing a JSON document to be sent.
-     *
-     * @param string $json
-     *
-     * @return $this
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function setJson($json)
-    {
-        $this->data = $json;
-
-        return $this->update();
-    }
-
-    /**
-     * Sets the data to be sent as JSON.
-     *
-     * @param mixed $data
-     *
-     * @return $this
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function setData($data = array())
-    {
-        try {
-            $data = json_encode($data, $this->encodingOptions);
-        } catch (\Exception $e) {
-            if ('Exception' === get_class($e) && 0 === strpos($e->getMessage(), 'Failed calling ')) {
-                throw $e->getPrevious() ?: $e;
-            }
-            throw $e;
-        }
-
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new \InvalidArgumentException(json_last_error_msg());
-        }
-
-        return $this->setJson($data);
     }
 
     /**
@@ -174,31 +196,8 @@ class JsonResponse extends Response
      */
     public function setEncodingOptions($encodingOptions)
     {
-        $this->encodingOptions = (int) $encodingOptions;
+        $this->encodingOptions = (int)$encodingOptions;
 
         return $this->setData(json_decode($this->data));
-    }
-
-    /**
-     * Updates the content and headers according to the JSON data and callback.
-     *
-     * @return $this
-     */
-    protected function update()
-    {
-        if (null !== $this->callback) {
-            // Not using application/javascript for compatibility reasons with older browsers.
-            $this->headers->set('Content-Type', 'text/javascript');
-
-            return $this->setContent(sprintf('/**/%s(%s);', $this->callback, $this->data));
-        }
-
-        // Only set the header when there is none or when it equals 'text/javascript' (from a previous update with callback)
-        // in order to not overwrite a custom definition.
-        if (!$this->headers->has('Content-Type') || 'text/javascript' === $this->headers->get('Content-Type')) {
-            $this->headers->set('Content-Type', 'application/json');
-        }
-
-        return $this->setContent($this->data);
     }
 }

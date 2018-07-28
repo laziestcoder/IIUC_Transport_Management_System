@@ -15,11 +15,11 @@ class ProxyObjectTest extends TestCase
     public function testMockedMethodIsProxiedToOriginalMethod()
     {
         $proxy = $this->getMockBuilder(Bar::class)
-                      ->enableProxyingToOriginalMethods()
-                      ->getMock();
+            ->enableProxyingToOriginalMethods()
+            ->getMock();
 
         $proxy->expects($this->once())
-              ->method('doSomethingElse');
+            ->method('doSomethingElse');
 
         $foo = new Foo;
 
@@ -29,8 +29,8 @@ class ProxyObjectTest extends TestCase
     public function testMockedMethodWithReferenceIsProxiedToOriginalMethod()
     {
         $proxy = $this->getMockBuilder(MethodCallbackByReference::class)
-                      ->enableProxyingToOriginalMethods()
-                      ->getMock();
+            ->enableProxyingToOriginalMethods()
+            ->getMock();
 
         $a = $b = $c = 0;
 

@@ -68,7 +68,7 @@ abstract class AbstractSurrogate implements SurrogateInterface
         $current = $request->headers->get('Surrogate-Capability');
         $new = sprintf('symfony="%s/1.0"', strtoupper($this->getName()));
 
-        $request->headers->set('Surrogate-Capability', $current ? $current.', '.$new : $new);
+        $request->headers->set('Surrogate-Capability', $current ? $current . ', ' . $new : $new);
     }
 
     /**
@@ -82,7 +82,7 @@ abstract class AbstractSurrogate implements SurrogateInterface
 
         $pattern = sprintf('#content="[^"]*%s/1.0[^"]*"#', strtoupper($this->getName()));
 
-        return (bool) preg_match($pattern, $control);
+        return (bool)preg_match($pattern, $control);
     }
 
     /**

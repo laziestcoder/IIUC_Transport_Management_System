@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Notice extends Model
 {
     // table name
-    protected $table = 'notices';
-    // primary key
-    protected $primaryKey = 'id';
     public $timestamps = true;
+    // primary key
+    protected $table = 'notices';
+    protected $primaryKey = 'id';
 
     public function user()
     {

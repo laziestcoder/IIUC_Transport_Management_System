@@ -70,7 +70,7 @@ if (!function_exists('Psy\debug')) {
      *         }
      *     }
      *
-     * @param array         $vars   Scope variables from the calling context (default: array())
+     * @param array $vars Scope variables from the calling context (default: array())
      * @param object|string $bindTo Bound object ($this) or class (self) value for the shell
      *
      * @return array Scope variables from the debugger session
@@ -137,16 +137,16 @@ if (!function_exists('Psy\info')) {
         $config = $lastConfig ?: new Configuration();
 
         $core = [
-            'PsySH version'       => Shell::VERSION,
-            'PHP version'         => PHP_VERSION,
-            'OS'                  => PHP_OS,
-            'default includes'    => $config->getDefaultIncludes(),
-            'require semicolons'  => $config->requireSemicolons(),
+            'PsySH version' => Shell::VERSION,
+            'PHP version' => PHP_VERSION,
+            'OS' => PHP_OS,
+            'default includes' => $config->getDefaultIncludes(),
+            'require semicolons' => $config->requireSemicolons(),
             'error logging level' => $config->errorLoggingLevel(),
-            'config file'         => [
+            'config file' => [
                 'default config file' => $prettyPath($config->getConfigFile()),
-                'local config file'   => $prettyPath($config->getLocalConfigFile()),
-                'PSYSH_CONFIG env'    => $prettyPath(getenv('PSYSH_CONFIG')),
+                'local config file' => $prettyPath($config->getLocalConfigFile()),
+                'PSYSH_CONFIG env' => $prettyPath(getenv('PSYSH_CONFIG')),
             ],
             // 'config dir'  => $config->getConfigDir(),
             // 'data dir'    => $config->getDataDir(),
@@ -164,10 +164,10 @@ if (!function_exists('Psy\info')) {
         }
 
         $updates = [
-            'update available'       => $updateAvailable,
+            'update available' => $updateAvailable,
             'latest release version' => $latest,
-            'update check interval'  => $config->getUpdateCheck(),
-            'update cache file'      => $prettyPath($config->getUpdateCheckCacheFile()),
+            'update check interval' => $config->getUpdateCheck(),
+            'update cache file' => $prettyPath($config->getUpdateCheckCacheFile()),
         ];
 
         if ($config->hasReadline()) {
@@ -175,8 +175,8 @@ if (!function_exists('Psy\info')) {
 
             $readline = [
                 'readline available' => true,
-                'readline enabled'   => $config->useReadline(),
-                'readline service'   => get_class($config->getReadline()),
+                'readline enabled' => $config->useReadline(),
+                'readline service' => get_class($config->getReadline()),
             ];
 
             if (isset($info['library_version'])) {
@@ -203,13 +203,13 @@ if (!function_exists('Psy\info')) {
         }
 
         $history = [
-            'history file'     => $prettyPath($config->getHistoryFile()),
-            'history size'     => $config->getHistorySize(),
+            'history file' => $prettyPath($config->getHistoryFile()),
+            'history size' => $config->getHistorySize(),
             'erase duplicates' => $config->getEraseDuplicates(),
         ];
 
         $docs = [
-            'manual db file'   => $prettyPath($config->getManualDbFile()),
+            'manual db file' => $prettyPath($config->getManualDbFile()),
             'sqlite available' => true,
         ];
 
@@ -243,14 +243,14 @@ if (!function_exists('Psy\info')) {
 
         $autocomplete = [
             'tab completion enabled' => $config->useTabCompletion(),
-            'custom matchers'        => array_map('get_class', $config->getTabCompletionMatchers()),
-            'bracketed paste'        => $config->useBracketedPaste(),
+            'custom matchers' => array_map('get_class', $config->getTabCompletionMatchers()),
+            'bracketed paste' => $config->useBracketedPaste(),
         ];
 
         // Shenanigans, but totally justified.
         if ($shell = Sudo::fetchProperty($config, 'shell')) {
             $core['loop listeners'] = array_map('get_class', Sudo::fetchProperty($shell, 'loopListeners'));
-            $core['commands']       = array_map('get_class', $shell->all());
+            $core['commands'] = array_map('get_class', $shell->all());
 
             $autocomplete['custom matchers'] = array_map('get_class', Sudo::fetchProperty($shell, 'matchers'));
         }
@@ -275,11 +275,11 @@ if (!function_exists('Psy\bin')) {
             $input = new ArgvInput();
             try {
                 $input->bind(new InputDefinition([
-                    new InputOption('help',     'h',  InputOption::VALUE_NONE),
-                    new InputOption('config',   'c',  InputOption::VALUE_REQUIRED),
-                    new InputOption('version',  'v',  InputOption::VALUE_NONE),
-                    new InputOption('cwd',      null, InputOption::VALUE_REQUIRED),
-                    new InputOption('color',    null, InputOption::VALUE_NONE),
+                    new InputOption('help', 'h', InputOption::VALUE_NONE),
+                    new InputOption('config', 'c', InputOption::VALUE_REQUIRED),
+                    new InputOption('version', 'v', InputOption::VALUE_NONE),
+                    new InputOption('cwd', null, InputOption::VALUE_REQUIRED),
+                    new InputOption('color', null, InputOption::VALUE_NONE),
                     new InputOption('no-color', null, InputOption::VALUE_NONE),
 
                     new InputArgument('include', InputArgument::IS_ARRAY),
@@ -313,7 +313,7 @@ if (!function_exists('Psy\bin')) {
                 }
 
                 $version = $shell->getVersion();
-                $name    = basename(reset($_SERVER['argv']));
+                $name = basename(reset($_SERVER['argv']));
                 echo <<<EOL
 $version
 

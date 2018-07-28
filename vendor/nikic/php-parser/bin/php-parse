@@ -94,7 +94,8 @@ foreach ($files as $file) {
     }
 }
 
-function formatErrorMessage(PhpParser\Error $e, $code, $withColumnInfo) {
+function formatErrorMessage(PhpParser\Error $e, $code, $withColumnInfo)
+{
     if ($withColumnInfo && $e->hasColumnInfo()) {
         return $e->getMessageWithColumnInfo($code);
     } else {
@@ -102,7 +103,8 @@ function formatErrorMessage(PhpParser\Error $e, $code, $withColumnInfo) {
     }
 }
 
-function showHelp($error = '') {
+function showHelp($error = '')
+{
     if ($error) {
         echo $error . "\n\n";
     }
@@ -133,7 +135,8 @@ OUTPUT
     );
 }
 
-function parseArgs($args) {
+function parseArgs($args)
+{
     $operations = [];
     $files = [];
     $attributes = [

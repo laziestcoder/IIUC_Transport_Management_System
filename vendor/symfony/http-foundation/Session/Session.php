@@ -11,12 +11,12 @@
 
 namespace Symfony\Component\HttpFoundation\Session;
 
-use Symfony\Component\HttpFoundation\Session\Storage\SessionStorageInterface;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+use Symfony\Component\HttpFoundation\Session\Storage\SessionStorageInterface;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
@@ -32,9 +32,9 @@ class Session implements SessionInterface, \IteratorAggregate, \Countable
     private $hasBeenStarted;
 
     /**
-     * @param SessionStorageInterface $storage    A SessionStorageInterface instance
-     * @param AttributeBagInterface   $attributes An AttributeBagInterface instance, (defaults null for default AttributeBag)
-     * @param FlashBagInterface       $flashes    A FlashBagInterface instance (defaults null for default FlashBag)
+     * @param SessionStorageInterface $storage A SessionStorageInterface instance
+     * @param AttributeBagInterface $attributes An AttributeBagInterface instance, (defaults null for default AttributeBag)
+     * @param FlashBagInterface $flashes A FlashBagInterface instance (defaults null for default FlashBag)
      */
     public function __construct(SessionStorageInterface $storage = null, AttributeBagInterface $attributes = null, FlashBagInterface $flashes = null)
     {
@@ -52,6 +52,14 @@ class Session implements SessionInterface, \IteratorAggregate, \Countable
     /**
      * {@inheritdoc}
      */
+    public function registerBag(SessionBagInterface $bag)
+    {
+        $this->storage->registerBag(new SessionBagProxy($bag, $this->data, $this->hasBeenStarted));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function start()
     {
         return $this->storage->start();
@@ -63,6 +71,26 @@ class Session implements SessionInterface, \IteratorAggregate, \Countable
     public function has($name)
     {
         return $this->getAttributeBag()->has($name);
+    }
+
+    /**
+     * Gets the attributebag interface.
+     *
+     * Note that this method was added to help with IDE autocompletion.
+     *
+     * @return AttributeBagInterface
+     */
+    private function getAttributeBag()
+    {
+        return $this->getBag($this->attributeName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBag($name)
+    {
+        return $this->storage->getBag($name)->getBag();
     }
 
     /**
@@ -234,22 +262,6 @@ class Session implements SessionInterface, \IteratorAggregate, \Countable
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function registerBag(SessionBagInterface $bag)
-    {
-        $this->storage->registerBag(new SessionBagProxy($bag, $this->data, $this->hasBeenStarted));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBag($name)
-    {
-        return $this->storage->getBag($name)->getBag();
-    }
-
-    /**
      * Gets the flashbag interface.
      *
      * @return FlashBagInterface
@@ -257,17 +269,5 @@ class Session implements SessionInterface, \IteratorAggregate, \Countable
     public function getFlashBag()
     {
         return $this->getBag($this->flashName);
-    }
-
-    /**
-     * Gets the attributebag interface.
-     *
-     * Note that this method was added to help with IDE autocompletion.
-     *
-     * @return AttributeBagInterface
-     */
-    private function getAttributeBag()
-    {
-        return $this->getBag($this->attributeName);
     }
 }

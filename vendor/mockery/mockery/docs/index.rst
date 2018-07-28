@@ -31,9 +31,9 @@ Ready to dive into the Mockery framework? Then you can get started by reading
 the "Getting Started" section!
 
 .. toctree::
-    :hidden:
+:hidden:
 
-    getting_started/index
+        getting_started/index
 
 .. include:: getting_started/map.rst.inc
 
@@ -44,9 +44,9 @@ The reference contains a complete overview of all features of the Mockery
 framework.
 
 .. toctree::
-    :hidden:
+:hidden:
 
-    reference/index
+        reference/index
 
 .. include:: reference/map.rst.inc
 
@@ -56,9 +56,9 @@ Mockery
 Learn about Mockery's configuration, reserved method names, exceptions...
 
 .. toctree::
-    :hidden:
+:hidden:
 
-    mockery/index
+        mockery/index
 
 .. include:: mockery/map.rst.inc
 
@@ -68,9 +68,9 @@ Cookbook
 Want to learn some easy tips and tricks? Take a look at the cookbook articles!
 
 .. toctree::
-    :hidden:
+:hidden:
 
-    cookbook/index
+        cookbook/index
 
 .. include:: cookbook/map.rst.inc
 

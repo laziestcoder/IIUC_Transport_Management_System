@@ -22,17 +22,12 @@ class ExporterTest extends TestCase
      */
     private $exporter;
 
-    protected function setUp()
-    {
-        $this->exporter = new Exporter;
-    }
-
     public function exportProvider()
     {
         $obj2 = new \stdClass;
         $obj2->foo = 'bar';
 
-        $obj3 = (object)array(1,2,"Test\r\n",4,5,6,7,8);
+        $obj3 = (object)array(1, 2, "Test\r\n", 4, 5, 6, 7, 8);
 
         $obj = new \stdClass;
         //@codingStandardsIgnoreStart
@@ -61,8 +56,8 @@ class ExporterTest extends TestCase
             'export float 1.2' => array(1.2, '1.2'),
             'export stream' => array(fopen('php://memory', 'r'), 'resource(%d) of type (stream)'),
             'export numeric string' => array('1', "'1'"),
-            'export multidimentional array' => array(array(array(1,2,3), array(3,4,5)),
-        <<<EOF
+            'export multidimentional array' => array(array(array(1, 2, 3), array(3, 4, 5)),
+                <<<EOF
 Array &0 (
     0 => Array &1 (
         0 => 1
@@ -79,7 +74,7 @@ EOF
             ),
             // \n\r and \r is converted to \n
             'export multiline text' => array("this\nis\na\nvery\nvery\nvery\nvery\nvery\nvery\rlong\n\rtext",
-            <<<EOF
+                <<<EOF
 'this\\n
 is\\n
 a\\n
@@ -95,7 +90,7 @@ EOF
             ),
             'export empty stdclass' => array(new \stdClass, 'stdClass Object &%x ()'),
             'export non empty stdclass' => array($obj,
-            <<<EOF
+                <<<EOF
 stdClass Object &%x (
     'null' => null
     'boolean' => true
@@ -126,7 +121,7 @@ EOF
             ),
             'export empty array' => array(array(), 'Array &%d ()'),
             'export splObjectStorage' => array($storage,
-            <<<EOF
+                <<<EOF
 SplObjectStorage Object &%x (
     'foo' => stdClass Object &%x (
         'foo' => 'bar'
@@ -139,7 +134,7 @@ SplObjectStorage Object &%x (
 EOF
             ),
             'export stdClass with numeric properties' => array($obj3,
-            <<<EOF
+                <<<EOF
 stdClass Object &%x (
     0 => 1
     1 => 2
@@ -181,6 +176,11 @@ EOF
             $expected,
             $this->trimNewline($this->exporter->export($value))
         );
+    }
+
+    private function trimNewline($string)
+    {
+        return preg_replace('/[ ]*\n/', "\n", $string);
     }
 
     public function testExport2()
@@ -315,8 +315,8 @@ EOF;
 
         try {
             $this->assertSame(
-              "'いろはにほへとちりぬるをわかよたれそつねならむうゐのおくや...しゑひもせす'",
-              $this->trimNewline($this->exporter->shortenedExport('いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせす'))
+                "'いろはにほへとちりぬるをわかよたれそつねならむうゐのおくや...しゑひもせす'",
+                $this->trimNewline($this->exporter->shortenedExport('いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせす'))
             );
         } catch (\Exception $e) {
             mb_internal_encoding($oldMbInternalEncoding);
@@ -354,8 +354,8 @@ EOF;
         $this->assertEquals(array(true), $this->exporter->toArray(true));
     }
 
-    private function trimNewline($string)
+    protected function setUp()
     {
-        return preg_replace('/[ ]*\n/', "\n", $string);
+        $this->exporter = new Exporter;
     }
 }

@@ -11,9 +11,9 @@
 
 namespace Symfony\Component\HttpKernel;
 
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
-use Symfony\Component\Config\Loader\LoaderInterface;
 
 /**
  * The Kernel is the heart of the Symfony system.
@@ -85,9 +85,9 @@ interface KernelInterface extends HttpKernelInterface, \Serializable
      *
      * before looking in the bundle resource folder.
      *
-     * @param string $name  A resource name to locate
-     * @param string $dir   A directory where to look for the resource first
-     * @param bool   $first Whether to return the first path or paths for all matching bundles
+     * @param string $name A resource name to locate
+     * @param string $dir A directory where to look for the resource first
+     * @param bool $first Whether to return the first path or paths for all matching bundles
      *
      * @return string|array The absolute path of the resource or an array if $first is false
      *

@@ -72,7 +72,7 @@ class ExecutionClosure
     /**
      * Set the closure instance.
      *
-     * @param Shell    $psysh
+     * @param Shell $psysh
      * @param \Closure $closure
      */
     protected function setClosure(Shell $shell, \Closure $closure)
@@ -90,18 +90,6 @@ class ExecutionClosure
     }
 
     /**
-     * Go go gadget closure.
-     *
-     * @return mixed
-     */
-    public function execute()
-    {
-        $closure = $this->closure;
-
-        return $closure();
-    }
-
-    /**
      * Decide whether to bind the execution closure.
      *
      * @return bool
@@ -115,5 +103,17 @@ class ExecutionClosure
         }
 
         return true;
+    }
+
+    /**
+     * Go go gadget closure.
+     *
+     * @return mixed
+     */
+    public function execute()
+    {
+        $closure = $this->closure;
+
+        return $closure();
     }
 }

@@ -46,7 +46,7 @@ use Traversable;
  * @method static void nullOrTrue($value, $message = '')
  * @method static void nullOrFalse($value, $message = '')
  * @method static void nullOrEq($value, $value2, $message = '')
- * @method static void nullOrNotEq($value,$value2,  $message = '')
+ * @method static void nullOrNotEq($value, $value2, $message = '')
  * @method static void nullOrSame($value, $value2, $message = '')
  * @method static void nullOrNotSame($value, $value2, $message = '')
  * @method static void nullOrGreaterThan($value, $value2, $message = '')
@@ -115,7 +115,7 @@ use Traversable;
  * @method static void allTrue($values, $message = '')
  * @method static void allFalse($values, $message = '')
  * @method static void allEq($values, $value2, $message = '')
- * @method static void allNotEq($values,$value2,  $message = '')
+ * @method static void allNotEq($values, $value2, $message = '')
  * @method static void allSame($values, $value2, $message = '')
  * @method static void allNotSame($values, $value2, $message = '')
  * @method static void allGreaterThan($values, $value2, $message = '')
@@ -166,6 +166,16 @@ use Traversable;
  */
 class Assert
 {
+    private function __construct()
+    {
+    }
+
+    public static function stringNotEmpty($value, $message = '')
+    {
+        static::string($value, $message);
+        static::notEq($value, '', $message);
+    }
+
     public static function string($value, $message = '')
     {
         if (!is_string($value)) {
@@ -176,10 +186,57 @@ class Assert
         }
     }
 
-    public static function stringNotEmpty($value, $message = '')
+    protected static function reportInvalidArgument($message)
     {
-        static::string($value, $message);
-        static::notEq($value, '', $message);
+        throw new InvalidArgumentException($message);
+    }
+
+    protected static function typeToString($value)
+    {
+        return is_object($value) ? get_class($value) : gettype($value);
+    }
+
+    public static function notEq($value, $value2, $message = '')
+    {
+        if ($value2 == $value) {
+            static::reportInvalidArgument(sprintf(
+                $message ?: 'Expected a different value than %s.',
+                static::valueToString($value2)
+            ));
+        }
+    }
+
+    protected static function valueToString($value)
+    {
+        if (null === $value) {
+            return 'null';
+        }
+
+        if (true === $value) {
+            return 'true';
+        }
+
+        if (false === $value) {
+            return 'false';
+        }
+
+        if (is_array($value)) {
+            return 'array';
+        }
+
+        if (is_object($value)) {
+            return get_class($value);
+        }
+
+        if (is_resource($value)) {
+            return 'resource';
+        }
+
+        if (is_string($value)) {
+            return '"' . $value . '"';
+        }
+
+        return (string)$value;
     }
 
     public static function integer($value, $message = '')
@@ -194,7 +251,7 @@ class Assert
 
     public static function integerish($value, $message = '')
     {
-        if (!is_numeric($value) || $value != (int) $value) {
+        if (!is_numeric($value) || $value != (int)$value) {
             static::reportInvalidArgument(sprintf(
                 $message ?: 'Expected an integerish value. Got: %s',
                 static::typeToString($value)
@@ -338,16 +395,6 @@ class Assert
         }
     }
 
-    public static function isIterable($value, $message = '')
-    {
-        if (!is_array($value) && !($value instanceof Traversable)) {
-            static::reportInvalidArgument(sprintf(
-                $message ?: 'Expected an iterable. Got: %s',
-                static::typeToString($value)
-            ));
-        }
-    }
-
     public static function isInstanceOf($value, $class, $message = '')
     {
         if (!($value instanceof $class)) {
@@ -440,27 +487,6 @@ class Assert
             static::reportInvalidArgument(sprintf(
                 $message ?: 'Expected a value to be false. Got: %s',
                 static::valueToString($value)
-            ));
-        }
-    }
-
-    public static function eq($value, $value2, $message = '')
-    {
-        if ($value2 != $value) {
-            static::reportInvalidArgument(sprintf(
-                $message ?: 'Expected a value equal to %2$s. Got: %s',
-                static::valueToString($value),
-                static::valueToString($value2)
-            ));
-        }
-    }
-
-    public static function notEq($value, $value2, $message = '')
-    {
-        if ($value2 == $value) {
-            static::reportInvalidArgument(sprintf(
-                $message ?: 'Expected a different value than %s.',
-                static::valueToString($value2)
             ));
         }
     }
@@ -626,6 +652,19 @@ class Assert
         }
     }
 
+    protected static function strlen($value)
+    {
+        if (!function_exists('mb_detect_encoding')) {
+            return strlen($value);
+        }
+
+        if (false === $encoding = mb_detect_encoding($value)) {
+            return strlen($value);
+        }
+
+        return mb_strwidth($value, $encoding);
+    }
+
     public static function regex($value, $pattern, $message = '')
     {
         if (!preg_match($pattern, $value)) {
@@ -758,18 +797,6 @@ class Assert
         }
     }
 
-    public static function fileExists($value, $message = '')
-    {
-        static::string($value);
-
-        if (!file_exists($value)) {
-            static::reportInvalidArgument(sprintf(
-                $message ?: 'The file %s does not exist.',
-                static::valueToString($value)
-            ));
-        }
-    }
-
     public static function file($value, $message = '')
     {
         static::fileExists($value, $message);
@@ -777,6 +804,18 @@ class Assert
         if (!is_file($value)) {
             static::reportInvalidArgument(sprintf(
                 $message ?: 'The path %s is not a file.',
+                static::valueToString($value)
+            ));
+        }
+    }
+
+    public static function fileExists($value, $message = '')
+    {
+        static::string($value);
+
+        if (!file_exists($value)) {
+            static::reportInvalidArgument(sprintf(
+                $message ?: 'The file %s does not exist.',
                 static::valueToString($value)
             ));
         }
@@ -915,6 +954,17 @@ class Assert
         );
     }
 
+    public static function eq($value, $value2, $message = '')
+    {
+        if ($value2 != $value) {
+            static::reportInvalidArgument(sprintf(
+                $message ?: 'Expected a value equal to %2$s. Got: %s',
+                static::valueToString($value),
+                static::valueToString($value2)
+            ));
+        }
+    }
+
     public static function minCount($array, $min, $message = '')
     {
         if (count($array) < $min) {
@@ -1022,66 +1072,16 @@ class Assert
             return;
         }
 
-        throw new BadMethodCallException('No such method: '.$name);
+        throw new BadMethodCallException('No such method: ' . $name);
     }
 
-    protected static function valueToString($value)
+    public static function isIterable($value, $message = '')
     {
-        if (null === $value) {
-            return 'null';
+        if (!is_array($value) && !($value instanceof Traversable)) {
+            static::reportInvalidArgument(sprintf(
+                $message ?: 'Expected an iterable. Got: %s',
+                static::typeToString($value)
+            ));
         }
-
-        if (true === $value) {
-            return 'true';
-        }
-
-        if (false === $value) {
-            return 'false';
-        }
-
-        if (is_array($value)) {
-            return 'array';
-        }
-
-        if (is_object($value)) {
-            return get_class($value);
-        }
-
-        if (is_resource($value)) {
-            return 'resource';
-        }
-
-        if (is_string($value)) {
-            return '"'.$value.'"';
-        }
-
-        return (string) $value;
-    }
-
-    protected static function typeToString($value)
-    {
-        return is_object($value) ? get_class($value) : gettype($value);
-    }
-
-    protected static function strlen($value)
-    {
-        if (!function_exists('mb_detect_encoding')) {
-            return strlen($value);
-        }
-
-        if (false === $encoding = mb_detect_encoding($value)) {
-            return strlen($value);
-        }
-
-        return mb_strwidth($value, $encoding);
-    }
-
-    protected static function reportInvalidArgument($message)
-    {
-        throw new InvalidArgumentException($message);
-    }
-
-    private function __construct()
-    {
     }
 }

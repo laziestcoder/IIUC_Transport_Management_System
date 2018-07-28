@@ -36,8 +36,8 @@ interface InputInterface
      * Does not necessarily return the correct result for short options
      * when multiple flags are combined in the same option.
      *
-     * @param string|array $values     The values to look for in the raw parameters (can be an array)
-     * @param bool         $onlyParams Only check real parameters, skip those following an end of options (--) signal
+     * @param string|array $values The values to look for in the raw parameters (can be an array)
+     * @param bool $onlyParams Only check real parameters, skip those following an end of options (--) signal
      *
      * @return bool true if the value is contained in the raw parameters
      */
@@ -51,9 +51,9 @@ interface InputInterface
      * Does not necessarily return the correct result for short options
      * when multiple flags are combined in the same option.
      *
-     * @param string|array $values     The value(s) to look for in the raw parameters (can be an array)
-     * @param mixed        $default    The default value to return if no result is found
-     * @param bool         $onlyParams Only check real parameters, skip those following an end of options (--) signal
+     * @param string|array $values The value(s) to look for in the raw parameters (can be an array)
+     * @param mixed $default The default value to return if no result is found
+     * @param bool $onlyParams Only check real parameters, skip those following an end of options (--) signal
      *
      * @return mixed The option value
      */
@@ -92,7 +92,7 @@ interface InputInterface
     /**
      * Sets an argument value by name.
      *
-     * @param string $name  The argument name
+     * @param string $name The argument name
      * @param string $value The argument value
      *
      * @throws InvalidArgumentException When argument given doesn't exist
@@ -129,7 +129,7 @@ interface InputInterface
     /**
      * Sets an option value by name.
      *
-     * @param string      $name  The option name
+     * @param string $name The option name
      * @param string|bool $value The option value
      *
      * @throws InvalidArgumentException When option given doesn't exist

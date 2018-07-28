@@ -2,16 +2,13 @@
 
 namespace App\Jobs;
 
+use App\Mail\EmailVerification;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Mail;
-use App\Mail\EmailVerification;
-use App\Http\Controllers\Auth\RegisterController;
-use App\User;
 
 class SendVerificationEmail implements ShouldQueue
 {
@@ -22,12 +19,12 @@ class SendVerificationEmail implements ShouldQueue
      *
      * @return void
      */
-    
-    
+
+
     protected $user;
-    
+
     public function __construct($user)
-    {   
+    {
         $this->user = $user;
     }
 

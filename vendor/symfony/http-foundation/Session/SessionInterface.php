@@ -76,8 +76,8 @@ interface SessionInterface
      * Migrates the current session to a new session id while maintaining all
      * session attributes.
      *
-     * @param bool $destroy  Whether to delete the old session or leave it to garbage collection
-     * @param int  $lifetime Sets the cookie lifetime for the session cookie. A null value
+     * @param bool $destroy Whether to delete the old session or leave it to garbage collection
+     * @param int $lifetime Sets the cookie lifetime for the session cookie. A null value
      *                       will leave the system settings unchanged, 0 sets the cookie
      *                       to expire with browser session. Time is in seconds, and is
      *                       not a Unix timestamp.
@@ -107,8 +107,8 @@ interface SessionInterface
     /**
      * Returns an attribute.
      *
-     * @param string $name    The attribute name
-     * @param mixed  $default The default value if not found
+     * @param string $name The attribute name
+     * @param mixed $default The default value if not found
      *
      * @return mixed
      */
@@ -118,7 +118,7 @@ interface SessionInterface
      * Sets an attribute.
      *
      * @param string $name
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function set($name, $value);
 

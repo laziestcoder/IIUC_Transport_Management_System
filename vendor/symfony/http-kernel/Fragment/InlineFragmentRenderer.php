@@ -11,13 +11,13 @@
 
 namespace Symfony\Component\HttpKernel\Fragment;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerReference;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * Implements the inline rendering strategy where the Request is rendered by the current HTTP kernel.
@@ -112,7 +112,7 @@ class InlineFragmentRenderer extends RoutableFragmentRenderer
         if (Request::HEADER_X_FORWARDED_FOR & Request::getTrustedHeaderSet()) {
             $currentXForwardedFor = $request->headers->get('X_FORWARDED_FOR', '');
 
-            $server['HTTP_X_FORWARDED_FOR'] = ($currentXForwardedFor ? $currentXForwardedFor.', ' : '').$request->getClientIp();
+            $server['HTTP_X_FORWARDED_FOR'] = ($currentXForwardedFor ? $currentXForwardedFor . ', ' : '') . $request->getClientIp();
         }
 
         $server['REMOTE_ADDR'] = '127.0.0.1';

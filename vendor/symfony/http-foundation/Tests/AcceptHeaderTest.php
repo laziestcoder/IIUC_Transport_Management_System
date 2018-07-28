@@ -54,7 +54,7 @@ class AcceptHeaderTest extends TestCase
     public function testToString(array $items, $string)
     {
         $header = new AcceptHeader($items);
-        $this->assertEquals($string, (string) $header);
+        $this->assertEquals($string, (string)$header);
     }
 
     public function provideToStringData()
@@ -95,9 +95,9 @@ class AcceptHeaderTest extends TestCase
     public function provideSortingData()
     {
         return array(
-            'quality has priority' => array('*;q=0.3,ISO-8859-1,utf-8;q=0.7',  array('ISO-8859-1', 'utf-8', '*')),
-            'order matters when q is equal' => array('*;q=0.3,ISO-8859-1;q=0.7,utf-8;q=0.7',  array('ISO-8859-1', 'utf-8', '*')),
-            'order matters when q is equal2' => array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7',  array('utf-8', 'ISO-8859-1', '*')),
+            'quality has priority' => array('*;q=0.3,ISO-8859-1,utf-8;q=0.7', array('ISO-8859-1', 'utf-8', '*')),
+            'order matters when q is equal' => array('*;q=0.3,ISO-8859-1;q=0.7,utf-8;q=0.7', array('ISO-8859-1', 'utf-8', '*')),
+            'order matters when q is equal2' => array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7', array('utf-8', 'ISO-8859-1', '*')),
         );
     }
 }

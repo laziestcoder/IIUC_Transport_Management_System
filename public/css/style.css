@@ -4,18 +4,26 @@
 /* .navbar-shrink{
     text-align: center;
 } */
+#footer {
+    padding-top: 15px;
+    margin: auto;
+}
+
 .navbar-nav {
     float: right;
     margin: auto;
 }
+
 #mainNav {
     padding-top: 10px;
-    padding-bottom: 10px; 
+    padding-bottom: 10px;
 }
+
 nav img {
     display: block;
     height: 100px;
 }
+
 .navbar-shrink img {
     height: 50px;
     padding-top: 2px;
@@ -35,17 +43,28 @@ nav img {
 /* #footer.row {
     display: block;
 } */
+/* body{
+    background-image: url('/storage/img/transport-bg1.png');
+    background-repeat: round;
+    background-attachment: fixed;
+} */
 section {
     padding: 50px 25px;
 }
 
+/* section .container{
+    background: transparent;
+} */
 .modal-content {
     position: absolute;
 }
 
 header.masthead {
     background-image: url('/storage/img/transport-bg.png');
+    background-repeat: round;
+    background-attachment: fixed;
 }
+
 header.masthead .intro-text {
     padding-top: 180px;
 }
@@ -62,6 +81,7 @@ header.masthead .intro-text {
     /* height: 100px; */
     width: 550px;
 }
+
 /* .nextBus table {
     width: 100%;
 
@@ -74,7 +94,7 @@ header.masthead .intro-text {
 }
 
 .nextBus-info {
-    background:#212529;
+    background: #212529;
     font-size: 18px;
     color: yellow;
 }
@@ -94,18 +114,18 @@ header.masthead .intro-text {
     text-align: initial;
 }
 
-
 .userrouteinfo {
 
     /*float: right;*/
     width: 90%;
     text-align: center;
 }
+
 /* .userrouteinfo table{
     align: center;
 } */
-.userrouteinfo .table td{
-    border-color: #bababa ;
+.userrouteinfo .table td {
+    border-color: #bababa;
 }
 
 .userrouteinfo table thead {
@@ -113,9 +133,11 @@ header.masthead .intro-text {
     color: yellow;
     font-weight: bold;
 }
-.userRouteForm{
+
+.userRouteForm {
     color: black;
 }
+
 .userrouteinfo h3 {
     text-align: initial;
 }

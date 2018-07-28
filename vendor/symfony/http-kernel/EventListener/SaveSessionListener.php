@@ -44,6 +44,14 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class SaveSessionListener implements EventSubscriberInterface
 {
+    public static function getSubscribedEvents()
+    {
+        return array(
+            // low priority but higher than StreamedResponseListener
+            KernelEvents::RESPONSE => array(array('onKernelResponse', -1000)),
+        );
+    }
+
     public function onKernelResponse(FilterResponseEvent $event)
     {
         if (!$event->isMasterRequest()) {
@@ -54,13 +62,5 @@ class SaveSessionListener implements EventSubscriberInterface
         if ($session && $session->isStarted()) {
             $session->save();
         }
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return array(
-            // low priority but higher than StreamedResponseListener
-            KernelEvents::RESPONSE => array(array('onKernelResponse', -1000)),
-        );
     }
 }

@@ -55,7 +55,8 @@ final class DocBlock
         Location $location = null,
         $isTemplateStart = false,
         $isTemplateEnd = false
-    ) {
+    )
+    {
         Assert::string($summary);
         Assert::boolean($isTemplateStart);
         Assert::boolean($isTemplateEnd);
@@ -72,6 +73,18 @@ final class DocBlock
 
         $this->isTemplateEnd = $isTemplateEnd;
         $this->isTemplateStart = $isTemplateStart;
+    }
+
+    /**
+     * Adds a tag to this DocBlock.
+     *
+     * @param Tag $tag The tag to add.
+     *
+     * @return void
+     */
+    private function addTag(Tag $tag)
+    {
+        $this->tags[] = $tag;
     }
 
     /**
@@ -149,16 +162,6 @@ final class DocBlock
     }
 
     /**
-     * Returns the tags for this DocBlock.
-     *
-     * @return Tag[]
-     */
-    public function getTags()
-    {
-        return $this->tags;
-    }
-
-    /**
      * Returns an array of tags matching the given name. If no tags are found
      * an empty array is returned.
      *
@@ -182,6 +185,16 @@ final class DocBlock
         }
 
         return $result;
+    }
+
+    /**
+     * Returns the tags for this DocBlock.
+     *
+     * @return Tag[]
+     */
+    public function getTags()
+    {
+        return $this->tags;
     }
 
     /**
@@ -220,17 +233,5 @@ final class DocBlock
                 break;
             }
         }
-    }
-
-    /**
-     * Adds a tag to this DocBlock.
-     *
-     * @param Tag $tag The tag to add.
-     *
-     * @return void
-     */
-    private function addTag(Tag $tag)
-    {
-        $this->tags[] = $tag;
     }
 }

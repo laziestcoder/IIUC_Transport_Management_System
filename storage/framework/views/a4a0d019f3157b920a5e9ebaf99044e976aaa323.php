@@ -9,7 +9,7 @@
                 <div class="panel panel-default">
 
                     <div class="panel-heading">Registration
-                        
+
                     </div>
 
                     <div class="panel-body">

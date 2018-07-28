@@ -24,11 +24,6 @@ final class RuntimeTest extends TestCase
      */
     private $env;
 
-    protected function setUp()/*: void*/
-    {
-        $this->env = new Runtime;
-    }
-
     /**
      * @todo Now that this component is PHP 7-only and uses return type declarations
      * this test makes even less sense than before
@@ -108,5 +103,10 @@ final class RuntimeTest extends TestCase
     public function testVendorUrlCanBeRetrieved()/*: void*/
     {
         $this->assertInternalType('string', $this->env->getVendorUrl());
+    }
+
+    protected function setUp()/*: void*/
+    {
+        $this->env = new Runtime;
     }
 }

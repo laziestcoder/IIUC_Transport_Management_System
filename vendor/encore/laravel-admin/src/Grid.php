@@ -27,124 +27,107 @@ use Jenssegers\Mongodb\Eloquent\Model as MongodbModel;
 class Grid
 {
     /**
-     * The grid data model instance.
-     *
-     * @var \Encore\Admin\Grid\Model
-     */
-    protected $model;
-
-    /**
-     * Collection of all grid columns.
-     *
-     * @var \Illuminate\Support\Collection
-     */
-    protected $columns;
-
-    /**
-     * Collection of table columns.
-     *
-     * @var \Illuminate\Support\Collection
-     */
-    protected $dbColumns;
-
-    /**
-     * Collection of all data rows.
-     *
-     * @var \Illuminate\Support\Collection
-     */
-    protected $rows;
-
-    /**
-     * Rows callable fucntion.
-     *
-     * @var \Closure
-     */
-    protected $rowsCallback;
-
-    /**
      * All column names of the grid.
      *
      * @var array
      */
     public $columnNames = [];
-
-    /**
-     * Grid builder.
-     *
-     * @var \Closure
-     */
-    protected $builder;
-
-    /**
-     * Mark if the grid is builded.
-     *
-     * @var bool
-     */
-    protected $builded = false;
-
-    /**
-     * All variables in grid view.
-     *
-     * @var array
-     */
-    protected $variables = [];
-
-    /**
-     * The grid Filter.
-     *
-     * @var \Encore\Admin\Grid\Filter
-     */
-    protected $filter;
-
-    /**
-     * Resource path of the grid.
-     *
-     * @var
-     */
-    protected $resourcePath;
-
-    /**
-     * Default primary key name.
-     *
-     * @var string
-     */
-    protected $keyName = 'id';
-
-    /**
-     * Export driver.
-     *
-     * @var string
-     */
-    protected $exporter;
-
-    /**
-     * View for grid to render.
-     *
-     * @var string
-     */
-    protected $view = 'admin::grid.table';
-
     /**
      * Per-page options.
      *
      * @var array
      */
     public $perPages = [10, 20, 30, 50, 100];
-
     /**
      * Default items count per-page.
      *
      * @var int
      */
     public $perPage = 20;
-
     /**
      * Header tools.
      *
      * @var Tools
      */
     public $tools;
-
+    /**
+     * The grid data model instance.
+     *
+     * @var \Encore\Admin\Grid\Model
+     */
+    protected $model;
+    /**
+     * Collection of all grid columns.
+     *
+     * @var \Illuminate\Support\Collection
+     */
+    protected $columns;
+    /**
+     * Collection of table columns.
+     *
+     * @var \Illuminate\Support\Collection
+     */
+    protected $dbColumns;
+    /**
+     * Collection of all data rows.
+     *
+     * @var \Illuminate\Support\Collection
+     */
+    protected $rows;
+    /**
+     * Rows callable fucntion.
+     *
+     * @var \Closure
+     */
+    protected $rowsCallback;
+    /**
+     * Grid builder.
+     *
+     * @var \Closure
+     */
+    protected $builder;
+    /**
+     * Mark if the grid is builded.
+     *
+     * @var bool
+     */
+    protected $builded = false;
+    /**
+     * All variables in grid view.
+     *
+     * @var array
+     */
+    protected $variables = [];
+    /**
+     * The grid Filter.
+     *
+     * @var \Encore\Admin\Grid\Filter
+     */
+    protected $filter;
+    /**
+     * Resource path of the grid.
+     *
+     * @var
+     */
+    protected $resourcePath;
+    /**
+     * Default primary key name.
+     *
+     * @var string
+     */
+    protected $keyName = 'id';
+    /**
+     * Export driver.
+     *
+     * @var string
+     */
+    protected $exporter;
+    /**
+     * View for grid to render.
+     *
+     * @var string
+     */
+    protected $view = 'admin::grid.table';
     /**
      * Callback for grid actions.
      *
@@ -158,12 +141,12 @@ class Grid
      * @var array
      */
     protected $options = [
-        'usePagination'  => true,
-        'useFilter'      => true,
-        'useExporter'    => true,
-        'useActions'     => true,
+        'usePagination' => true,
+        'useFilter' => true,
+        'useExporter' => true,
+        'useActions' => true,
         'useRowSelector' => true,
-        'allowCreate'    => true,
+        'allowCreate' => true,
     ];
 
     /**
@@ -175,7 +158,7 @@ class Grid
      * Create a new grid instance.
      *
      * @param Eloquent $model
-     * @param Closure  $builder
+     * @param Closure $builder
      */
     public function __construct(Eloquent $model, Closure $builder)
     {
@@ -209,6 +192,16 @@ class Grid
     }
 
     /**
+     * Get Grid model.
+     *
+     * @return Model
+     */
+    public function model()
+    {
+        return $this->model;
+    }
+
+    /**
      * Setup grid exporter.
      *
      * @return void
@@ -225,22 +218,31 @@ class Grid
     }
 
     /**
-     * Get or set option for grid.
+     * Register column displayers.
      *
-     * @param string $key
-     * @param mixed  $value
-     *
-     * @return $this|mixed
+     * @return void.
      */
-    public function option($key, $value = null)
+    public static function registerColumnDisplayer()
     {
-        if (is_null($value)) {
-            return $this->options[$key];
+        $map = [
+            'editable' => \Encore\Admin\Grid\Displayers\Editable::class,
+            'switch' => \Encore\Admin\Grid\Displayers\SwitchDisplay::class,
+            'switchGroup' => \Encore\Admin\Grid\Displayers\SwitchGroup::class,
+            'select' => \Encore\Admin\Grid\Displayers\Select::class,
+            'image' => \Encore\Admin\Grid\Displayers\Image::class,
+            'label' => \Encore\Admin\Grid\Displayers\Label::class,
+            'button' => \Encore\Admin\Grid\Displayers\Button::class,
+            'link' => \Encore\Admin\Grid\Displayers\Link::class,
+            'badge' => \Encore\Admin\Grid\Displayers\Badge::class,
+            'progressBar' => \Encore\Admin\Grid\Displayers\ProgressBar::class,
+            'radio' => \Encore\Admin\Grid\Displayers\Radio::class,
+            'checkbox' => \Encore\Admin\Grid\Displayers\Checkbox::class,
+            'orderable' => \Encore\Admin\Grid\Displayers\Orderable::class,
+        ];
+
+        foreach ($map as $abstract => $class) {
+            Column::extend($abstract, $class);
         }
-
-        $this->options[$key] = $value;
-
-        return $this;
     }
 
     /**
@@ -251,38 +253,6 @@ class Grid
     public function getKeyName()
     {
         return $this->keyName ?: 'id';
-    }
-
-    /**
-     * Add column to Grid.
-     *
-     * @param string $name
-     * @param string $label
-     *
-     * @return Column
-     */
-    public function column($name, $label = '')
-    {
-        $relationName = $relationColumn = '';
-
-        if (strpos($name, '.') !== false) {
-            list($relationName, $relationColumn) = explode('.', $name);
-
-            $relation = $this->model()->eloquent()->$relationName();
-
-            $label = empty($label) ? ucfirst($relationColumn) : $label;
-
-            $name = snake_case($relationName).'.'.$relationColumn;
-        }
-
-        $column = $this->addColumn($name, $label);
-
-        if (isset($relation) && $relation instanceof Relation) {
-            $this->model()->with($relationName);
-            $column->setRelation($relationName, $relationColumn);
-        }
-
-        return $column;
     }
 
     /**
@@ -316,6 +286,38 @@ class Grid
     }
 
     /**
+     * Add column to Grid.
+     *
+     * @param string $name
+     * @param string $label
+     *
+     * @return Column
+     */
+    public function column($name, $label = '')
+    {
+        $relationName = $relationColumn = '';
+
+        if (strpos($name, '.') !== false) {
+            list($relationName, $relationColumn) = explode('.', $name);
+
+            $relation = $this->model()->eloquent()->$relationName();
+
+            $label = empty($label) ? ucfirst($relationColumn) : $label;
+
+            $name = snake_case($relationName) . '.' . $relationColumn;
+        }
+
+        $column = $this->addColumn($name, $label);
+
+        if (isset($relation) && $relation instanceof Relation) {
+            $this->model()->with($relationName);
+            $column->setRelation($relationName, $relationColumn);
+        }
+
+        return $column;
+    }
+
+    /**
      * Add column to grid.
      *
      * @param string $column
@@ -329,16 +331,6 @@ class Grid
         $column->setGrid($this);
 
         return $this->columns[] = $column;
-    }
-
-    /**
-     * Get Grid model.
-     *
-     * @return Model
-     */
-    public function model()
-    {
-        return $this->model;
     }
 
     /**
@@ -375,6 +367,25 @@ class Grid
         $this->model->usePaginate(false);
 
         $this->option('usePagination', false);
+
+        return $this;
+    }
+
+    /**
+     * Get or set option for grid.
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return $this|mixed
+     */
+    public function option($key, $value = null)
+    {
+        if (is_null($value)) {
+            return $this->options[$key];
+        }
+
+        $this->options[$key] = $value;
 
         return $this;
     }
@@ -424,28 +435,6 @@ class Grid
     }
 
     /**
-     * Add `actions` column for grid.
-     *
-     * @return void
-     */
-    protected function appendActionsColumn()
-    {
-        if (!$this->option('useActions')) {
-            return;
-        }
-
-        $grid = $this;
-        $callback = $this->actionsCallback;
-        $column = $this->addColumn('__actions__', trans('admin.action'));
-
-        $column->display(function ($value) use ($grid, $column, $callback) {
-            $actions = new Actions($value, $grid, $column, $this);
-
-            return $actions->display($callback);
-        });
-    }
-
-    /**
      * Disable row selector.
      *
      * @return Grid|mixed
@@ -461,57 +450,15 @@ class Grid
     }
 
     /**
-     * Prepend checkbox column for grid.
+     * Setup grid tools.
+     *
+     * @param Closure $callback
      *
      * @return void
      */
-    protected function prependRowSelectorColumn()
+    public function tools(Closure $callback)
     {
-        if (!$this->option('useRowSelector')) {
-            return;
-        }
-
-        $grid = $this;
-
-        $column = new Column(Column::SELECT_COLUMN_NAME, ' ');
-        $column->setGrid($this);
-
-        $column->display(function ($value) use ($grid, $column) {
-            $actions = new RowSelector($value, $grid, $column, $this);
-
-            return $actions->display();
-        });
-
-        $this->columns->prepend($column);
-    }
-
-    /**
-     * Build the grid.
-     *
-     * @return void
-     */
-    public function build()
-    {
-        if ($this->builded) {
-            return;
-        }
-
-        $data = $this->processFilter();
-
-        $this->prependRowSelectorColumn();
-        $this->appendActionsColumn();
-
-        Column::setOriginalGridData($data);
-
-        $this->columns->map(function (Column $column) use (&$data) {
-            $data = $column->fill($data);
-
-            $this->columnNames[] = $column->getName();
-        });
-
-        $this->buildRows($data);
-
-        $this->builded = true;
+        call_user_func($callback, $this->tools);
     }
 
     /**
@@ -534,18 +481,6 @@ class Grid
     public function getFilter()
     {
         return $this->filter;
-    }
-
-    /**
-     * Process the grid filter.
-     *
-     * @return array
-     */
-    public function processFilter()
-    {
-        call_user_func($this->builder, $this);
-
-        return $this->filter->execute();
     }
 
     /**
@@ -573,24 +508,6 @@ class Grid
     }
 
     /**
-     * Build the grid rows.
-     *
-     * @param array $data
-     *
-     * @return void
-     */
-    protected function buildRows(array $data)
-    {
-        $this->rows = collect($data)->map(function ($model, $number) {
-            return new Row($number, $model);
-        });
-
-        if ($this->rowsCallback) {
-            $this->rows->map($this->rowsCallback);
-        }
-    }
-
-    /**
      * Set grid row callback function.
      *
      * @param Closure $callable
@@ -604,18 +521,6 @@ class Grid
         }
 
         $this->rowsCallback = $callable;
-    }
-
-    /**
-     * Setup grid tools.
-     *
-     * @param Closure $callback
-     *
-     * @return void
-     */
-    public function tools(Closure $callback)
-    {
-        call_user_func($callback, $this->tools);
     }
 
     /**
@@ -645,7 +550,7 @@ class Grid
     /**
      * Get the export url.
      *
-     * @param int  $scope
+     * @param int $scope
      * @param null $args
      *
      * @return string
@@ -654,7 +559,29 @@ class Grid
     {
         $input = array_merge(Input::all(), Exporter::formatExportQuery($scope, $args));
 
-        return $this->resource().'?'.http_build_query($input);
+        return $this->resource() . '?' . http_build_query($input);
+    }
+
+    /**
+     * Get current resource uri.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public function resource($path = null)
+    {
+        if (!empty($path)) {
+            $this->resourcePath = $path;
+
+            return $this;
+        }
+
+        if (!empty($this->resourcePath)) {
+            return $this->resourcePath;
+        }
+
+        return app('request')->getPathInfo();
     }
 
     /**
@@ -762,58 +689,34 @@ class Grid
     }
 
     /**
-     * Get current resource uri.
+     * Dynamically add columns to the grid view.
      *
-     * @param string $path
+     * @param $method
+     * @param $arguments
      *
-     * @return string
+     * @return Column
      */
-    public function resource($path = null)
+    public function __call($method, $arguments)
     {
-        if (!empty($path)) {
-            $this->resourcePath = $path;
+        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($method);
 
-            return $this;
-        }
-
-        if (!empty($this->resourcePath)) {
-            return $this->resourcePath;
-        }
-
-        return app('request')->getPathInfo();
-    }
-
-    /**
-     * Get the table columns for grid.
-     *
-     * @return void
-     */
-    protected function setDbColumns()
-    {
-        $connection = $this->model()->eloquent()->getConnectionName();
-
-        $this->dbColumns = collect(Schema::connection($connection)->getColumnListing($this->model()->getTable()));
-    }
-
-    /**
-     * Handle table column for grid.
-     *
-     * @param string $method
-     * @param string $label
-     *
-     * @return bool|Column
-     */
-    protected function handleTableColumn($method, $label)
-    {
-        if (empty($this->dbColumns)) {
-            $this->setDbColumns();
-        }
-
-        if ($this->dbColumns->has($method)) {
+        if ($this->model()->eloquent() instanceof MongodbModel) {
             return $this->addColumn($method, $label);
         }
 
-        return false;
+        if ($column = $this->handleGetMutatorColumn($method, $label)) {
+            return $column;
+        }
+
+        if ($column = $this->handleRelationColumn($method, $label)) {
+            return $column;
+        }
+
+        if ($column = $this->handleTableColumn($method, $label)) {
+            return $column;
+        }
+
+        return $this->addColumn($method, $label);
     }
 
     /**
@@ -869,62 +772,51 @@ class Grid
     }
 
     /**
-     * Dynamically add columns to the grid view.
+     * Handle table column for grid.
      *
-     * @param $method
-     * @param $arguments
+     * @param string $method
+     * @param string $label
      *
-     * @return Column
+     * @return bool|Column
      */
-    public function __call($method, $arguments)
+    protected function handleTableColumn($method, $label)
     {
-        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($method);
+        if (empty($this->dbColumns)) {
+            $this->setDbColumns();
+        }
 
-        if ($this->model()->eloquent() instanceof MongodbModel) {
+        if ($this->dbColumns->has($method)) {
             return $this->addColumn($method, $label);
         }
 
-        if ($column = $this->handleGetMutatorColumn($method, $label)) {
-            return $column;
-        }
-
-        if ($column = $this->handleRelationColumn($method, $label)) {
-            return $column;
-        }
-
-        if ($column = $this->handleTableColumn($method, $label)) {
-            return $column;
-        }
-
-        return $this->addColumn($method, $label);
+        return false;
     }
 
     /**
-     * Register column displayers.
+     * Get the table columns for grid.
      *
-     * @return void.
+     * @return void
      */
-    public static function registerColumnDisplayer()
+    protected function setDbColumns()
     {
-        $map = [
-            'editable'    => \Encore\Admin\Grid\Displayers\Editable::class,
-            'switch'      => \Encore\Admin\Grid\Displayers\SwitchDisplay::class,
-            'switchGroup' => \Encore\Admin\Grid\Displayers\SwitchGroup::class,
-            'select'      => \Encore\Admin\Grid\Displayers\Select::class,
-            'image'       => \Encore\Admin\Grid\Displayers\Image::class,
-            'label'       => \Encore\Admin\Grid\Displayers\Label::class,
-            'button'      => \Encore\Admin\Grid\Displayers\Button::class,
-            'link'        => \Encore\Admin\Grid\Displayers\Link::class,
-            'badge'       => \Encore\Admin\Grid\Displayers\Badge::class,
-            'progressBar' => \Encore\Admin\Grid\Displayers\ProgressBar::class,
-            'radio'       => \Encore\Admin\Grid\Displayers\Radio::class,
-            'checkbox'    => \Encore\Admin\Grid\Displayers\Checkbox::class,
-            'orderable'   => \Encore\Admin\Grid\Displayers\Orderable::class,
-        ];
+        $connection = $this->model()->eloquent()->getConnectionName();
 
-        foreach ($map as $abstract => $class) {
-            Column::extend($abstract, $class);
+        $this->dbColumns = collect(Schema::connection($connection)->getColumnListing($this->model()->getTable()));
+    }
+
+    /**
+     * Set a view to render.
+     *
+     * @param string $view
+     * @param array $variables
+     */
+    public function setView($view, $variables = [])
+    {
+        if (!empty($variables)) {
+            $this->with($variables);
         }
+
+        $this->view = $view;
     }
 
     /**
@@ -942,30 +834,13 @@ class Grid
     }
 
     /**
-     * Get all variables will used in grid view.
+     * Get the string contents of the grid view.
      *
-     * @return array
+     * @return string
      */
-    protected function variables()
+    public function __toString()
     {
-        $this->variables['grid'] = $this;
-
-        return $this->variables;
-    }
-
-    /**
-     * Set a view to render.
-     *
-     * @param string $view
-     * @param array  $variables
-     */
-    public function setView($view, $variables = [])
-    {
-        if (!empty($variables)) {
-            $this->with($variables);
-        }
-
-        $this->view = $view;
+        return $this->render();
     }
 
     /**
@@ -985,12 +860,120 @@ class Grid
     }
 
     /**
-     * Get the string contents of the grid view.
+     * Build the grid.
      *
-     * @return string
+     * @return void
      */
-    public function __toString()
+    public function build()
     {
-        return $this->render();
+        if ($this->builded) {
+            return;
+        }
+
+        $data = $this->processFilter();
+
+        $this->prependRowSelectorColumn();
+        $this->appendActionsColumn();
+
+        Column::setOriginalGridData($data);
+
+        $this->columns->map(function (Column $column) use (&$data) {
+            $data = $column->fill($data);
+
+            $this->columnNames[] = $column->getName();
+        });
+
+        $this->buildRows($data);
+
+        $this->builded = true;
+    }
+
+    /**
+     * Process the grid filter.
+     *
+     * @return array
+     */
+    public function processFilter()
+    {
+        call_user_func($this->builder, $this);
+
+        return $this->filter->execute();
+    }
+
+    /**
+     * Prepend checkbox column for grid.
+     *
+     * @return void
+     */
+    protected function prependRowSelectorColumn()
+    {
+        if (!$this->option('useRowSelector')) {
+            return;
+        }
+
+        $grid = $this;
+
+        $column = new Column(Column::SELECT_COLUMN_NAME, ' ');
+        $column->setGrid($this);
+
+        $column->display(function ($value) use ($grid, $column) {
+            $actions = new RowSelector($value, $grid, $column, $this);
+
+            return $actions->display();
+        });
+
+        $this->columns->prepend($column);
+    }
+
+    /**
+     * Add `actions` column for grid.
+     *
+     * @return void
+     */
+    protected function appendActionsColumn()
+    {
+        if (!$this->option('useActions')) {
+            return;
+        }
+
+        $grid = $this;
+        $callback = $this->actionsCallback;
+        $column = $this->addColumn('__actions__', trans('admin.action'));
+
+        $column->display(function ($value) use ($grid, $column, $callback) {
+            $actions = new Actions($value, $grid, $column, $this);
+
+            return $actions->display($callback);
+        });
+    }
+
+    /**
+     * Build the grid rows.
+     *
+     * @param array $data
+     *
+     * @return void
+     */
+    protected function buildRows(array $data)
+    {
+        $this->rows = collect($data)->map(function ($model, $number) {
+            return new Row($number, $model);
+        });
+
+        if ($this->rowsCallback) {
+            $this->rows->map($this->rowsCallback);
+        }
+    }
+
+    /**
+     * Get all variables will used in grid view.
+     *
+     * @return array
+     */
+    protected function variables()
+    {
+        $this->variables['grid'] = $this;
+
+        return $this->variables;
     }
 }

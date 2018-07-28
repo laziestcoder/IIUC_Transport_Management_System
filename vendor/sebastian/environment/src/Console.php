@@ -17,7 +17,7 @@ final class Console
     /**
      * @var int
      */
-    const STDIN  = 0;
+    const STDIN = 0;
 
     /**
      * @var int
@@ -52,6 +52,21 @@ final class Console
         return $this->isInteractive(STDOUT);
     }
 
+    private function isWindows(): bool
+    {
+        return DIRECTORY_SEPARATOR === '\\';
+    }
+
+    /**
+     * Returns if the file descriptor is an interactive terminal or not.
+     *
+     * @param int|resource $fileDescriptor
+     */
+    public function isInteractive($fileDescriptor = self::STDOUT): bool
+    {
+        return \function_exists('posix_isatty') && @\posix_isatty($fileDescriptor);
+    }
+
     /**
      * Returns the number of columns of the terminal.
      *
@@ -68,41 +83,6 @@ final class Console
         }
 
         return $this->getNumberOfColumnsInteractive();
-    }
-
-    /**
-     * Returns if the file descriptor is an interactive terminal or not.
-     *
-     * @param int|resource $fileDescriptor
-     */
-    public function isInteractive($fileDescriptor = self::STDOUT): bool
-    {
-        return \function_exists('posix_isatty') && @\posix_isatty($fileDescriptor);
-    }
-
-    private function isWindows(): bool
-    {
-        return DIRECTORY_SEPARATOR === '\\';
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    private function getNumberOfColumnsInteractive(): int
-    {
-        if (\function_exists('shell_exec') && \preg_match('#\d+ (\d+)#', \shell_exec('stty size') ?? '', $match) === 1) {
-            if ((int) $match[1] > 0) {
-                return (int) $match[1];
-            }
-        }
-
-        if (\function_exists('shell_exec') && \preg_match('#columns = (\d+);#', \shell_exec('stty') ?? '', $match) === 1) {
-            if ((int) $match[1] > 0) {
-                return (int) $match[1];
-            }
-        }
-
-        return 80;
     }
 
     /**
@@ -142,5 +122,25 @@ final class Console
         }
 
         return $columns - 1;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    private function getNumberOfColumnsInteractive(): int
+    {
+        if (\function_exists('shell_exec') && \preg_match('#\d+ (\d+)#', \shell_exec('stty size') ?? '', $match) === 1) {
+            if ((int)$match[1] > 0) {
+                return (int)$match[1];
+            }
+        }
+
+        if (\function_exists('shell_exec') && \preg_match('#columns = (\d+);#', \shell_exec('stty') ?? '', $match) === 1) {
+            if ((int)$match[1] > 0) {
+                return (int)$match[1];
+            }
+        }
+
+        return 80;
     }
 }

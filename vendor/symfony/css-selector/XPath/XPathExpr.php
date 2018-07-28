@@ -38,16 +38,16 @@ class XPathExpr
         }
     }
 
+    public function addStarPrefix(): self
+    {
+        $this->path .= '*/';
+
+        return $this;
+    }
+
     public function getElement(): string
     {
         return $this->element;
-    }
-
-    public function addCondition(string $condition): self
-    {
-        $this->condition = $this->condition ? sprintf('(%s) and (%s)', $this->condition, $condition) : $condition;
-
-        return $this;
     }
 
     public function getCondition(): string
@@ -58,16 +58,16 @@ class XPathExpr
     public function addNameTest(): self
     {
         if ('*' !== $this->element) {
-            $this->addCondition('name() = '.Translator::getXpathLiteral($this->element));
+            $this->addCondition('name() = ' . Translator::getXpathLiteral($this->element));
             $this->element = '*';
         }
 
         return $this;
     }
 
-    public function addStarPrefix(): self
+    public function addCondition(string $condition): self
     {
-        $this->path .= '*/';
+        $this->condition = $this->condition ? sprintf('(%s) and (%s)', $this->condition, $condition) : $condition;
 
         return $this;
     }
@@ -79,7 +79,7 @@ class XPathExpr
      */
     public function join(string $combiner, self $expr): self
     {
-        $path = $this->__toString().$combiner;
+        $path = $this->__toString() . $combiner;
 
         if ('*/' !== $expr->path) {
             $path .= $expr->path;
@@ -94,9 +94,9 @@ class XPathExpr
 
     public function __toString(): string
     {
-        $path = $this->path.$this->element;
-        $condition = null === $this->condition || '' === $this->condition ? '' : '['.$this->condition.']';
+        $path = $this->path . $this->element;
+        $condition = null === $this->condition || '' === $this->condition ? '' : '[' . $this->condition . ']';
 
-        return $path.$condition;
+        return $path . $condition;
     }
 }

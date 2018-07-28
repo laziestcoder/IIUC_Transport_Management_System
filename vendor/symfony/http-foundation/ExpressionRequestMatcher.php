@@ -36,12 +36,12 @@ class ExpressionRequestMatcher extends RequestMatcher
         }
 
         return $this->language->evaluate($this->expression, array(
-            'request' => $request,
-            'method' => $request->getMethod(),
-            'path' => rawurldecode($request->getPathInfo()),
-            'host' => $request->getHost(),
-            'ip' => $request->getClientIp(),
-            'attributes' => $request->attributes->all(),
-        )) && parent::matches($request);
+                'request' => $request,
+                'method' => $request->getMethod(),
+                'path' => rawurldecode($request->getPathInfo()),
+                'host' => $request->getHost(),
+                'ip' => $request->getClientIp(),
+                'attributes' => $request->attributes->all(),
+            )) && parent::matches($request);
     }
 }

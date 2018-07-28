@@ -17,14 +17,14 @@
  * <http://www.doctrine-project.org>.
  */
 
-use Symfony\Component\Console\Helper\HelperSet;
 use Doctrine\DBAL\Tools\Console\ConsoleRunner;
+use Symfony\Component\Console\Helper\HelperSet;
 
-$files       = array(__DIR__ . '/../vendor/autoload.php', __DIR__ . '/../../../autoload.php');
-$loader      = null;
-$cwd         = getcwd();
+$files = array(__DIR__ . '/../vendor/autoload.php', __DIR__ . '/../../../autoload.php');
+$loader = null;
+$cwd = getcwd();
 $directories = array($cwd, $cwd . DIRECTORY_SEPARATOR . 'config');
-$configFile  = null;
+$configFile = null;
 
 foreach ($files as $file) {
     if (file_exists($file)) {
@@ -34,7 +34,7 @@ foreach ($files as $file) {
     }
 }
 
-if ( ! $loader) {
+if (!$loader) {
     throw new RuntimeException('vendor/autoload.php could not be found. Did you run `php composer.phar install`?');
 }
 
@@ -46,22 +46,22 @@ foreach ($directories as $directory) {
     }
 }
 
-if ( ! file_exists($configFile)) {
+if (!file_exists($configFile)) {
     ConsoleRunner::printCliConfigTemplate();
 
     exit(1);
 }
 
-if ( ! is_readable($configFile)) {
+if (!is_readable($configFile)) {
     echo 'Configuration file [' . $configFile . '] does not have read permission.' . PHP_EOL;
 
     exit(1);
 }
 
-$commands  = array();
+$commands = array();
 $helperSet = require $configFile;
 
-if ( ! $helperSet instanceof HelperSet) {
+if (!$helperSet instanceof HelperSet) {
     foreach ($GLOBALS as $helperSetCandidate) {
         if ($helperSetCandidate instanceof HelperSet) {
             $helperSet = $helperSetCandidate;

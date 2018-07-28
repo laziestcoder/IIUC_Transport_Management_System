@@ -114,6 +114,16 @@ class TimeDataCollector extends DataCollector implements LateDataCollectorInterf
     }
 
     /**
+     * Gets the request time.
+     *
+     * @return int The time
+     */
+    public function getStartTime()
+    {
+        return $this->data['start_time'];
+    }
+
+    /**
      * Gets the initialization time.
      *
      * This is the time spent until the beginning of the request handling.
@@ -127,16 +137,6 @@ class TimeDataCollector extends DataCollector implements LateDataCollectorInterf
         }
 
         return $this->data['events']['__section__']->getOrigin() - $this->getStartTime();
-    }
-
-    /**
-     * Gets the request time.
-     *
-     * @return int The time
-     */
-    public function getStartTime()
-    {
-        return $this->data['start_time'];
     }
 
     /**

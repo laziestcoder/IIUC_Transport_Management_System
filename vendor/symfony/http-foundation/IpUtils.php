@@ -30,8 +30,8 @@ class IpUtils
     /**
      * Checks if an IPv4 or IPv6 address is contained in the list of given IPs or subnets.
      *
-     * @param string       $requestIp IP to check
-     * @param string|array $ips       List of IPs or subnets (can be a string if only a single one)
+     * @param string $requestIp IP to check
+     * @param string|array $ips List of IPs or subnets (can be a string if only a single one)
      *
      * @return bool Whether the IP is valid
      */
@@ -57,13 +57,13 @@ class IpUtils
      * In case a subnet is given, it checks if it contains the request IP.
      *
      * @param string $requestIp IPv4 address to check
-     * @param string $ip        IPv4 address or subnet in CIDR notation
+     * @param string $ip IPv4 address or subnet in CIDR notation
      *
      * @return bool Whether the request IP matches the IP, or whether the request IP is within the CIDR subnet
      */
     public static function checkIp4($requestIp, $ip)
     {
-        $cacheKey = $requestIp.'-'.$ip;
+        $cacheKey = $requestIp . '-' . $ip;
         if (isset(self::$checkedIps[$cacheKey])) {
             return self::$checkedIps[$cacheKey];
         }
@@ -103,7 +103,7 @@ class IpUtils
      * @see https://github.com/dsp/v6tools
      *
      * @param string $requestIp IPv6 address to check
-     * @param string $ip        IPv6 address or subnet in CIDR notation
+     * @param string $ip IPv6 address or subnet in CIDR notation
      *
      * @return bool Whether the IP is valid
      *
@@ -111,7 +111,7 @@ class IpUtils
      */
     public static function checkIp6($requestIp, $ip)
     {
-        $cacheKey = $requestIp.'-'.$ip;
+        $cacheKey = $requestIp . '-' . $ip;
         if (isset(self::$checkedIps[$cacheKey])) {
             return self::$checkedIps[$cacheKey];
         }
@@ -124,7 +124,7 @@ class IpUtils
             list($address, $netmask) = explode('/', $ip, 2);
 
             if ('0' === $netmask) {
-                return (bool) unpack('n*', @inet_pton($address));
+                return (bool)unpack('n*', @inet_pton($address));
             }
 
             if ($netmask < 1 || $netmask > 128) {

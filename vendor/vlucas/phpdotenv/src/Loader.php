@@ -32,7 +32,7 @@ class Loader
      * Create a new loader instance.
      *
      * @param string $filePath
-     * @param bool   $immutable
+     * @param bool $immutable
      *
      * @return void
      */
@@ -74,50 +74,6 @@ class Loader
         if (!is_readable($this->filePath) || !is_file($this->filePath)) {
             throw new InvalidPathException(sprintf('Unable to read the environment file at %s.', $this->filePath));
         }
-    }
-
-    /**
-     * Normalise the given environment variable.
-     *
-     * Takes value as passed in by developer and:
-     * - ensures we're dealing with a separate name and value, breaking apart the name string if needed,
-     * - cleaning the value of quotes,
-     * - cleaning the name of quotes,
-     * - resolving nested variables.
-     *
-     * @param string $name
-     * @param string $value
-     *
-     * @return array
-     */
-    protected function normaliseEnvironmentVariable($name, $value)
-    {
-        list($name, $value) = $this->splitCompoundStringIntoParts($name, $value);
-        list($name, $value) = $this->sanitiseVariableName($name, $value);
-        list($name, $value) = $this->sanitiseVariableValue($name, $value);
-
-        $value = $this->resolveNestedVariables($value);
-
-        return array($name, $value);
-    }
-
-    /**
-     * Process the runtime filters.
-     *
-     * Called from the `VariableFactory`, passed as a callback in `$this->loadFromFile()`.
-     *
-     * @param string $name
-     * @param string $value
-     *
-     * @return array
-     */
-    public function processFilters($name, $value)
-    {
-        list($name, $value) = $this->splitCompoundStringIntoParts($name, $value);
-        list($name, $value) = $this->sanitiseVariableName($name, $value);
-        list($name, $value) = $this->sanitiseVariableValue($name, $value);
-
-        return array($name, $value);
     }
 
     /**
@@ -163,6 +119,70 @@ class Loader
     }
 
     /**
+     * Set an environment variable.
+     *
+     * This is done using:
+     * - putenv,
+     * - $_ENV,
+     * - $_SERVER.
+     *
+     * The environment variable value is stripped of single and double quotes.
+     *
+     * @param string $name
+     * @param string|null $value
+     *
+     * @return void
+     */
+    public function setEnvironmentVariable($name, $value = null)
+    {
+        list($name, $value) = $this->normaliseEnvironmentVariable($name, $value);
+
+        // Don't overwrite existing environment variables if we're immutable
+        // Ruby's dotenv does this with `ENV[key] ||= value`.
+        if ($this->immutable && $this->getEnvironmentVariable($name) !== null) {
+            return;
+        }
+
+        // If PHP is running as an Apache module and an existing
+        // Apache environment variable exists, overwrite it
+        if (function_exists('apache_getenv') && function_exists('apache_setenv') && apache_getenv($name)) {
+            apache_setenv($name, $value);
+        }
+
+        if (function_exists('putenv')) {
+            putenv("$name=$value");
+        }
+
+        $_ENV[$name] = $value;
+        $_SERVER[$name] = $value;
+    }
+
+    /**
+     * Normalise the given environment variable.
+     *
+     * Takes value as passed in by developer and:
+     * - ensures we're dealing with a separate name and value, breaking apart the name string if needed,
+     * - cleaning the value of quotes,
+     * - cleaning the name of quotes,
+     * - resolving nested variables.
+     *
+     * @param string $name
+     * @param string $value
+     *
+     * @return array
+     */
+    protected function normaliseEnvironmentVariable($name, $value)
+    {
+        list($name, $value) = $this->splitCompoundStringIntoParts($name, $value);
+        list($name, $value) = $this->sanitiseVariableName($name, $value);
+        list($name, $value) = $this->sanitiseVariableValue($name, $value);
+
+        $value = $this->resolveNestedVariables($value);
+
+        return array($name, $value);
+    }
+
+    /**
      * Split the compound string into parts.
      *
      * If the `$name` contains an `=` sign, then we split it into 2 parts, a `name` & `value`
@@ -178,6 +198,21 @@ class Loader
         if (strpos($name, '=') !== false) {
             list($name, $value) = array_map('trim', explode('=', $name, 2));
         }
+
+        return array($name, $value);
+    }
+
+    /**
+     * Strips quotes and the optional leading "export " from the environment variable name.
+     *
+     * @param string $name
+     * @param string $value
+     *
+     * @return array
+     */
+    protected function sanitiseVariableName($name, $value)
+    {
+        $name = trim(str_replace(array('export ', '\'', '"'), '', $name));
 
         return array($name, $value);
     }
@@ -233,6 +268,18 @@ class Loader
     }
 
     /**
+     * Determine if the given string begins with a quote.
+     *
+     * @param string $value
+     *
+     * @return bool
+     */
+    protected function beginsWithAQuote($value)
+    {
+        return strpbrk($value[0], '"\'') !== false;
+    }
+
+    /**
      * Resolve the nested variables.
      *
      * Look for {$varname} patterns in the variable value and replace with an
@@ -264,33 +311,6 @@ class Loader
     }
 
     /**
-     * Strips quotes and the optional leading "export " from the environment variable name.
-     *
-     * @param string $name
-     * @param string $value
-     *
-     * @return array
-     */
-    protected function sanitiseVariableName($name, $value)
-    {
-        $name = trim(str_replace(array('export ', '\'', '"'), '', $name));
-
-        return array($name, $value);
-    }
-
-    /**
-     * Determine if the given string begins with a quote.
-     *
-     * @param string $value
-     *
-     * @return bool
-     */
-    protected function beginsWithAQuote($value)
-    {
-        return strpbrk($value[0], '"\'') !== false;
-    }
-
-    /**
      * Search the different places for environment variables and return first value found.
      *
      * @param string $name
@@ -311,42 +331,22 @@ class Loader
     }
 
     /**
-     * Set an environment variable.
+     * Process the runtime filters.
      *
-     * This is done using:
-     * - putenv,
-     * - $_ENV,
-     * - $_SERVER.
+     * Called from the `VariableFactory`, passed as a callback in `$this->loadFromFile()`.
      *
-     * The environment variable value is stripped of single and double quotes.
+     * @param string $name
+     * @param string $value
      *
-     * @param string      $name
-     * @param string|null $value
-     *
-     * @return void
+     * @return array
      */
-    public function setEnvironmentVariable($name, $value = null)
+    public function processFilters($name, $value)
     {
-        list($name, $value) = $this->normaliseEnvironmentVariable($name, $value);
+        list($name, $value) = $this->splitCompoundStringIntoParts($name, $value);
+        list($name, $value) = $this->sanitiseVariableName($name, $value);
+        list($name, $value) = $this->sanitiseVariableValue($name, $value);
 
-        // Don't overwrite existing environment variables if we're immutable
-        // Ruby's dotenv does this with `ENV[key] ||= value`.
-        if ($this->immutable && $this->getEnvironmentVariable($name) !== null) {
-            return;
-        }
-
-        // If PHP is running as an Apache module and an existing
-        // Apache environment variable exists, overwrite it
-        if (function_exists('apache_getenv') && function_exists('apache_setenv') && apache_getenv($name)) {
-            apache_setenv($name, $value);
-        }
-
-        if (function_exists('putenv')) {
-            putenv("$name=$value");
-        }
-
-        $_ENV[$name] = $value;
-        $_SERVER[$name] = $value;
+        return array($name, $value);
     }
 
     /**

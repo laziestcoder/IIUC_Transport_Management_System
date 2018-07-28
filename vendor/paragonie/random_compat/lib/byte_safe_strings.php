@@ -51,7 +51,7 @@ if (!is_callable('RandomCompat_strlen')) {
                 );
             }
 
-            return (int) mb_strlen($binary_string, '8bit');
+            return (int)mb_strlen($binary_string, '8bit');
         }
 
     } else {
@@ -73,7 +73,7 @@ if (!is_callable('RandomCompat_strlen')) {
                     'RandomCompat_strlen() expects a string'
                 );
             }
-            return (int) strlen($binary_string);
+            return (int)strlen($binary_string);
         }
     }
 }
@@ -133,7 +133,7 @@ if (!is_callable('RandomCompat_substr')) {
                 return '';
             }
 
-            return (string) mb_substr($binary_string, $start, $length, '8bit');
+            return (string)mb_substr($binary_string, $start, $length, '8bit');
         }
 
     } else {
@@ -172,10 +172,10 @@ if (!is_callable('RandomCompat_substr')) {
                     );
                 }
 
-                return (string) substr($binary_string, $start, $length);
+                return (string)substr($binary_string, $start, $length);
             }
 
-            return (string) substr($binary_string, $start);
+            return (string)substr($binary_string, $start);
         }
     }
 }

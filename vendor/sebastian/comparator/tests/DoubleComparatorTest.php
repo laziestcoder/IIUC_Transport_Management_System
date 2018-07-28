@@ -23,65 +23,60 @@ class DoubleComparatorTest extends TestCase
 {
     private $comparator;
 
-    protected function setUp()
-    {
-        $this->comparator = new DoubleComparator;
-    }
-
     public function acceptsSucceedsProvider()
     {
         return [
-          [0, 5.0],
-          [5.0, 0],
-          ['5', 4.5],
-          [1.2e3, 7E-10],
-          [3, \acos(8)],
-          [\acos(8), 3],
-          [\acos(8), \acos(8)]
+            [0, 5.0],
+            [5.0, 0],
+            ['5', 4.5],
+            [1.2e3, 7E-10],
+            [3, \acos(8)],
+            [\acos(8), 3],
+            [\acos(8), \acos(8)]
         ];
     }
 
     public function acceptsFailsProvider()
     {
         return [
-          [5, 5],
-          ['4.5', 5],
-          [0x539, 02471],
-          [5.0, false],
-          [null, 5.0]
+            [5, 5],
+            ['4.5', 5],
+            [0x539, 02471],
+            [5.0, false],
+            [null, 5.0]
         ];
     }
 
     public function assertEqualsSucceedsProvider()
     {
         return [
-          [2.3, 2.3],
-          ['2.3', 2.3],
-          [5.0, 5],
-          [5, 5.0],
-          [5.0, '5'],
-          [1.2e3, 1200],
-          [2.3, 2.5, 0.5],
-          [3, 3.05, 0.05],
-          [1.2e3, 1201, 1],
-          [(string) (1 / 3), 1 - 2 / 3],
-          [1 / 3, (string) (1 - 2 / 3)]
+            [2.3, 2.3],
+            ['2.3', 2.3],
+            [5.0, 5],
+            [5, 5.0],
+            [5.0, '5'],
+            [1.2e3, 1200],
+            [2.3, 2.5, 0.5],
+            [3, 3.05, 0.05],
+            [1.2e3, 1201, 1],
+            [(string)(1 / 3), 1 - 2 / 3],
+            [1 / 3, (string)(1 - 2 / 3)]
         ];
     }
 
     public function assertEqualsFailsProvider()
     {
         return [
-          [2.3, 4.2],
-          ['2.3', 4.2],
-          [5.0, '4'],
-          [5.0, 6],
-          [1.2e3, 1201],
-          [2.3, 2.5, 0.2],
-          [3, 3.05, 0.04],
-          [3, \acos(8)],
-          [\acos(8), 3],
-          [\acos(8), \acos(8)]
+            [2.3, 4.2],
+            ['2.3', 4.2],
+            [5.0, '4'],
+            [5.0, 6],
+            [1.2e3, 1201],
+            [2.3, 2.5, 0.2],
+            [3, 3.05, 0.04],
+            [3, \acos(8)],
+            [\acos(8), 3],
+            [\acos(8), \acos(8)]
         ];
     }
 
@@ -95,7 +90,7 @@ class DoubleComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual)
     {
         $this->assertTrue(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -109,7 +104,7 @@ class DoubleComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual)
     {
         $this->assertFalse(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -147,5 +142,10 @@ class DoubleComparatorTest extends TestCase
         $this->expectExceptionMessage('matches expected');
 
         $this->comparator->assertEquals($expected, $actual, $delta);
+    }
+
+    protected function setUp()
+    {
+        $this->comparator = new DoubleComparator;
     }
 }

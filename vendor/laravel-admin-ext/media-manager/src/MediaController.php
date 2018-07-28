@@ -20,9 +20,9 @@ class MediaController extends Controller
             $manager = new MediaManager($path);
 
             $content->body(view("laravel-admin-media::$view", [
-                'list'   => $manager->ls(),
-                'nav'    => $manager->navigation(),
-                'url'    => $manager->urls(),
+                'list' => $manager->ls(),
+                'nav' => $manager->navigation(),
+                'url' => $manager->urls(),
             ]));
         });
     }
@@ -63,13 +63,13 @@ class MediaController extends Controller
         try {
             if ($manager->delete($files)) {
                 return response()->json([
-                    'status'  => true,
+                    'status' => true,
                     'message' => trans('admin.delete_succeeded'),
                 ]);
             }
         } catch (\Exception $e) {
             return response()->json([
-                'status'  => true,
+                'status' => true,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -85,13 +85,13 @@ class MediaController extends Controller
         try {
             if ($manager->move($new)) {
                 return response()->json([
-                    'status'  => true,
+                    'status' => true,
                     'message' => trans('admin.move_succeeded'),
                 ]);
             }
         } catch (\Exception $e) {
             return response()->json([
-                'status'  => true,
+                'status' => true,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -107,13 +107,13 @@ class MediaController extends Controller
         try {
             if ($manager->newFolder($name)) {
                 return response()->json([
-                    'status'  => true,
+                    'status' => true,
                     'message' => trans('admin.move_succeeded'),
                 ]);
             }
         } catch (\Exception $e) {
             return response()->json([
-                'status'  => true,
+                'status' => true,
                 'message' => $e->getMessage(),
             ]);
         }

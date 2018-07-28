@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Encore\Admin\Facades\Admin;
 use App\Notice;
 use DB;
+use Encore\Admin\Facades\Admin;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class NoticesController extends Controller
 {
@@ -35,7 +35,7 @@ class NoticesController extends Controller
         // $posts =  Post::orderBy('id','desc')->take(1)->get();
         // $posts =  Post::orderBy('id','desc')->get();
         $title = 'Notices';
-        $notices =  Notice::orderBy('id','desc')->paginate(25);
+        $notices = Notice::orderBy('id', 'desc')->paginate(25);
         $description = "";
 
         $data = array(
@@ -57,13 +57,13 @@ class NoticesController extends Controller
             'title' => 'Create Notice',
             'notices' => ''
         );
-        return view('notices.create')->with($data);    
+        return view('notices.create')->with($data);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -76,28 +76,25 @@ class NoticesController extends Controller
 
         //Handle File Upload
 
-         if($request->hasFile('cover_image'))
-        {
+        if ($request->hasFile('cover_image')) {
             //Get Filename with extension
-            $filenameWithExt = $request -> file('cover_image')->getClientOriginalName();
-            
+            $filenameWithExt = $request->file('cover_image')->getClientOriginalName();
+
             // Get just file name
-            $filename = pathinfo($filenameWithExt,PATHINFO_FILENAME);
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
 
             // Get just file extension
             $extension = $request->file('cover_image')->getClientOriginalExtension();
 
             // File name to store
-            $fileNameToStore = $filename.'_'.time().'.'.$extension;
-            
-            //uload image
-            $path = $request->file('cover_image')->storeAs('public/cover_images',$fileNameToStore);
+            $fileNameToStore = $filename . '_' . time() . '.' . $extension;
 
+            //uload image
+            $path = $request->file('cover_image')->storeAs('public/cover_images', $fileNameToStore);
+
+        } else {
+            $fileNameToStore = 'noimage.jpeg';
         }
-        else 
-        {
-            $fileNameToStore ='noimage.jpeg';
-        } 
 
         //Create notice
         $notice = new notice;
@@ -107,40 +104,40 @@ class NoticesController extends Controller
         $notice->cover_image = $fileNameToStore;
         //$post->cover_image = 'noimage.jpeg';
         $notice->save();
-        return redirect('/admin/auth/notices')->with('success','Notice Created Successfully!');
+        return redirect('/admin/auth/notices')->with('success', 'Notice Created Successfully!');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $notice = Notice::find($id);
-        return view('notices.show')->with('notice',$notice);
+        return view('notices.show')->with('notice', $notice);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
         $notice = Notice::find($id);
-        
+
         //Check for correct user
 
-        if(Admin::user()->id !== $notice->user_id){
-            return redirect('/admin/auth/notices')->with('error','Unauthorized Access Denied!');
+        if (Admin::user()->id !== $notice->user_id) {
+            return redirect('/admin/auth/notices')->with('error', 'Unauthorized Access Denied!');
 
         }
 
         // Edit notice
-        
+
         $data = array(
             'title' => 'Edit Notice',
             'notice' => $notice
@@ -151,19 +148,19 @@ class NoticesController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        
-       /*  $data = array(
-            'title' => $title,
-            'posts' => $posts
-        );
-        return view('posts.update')->with($data); */
-        
+
+        /*  $data = array(
+             'title' => $title,
+             'posts' => $posts
+         );
+         return view('posts.update')->with($data); */
+
         $this->validate($request, [
             'title' => 'required',
             'body' => 'required',
@@ -172,59 +169,57 @@ class NoticesController extends Controller
         //Update Post
         //$post = new Post; //Handle File Upload
 
-         if($request->hasFile('cover_image'))
-         {
-             //Get Filename with extension
-             $filenameWithExt = $request -> file('cover_image')->getClientOriginalName();
-             
-             // Get just file name
-             $filename = pathinfo($filenameWithExt,PATHINFO_FILENAME);
- 
-             // Get just file extension
-             $extension = $request->file('cover_image')->getClientOriginalExtension();
- 
-             // File name to store
-             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-             
-             //uload image
-             $path = $request->file('cover_image')->storeAs('public/cover_images',$fileNameToStore);
- 
-         }
+        if ($request->hasFile('cover_image')) {
+            //Get Filename with extension
+            $filenameWithExt = $request->file('cover_image')->getClientOriginalName();
+
+            // Get just file name
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+
+            // Get just file extension
+            $extension = $request->file('cover_image')->getClientOriginalExtension();
+
+            // File name to store
+            $fileNameToStore = $filename . '_' . time() . '.' . $extension;
+
+            //uload image
+            $path = $request->file('cover_image')->storeAs('public/cover_images', $fileNameToStore);
+
+        }
 
         $notice = Notice::find($id);
         $notice->title = $request->input('title');
         $notice->body = $request->input('body');
-        if($request->hasFile('cover_image'))
-         {  
-             $notice->cover_image = $fileNameToStore;
-         }
+        if ($request->hasFile('cover_image')) {
+            $notice->cover_image = $fileNameToStore;
+        }
         $notice->save();
-        return redirect('/admin/auth/notices/'.$id)->with('success','Notice Updated Successfully!');
+        return redirect('/admin/auth/notices/' . $id)->with('success', 'Notice Updated Successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        
+
         $notice = Notice::find($id);
 
         //Check for correct user
 
-        if(Admin::user()->id !== $notice->user_id){
-            return redirect('/admin/auth/notices')->with('error','Unauthorized Access Denied!');
+        if (Admin::user()->id !== $notice->user_id) {
+            return redirect('/admin/auth/notices')->with('error', 'Unauthorized Access Denied!');
 
         }
-        if($notice->cover_image != 'noimage.jpeg' ){
+        if ($notice->cover_image != 'noimage.jpeg') {
             //Delete Image From Windows Directory
-            Storage::delete('public/cover_images/'.$notice->cover_image);
+            Storage::delete('public/cover_images/' . $notice->cover_image);
         }
 
         $notice->delete();
-        return redirect('/admin/auth/notices')->with('success','Notice Removed Successfully!');
+        return redirect('/admin/auth/notices')->with('success', 'Notice Removed Successfully!');
     }
 }

@@ -11,12 +11,12 @@
 
 namespace Symfony\Component\HttpKernel\EventListener;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Sets the session in the request.
@@ -25,6 +25,15 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 abstract class AbstractSessionListener implements EventSubscriberInterface
 {
+    public static function getSubscribedEvents()
+    {
+        return array(
+            KernelEvents::REQUEST => array('onKernelRequest', 128),
+            // low priority to come after regular response listeners, same as SaveSessionListener
+            KernelEvents::RESPONSE => array('onKernelResponse', -1000),
+        );
+    }
+
     public function onKernelRequest(GetResponseEvent $event)
     {
         if (!$event->isMasterRequest()) {
@@ -39,6 +48,13 @@ abstract class AbstractSessionListener implements EventSubscriberInterface
 
         $request->setSession($session);
     }
+
+    /**
+     * Gets the session object.
+     *
+     * @return SessionInterface|null A SessionInterface instance or null if no session is available
+     */
+    abstract protected function getSession();
 
     public function onKernelResponse(FilterResponseEvent $event)
     {
@@ -57,20 +73,4 @@ abstract class AbstractSessionListener implements EventSubscriberInterface
                 ->headers->addCacheControlDirective('must-revalidate');
         }
     }
-
-    public static function getSubscribedEvents()
-    {
-        return array(
-            KernelEvents::REQUEST => array('onKernelRequest', 128),
-            // low priority to come after regular response listeners, same as SaveSessionListener
-            KernelEvents::RESPONSE => array('onKernelResponse', -1000),
-        );
-    }
-
-    /**
-     * Gets the session object.
-     *
-     * @return SessionInterface|null A SessionInterface instance or null if no session is available
-     */
-    abstract protected function getSession();
 }

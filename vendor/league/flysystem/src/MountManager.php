@@ -3,7 +3,6 @@
 namespace League\Flysystem;
 
 use InvalidArgumentException;
-use League\Flysystem\FilesystemNotFoundException;
 use League\Flysystem\Plugin\PluggableTrait;
 use League\Flysystem\Plugin\PluginNotFoundException;
 
@@ -85,7 +84,7 @@ class MountManager
     /**
      * Mount filesystems.
      *
-     * @param string              $prefix
+     * @param string $prefix
      * @param FilesystemInterface $filesystem
      *
      * @throws InvalidArgumentException
@@ -94,7 +93,7 @@ class MountManager
      */
     public function mountFilesystem($prefix, FilesystemInterface $filesystem)
     {
-        if ( ! is_string($prefix)) {
+        if (!is_string($prefix)) {
             throw new InvalidArgumentException(__METHOD__ . ' expects argument #1 to be a string.');
         }
 
@@ -104,53 +103,8 @@ class MountManager
     }
 
     /**
-     * Get the filesystem with the corresponding prefix.
-     *
-     * @param string $prefix
-     *
-     * @throws FilesystemNotFoundException
-     *
-     * @return FilesystemInterface
-     */
-    public function getFilesystem($prefix)
-    {
-        if ( ! isset($this->filesystems[$prefix])) {
-            throw new FilesystemNotFoundException('No filesystem mounted with prefix ' . $prefix);
-        }
-
-        return $this->filesystems[$prefix];
-    }
-
-    /**
-     * Retrieve the prefix from an arguments array.
-     *
-     * @param array $arguments
-     *
-     * @throws InvalidArgumentException
-     *
-     * @return array [:prefix, :arguments]
-     */
-    public function filterPrefix(array $arguments)
-    {
-        if (empty($arguments)) {
-            throw new InvalidArgumentException('At least one argument needed');
-        }
-
-        $path = array_shift($arguments);
-
-        if ( ! is_string($path)) {
-            throw new InvalidArgumentException('First argument should be a string');
-        }
-
-        list($prefix, $path) = $this->getPrefixAndPath($path);
-        array_unshift($arguments, $path);
-
-        return [$prefix, $arguments];
-    }
-
-    /**
      * @param string $directory
-     * @param bool   $recursive
+     * @param bool $recursive
      *
      * @throws InvalidArgumentException
      * @throws FilesystemNotFoundException
@@ -171,10 +125,44 @@ class MountManager
     }
 
     /**
+     * @param string $path
+     *
+     * @throws InvalidArgumentException
+     *
+     * @return string[] [:prefix, :path]
+     */
+    protected function getPrefixAndPath($path)
+    {
+        if (strpos($path, '://') < 1) {
+            throw new InvalidArgumentException('No prefix detected in path: ' . $path);
+        }
+
+        return explode('://', $path, 2);
+    }
+
+    /**
+     * Get the filesystem with the corresponding prefix.
+     *
+     * @param string $prefix
+     *
+     * @throws FilesystemNotFoundException
+     *
+     * @return FilesystemInterface
+     */
+    public function getFilesystem($prefix)
+    {
+        if (!isset($this->filesystems[$prefix])) {
+            throw new FilesystemNotFoundException('No filesystem mounted with prefix ' . $prefix);
+        }
+
+        return $this->filesystems[$prefix];
+    }
+
+    /**
      * Call forwarder.
      *
      * @param string $method
-     * @param array  $arguments
+     * @param array $arguments
      *
      * @throws InvalidArgumentException
      * @throws FilesystemNotFoundException
@@ -189,42 +177,64 @@ class MountManager
     }
 
     /**
-     * @param string $from
-     * @param string $to
-     * @param array  $config
+     * Retrieve the prefix from an arguments array.
+     *
+     * @param array $arguments
      *
      * @throws InvalidArgumentException
+     *
+     * @return array [:prefix, :arguments]
+     */
+    public function filterPrefix(array $arguments)
+    {
+        if (empty($arguments)) {
+            throw new InvalidArgumentException('At least one argument needed');
+        }
+
+        $path = array_shift($arguments);
+
+        if (!is_string($path)) {
+            throw new InvalidArgumentException('First argument should be a string');
+        }
+
+        list($prefix, $path) = $this->getPrefixAndPath($path);
+        array_unshift($arguments, $path);
+
+        return [$prefix, $arguments];
+    }
+
+    /**
+     * Invoke a plugin on a filesystem mounted on a given prefix.
+     *
+     * @param string $method
+     * @param array $arguments
+     * @param string $prefix
+     *
      * @throws FilesystemNotFoundException
      *
-     * @return bool
+     * @return mixed
      */
-    public function copy($from, $to, array $config = [])
+    public function invokePluginOnFilesystem($method, $arguments, $prefix)
     {
-        list($prefixFrom, $from) = $this->getPrefixAndPath($from);
+        $filesystem = $this->getFilesystem($prefix);
 
-        $buffer = $this->getFilesystem($prefixFrom)->readStream($from);
-
-        if ($buffer === false) {
-            return false;
+        try {
+            return $this->invokePlugin($method, $arguments, $filesystem);
+        } catch (PluginNotFoundException $e) {
+            // Let it pass, it's ok, don't panic.
         }
 
-        list($prefixTo, $to) = $this->getPrefixAndPath($to);
+        $callback = [$filesystem, $method];
 
-        $result = $this->getFilesystem($prefixTo)->writeStream($to, $buffer, $config);
-
-        if (is_resource($buffer)) {
-            fclose($buffer);
-        }
-
-        return $result;
+        return call_user_func_array($callback, $arguments);
     }
 
     /**
      * List with plugin adapter.
      *
-     * @param array  $keys
+     * @param array $keys
      * @param string $directory
-     * @param bool   $recursive
+     * @param bool $recursive
      *
      * @throws InvalidArgumentException
      * @throws FilesystemNotFoundException
@@ -244,7 +254,7 @@ class MountManager
      *
      * @param string $from
      * @param string $to
-     * @param array  $config
+     * @param array $config
      *
      * @throws InvalidArgumentException
      * @throws FilesystemNotFoundException
@@ -277,44 +287,33 @@ class MountManager
     }
 
     /**
-     * Invoke a plugin on a filesystem mounted on a given prefix.
-     *
-     * @param string $method
-     * @param array  $arguments
-     * @param string $prefix
-     *
-     * @throws FilesystemNotFoundException
-     *
-     * @return mixed
-     */
-    public function invokePluginOnFilesystem($method, $arguments, $prefix)
-    {
-        $filesystem = $this->getFilesystem($prefix);
-
-        try {
-            return $this->invokePlugin($method, $arguments, $filesystem);
-        } catch (PluginNotFoundException $e) {
-            // Let it pass, it's ok, don't panic.
-        }
-
-        $callback = [$filesystem, $method];
-
-        return call_user_func_array($callback, $arguments);
-    }
-
-    /**
-     * @param string $path
+     * @param string $from
+     * @param string $to
+     * @param array $config
      *
      * @throws InvalidArgumentException
+     * @throws FilesystemNotFoundException
      *
-     * @return string[] [:prefix, :path]
+     * @return bool
      */
-    protected function getPrefixAndPath($path)
+    public function copy($from, $to, array $config = [])
     {
-        if (strpos($path, '://') < 1) {
-            throw new InvalidArgumentException('No prefix detected in path: ' . $path);
+        list($prefixFrom, $from) = $this->getPrefixAndPath($from);
+
+        $buffer = $this->getFilesystem($prefixFrom)->readStream($from);
+
+        if ($buffer === false) {
+            return false;
         }
 
-        return explode('://', $path, 2);
+        list($prefixTo, $to) = $this->getPrefixAndPath($to);
+
+        $result = $this->getFilesystem($prefixTo)->writeStream($to, $buffer, $config);
+
+        if (is_resource($buffer)) {
+            fclose($buffer);
+        }
+
+        return $result;
     }
 }

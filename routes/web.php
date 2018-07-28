@@ -49,7 +49,7 @@ Route::get('/test', 'PagesController@test');
 
 // Report A Problem
 //Route::get('/contact-msg', ['as'=>'contact-msg','uses'=>'DashboardController@contact']);
-Route::post('/contact-msg', ['as'=>'contact-msg','uses'=>'DashboardController@contact']);
+Route::post('/contact-msg', ['as' => 'contact-msg', 'uses' => 'DashboardController@contact']);
 //Route::post('product_catalog',['as' => 'storeProduct', 'uses' => 'front\ProductCatalogController@storeProduct']);
 
 //Notice routing
@@ -73,8 +73,8 @@ Route::get('/verifyemail/{token}', 'Auth\RegisterController@verify')->name('conf
 
 
 //Admin::routes();
-Route::resource('/admin/auth/routes','BusRoutesController');
-Route::resource('/admin/auth/points','BusPointsController');
-Route::resource('/admin/auth/notices','NoticesController');
+Route::resource('/admin/auth/routes', 'BusRoutesController');
+Route::resource('/admin/auth/points', 'BusPointsController');
+Route::resource('/admin/auth/notices', 'NoticesController');
 /* Route::get('/admin/auth/notices/create','NoticesController@create');
 Route::get('/admin/auth/notices/create','NoticesController@store'); */

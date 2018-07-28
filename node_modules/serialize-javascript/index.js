@@ -7,18 +7,18 @@ See the accompanying LICENSE file for terms.
 'use strict';
 
 // Generate an internal UID to make the regexp pattern harder to guess.
-var UID                 = Math.floor(Math.random() * 0x10000000000).toString(16);
+var UID = Math.floor(Math.random() * 0x10000000000).toString(16);
 var PLACE_HOLDER_REGEXP = new RegExp('"@__(F|R|D)-' + UID + '-(\\d+)__@"', 'g');
 
 var IS_NATIVE_CODE_REGEXP = /\{\s*\[native code\]\s*\}/g;
-var UNSAFE_CHARS_REGEXP   = /[<>\/\u2028\u2029]/g;
+var UNSAFE_CHARS_REGEXP = /[<>\/\u2028\u2029]/g;
 
 // Mapping of unsafe HTML and invalid JavaScript line terminator chars to their
 // Unicode char counterparts which are safe to use in JavaScript strings.
 var ESCAPED_CHARS = {
-    '<'     : '\\u003C',
-    '>'     : '\\u003E',
-    '/'     : '\\u002F',
+    '<': '\\u003C',
+    '>': '\\u003E',
+    '/': '\\u002F',
     '\u2028': '\\u2028',
     '\u2029': '\\u2029'
 };
@@ -36,8 +36,8 @@ module.exports = function serialize(obj, options) {
     }
 
     var functions = [];
-    var regexps   = [];
-    var dates     = [];
+    var regexps = [];
+    var dates = [];
 
     // Returns placeholders for functions and regexps (identified by index)
     // which are later replaced by their string representation.
@@ -52,11 +52,11 @@ module.exports = function serialize(obj, options) {
         var type = typeof origValue;
 
         if (type === 'object') {
-            if(origValue instanceof RegExp) {
+            if (origValue instanceof RegExp) {
                 return '@__R-' + UID + '-' + (regexps.push(origValue) - 1) + '__@';
             }
 
-            if(origValue instanceof Date) {
+            if (origValue instanceof Date) {
                 return '@__D-' + UID + '-' + (dates.push(origValue) - 1) + '__@';
             }
         }
@@ -107,7 +107,7 @@ module.exports = function serialize(obj, options) {
             return regexps[valueIndex].toString();
         }
 
-        var fn           = functions[valueIndex];
+        var fn = functions[valueIndex];
         var serializedFn = fn.toString();
 
         if (IS_NATIVE_CODE_REGEXP.test(serializedFn)) {

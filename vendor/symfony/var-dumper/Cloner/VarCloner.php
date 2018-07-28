@@ -39,10 +39,10 @@ class VarCloner extends AbstractCloner
         $currentDepth = 0;              // Current tree depth
         $currentDepthFinalIndex = 0;    // Final $queue index for current tree depth
         $minimumDepthReached = 0 === $minDepth; // Becomes true when minimum tree depth has been reached
-        $cookie = (object) array();     // Unique object used to detect hard references
+        $cookie = (object)array();     // Unique object used to detect hard references
         $a = null;                      // Array cast for nested structures
         $stub = null;                   // Stub capturing the main properties of an original item value
-                                        // or null if the original value is used directly
+        // or null if the original value is used directly
 
         if (!$gid = self::$gid) {
             $gid = self::$gid = uniqid(mt_rand(), true); // Unique string used to detect the special $GLOBALS variable
@@ -201,7 +201,7 @@ class VarCloner extends AbstractCloner
                         break;
 
                     default: // resource
-                        if (empty($resRefs[$h = (int) $v])) {
+                        if (empty($resRefs[$h = (int)$v])) {
                             $stub = new Stub();
                             $stub->type = Stub::TYPE_RESOURCE;
                             if ('Unknown' === $stub->class = @\get_resource_type($v)) {
@@ -272,9 +272,9 @@ class VarCloner extends AbstractCloner
                     foreach (array($k => true) as $gk => $gv) {
                     }
                     if ($gk !== $k) {
-                        $vals = (object) $vals;
+                        $vals = (object)$vals;
                         $vals->{$k} = $refs[++$j];
-                        $vals = (array) $vals;
+                        $vals = (array)$vals;
                     } else {
                         $vals[$k] = $refs[++$j];
                     }

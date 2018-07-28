@@ -25,8 +25,8 @@ class Debug
      *
      * This method registers an error handler and an exception handler.
      *
-     * @param int  $errorReportingLevel The level of error reporting you want
-     * @param bool $displayErrors       Whether to display errors (for development) or just log them (for production)
+     * @param int $errorReportingLevel The level of error reporting you want
+     * @param bool $displayErrors Whether to display errors (for development) or just log them (for production)
      */
     public static function enable($errorReportingLevel = E_ALL, $displayErrors = true)
     {

@@ -32,8 +32,8 @@ class ConsoleOutput extends StreamOutput implements ConsoleOutputInterface
     private $stderr;
 
     /**
-     * @param int                           $verbosity The verbosity level (one of the VERBOSITY constants in OutputInterface)
-     * @param bool|null                     $decorated Whether to decorate messages (null for auto-guessing)
+     * @param int $verbosity The verbosity level (one of the VERBOSITY constants in OutputInterface)
+     * @param bool|null $decorated Whether to decorate messages (null for auto-guessing)
      * @param OutputFormatterInterface|null $formatter Output formatter instance (null to use default OutputFormatter)
      */
     public function __construct(int $verbosity = self::VERBOSITY_NORMAL, bool $decorated = null, OutputFormatterInterface $formatter = null)
@@ -46,6 +46,65 @@ class ConsoleOutput extends StreamOutput implements ConsoleOutputInterface
         if (null === $decorated) {
             $this->setDecorated($actualDecorated && $this->stderr->isDecorated());
         }
+    }
+
+    /**
+     * @return resource
+     */
+    private function openOutputStream()
+    {
+        if (!$this->hasStdoutSupport()) {
+            return fopen('php://output', 'w');
+        }
+
+        return @fopen('php://stdout', 'w') ?: fopen('php://output', 'w');
+    }
+
+    /**
+     * Returns true if current environment supports writing console output to
+     * STDOUT.
+     *
+     * @return bool
+     */
+    protected function hasStdoutSupport()
+    {
+        return false === $this->isRunningOS400();
+    }
+
+    /**
+     * Checks if current executing environment is IBM iSeries (OS400), which
+     * doesn't properly convert character-encodings between ASCII to EBCDIC.
+     *
+     * @return bool
+     */
+    private function isRunningOS400()
+    {
+        $checks = array(
+            function_exists('php_uname') ? php_uname('s') : '',
+            getenv('OSTYPE'),
+            PHP_OS,
+        );
+
+        return false !== stripos(implode(';', $checks), 'OS400');
+    }
+
+    /**
+     * @return resource
+     */
+    private function openErrorStream()
+    {
+        return fopen($this->hasStderrSupport() ? 'php://stderr' : 'php://output', 'w');
+    }
+
+    /**
+     * Returns true if current environment supports writing console output to
+     * STDERR.
+     *
+     * @return bool
+     */
+    protected function hasStderrSupport()
+    {
+        return false === $this->isRunningOS400();
     }
 
     /**
@@ -89,64 +148,5 @@ class ConsoleOutput extends StreamOutput implements ConsoleOutputInterface
     public function setErrorOutput(OutputInterface $error)
     {
         $this->stderr = $error;
-    }
-
-    /**
-     * Returns true if current environment supports writing console output to
-     * STDOUT.
-     *
-     * @return bool
-     */
-    protected function hasStdoutSupport()
-    {
-        return false === $this->isRunningOS400();
-    }
-
-    /**
-     * Returns true if current environment supports writing console output to
-     * STDERR.
-     *
-     * @return bool
-     */
-    protected function hasStderrSupport()
-    {
-        return false === $this->isRunningOS400();
-    }
-
-    /**
-     * Checks if current executing environment is IBM iSeries (OS400), which
-     * doesn't properly convert character-encodings between ASCII to EBCDIC.
-     *
-     * @return bool
-     */
-    private function isRunningOS400()
-    {
-        $checks = array(
-            function_exists('php_uname') ? php_uname('s') : '',
-            getenv('OSTYPE'),
-            PHP_OS,
-        );
-
-        return false !== stripos(implode(';', $checks), 'OS400');
-    }
-
-    /**
-     * @return resource
-     */
-    private function openOutputStream()
-    {
-        if (!$this->hasStdoutSupport()) {
-            return fopen('php://output', 'w');
-        }
-
-        return @fopen('php://stdout', 'w') ?: fopen('php://output', 'w');
-    }
-
-    /**
-     * @return resource
-     */
-    private function openErrorStream()
-    {
-        return fopen($this->hasStderrSupport() ? 'php://stderr' : 'php://output', 'w');
     }
 }

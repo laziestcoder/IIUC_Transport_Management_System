@@ -8,15 +8,6 @@ use Illuminate\Support\Facades\Route;
 
 abstract class Extension
 {
-    public static function config($key, $default = null)
-    {
-        $name = array_search(get_called_class(), Admin::$extensions);
-
-        $key = sprintf('admin.extensions.%s.%s', strtolower($name), $key);
-
-        return config($key, $default);
-    }
-
     public static function import()
     {
     }
@@ -33,25 +24,34 @@ abstract class Extension
         });
     }
 
+    public static function config($key, $default = null)
+    {
+        $name = array_search(get_called_class(), Admin::$extensions);
+
+        $key = sprintf('admin.extensions.%s.%s', strtolower($name), $key);
+
+        return config($key, $default);
+    }
+
     protected static function createMenu($title, $uri, $icon = 'fa-bars', $parentId = 0)
     {
         $lastOrder = Menu::max('order');
 
         Menu::create([
             'parent_id' => $parentId,
-            'order'     => $lastOrder + 1,
-            'title'     => $title,
-            'icon'      => $icon,
-            'uri'       => $uri,
+            'order' => $lastOrder + 1,
+            'title' => $title,
+            'icon' => $icon,
+            'uri' => $uri,
         ]);
     }
 
     protected static function createPermission($name, $slug, $path)
     {
         Permission::create([
-            'name'      => $name,
-            'slug'      => $slug,
-            'http_path' => '/'.trim($path, '/'),
+            'name' => $name,
+            'slug' => $slug,
+            'http_path' => '/' . trim($path, '/'),
         ]);
     }
 }

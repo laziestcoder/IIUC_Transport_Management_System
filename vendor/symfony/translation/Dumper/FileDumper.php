@@ -11,9 +11,9 @@
 
 namespace Symfony\Component\Translation\Dumper;
 
-use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Exception\InvalidArgumentException;
 use Symfony\Component\Translation\Exception\RuntimeException;
+use Symfony\Component\Translation\MessageCatalogue;
 
 /**
  * FileDumper is an implementation of DumperInterface that dump a message catalogue to file(s).
@@ -68,7 +68,7 @@ abstract class FileDumper implements DumperInterface
 
         // save a file for each domain
         foreach ($messages->getDomains() as $domain) {
-            $fullpath = $options['path'].'/'.$this->getRelativePath($domain, $messages->getLocale());
+            $fullpath = $options['path'] . '/' . $this->getRelativePath($domain, $messages->getLocale());
             if (!file_exists($fullpath)) {
                 $directory = dirname($fullpath);
                 if (!file_exists($directory) && !@mkdir($directory, 0777, true)) {
@@ -81,24 +81,6 @@ abstract class FileDumper implements DumperInterface
     }
 
     /**
-     * Transforms a domain of a message catalogue to its string representation.
-     *
-     * @param MessageCatalogue $messages
-     * @param string           $domain
-     * @param array            $options
-     *
-     * @return string representation
-     */
-    abstract public function formatCatalogue(MessageCatalogue $messages, $domain, array $options = array());
-
-    /**
-     * Gets the file extension of the dumper.
-     *
-     * @return string file extension
-     */
-    abstract protected function getExtension();
-
-    /**
      * Gets the relative file path using the template.
      */
     private function getRelativePath(string $domain, string $locale): string
@@ -109,4 +91,22 @@ abstract class FileDumper implements DumperInterface
             '%extension%' => $this->getExtension(),
         ));
     }
+
+    /**
+     * Gets the file extension of the dumper.
+     *
+     * @return string file extension
+     */
+    abstract protected function getExtension();
+
+    /**
+     * Transforms a domain of a message catalogue to its string representation.
+     *
+     * @param MessageCatalogue $messages
+     * @param string $domain
+     * @param array $options
+     *
+     * @return string representation
+     */
+    abstract public function formatCatalogue(MessageCatalogue $messages, $domain, array $options = array());
 }

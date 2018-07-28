@@ -42,7 +42,7 @@ class XmlReaderCaster
 
     public static function castXmlReader(\XMLReader $reader, array $a, Stub $stub, $isNested)
     {
-        $props = Caster::PREFIX_VIRTUAL.'parserProperties';
+        $props = Caster::PREFIX_VIRTUAL . 'parserProperties';
         $info = array(
             'localName' => $reader->localName,
             'prefix' => $reader->prefix,

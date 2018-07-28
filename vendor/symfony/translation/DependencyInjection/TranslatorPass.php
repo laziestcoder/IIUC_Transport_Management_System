@@ -11,10 +11,10 @@
 
 namespace Symfony\Component\Translation\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 class TranslatorPass implements CompilerPassInterface
 {
@@ -61,8 +61,7 @@ class TranslatorPass implements CompilerPassInterface
         $container
             ->findDefinition($this->translatorServiceId)
             ->replaceArgument(0, ServiceLocatorTagPass::register($container, $loaderRefs))
-            ->replaceArgument(3, $loaders)
-        ;
+            ->replaceArgument(3, $loaders);
 
         if (!$container->hasParameter('twig.default_path')) {
             return;

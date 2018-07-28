@@ -13,7 +13,8 @@
         @endif
         <div class="container">
             <div class="userinfo">
-                <b><h3>Basic Info:</h3></b><hr>
+                <b><h3>Basic Info:</h3></b>
+                <hr>
 
                 <table class="table-active">
                     <thead class="">
@@ -81,19 +82,19 @@
                         </td>
                         <td>
                             <div class="userRouteForm">
-                            @if(count( $BusPoints ) > 0  )
-                                <select name="pointnamesatp" required="True">
-                                    <option value="" disabled="true" selected="true" required>Select A Point Name
-                                    </option>
-                                    @foreach ($BusPoints as $point)
-                                        <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                    @endforeach
-                                </select>
-                            @else
-                                <select name="pointname">
-                                    <option value="" disabled="true" selected="true">No Point Available</option>
-                                </select>
-                            @endif
+                                @if(count( $BusPoints ) > 0  )
+                                    <select name="pointnamesatp" required="True">
+                                        <option value="" disabled="true" selected="true" required>Select A Point Name
+                                        </option>
+                                        @foreach ($BusPoints as $point)
+                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
+                                        @endforeach
+                                    </select>
+                                @else
+                                    <select name="pointname">
+                                        <option value="" disabled="true" selected="true">No Point Available</option>
+                                    </select>
+                                @endif
                             </div>
                         </td>
                         <td>

@@ -33,7 +33,7 @@ class RouteCollectionBuilderTest extends TestCase
         $originalRoute = new Route('/foo/path');
         $expectedCollection = new RouteCollection();
         $expectedCollection->add('one_test_route', $originalRoute);
-        $expectedCollection->addResource(new FileResource(__DIR__.'/Fixtures/file_resource.yml'));
+        $expectedCollection->addResource(new FileResource(__DIR__ . '/Fixtures/file_resource.yml'));
 
         $resolvedLoader
             ->expects($this->once())
@@ -68,7 +68,7 @@ class RouteCollectionBuilderTest extends TestCase
 
     public function testImportAddResources()
     {
-        $routeCollectionBuilder = new RouteCollectionBuilder(new YamlFileLoader(new FileLocator(array(__DIR__.'/Fixtures/'))));
+        $routeCollectionBuilder = new RouteCollectionBuilder(new YamlFileLoader(new FileLocator(array(__DIR__ . '/Fixtures/'))));
         $routeCollectionBuilder->import('file_resource.yml');
         $routeCollection = $routeCollectionBuilder->build();
 

@@ -43,10 +43,24 @@ abstract class AbstractFileExtractor
         return $files;
     }
 
+    /**
+     * @param string $file
+     *
+     * @return bool
+     */
+    abstract protected function canBeExtracted($file);
+
     private function toSplFileInfo(string $file): \SplFileInfo
     {
         return ($file instanceof \SplFileInfo) ? $file : new \SplFileInfo($file);
     }
+
+    /**
+     * @param string|array $resource Files, a file or a directory
+     *
+     * @return array files to be extracted
+     */
+    abstract protected function extractFromDirectory($resource);
 
     /**
      * @param string $file
@@ -63,18 +77,4 @@ abstract class AbstractFileExtractor
 
         return true;
     }
-
-    /**
-     * @param string $file
-     *
-     * @return bool
-     */
-    abstract protected function canBeExtracted($file);
-
-    /**
-     * @param string|array $resource Files, a file or a directory
-     *
-     * @return array files to be extracted
-     */
-    abstract protected function extractFromDirectory($resource);
 }

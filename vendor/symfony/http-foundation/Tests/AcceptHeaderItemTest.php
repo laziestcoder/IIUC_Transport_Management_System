@@ -54,7 +54,7 @@ class AcceptHeaderItemTest extends TestCase
     public function testToString($value, array $attributes, $string)
     {
         $item = new AcceptHeaderItem($value, $attributes);
-        $this->assertEquals($string, (string) $item);
+        $this->assertEquals($string, (string)$item);
     }
 
     public function provideToStringData()

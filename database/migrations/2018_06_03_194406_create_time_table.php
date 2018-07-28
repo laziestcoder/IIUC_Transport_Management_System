@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateTimeTable extends Migration
 {
@@ -16,8 +16,6 @@ class CreateTimeTable extends Migration
         Schema::create('time', function (Blueprint $table) {
             $table->increments('id');
             $table->time('time');
-            $table->boolean('toiiuc')->default(null);
-            $table->boolean('fromiiuc')->default(null);
             $table->timestamps();
         });
     }

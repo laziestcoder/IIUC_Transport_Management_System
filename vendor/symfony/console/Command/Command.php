@@ -11,16 +11,16 @@
 
 namespace Symfony\Component\Console\Command;
 
-use Symfony\Component\Console\Exception\ExceptionInterface;
-use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\LogicException;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Base class for all commands.
@@ -51,17 +51,6 @@ class Command
     private $helperSet;
 
     /**
-     * @return string|null The default command name or null when no default name is set
-     */
-    public static function getDefaultName()
-    {
-        $class = get_called_class();
-        $r = new \ReflectionProperty($class, 'defaultName');
-
-        return $class === $r->class ? static::$defaultName : null;
-    }
-
-    /**
      * @param string|null $name The name of the command; passing null means it must be set in configure()
      *
      * @throws LogicException When the command name is empty
@@ -78,6 +67,24 @@ class Command
     }
 
     /**
+     * @return string|null The default command name or null when no default name is set
+     */
+    public static function getDefaultName()
+    {
+        $class = get_called_class();
+        $r = new \ReflectionProperty($class, 'defaultName');
+
+        return $class === $r->class ? static::$defaultName : null;
+    }
+
+    /**
+     * Configures the current command.
+     */
+    protected function configure()
+    {
+    }
+
+    /**
      * Ignores validation errors.
      *
      * This is mainly useful for the help command.
@@ -85,21 +92,6 @@ class Command
     public function ignoreValidationErrors()
     {
         $this->ignoreValidationErrors = true;
-    }
-
-    public function setApplication(Application $application = null)
-    {
-        $this->application = $application;
-        if ($application) {
-            $this->setHelperSet($application->getHelperSet());
-        } else {
-            $this->helperSet = null;
-        }
-    }
-
-    public function setHelperSet(HelperSet $helperSet)
-    {
-        $this->helperSet = $helperSet;
     }
 
     /**
@@ -112,6 +104,11 @@ class Command
         return $this->helperSet;
     }
 
+    public function setHelperSet(HelperSet $helperSet)
+    {
+        $this->helperSet = $helperSet;
+    }
+
     /**
      * Gets the application instance for this command.
      *
@@ -120,6 +117,16 @@ class Command
     public function getApplication()
     {
         return $this->application;
+    }
+
+    public function setApplication(Application $application = null)
+    {
+        $this->application = $application;
+        if ($application) {
+            $this->setHelperSet($application->getHelperSet());
+        } else {
+            $this->helperSet = null;
+        }
     }
 
     /**
@@ -133,53 +140,6 @@ class Command
     public function isEnabled()
     {
         return true;
-    }
-
-    /**
-     * Configures the current command.
-     */
-    protected function configure()
-    {
-    }
-
-    /**
-     * Executes the current command.
-     *
-     * This method is not abstract because you can use this class
-     * as a concrete class. In this case, instead of defining the
-     * execute() method, you set the code to execute by passing
-     * a Closure to the setCode() method.
-     *
-     * @return null|int null or 0 if everything went fine, or an error code
-     *
-     * @throws LogicException When this abstract method is not implemented
-     *
-     * @see setCode()
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        throw new LogicException('You must override the execute() method in the concrete command class.');
-    }
-
-    /**
-     * Interacts with the user.
-     *
-     * This method is executed before the InputDefinition is validated.
-     * This means that this is the only place where the command can
-     * interactively ask for values of missing required arguments.
-     */
-    protected function interact(InputInterface $input, OutputInterface $output)
-    {
-    }
-
-    /**
-     * Initializes the command just after the input has been validated.
-     *
-     * This is mainly useful when a lot of commands extends one main command
-     * where some things need to be initialized based on the input arguments and options.
-     */
-    protected function initialize(InputInterface $input, OutputInterface $output)
-    {
     }
 
     /**
@@ -251,7 +211,125 @@ class Command
             $statusCode = $this->execute($input, $output);
         }
 
-        return is_numeric($statusCode) ? (int) $statusCode : 0;
+        return is_numeric($statusCode) ? (int)$statusCode : 0;
+    }
+
+    /**
+     * Returns the synopsis for the command.
+     *
+     * @param bool $short Whether to show the short version of the synopsis (with options folded) or not
+     *
+     * @return string The synopsis
+     */
+    public function getSynopsis($short = false)
+    {
+        $key = $short ? 'short' : 'long';
+
+        if (!isset($this->synopsis[$key])) {
+            $this->synopsis[$key] = trim(sprintf('%s %s', $this->name, $this->definition->getSynopsis($short)));
+        }
+
+        return $this->synopsis[$key];
+    }
+
+    /**
+     * Merges the application definition with the command definition.
+     *
+     * This method is not part of public API and should not be used directly.
+     *
+     * @param bool $mergeArgs Whether to merge or not the Application definition arguments to Command definition arguments
+     */
+    public function mergeApplicationDefinition($mergeArgs = true)
+    {
+        if (null === $this->application || (true === $this->applicationDefinitionMerged && ($this->applicationDefinitionMergedWithArgs || !$mergeArgs))) {
+            return;
+        }
+
+        $this->definition->addOptions($this->application->getDefinition()->getOptions());
+
+        if ($mergeArgs) {
+            $currentArguments = $this->definition->getArguments();
+            $this->definition->setArguments($this->application->getDefinition()->getArguments());
+            $this->definition->addArguments($currentArguments);
+        }
+
+        $this->applicationDefinitionMerged = true;
+        if ($mergeArgs) {
+            $this->applicationDefinitionMergedWithArgs = true;
+        }
+    }
+
+    /**
+     * Initializes the command just after the input has been validated.
+     *
+     * This is mainly useful when a lot of commands extends one main command
+     * where some things need to be initialized based on the input arguments and options.
+     */
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+    }
+
+    /**
+     * Interacts with the user.
+     *
+     * This method is executed before the InputDefinition is validated.
+     * This means that this is the only place where the command can
+     * interactively ask for values of missing required arguments.
+     */
+    protected function interact(InputInterface $input, OutputInterface $output)
+    {
+    }
+
+    /**
+     * Returns the command name.
+     *
+     * @return string The command name
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Sets the name of the command.
+     *
+     * This method can set both the namespace and the name if
+     * you separate them by a colon (:)
+     *
+     *     $command->setName('foo:bar');
+     *
+     * @param string $name The command name
+     *
+     * @return $this
+     *
+     * @throws InvalidArgumentException When the name is invalid
+     */
+    public function setName($name)
+    {
+        $this->validateName($name);
+
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Executes the current command.
+     *
+     * This method is not abstract because you can use this class
+     * as a concrete class. In this case, instead of defining the
+     * execute() method, you set the code to execute by passing
+     * a Closure to the setCode() method.
+     *
+     * @return null|int null or 0 if everything went fine, or an error code
+     *
+     * @throws LogicException When this abstract method is not implemented
+     *
+     * @see setCode()
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        throw new LogicException('You must override the execute() method in the concrete command class.');
     }
 
     /**
@@ -283,30 +361,28 @@ class Command
     }
 
     /**
-     * Merges the application definition with the command definition.
+     * Gets the InputDefinition to be used to create representations of this Command.
+     *
+     * Can be overridden to provide the original command representation when it would otherwise
+     * be changed by merging with the application InputDefinition.
      *
      * This method is not part of public API and should not be used directly.
      *
-     * @param bool $mergeArgs Whether to merge or not the Application definition arguments to Command definition arguments
+     * @return InputDefinition An InputDefinition instance
      */
-    public function mergeApplicationDefinition($mergeArgs = true)
+    public function getNativeDefinition()
     {
-        if (null === $this->application || (true === $this->applicationDefinitionMerged && ($this->applicationDefinitionMergedWithArgs || !$mergeArgs))) {
-            return;
-        }
+        return $this->getDefinition();
+    }
 
-        $this->definition->addOptions($this->application->getDefinition()->getOptions());
-
-        if ($mergeArgs) {
-            $currentArguments = $this->definition->getArguments();
-            $this->definition->setArguments($this->application->getDefinition()->getArguments());
-            $this->definition->addArguments($currentArguments);
-        }
-
-        $this->applicationDefinitionMerged = true;
-        if ($mergeArgs) {
-            $this->applicationDefinitionMergedWithArgs = true;
-        }
+    /**
+     * Gets the InputDefinition attached to this Command.
+     *
+     * @return InputDefinition An InputDefinition instance
+     */
+    public function getDefinition()
+    {
+        return $this->definition;
     }
 
     /**
@@ -330,37 +406,12 @@ class Command
     }
 
     /**
-     * Gets the InputDefinition attached to this Command.
-     *
-     * @return InputDefinition An InputDefinition instance
-     */
-    public function getDefinition()
-    {
-        return $this->definition;
-    }
-
-    /**
-     * Gets the InputDefinition to be used to create representations of this Command.
-     *
-     * Can be overridden to provide the original command representation when it would otherwise
-     * be changed by merging with the application InputDefinition.
-     *
-     * This method is not part of public API and should not be used directly.
-     *
-     * @return InputDefinition An InputDefinition instance
-     */
-    public function getNativeDefinition()
-    {
-        return $this->getDefinition();
-    }
-
-    /**
      * Adds an argument.
      *
-     * @param string $name        The argument name
-     * @param int    $mode        The argument mode: InputArgument::REQUIRED or InputArgument::OPTIONAL
+     * @param string $name The argument name
+     * @param int $mode The argument mode: InputArgument::REQUIRED or InputArgument::OPTIONAL
      * @param string $description A description text
-     * @param mixed  $default     The default value (for InputArgument::OPTIONAL mode only)
+     * @param mixed $default The default value (for InputArgument::OPTIONAL mode only)
      *
      * @return $this
      */
@@ -374,40 +425,17 @@ class Command
     /**
      * Adds an option.
      *
-     * @param string $name        The option name
-     * @param string $shortcut    The shortcut (can be null)
-     * @param int    $mode        The option mode: One of the InputOption::VALUE_* constants
+     * @param string $name The option name
+     * @param string $shortcut The shortcut (can be null)
+     * @param int $mode The option mode: One of the InputOption::VALUE_* constants
      * @param string $description A description text
-     * @param mixed  $default     The default value (must be null for InputOption::VALUE_NONE)
+     * @param mixed $default The default value (must be null for InputOption::VALUE_NONE)
      *
      * @return $this
      */
     public function addOption($name, $shortcut = null, $mode = null, $description = '', $default = null)
     {
         $this->definition->addOption(new InputOption($name, $shortcut, $mode, $description, $default));
-
-        return $this;
-    }
-
-    /**
-     * Sets the name of the command.
-     *
-     * This method can set both the namespace and the name if
-     * you separate them by a colon (:)
-     *
-     *     $command->setName('foo:bar');
-     *
-     * @param string $name The command name
-     *
-     * @return $this
-     *
-     * @throws InvalidArgumentException When the name is invalid
-     */
-    public function setName($name)
-    {
-        $this->validateName($name);
-
-        $this->name = $name;
 
         return $this;
     }
@@ -432,13 +460,11 @@ class Command
     }
 
     /**
-     * Returns the command name.
-     *
-     * @return string The command name
+     * @return bool whether the command should be publicly shown or not
      */
-    public function getName()
+    public function isHidden()
     {
-        return $this->name;
+        return $this->hidden;
     }
 
     /**
@@ -448,65 +474,9 @@ class Command
      */
     public function setHidden($hidden)
     {
-        $this->hidden = (bool) $hidden;
+        $this->hidden = (bool)$hidden;
 
         return $this;
-    }
-
-    /**
-     * @return bool whether the command should be publicly shown or not
-     */
-    public function isHidden()
-    {
-        return $this->hidden;
-    }
-
-    /**
-     * Sets the description for the command.
-     *
-     * @param string $description The description for the command
-     *
-     * @return $this
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Returns the description for the command.
-     *
-     * @return string The description for the command
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * Sets the help for the command.
-     *
-     * @param string $help The help for the command
-     *
-     * @return $this
-     */
-    public function setHelp($help)
-    {
-        $this->help = $help;
-
-        return $this;
-    }
-
-    /**
-     * Returns the help for the command.
-     *
-     * @return string The help for the command
-     */
-    public function getHelp()
-    {
-        return $this->help;
     }
 
     /**
@@ -525,10 +495,68 @@ class Command
         );
         $replacements = array(
             $name,
-            $_SERVER['PHP_SELF'].' '.$name,
+            $_SERVER['PHP_SELF'] . ' ' . $name,
         );
 
         return str_replace($placeholders, $replacements, $this->getHelp() ?: $this->getDescription());
+    }
+
+    /**
+     * Returns the help for the command.
+     *
+     * @return string The help for the command
+     */
+    public function getHelp()
+    {
+        return $this->help;
+    }
+
+    /**
+     * Sets the help for the command.
+     *
+     * @param string $help The help for the command
+     *
+     * @return $this
+     */
+    public function setHelp($help)
+    {
+        $this->help = $help;
+
+        return $this;
+    }
+
+    /**
+     * Returns the description for the command.
+     *
+     * @return string The description for the command
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * Sets the description for the command.
+     *
+     * @param string $description The description for the command
+     *
+     * @return $this
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Returns the aliases for the command.
+     *
+     * @return array An array of aliases for the command
+     */
+    public function getAliases()
+    {
+        return $this->aliases;
     }
 
     /**
@@ -556,31 +584,17 @@ class Command
     }
 
     /**
-     * Returns the aliases for the command.
+     * Validates a command name.
      *
-     * @return array An array of aliases for the command
+     * It must be non-empty and parts can optionally be separated by ":".
+     *
+     * @throws InvalidArgumentException When the name is invalid
      */
-    public function getAliases()
+    private function validateName(string $name)
     {
-        return $this->aliases;
-    }
-
-    /**
-     * Returns the synopsis for the command.
-     *
-     * @param bool $short Whether to show the short version of the synopsis (with options folded) or not
-     *
-     * @return string The synopsis
-     */
-    public function getSynopsis($short = false)
-    {
-        $key = $short ? 'short' : 'long';
-
-        if (!isset($this->synopsis[$key])) {
-            $this->synopsis[$key] = trim(sprintf('%s %s', $this->name, $this->definition->getSynopsis($short)));
+        if (!preg_match('/^[^\:]++(\:[^\:]++)*$/', $name)) {
+            throw new InvalidArgumentException(sprintf('Command name "%s" is invalid.', $name));
         }
-
-        return $this->synopsis[$key];
     }
 
     /**
@@ -628,19 +642,5 @@ class Command
         }
 
         return $this->helperSet->get($name);
-    }
-
-    /**
-     * Validates a command name.
-     *
-     * It must be non-empty and parts can optionally be separated by ":".
-     *
-     * @throws InvalidArgumentException When the name is invalid
-     */
-    private function validateName(string $name)
-    {
-        if (!preg_match('/^[^\:]++(\:[^\:]++)*$/', $name)) {
-            throw new InvalidArgumentException(sprintf('Command name "%s" is invalid.', $name));
-        }
     }
 }

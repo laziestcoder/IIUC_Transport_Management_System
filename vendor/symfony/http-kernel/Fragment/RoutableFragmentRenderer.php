@@ -11,8 +11,8 @@
 
 namespace Symfony\Component\HttpKernel\Fragment;
 
-use Symfony\Component\HttpKernel\Controller\ControllerReference;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Controller\ControllerReference;
 use Symfony\Component\HttpKernel\EventListener\FragmentListener;
 
 /**
@@ -40,9 +40,9 @@ abstract class RoutableFragmentRenderer implements FragmentRendererInterface
      * Generates a fragment URI for a given controller.
      *
      * @param ControllerReference $reference A ControllerReference instance
-     * @param Request             $request   A Request instance
-     * @param bool                $absolute  Whether to generate an absolute URL or not
-     * @param bool                $strict    Whether to allow non-scalar attributes or not
+     * @param Request $request A Request instance
+     * @param bool $absolute Whether to generate an absolute URL or not
+     * @param bool $strict Whether to allow non-scalar attributes or not
      *
      * @return string A fragment URI
      */
@@ -68,13 +68,13 @@ abstract class RoutableFragmentRenderer implements FragmentRendererInterface
 
         $reference->query['_path'] = http_build_query($reference->attributes, '', '&');
 
-        $path = $this->fragmentPath.'?'.http_build_query($reference->query, '', '&');
+        $path = $this->fragmentPath . '?' . http_build_query($reference->query, '', '&');
 
         if ($absolute) {
             return $request->getUriForPath($path);
         }
 
-        return $request->getBaseUrl().$path;
+        return $request->getBaseUrl() . $path;
     }
 
     private function checkNonScalar($values)

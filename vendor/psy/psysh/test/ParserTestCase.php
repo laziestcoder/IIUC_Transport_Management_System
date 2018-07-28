@@ -21,6 +21,13 @@ class ParserTestCase extends \PHPUnit\Framework\TestCase
     private $parser;
     private $printer;
 
+    protected function assertProcessesAs($from, $to)
+    {
+        $stmts = $this->parse($from);
+        $stmts = $this->traverse($stmts);
+        $this->assertSame($to, $this->prettyPrint($stmts));
+    }
+
     protected function parse($code, $prefix = '<?php ')
     {
         $code = $prefix . $code;
@@ -40,6 +47,23 @@ class ParserTestCase extends \PHPUnit\Framework\TestCase
         }
     }
 
+    private function getParser()
+    {
+        if (!isset($this->parser)) {
+            $parserFactory = new ParserFactory();
+            $this->parser = $parserFactory->createParser();
+        }
+
+        return $this->parser;
+    }
+
+    private function parseErrorIsEOF(\PhpParser\Error $e)
+    {
+        $msg = $e->getRawMessage();
+
+        return ($msg === 'Unexpected token EOF') || (strpos($msg, 'Syntax error, unexpected EOF') !== false);
+    }
+
     protected function traverse(array $stmts)
     {
         if (!isset($this->traverser)) {
@@ -54,23 +78,6 @@ class ParserTestCase extends \PHPUnit\Framework\TestCase
         return $this->getPrinter()->prettyPrint($stmts);
     }
 
-    protected function assertProcessesAs($from, $to)
-    {
-        $stmts = $this->parse($from);
-        $stmts = $this->traverse($stmts);
-        $this->assertSame($to, $this->prettyPrint($stmts));
-    }
-
-    private function getParser()
-    {
-        if (!isset($this->parser)) {
-            $parserFactory = new ParserFactory();
-            $this->parser  = $parserFactory->createParser();
-        }
-
-        return $this->parser;
-    }
-
     private function getPrinter()
     {
         if (!isset($this->printer)) {
@@ -78,12 +85,5 @@ class ParserTestCase extends \PHPUnit\Framework\TestCase
         }
 
         return $this->printer;
-    }
-
-    private function parseErrorIsEOF(\PhpParser\Error $e)
-    {
-        $msg = $e->getRawMessage();
-
-        return ($msg === 'Unexpected token EOF') || (strpos($msg, 'Syntax error, unexpected EOF') !== false);
     }
 }

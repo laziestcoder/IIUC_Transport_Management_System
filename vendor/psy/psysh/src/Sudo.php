@@ -39,7 +39,7 @@ class Sudo
      *
      * @param object $object
      * @param string $property property name
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return mixed Value of $object->property
      */
@@ -57,14 +57,14 @@ class Sudo
      * Call a method on an object, bypassing visibility restrictions.
      *
      * @param object $object
-     * @param string $method  method name
-     * @param mixed  $args...
+     * @param string $method method name
+     * @param mixed $args ...
      *
      * @return mixed
      */
     public static function callMethod($object, $method, $args = null)
     {
-        $args   = func_get_args();
+        $args = func_get_args();
         $object = array_shift($args);
         $method = array_shift($args);
 
@@ -78,8 +78,8 @@ class Sudo
     /**
      * Fetch a property of a class, bypassing visibility restrictions.
      *
-     * @param string|object $class    class name or instance
-     * @param string        $property property name
+     * @param string|object $class class name or instance
+     * @param string $property property name
      *
      * @return mixed Value of $class::$property
      */
@@ -95,9 +95,9 @@ class Sudo
     /**
      * Assign the value of a static property of a class, bypassing visibility restrictions.
      *
-     * @param string|object $class    class name or instance
-     * @param string        $property property name
-     * @param mixed         $value
+     * @param string|object $class class name or instance
+     * @param string $property property name
+     * @param mixed $value
      *
      * @return mixed Value of $class::$property
      */
@@ -114,16 +114,16 @@ class Sudo
     /**
      * Call a static method on a class, bypassing visibility restrictions.
      *
-     * @param string|object $class   class name or instance
-     * @param string        $method  method name
-     * @param mixed         $args...
+     * @param string|object $class class name or instance
+     * @param string $method method name
+     * @param mixed $args ...
      *
      * @return mixed
      */
     public static function callStatic($class, $method, $args = null)
     {
-        $args   = func_get_args();
-        $class  = array_shift($args);
+        $args = func_get_args();
+        $class = array_shift($args);
         $method = array_shift($args);
 
         $refl = new \ReflectionClass($class);
@@ -137,7 +137,7 @@ class Sudo
      * Fetch a class constant, bypassing visibility restrictions.
      *
      * @param string|object $class class name or instance
-     * @param string        $const constant name
+     * @param string $const constant name
      *
      * @return mixed
      */

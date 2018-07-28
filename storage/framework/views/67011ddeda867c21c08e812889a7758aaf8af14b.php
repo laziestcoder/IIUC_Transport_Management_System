@@ -48,18 +48,19 @@
                         </li>
                         <li class="user-footer">
                             <div class="pull-left">
-                                <a href="<?php echo e(admin_base_path('auth/setting')); ?>" class="btn btn-default btn-flat"><?php echo e(trans('admin.setting')); ?></a>
+                                <a href="<?php echo e(admin_base_path('auth/setting')); ?>"
+                                   class="btn btn-default btn-flat"><?php echo e(trans('admin.setting')); ?></a>
                             </div>
                             <div class="pull-right">
-                                <a href="<?php echo e(admin_base_path('auth/logout')); ?>" class="btn btn-default btn-flat"><?php echo e(trans('admin.logout')); ?></a>
+                                <a href="<?php echo e(admin_base_path('auth/logout')); ?>"
+                                   class="btn btn-default btn-flat"><?php echo e(trans('admin.logout')); ?></a>
                             </div>
                         </li>
                     </ul>
                 </li>
                 <!-- Control Sidebar Toggle Button -->
-                
-                    
-                
+
+
             </ul>
         </div>
     </nav>

@@ -19,9 +19,9 @@ final class ComparisonFailureTest extends TestCase
 {
     public function testComparisonFailure()
     {
-        $actual   = "\nB\n";
+        $actual = "\nB\n";
         $expected = "\nA\n";
-        $message  = 'Test message';
+        $message = 'Test message';
 
         $failure = new ComparisonFailure(
             $expected,

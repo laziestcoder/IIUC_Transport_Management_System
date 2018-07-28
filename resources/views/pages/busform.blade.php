@@ -18,21 +18,21 @@
                 {{Form :: label('body','Body')}}
                 {{Form :: textarea('body' , '', ['id' => 'article-ckeditor','class' => 'form-control', 'placeholder' => 'Body Text', ])}}    
         </div> --}}
-        {{-- <div class="form-group">
-            {{Form::file('cover_image')}}
-        </div> --}}
-       {{--  {{ Form :: submit('Submit',['class' => 'btn btn-primary']) }}
-        {!! Form::close() !!}
+{{-- <div class="form-group">
+    {{Form::file('cover_image')}}
+</div> --}}
+{{--  {{ Form :: submit('Submit',['class' => 'btn btn-primary']) }}
+ {!! Form::close() !!}
 
-    </section>
-    <br><br>
-    <section class="content">  --}}           
-            {{--  @include('admin::partials.error')
-                @include('admin::partials.success')
-                @include('admin::partials.exception')
-                @include('admin::partials.toastr') --}}
+</section>
+<br><br>
+<section class="content">  --}}
+{{--  @include('admin::partials.error')
+    @include('admin::partials.success')
+    @include('admin::partials.exception')
+    @include('admin::partials.toastr') --}}
 
-                {{-- {!! $content !!} --}}
+{{-- {!! $content !!} --}}
 {{-- 
     </section>
 @endsection

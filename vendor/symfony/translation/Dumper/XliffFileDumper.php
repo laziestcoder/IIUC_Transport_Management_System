@@ -11,8 +11,8 @@
 
 namespace Symfony\Component\Translation\Dumper;
 
-use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Exception\InvalidArgumentException;
+use Symfony\Component\Translation\MessageCatalogue;
 
 /**
  * XliffFileDumper generates xliff files from a message catalogue.
@@ -45,14 +45,6 @@ class XliffFileDumper extends FileDumper
         }
 
         throw new InvalidArgumentException(sprintf('No support implemented for dumping XLIFF version "%s".', $xliffVersion));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getExtension()
-    {
-        return 'xlf';
     }
 
     private function dumpXliff1($defaultLocale, MessageCatalogue $messages, $domain, array $options = array())
@@ -129,6 +121,17 @@ class XliffFileDumper extends FileDumper
         return $dom->saveXML();
     }
 
+    /**
+     * @param string $key
+     * @param array|null $metadata
+     *
+     * @return bool
+     */
+    private function hasMetadataArrayInfo($key, $metadata = null)
+    {
+        return null !== $metadata && array_key_exists($key, $metadata) && ($metadata[$key] instanceof \Traversable || is_array($metadata[$key]));
+    }
+
     private function dumpXliff2($defaultLocale, MessageCatalogue $messages, $domain, array $options = array())
     {
         $dom = new \DOMDocument('1.0', 'utf-8');
@@ -141,7 +144,7 @@ class XliffFileDumper extends FileDumper
         $xliff->setAttribute('trgLang', str_replace('_', '-', $messages->getLocale()));
 
         $xliffFile = $xliff->appendChild($dom->createElement('file'));
-        $xliffFile->setAttribute('id', $domain.'.'.$messages->getLocale());
+        $xliffFile->setAttribute('id', $domain . '.' . $messages->getLocale());
 
         foreach ($messages->all($domain) as $source => $target) {
             $translation = $dom->createElement('unit');
@@ -188,13 +191,10 @@ class XliffFileDumper extends FileDumper
     }
 
     /**
-     * @param string     $key
-     * @param array|null $metadata
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    private function hasMetadataArrayInfo($key, $metadata = null)
+    protected function getExtension()
     {
-        return null !== $metadata && array_key_exists($key, $metadata) && ($metadata[$key] instanceof \Traversable || is_array($metadata[$key]));
+        return 'xlf';
     }
 }

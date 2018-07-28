@@ -24,11 +24,6 @@ final class ConsoleTest extends TestCase
      */
     private $console;
 
-    protected function setUp()/*: void*/
-    {
-        $this->console = new Console;
-    }
-
     /**
      * @todo Now that this component is PHP 7-only and uses return type declarations
      * this test makes even less sense than before
@@ -63,5 +58,10 @@ final class ConsoleTest extends TestCase
     public function testCanDetectNumberOfColumns()/*: void*/
     {
         $this->assertInternalType('integer', $this->console->getNumberOfColumns());
+    }
+
+    protected function setUp()/*: void*/
+    {
+        $this->console = new Console;
     }
 }

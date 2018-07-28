@@ -1,6 +1,7 @@
 <div class="<?php echo e($viewClass['form-group']); ?> <?php echo !$errors->has($errorKey) ? '' : 'has-error'; ?>">
 
-    <label for="<?php echo e($id); ?>" class="<?php echo e($viewClass['label']); ?> control-label"><?php echo e($label); ?></label>
+    <label for="<?php echo e($id); ?>"
+           class="<?php echo e($viewClass['label']); ?> control-label"><?php echo e($label); ?></label>
 
     <div class="<?php echo e($viewClass['field']); ?>">
 
@@ -8,13 +9,13 @@
 
         <div class="input-group">
 
-            <?php if($prepend): ?>
-            <span class="input-group-addon"><?php echo $prepend; ?></span>
+            <?php if ($prepend): ?>
+                <span class="input-group-addon"><?php echo $prepend; ?></span>
             <?php endif; ?>
 
             <input <?php echo $attributes; ?> />
 
-            <?php if($append): ?>
+            <?php if ($append): ?>
                 <span class="input-group-addon clearfix"><?php echo $append; ?></span>
             <?php endif; ?>
 

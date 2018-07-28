@@ -24,11 +24,6 @@ trait VarDumperTestTrait
         $this->assertSame(rtrim($dump), $this->getDump($data, null, $filter), $message);
     }
 
-    public function assertDumpMatchesFormat($dump, $data, $filter = 0, $message = '')
-    {
-        $this->assertStringMatchesFormat(rtrim($dump), $this->getDump($data, null, $filter), $message);
-    }
-
     protected function getDump($data, $key = null, $filter = 0)
     {
         $flags = getenv('DUMP_LIGHT_ARRAY') ? CliDumper::DUMP_LIGHT_ARRAY : 0;
@@ -44,5 +39,10 @@ trait VarDumperTestTrait
         }
 
         return rtrim($dumper->dump($data, true));
+    }
+
+    public function assertDumpMatchesFormat($dump, $data, $filter = 0, $message = '')
+    {
+        $this->assertStringMatchesFormat(rtrim($dump), $this->getDump($data, null, $filter), $message);
     }
 }

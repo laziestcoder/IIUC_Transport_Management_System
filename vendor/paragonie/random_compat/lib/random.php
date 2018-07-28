@@ -97,9 +97,9 @@ if (!is_callable('random_bytes')) {
                 strtolower($RandomCompat_basedir)
             );
             $RandomCompatUrandom = (array() !== array_intersect(
-                array('/dev', '/dev/', '/dev/urandom'),
-                $RandomCompat_open_basedir
-            ));
+                    array('/dev', '/dev/', '/dev/urandom'),
+                    $RandomCompat_open_basedir
+                ));
             $RandomCompat_open_basedir = null;
         }
 

@@ -30,7 +30,7 @@ class BusInfoController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -41,7 +41,7 @@ class BusInfoController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\BusInfo  $busInfo
+     * @param  \App\BusInfo $busInfo
      * @return \Illuminate\Http\Response
      */
     public function show(BusInfo $busInfo)
@@ -52,7 +52,7 @@ class BusInfoController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\BusInfo  $busInfo
+     * @param  \App\BusInfo $busInfo
      * @return \Illuminate\Http\Response
      */
     public function edit(BusInfo $busInfo)
@@ -63,8 +63,8 @@ class BusInfoController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\BusInfo  $busInfo
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\BusInfo $busInfo
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, BusInfo $busInfo)
@@ -75,7 +75,7 @@ class BusInfoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\BusInfo  $busInfo
+     * @param  \App\BusInfo $busInfo
      * @return \Illuminate\Http\Response
      */
     public function destroy(BusInfo $busInfo)

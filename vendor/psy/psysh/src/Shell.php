@@ -49,10 +49,10 @@ class Shell extends Application
 {
     const VERSION = 'v0.9.4';
 
-    const PROMPT      = '>>> ';
+    const PROMPT = '>>> ';
     const BUFF_PROMPT = '... ';
-    const REPLAY      = '--> ';
-    const RETVAL      = '=> ';
+    const REPLAY = '--> ';
+    const RETVAL = '=> ';
 
     private $config;
     private $cleaner;
@@ -81,15 +81,15 @@ class Shell extends Application
      */
     public function __construct(Configuration $config = null)
     {
-        $this->config        = $config ?: new Configuration();
-        $this->cleaner       = $this->config->getCodeCleaner();
-        $this->loop          = new ExecutionLoop();
-        $this->context       = new Context();
-        $this->includes      = [];
-        $this->readline      = $this->config->getReadline();
-        $this->inputBuffer   = [];
-        $this->codeStack     = [];
-        $this->stdoutBuffer  = '';
+        $this->config = $config ?: new Configuration();
+        $this->cleaner = $this->config->getCodeCleaner();
+        $this->loop = new ExecutionLoop();
+        $this->context = new Context();
+        $this->includes = [];
+        $this->readline = $this->config->getReadline();
+        $this->inputBuffer = [];
+        $this->codeStack = [];
+        $this->stdoutBuffer = '';
         $this->loopListeners = $this->getDefaultLoopListeners();
 
         parent::__construct('Psy Shell', self::VERSION);
@@ -101,6 +101,26 @@ class Shell extends Application
     }
 
     /**
+     * Gets the default command loop listeners.
+     *
+     * @return array An array of Execution Loop Listener instances
+     */
+    protected function getDefaultLoopListeners()
+    {
+        $listeners = [];
+
+        if (ProcessForker::isSupported() && $this->config->usePcntl()) {
+            $listeners[] = new ProcessForker();
+        }
+
+        if (RunkitReloader::isSupported()) {
+            $listeners[] = new RunkitReloader();
+        }
+
+        return $listeners;
+    }
+
+    /**
      * Check whether the first thing in a backtrace is an include call.
      *
      * This is used by the psysh bin to decide whether to start a shell on boot,
@@ -109,7 +129,7 @@ class Shell extends Application
     public static function isIncluded(array $trace)
     {
         return isset($trace[0]['function']) &&
-          in_array($trace[0]['function'], ['require', 'include', 'require_once', 'include_once']);
+            in_array($trace[0]['function'], ['require', 'include', 'require_once', 'include_once']);
     }
 
     /**
@@ -118,7 +138,7 @@ class Shell extends Application
      * @see Psy\debug
      * @deprecated will be removed in 1.0. Use \Psy\debug instead
      *
-     * @param array         $vars   Scope variables from the calling context (default: array())
+     * @param array $vars Scope variables from the calling context (default: array())
      * @param object|string $bindTo Bound object ($this) or class (self) value for the shell
      *
      * @return array Scope variables from the debugger session
@@ -157,50 +177,93 @@ class Shell extends Application
     }
 
     /**
-     * Gets the default input definition.
+     * @deprecated Call `addMatchers` instead
      *
-     * @return InputDefinition An InputDefinition instance
+     * @param array $matchers
      */
-    protected function getDefaultInputDefinition()
+    public function addTabCompletionMatchers(array $matchers)
     {
-        return new InputDefinition([
-            new InputArgument('command', InputArgument::REQUIRED, 'The command to execute'),
-            new InputOption('--help', '-h', InputOption::VALUE_NONE, 'Display this help message.'),
-        ]);
+        $this->addMatchers($matchers);
     }
 
     /**
-     * Gets the default commands that should always be available.
+     * Add tab completion matchers.
      *
-     * @return array An array of default Command instances
+     * @param array $matchers
      */
-    protected function getDefaultCommands()
+    public function addMatchers(array $matchers)
     {
-        $sudo = new Command\SudoCommand();
-        $sudo->setReadline($this->readline);
+        $this->matchers = array_merge($this->matchers, $matchers);
 
-        $hist = new Command\HistoryCommand();
-        $hist->setReadline($this->readline);
+        if (isset($this->autoCompleter)) {
+            $this->addMatchersToAutoCompleter($matchers);
+        }
+    }
 
-        return [
-            new Command\HelpCommand(),
-            new Command\ListCommand(),
-            new Command\DumpCommand(),
-            new Command\DocCommand(),
-            new Command\ShowCommand($this->config->colorMode()),
-            new Command\WtfCommand($this->config->colorMode()),
-            new Command\WhereamiCommand($this->config->colorMode()),
-            new Command\ThrowUpCommand(),
-            new Command\TimeitCommand(),
-            new Command\TraceCommand(),
-            new Command\BufferCommand(),
-            new Command\ClearCommand(),
-            new Command\EditCommand($this->config->getRuntimeDir()),
-            // new Command\PsyVersionCommand(),
-            $sudo,
-            $hist,
-            new Command\ExitCommand(),
-        ];
+    /**
+     * Add matchers to the auto completer, setting context if needed.
+     *
+     * @param array $matchers
+     */
+    private function addMatchersToAutoCompleter(array $matchers)
+    {
+        foreach ($matchers as $matcher) {
+            if ($matcher instanceof ContextAware) {
+                $matcher->setContext($this->context);
+            }
+            $this->autoCompleter->addMatcher($matcher);
+        }
+    }
+
+    /**
+     * Runs the current application.
+     *
+     * @param InputInterface $input An Input instance
+     * @param OutputInterface $output An Output instance
+     *
+     * @return int 0 if everything went fine, or an error code
+     */
+    public function run(InputInterface $input = null, OutputInterface $output = null)
+    {
+        $this->initializeTabCompletion();
+
+        if ($input === null && !isset($_SERVER['argv'])) {
+            $input = new ArgvInput([]);
+        }
+
+        if ($output === null) {
+            $output = $this->config->getOutput();
+        }
+
+        try {
+            return parent::run($input, $output);
+        } catch (\Exception $e) {
+            $this->writeException($e);
+        }
+
+        return 1;
+    }
+
+    /**
+     * Initialize tab completion matchers.
+     *
+     * If tab completion is enabled this adds tab completion matchers to the
+     * auto completer and sets context if needed.
+     */
+    protected function initializeTabCompletion()
+    {
+        if (!$this->config->useTabCompletion()) {
+            return;
+        }
+
+        $this->autoCompleter = $this->config->getAutoCompleter();
+
+        // auto completer needs shell to be linked to configuration because of
+        // the context aware matchers
+        $this->addMatchersToAutoCompleter($this->getDefaultMatchers());
+        $this->addMatchersToAutoCompleter($this->matchers);
+
+        $this->autoCompleter->activate();
     }
 
     /**
@@ -230,94 +293,95 @@ class Shell extends Application
     }
 
     /**
-     * @deprecated Nothing should use this anymore
+     * Renders a caught Exception.
+     *
+     * Exceptions are formatted according to severity. ErrorExceptions which were
+     * warnings or Strict errors aren't rendered as harshly as real errors.
+     *
+     * Stores $e as the last Exception in the Shell Context.
+     *
+     * @param \Exception $e An exception instance
      */
-    protected function getTabCompletionMatchers()
+    public function writeException(\Exception $e)
     {
-        @trigger_error('getTabCompletionMatchers is no longer used', E_USER_DEPRECATED);
+        $this->context->setLastException($e);
+        $this->output->writeln($this->formatException($e));
+        $this->resetCodeBuffer();
     }
 
     /**
-     * Gets the default command loop listeners.
+     * Helper for formatting an exception for writeException().
      *
-     * @return array An array of Execution Loop Listener instances
+     * @todo extract this to somewhere it makes more sense
+     *
+     * @param \Exception $e
+     *
+     * @return string
      */
-    protected function getDefaultLoopListeners()
+    public function formatException(\Exception $e)
     {
-        $listeners = [];
-
-        if (ProcessForker::isSupported() && $this->config->usePcntl()) {
-            $listeners[] = new ProcessForker();
+        $message = $e->getMessage();
+        if (!$e instanceof PsyException) {
+            if ($message === '') {
+                $message = get_class($e);
+            } else {
+                $message = sprintf('%s with message \'%s\'', get_class($e), $message);
+            }
         }
 
-        if (RunkitReloader::isSupported()) {
-            $listeners[] = new RunkitReloader();
-        }
+        $message = preg_replace(
+            "#(\\w:)?(/\\w+)*/src/Execution(?:Loop)?Closure.php\(\d+\) : eval\(\)'d code#",
+            "eval()'d code",
+            str_replace('\\', '/', $message)
+        );
 
-        return $listeners;
+        $message = str_replace(" in eval()'d code", ' in Psy Shell code', $message);
+
+        $severity = ($e instanceof \ErrorException) ? $this->getSeverity($e) : 'error';
+
+        return sprintf('<%s>%s</%s>', $severity, OutputFormatter::escape($message), $severity);
     }
 
     /**
-     * Add tab completion matchers.
+     * Helper for getting an output style for the given ErrorException's level.
      *
-     * @param array $matchers
+     * @param \ErrorException $e
+     *
+     * @return string
      */
-    public function addMatchers(array $matchers)
+    protected function getSeverity(\ErrorException $e)
     {
-        $this->matchers = array_merge($this->matchers, $matchers);
+        $severity = $e->getSeverity();
+        if ($severity & error_reporting()) {
+            switch ($severity) {
+                case E_WARNING:
+                case E_NOTICE:
+                case E_CORE_WARNING:
+                case E_COMPILE_WARNING:
+                case E_USER_WARNING:
+                case E_USER_NOTICE:
+                case E_STRICT:
+                    return 'warning';
 
-        if (isset($this->autoCompleter)) {
-            $this->addMatchersToAutoCompleter($matchers);
+                default:
+                    return 'error';
+            }
+        } else {
+            // Since this is below the user's reporting threshold, it's always going to be a warning.
+            return 'warning';
         }
     }
 
     /**
-     * @deprecated Call `addMatchers` instead
+     * Reset the current code buffer.
      *
-     * @param array $matchers
+     * This should be run after evaluating user input, catching exceptions, or
+     * on demand by commands such as BufferCommand.
      */
-    public function addTabCompletionMatchers(array $matchers)
+    public function resetCodeBuffer()
     {
-        $this->addMatchers($matchers);
-    }
-
-    /**
-     * Set the Shell output.
-     *
-     * @param OutputInterface $output
-     */
-    public function setOutput(OutputInterface $output)
-    {
-        $this->output = $output;
-    }
-
-    /**
-     * Runs the current application.
-     *
-     * @param InputInterface  $input  An Input instance
-     * @param OutputInterface $output An Output instance
-     *
-     * @return int 0 if everything went fine, or an error code
-     */
-    public function run(InputInterface $input = null, OutputInterface $output = null)
-    {
-        $this->initializeTabCompletion();
-
-        if ($input === null && !isset($_SERVER['argv'])) {
-            $input = new ArgvInput([]);
-        }
-
-        if ($output === null) {
-            $output = $this->config->getOutput();
-        }
-
-        try {
-            return parent::run($input, $output);
-        } catch (\Exception $e) {
-            $this->writeException($e);
-        }
-
-        return 1;
+        $this->codeBuffer = [];
+        $this->code = false;
     }
 
     /**
@@ -325,7 +389,7 @@ class Shell extends Application
      *
      * @throws Exception if thrown via the `throw-up` command
      *
-     * @param InputInterface  $input  An Input instance
+     * @param InputInterface $input An Input instance
      * @param OutputInterface $output An Output instance
      *
      * @return int 0 if everything went fine, or an error code
@@ -354,6 +418,91 @@ class Shell extends Application
         } catch (BreakException $e) {
             // The ProcessForker throws a BreakException to finish the main thread.
             return;
+        }
+    }
+
+    /**
+     * Set the Shell output.
+     *
+     * @param OutputInterface $output
+     */
+    public function setOutput(OutputInterface $output)
+    {
+        $this->output = $output;
+    }
+
+    /**
+     * Get the shell output header.
+     *
+     * @return string
+     */
+    protected function getHeader()
+    {
+        return sprintf('<aside>%s by Justin Hileman</aside>', $this->getVersion());
+    }
+
+    /**
+     * Get the current version of Psy Shell.
+     *
+     * @return string
+     */
+    public function getVersion()
+    {
+        $separator = $this->config->useUnicode() ? '—' : '-';
+
+        return sprintf('Psy Shell %s (PHP %s %s %s)', self::VERSION, phpversion(), $separator, php_sapi_name());
+    }
+
+    /**
+     * @todo Implement self-update
+     * @todo Implement prompt to start update
+     *
+     * @return void|string
+     */
+    protected function writeVersionInfo()
+    {
+        if (PHP_SAPI !== 'cli') {
+            return;
+        }
+
+        try {
+            $client = $this->config->getChecker();
+            if (!$client->isLatest()) {
+                $this->output->writeln(sprintf('New version is available (current: %s, latest: %s)', self::VERSION, $client->getLatest()));
+            }
+        } catch (\InvalidArgumentException $e) {
+            $this->output->writeln($e->getMessage());
+        }
+    }
+
+    /**
+     * Write a startup message if set.
+     */
+    protected function writeStartupMessage()
+    {
+        $message = $this->config->getStartupMessage();
+        if ($message !== null && $message !== '') {
+            $this->output->writeln($message);
+        }
+    }
+
+    /**
+     * Run execution loop listeners before the shell session.
+     */
+    protected function beforeRun()
+    {
+        foreach ($this->loopListeners as $listener) {
+            $listener->beforeRun($this);
+        }
+    }
+
+    /**
+     * Run execution loop listers after the shell session.
+     */
+    protected function afterRun()
+    {
+        foreach ($this->loopListeners as $listener) {
+            $listener->afterRun($this);
         }
     }
 
@@ -411,6 +560,99 @@ class Shell extends Application
     }
 
     /**
+     * Read a line of user input.
+     *
+     * This will return a line from the input buffer (if any exist). Otherwise,
+     * it will ask the user for input.
+     *
+     * If readline is enabled, this delegates to readline. Otherwise, it's an
+     * ugly `fgets` call.
+     *
+     * @return string One line of user input
+     */
+    protected function readline()
+    {
+        if (!empty($this->inputBuffer)) {
+            $line = array_shift($this->inputBuffer);
+            if (!$line instanceof SilentInput) {
+                $this->output->writeln(sprintf('<aside>%s %s</aside>', static::REPLAY, OutputFormatter::escape($line)));
+            }
+
+            return $line;
+        }
+
+        if ($bracketedPaste = $this->config->useBracketedPaste()) {
+            printf("\e[?2004h"); // Enable bracketed paste
+        }
+
+        $line = $this->readline->readline($this->getPrompt());
+
+        if ($bracketedPaste) {
+            printf("\e[?2004l"); // ... and disable it again
+        }
+
+        return $line;
+    }
+
+    /**
+     * Get the current input prompt.
+     *
+     * @return string
+     */
+    protected function getPrompt()
+    {
+        if ($this->hasCode()) {
+            return static::BUFF_PROMPT;
+        }
+
+        return $this->config->getPrompt() ?: static::PROMPT;
+    }
+
+    /**
+     * Check whether this shell's code buffer contains code.
+     *
+     * @return bool True if the code buffer contains code
+     */
+    public function hasCode()
+    {
+        return !empty($this->codeBuffer);
+    }
+
+    /**
+     * Run execution loop listeners on user input.
+     *
+     * @param string $input
+     *
+     * @return string
+     */
+    public function onInput($input)
+    {
+        foreach ($this->loopListeners as $listeners) {
+            if (($return = $listeners->onInput($this, $input)) !== null) {
+                $input = $return;
+            }
+        }
+
+        return $input;
+    }
+
+    /**
+     * Check whether a command is set for the current input string.
+     *
+     * @param string $input
+     *
+     * @return bool True if the shell has a command for the given input
+     */
+    protected function hasCommand($input)
+    {
+        if (preg_match('/([^\s]+?)(?:\s|$)/A', ltrim($input), $match)) {
+            return $this->has($match[1]);
+        }
+
+        return false;
+    }
+
+    /**
      * Check whether the code buffer (plus current input) is in an open string or comment.
      *
      * @param string $input current line of input
@@ -433,13 +675,122 @@ class Shell extends Application
     }
 
     /**
-     * Run execution loop listeners before the shell session.
+     * (Possibly) add a line to the readline history.
+     *
+     * Like Bash, if the line starts with a space character, it will be omitted
+     * from history. Note that an entire block multi-line code input will be
+     * omitted iff the first line begins with a space.
+     *
+     * Additionally, if a line is "silent", i.e. it was initially added with the
+     * silent flag, it will also be omitted.
+     *
+     * @param string|SilentInput $line
      */
-    protected function beforeRun()
+    private function addHistory($line)
     {
-        foreach ($this->loopListeners as $listener) {
-            $listener->beforeRun($this);
+        if ($line instanceof SilentInput) {
+            return;
         }
+
+        // Skip empty lines and lines starting with a space
+        if (trim($line) !== '' && substr($line, 0, 1) !== ' ') {
+            $this->readline->addHistory($line);
+        }
+    }
+
+    /**
+     * Run a Psy Shell command given the user input.
+     *
+     * @throws InvalidArgumentException if the input is not a valid command
+     *
+     * @param string $input User input string
+     *
+     * @return mixed Who knows?
+     */
+    protected function runCommand($input)
+    {
+        $command = $this->getCommand($input);
+
+        if (empty($command)) {
+            throw new \InvalidArgumentException('Command not found: ' . $input);
+        }
+
+        $input = new ShellInput(str_replace('\\', '\\\\', rtrim($input, " \t\n\r\0\x0B;")));
+
+        if ($input->hasParameterOption(['--help', '-h'])) {
+            $helpCommand = $this->get('help');
+            $helpCommand->setCommand($command);
+
+            return $helpCommand->run($input, $this->output);
+        }
+
+        return $command->run($input, $this->output);
+    }
+
+    /**
+     * Get a command (if one exists) for the current input string.
+     *
+     * @param string $input
+     *
+     * @return null|BaseCommand
+     */
+    protected function getCommand($input)
+    {
+        $input = new StringInput($input);
+        if ($name = $input->getFirstArgument()) {
+            return $this->get($name);
+        }
+    }
+
+    /**
+     * Add code to the code buffer.
+     *
+     * @param string $code
+     * @param bool $silent
+     */
+    public function addCode($code, $silent = false)
+    {
+        try {
+            // Code lines ending in \ keep the buffer open
+            if (substr(rtrim($code), -1) === '\\') {
+                $this->codeBufferOpen = true;
+                $code = substr(rtrim($code), 0, -1);
+            } else {
+                $this->codeBufferOpen = false;
+            }
+
+            $this->codeBuffer[] = $silent ? new SilentInput($code) : $code;
+            $this->code = $this->cleaner->clean($this->codeBuffer, $this->config->requireSemicolons());
+        } catch (\Exception $e) {
+            // Add failed code blocks to the readline history.
+            $this->addCodeBufferToHistory();
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Filter silent input from code buffer, write the rest to readline history.
+     */
+    private function addCodeBufferToHistory()
+    {
+        $codeBuffer = array_filter($this->codeBuffer, function ($line) {
+            return !$line instanceof SilentInput;
+        });
+
+        $this->addHistory(implode("\n", $codeBuffer));
+    }
+
+    /**
+     * Check whether the code in this shell's code buffer is valid.
+     *
+     * If the code is valid, the code buffer should be flushed and evaluated.
+     *
+     * @return bool True if the code buffer content is valid
+     */
+    protected function hasValidCode()
+    {
+        return !$this->codeBufferOpen && $this->code !== false;
     }
 
     /**
@@ -450,24 +801,6 @@ class Shell extends Application
         foreach ($this->loopListeners as $listener) {
             $listener->beforeLoop($this);
         }
-    }
-
-    /**
-     * Run execution loop listeners on user input.
-     *
-     * @param string $input
-     *
-     * @return string
-     */
-    public function onInput($input)
-    {
-        foreach ($this->loopListeners as $listeners) {
-            if (($return = $listeners->onInput($this, $input)) !== null) {
-                $input = $return;
-            }
-        }
-
-        return $input;
     }
 
     /**
@@ -495,16 +828,6 @@ class Shell extends Application
     {
         foreach ($this->loopListeners as $listener) {
             $listener->afterLoop($this);
-        }
-    }
-
-    /**
-     * Run execution loop listers after the shell session.
-     */
-    protected function afterRun()
-    {
-        foreach ($this->loopListeners as $listener) {
-            $listener->afterRun($this);
         }
     }
 
@@ -631,16 +954,6 @@ class Shell extends Application
     }
 
     /**
-     * Add includes, to be parsed and executed before running the interactive shell.
-     *
-     * @param array $includes
-     */
-    public function setIncludes(array $includes = [])
-    {
-        $this->includes = $includes;
-    }
-
-    /**
      * Get PHP files to be parsed and executed before running the interactive shell.
      *
      * @return array
@@ -651,90 +964,13 @@ class Shell extends Application
     }
 
     /**
-     * Check whether this shell's code buffer contains code.
+     * Add includes, to be parsed and executed before running the interactive shell.
      *
-     * @return bool True if the code buffer contains code
+     * @param array $includes
      */
-    public function hasCode()
+    public function setIncludes(array $includes = [])
     {
-        return !empty($this->codeBuffer);
-    }
-
-    /**
-     * Check whether the code in this shell's code buffer is valid.
-     *
-     * If the code is valid, the code buffer should be flushed and evaluated.
-     *
-     * @return bool True if the code buffer content is valid
-     */
-    protected function hasValidCode()
-    {
-        return !$this->codeBufferOpen && $this->code !== false;
-    }
-
-    /**
-     * Add code to the code buffer.
-     *
-     * @param string $code
-     * @param bool   $silent
-     */
-    public function addCode($code, $silent = false)
-    {
-        try {
-            // Code lines ending in \ keep the buffer open
-            if (substr(rtrim($code), -1) === '\\') {
-                $this->codeBufferOpen = true;
-                $code = substr(rtrim($code), 0, -1);
-            } else {
-                $this->codeBufferOpen = false;
-            }
-
-            $this->codeBuffer[] = $silent ? new SilentInput($code) : $code;
-            $this->code         = $this->cleaner->clean($this->codeBuffer, $this->config->requireSemicolons());
-        } catch (\Exception $e) {
-            // Add failed code blocks to the readline history.
-            $this->addCodeBufferToHistory();
-
-            throw $e;
-        }
-    }
-
-    /**
-     * Set the code buffer.
-     *
-     * This is mostly used by `Shell::execute`. Any existing code in the input
-     * buffer is pushed onto a stack and will come back after this new code is
-     * executed.
-     *
-     * @throws \InvalidArgumentException if $code isn't a complete statement
-     *
-     * @param string $code
-     * @param bool   $silent
-     */
-    private function setCode($code, $silent = false)
-    {
-        if ($this->hasCode()) {
-            $this->codeStack[] = [$this->codeBuffer, $this->codeBufferOpen, $this->code];
-        }
-
-        $this->resetCodeBuffer();
-        try {
-            $this->addCode($code, $silent);
-        } catch (\Throwable $e) {
-            $this->popCodeStack();
-
-            throw $e;
-        } catch (\Exception $e) {
-            $this->popCodeStack();
-
-            throw $e;
-        }
-
-        if (!$this->hasValidCode()) {
-            $this->popCodeStack();
-
-            throw new \InvalidArgumentException('Unexpected end of input');
-        }
+        $this->includes = $includes;
     }
 
     /**
@@ -750,57 +986,16 @@ class Shell extends Application
     }
 
     /**
-     * Run a Psy Shell command given the user input.
-     *
-     * @throws InvalidArgumentException if the input is not a valid command
-     *
-     * @param string $input User input string
-     *
-     * @return mixed Who knows?
-     */
-    protected function runCommand($input)
-    {
-        $command = $this->getCommand($input);
-
-        if (empty($command)) {
-            throw new \InvalidArgumentException('Command not found: ' . $input);
-        }
-
-        $input = new ShellInput(str_replace('\\', '\\\\', rtrim($input, " \t\n\r\0\x0B;")));
-
-        if ($input->hasParameterOption(['--help', '-h'])) {
-            $helpCommand = $this->get('help');
-            $helpCommand->setCommand($command);
-
-            return $helpCommand->run($input, $this->output);
-        }
-
-        return $command->run($input, $this->output);
-    }
-
-    /**
-     * Reset the current code buffer.
-     *
-     * This should be run after evaluating user input, catching exceptions, or
-     * on demand by commands such as BufferCommand.
-     */
-    public function resetCodeBuffer()
-    {
-        $this->codeBuffer = [];
-        $this->code       = false;
-    }
-
-    /**
      * Inject input into the input buffer.
      *
      * This is useful for commands which want to replay history.
      *
      * @param string|array $input
-     * @param bool         $silent
+     * @param bool $silent
      */
     public function addInput($input, $silent = false)
     {
-        foreach ((array) $input as $line) {
+        foreach ((array)$input as $line) {
             $this->inputBuffer[] = $silent ? new SilentInput($line) : $line;
         }
     }
@@ -837,45 +1032,9 @@ class Shell extends Application
 
         list($codeBuffer, $codeBufferOpen, $code) = array_pop($this->codeStack);
 
-        $this->codeBuffer     = $codeBuffer;
+        $this->codeBuffer = $codeBuffer;
         $this->codeBufferOpen = $codeBufferOpen;
-        $this->code           = $code;
-    }
-
-    /**
-     * (Possibly) add a line to the readline history.
-     *
-     * Like Bash, if the line starts with a space character, it will be omitted
-     * from history. Note that an entire block multi-line code input will be
-     * omitted iff the first line begins with a space.
-     *
-     * Additionally, if a line is "silent", i.e. it was initially added with the
-     * silent flag, it will also be omitted.
-     *
-     * @param string|SilentInput $line
-     */
-    private function addHistory($line)
-    {
-        if ($line instanceof SilentInput) {
-            return;
-        }
-
-        // Skip empty lines and lines starting with a space
-        if (trim($line) !== '' && substr($line, 0, 1) !== ' ') {
-            $this->readline->addHistory($line);
-        }
-    }
-
-    /**
-     * Filter silent input from code buffer, write the rest to readline history.
-     */
-    private function addCodeBufferToHistory()
-    {
-        $codeBuffer = array_filter($this->codeBuffer, function ($line) {
-            return !$line instanceof SilentInput;
-        });
-
-        $this->addHistory(implode("\n", $codeBuffer));
+        $this->code = $code;
     }
 
     /**
@@ -898,7 +1057,7 @@ class Shell extends Application
      * This is used by the shell loop for rendering output from evaluated code.
      *
      * @param string $out
-     * @param int    $phase Output buffering phase
+     * @param int $phase Output buffering phase
      */
     public function writeStdout($out, $phase = PHP_OUTPUT_HANDLER_END)
     {
@@ -944,97 +1103,31 @@ class Shell extends Application
         }
 
         $this->context->setReturnValue($ret);
-        $ret    = $this->presentValue($ret);
+        $ret = $this->presentValue($ret);
         $indent = str_repeat(' ', strlen(static::RETVAL));
 
         $this->output->writeln(static::RETVAL . str_replace(PHP_EOL, PHP_EOL . $indent, $ret));
     }
 
     /**
-     * Renders a caught Exception.
+     * Format a value for display.
      *
-     * Exceptions are formatted according to severity. ErrorExceptions which were
-     * warnings or Strict errors aren't rendered as harshly as real errors.
+     * @see Presenter::present
      *
-     * Stores $e as the last Exception in the Shell Context.
+     * @param mixed $val
      *
-     * @param \Exception $e An exception instance
+     * @return string Formatted value
      */
-    public function writeException(\Exception $e)
+    protected function presentValue($val)
     {
-        $this->context->setLastException($e);
-        $this->output->writeln($this->formatException($e));
-        $this->resetCodeBuffer();
-    }
-
-    /**
-     * Helper for formatting an exception for writeException().
-     *
-     * @todo extract this to somewhere it makes more sense
-     *
-     * @param \Exception $e
-     *
-     * @return string
-     */
-    public function formatException(\Exception $e)
-    {
-        $message = $e->getMessage();
-        if (!$e instanceof PsyException) {
-            if ($message === '') {
-                $message = get_class($e);
-            } else {
-                $message = sprintf('%s with message \'%s\'', get_class($e), $message);
-            }
-        }
-
-        $message = preg_replace(
-            "#(\\w:)?(/\\w+)*/src/Execution(?:Loop)?Closure.php\(\d+\) : eval\(\)'d code#",
-            "eval()'d code",
-            str_replace('\\', '/', $message)
-        );
-
-        $message = str_replace(" in eval()'d code", ' in Psy Shell code', $message);
-
-        $severity = ($e instanceof \ErrorException) ? $this->getSeverity($e) : 'error';
-
-        return sprintf('<%s>%s</%s>', $severity, OutputFormatter::escape($message), $severity);
-    }
-
-    /**
-     * Helper for getting an output style for the given ErrorException's level.
-     *
-     * @param \ErrorException $e
-     *
-     * @return string
-     */
-    protected function getSeverity(\ErrorException $e)
-    {
-        $severity = $e->getSeverity();
-        if ($severity & error_reporting()) {
-            switch ($severity) {
-                case E_WARNING:
-                case E_NOTICE:
-                case E_CORE_WARNING:
-                case E_COMPILE_WARNING:
-                case E_USER_WARNING:
-                case E_USER_NOTICE:
-                case E_STRICT:
-                    return 'warning';
-
-                default:
-                    return 'error';
-            }
-        } else {
-            // Since this is below the user's reporting threshold, it's always going to be a warning.
-            return 'warning';
-        }
+        return $this->config->getPresenter()->present($val);
     }
 
     /**
      * Execute code in the shell execution context.
      *
      * @param string $code
-     * @param bool   $throwExceptions
+     * @param bool $throwExceptions
      *
      * @return mixed
      */
@@ -1059,6 +1152,44 @@ class Shell extends Application
     }
 
     /**
+     * Set the code buffer.
+     *
+     * This is mostly used by `Shell::execute`. Any existing code in the input
+     * buffer is pushed onto a stack and will come back after this new code is
+     * executed.
+     *
+     * @throws \InvalidArgumentException if $code isn't a complete statement
+     *
+     * @param string $code
+     * @param bool $silent
+     */
+    private function setCode($code, $silent = false)
+    {
+        if ($this->hasCode()) {
+            $this->codeStack[] = [$this->codeBuffer, $this->codeBufferOpen, $this->code];
+        }
+
+        $this->resetCodeBuffer();
+        try {
+            $this->addCode($code, $silent);
+        } catch (\Throwable $e) {
+            $this->popCodeStack();
+
+            throw $e;
+        } catch (\Exception $e) {
+            $this->popCodeStack();
+
+            throw $e;
+        }
+
+        if (!$this->hasValidCode()) {
+            $this->popCodeStack();
+
+            throw new \InvalidArgumentException('Unexpected end of input');
+        }
+    }
+
+    /**
      * Helper for throwing an ErrorException.
      *
      * This allows us to:
@@ -1079,10 +1210,10 @@ class Shell extends Application
      *
      * @throws \Psy\Exception\ErrorException depending on the current error_reporting level
      *
-     * @param int    $errno   Error type
-     * @param string $errstr  Message
+     * @param int $errno Error type
+     * @param string $errstr Message
      * @param string $errfile Filename
-     * @param int    $errline Line number
+     * @param int $errline Line number
      */
     public function handleError($errno, $errstr, $errfile, $errline)
     {
@@ -1092,122 +1223,6 @@ class Shell extends Application
             // log it and continue...
             $this->writeException(new ErrorException($errstr, 0, $errno, $errfile, $errline));
         }
-    }
-
-    /**
-     * Format a value for display.
-     *
-     * @see Presenter::present
-     *
-     * @param mixed $val
-     *
-     * @return string Formatted value
-     */
-    protected function presentValue($val)
-    {
-        return $this->config->getPresenter()->present($val);
-    }
-
-    /**
-     * Get a command (if one exists) for the current input string.
-     *
-     * @param string $input
-     *
-     * @return null|BaseCommand
-     */
-    protected function getCommand($input)
-    {
-        $input = new StringInput($input);
-        if ($name = $input->getFirstArgument()) {
-            return $this->get($name);
-        }
-    }
-
-    /**
-     * Check whether a command is set for the current input string.
-     *
-     * @param string $input
-     *
-     * @return bool True if the shell has a command for the given input
-     */
-    protected function hasCommand($input)
-    {
-        if (preg_match('/([^\s]+?)(?:\s|$)/A', ltrim($input), $match)) {
-            return $this->has($match[1]);
-        }
-
-        return false;
-    }
-
-    /**
-     * Get the current input prompt.
-     *
-     * @return string
-     */
-    protected function getPrompt()
-    {
-        if ($this->hasCode()) {
-            return static::BUFF_PROMPT;
-        }
-
-        return $this->config->getPrompt() ?: static::PROMPT;
-    }
-
-    /**
-     * Read a line of user input.
-     *
-     * This will return a line from the input buffer (if any exist). Otherwise,
-     * it will ask the user for input.
-     *
-     * If readline is enabled, this delegates to readline. Otherwise, it's an
-     * ugly `fgets` call.
-     *
-     * @return string One line of user input
-     */
-    protected function readline()
-    {
-        if (!empty($this->inputBuffer)) {
-            $line = array_shift($this->inputBuffer);
-            if (!$line instanceof SilentInput) {
-                $this->output->writeln(sprintf('<aside>%s %s</aside>', static::REPLAY, OutputFormatter::escape($line)));
-            }
-
-            return $line;
-        }
-
-        if ($bracketedPaste = $this->config->useBracketedPaste()) {
-            printf("\e[?2004h"); // Enable bracketed paste
-        }
-
-        $line = $this->readline->readline($this->getPrompt());
-
-        if ($bracketedPaste) {
-            printf("\e[?2004l"); // ... and disable it again
-        }
-
-        return $line;
-    }
-
-    /**
-     * Get the shell output header.
-     *
-     * @return string
-     */
-    protected function getHeader()
-    {
-        return sprintf('<aside>%s by Justin Hileman</aside>', $this->getVersion());
-    }
-
-    /**
-     * Get the current version of Psy Shell.
-     *
-     * @return string
-     */
-    public function getVersion()
-    {
-        $separator = $this->config->useUnicode() ? '—' : '-';
-
-        return sprintf('Psy Shell %s (PHP %s %s %s)', self::VERSION, phpversion(), $separator, php_sapi_name());
     }
 
     /**
@@ -1221,80 +1236,65 @@ class Shell extends Application
     }
 
     /**
+     * Gets the default input definition.
+     *
+     * @return InputDefinition An InputDefinition instance
+     */
+    protected function getDefaultInputDefinition()
+    {
+        return new InputDefinition([
+            new InputArgument('command', InputArgument::REQUIRED, 'The command to execute'),
+            new InputOption('--help', '-h', InputOption::VALUE_NONE, 'Display this help message.'),
+        ]);
+    }
+
+    /**
+     * Gets the default commands that should always be available.
+     *
+     * @return array An array of default Command instances
+     */
+    protected function getDefaultCommands()
+    {
+        $sudo = new Command\SudoCommand();
+        $sudo->setReadline($this->readline);
+
+        $hist = new Command\HistoryCommand();
+        $hist->setReadline($this->readline);
+
+        return [
+            new Command\HelpCommand(),
+            new Command\ListCommand(),
+            new Command\DumpCommand(),
+            new Command\DocCommand(),
+            new Command\ShowCommand($this->config->colorMode()),
+            new Command\WtfCommand($this->config->colorMode()),
+            new Command\WhereamiCommand($this->config->colorMode()),
+            new Command\ThrowUpCommand(),
+            new Command\TimeitCommand(),
+            new Command\TraceCommand(),
+            new Command\BufferCommand(),
+            new Command\ClearCommand(),
+            new Command\EditCommand($this->config->getRuntimeDir()),
+            // new Command\PsyVersionCommand(),
+            $sudo,
+            $hist,
+            new Command\ExitCommand(),
+        ];
+    }
+
+    /**
+     * @deprecated Nothing should use this anymore
+     */
+    protected function getTabCompletionMatchers()
+    {
+        @trigger_error('getTabCompletionMatchers is no longer used', E_USER_DEPRECATED);
+    }
+
+    /**
      * @deprecated Tab completion is provided by the AutoCompleter service
      */
     protected function autocomplete($text)
     {
         @trigger_error('Tab completion is provided by the AutoCompleter service', E_USER_DEPRECATED);
-    }
-
-    /**
-     * Initialize tab completion matchers.
-     *
-     * If tab completion is enabled this adds tab completion matchers to the
-     * auto completer and sets context if needed.
-     */
-    protected function initializeTabCompletion()
-    {
-        if (!$this->config->useTabCompletion()) {
-            return;
-        }
-
-        $this->autoCompleter = $this->config->getAutoCompleter();
-
-        // auto completer needs shell to be linked to configuration because of
-        // the context aware matchers
-        $this->addMatchersToAutoCompleter($this->getDefaultMatchers());
-        $this->addMatchersToAutoCompleter($this->matchers);
-
-        $this->autoCompleter->activate();
-    }
-
-    /**
-     * Add matchers to the auto completer, setting context if needed.
-     *
-     * @param array $matchers
-     */
-    private function addMatchersToAutoCompleter(array $matchers)
-    {
-        foreach ($matchers as $matcher) {
-            if ($matcher instanceof ContextAware) {
-                $matcher->setContext($this->context);
-            }
-            $this->autoCompleter->addMatcher($matcher);
-        }
-    }
-
-    /**
-     * @todo Implement self-update
-     * @todo Implement prompt to start update
-     *
-     * @return void|string
-     */
-    protected function writeVersionInfo()
-    {
-        if (PHP_SAPI !== 'cli') {
-            return;
-        }
-
-        try {
-            $client = $this->config->getChecker();
-            if (!$client->isLatest()) {
-                $this->output->writeln(sprintf('New version is available (current: %s, latest: %s)', self::VERSION, $client->getLatest()));
-            }
-        } catch (\InvalidArgumentException $e) {
-            $this->output->writeln($e->getMessage());
-        }
-    }
-
-    /**
-     * Write a startup message if set.
-     */
-    protected function writeStartupMessage()
-    {
-        $message = $this->config->getStartupMessage();
-        if ($message !== null && $message !== '') {
-            $this->output->writeln($message);
-        }
     }
 }

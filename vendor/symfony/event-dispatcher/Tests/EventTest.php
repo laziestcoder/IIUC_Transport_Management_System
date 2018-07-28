@@ -24,6 +24,17 @@ class EventTest extends TestCase
      */
     protected $event;
 
+    public function testIsPropagationStopped()
+    {
+        $this->assertFalse($this->event->isPropagationStopped());
+    }
+
+    public function testStopPropagationAndIsPropagationStopped()
+    {
+        $this->event->stopPropagation();
+        $this->assertTrue($this->event->isPropagationStopped());
+    }
+
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
@@ -40,16 +51,5 @@ class EventTest extends TestCase
     protected function tearDown()
     {
         $this->event = null;
-    }
-
-    public function testIsPropagationStopped()
-    {
-        $this->assertFalse($this->event->isPropagationStopped());
-    }
-
-    public function testStopPropagationAndIsPropagationStopped()
-    {
-        $this->event->stopPropagation();
-        $this->assertTrue($this->event->isPropagationStopped());
     }
 }

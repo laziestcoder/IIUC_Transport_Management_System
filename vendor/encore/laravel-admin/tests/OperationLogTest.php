@@ -78,7 +78,6 @@ class OperationLogTest extends TestCase
             ->notSeeInDatabase($table, ['path' => 'admin/auth/users', 'method' => 'GET'])
             ->notSeeInDatabase($table, ['path' => 'admin/auth/permissions', 'method' => 'GET'])
             ->notSeeInDatabase($table, ['path' => 'admin/auth/roles', 'method' => 'GET'])
-
             ->assertEquals(0, OperationLog::count());
     }
 }

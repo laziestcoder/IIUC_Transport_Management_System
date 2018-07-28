@@ -35,11 +35,11 @@ class RemoveEmptyControllerArgumentLocatorsPass implements CompilerPassInterface
         }
 
         $serviceResolver = $container->getDefinition($this->resolverServiceId);
-        $controllerLocator = $container->getDefinition((string) $serviceResolver->getArgument(0));
+        $controllerLocator = $container->getDefinition((string)$serviceResolver->getArgument(0));
         $controllers = $controllerLocator->getArgument(0);
 
         foreach ($controllers as $controller => $argumentRef) {
-            $argumentLocator = $container->getDefinition((string) $argumentRef->getValues()[0]);
+            $argumentLocator = $container->getDefinition((string)$argumentRef->getValues()[0]);
 
             if (!$argumentLocator->getArgument(0)) {
                 // remove empty argument locators
@@ -58,7 +58,7 @@ class RemoveEmptyControllerArgumentLocatorsPass implements CompilerPassInterface
                 }
                 if (!$reason) {
                     if ($controllerDef->getClass() === $id) {
-                        $controllers[$id.'::'.$action] = $argumentRef;
+                        $controllers[$id . '::' . $action] = $argumentRef;
                     }
                     if ('__invoke' === $action) {
                         $controllers[$id] = $argumentRef;

@@ -11,14 +11,14 @@
 
 <body id="page-top">
 
-    <?php include('common/nav.blade.php'); ?>
+<?php include('common/nav.blade.php'); ?>
 
 <!--  here  -->
 
-    <?php include('common/footer.blade.php'); ?>
+<?php include('common/footer.blade.php'); ?>
 
 
-    <?php include('common/script.blade.php'); ?>
+<?php include('common/script.blade.php'); ?>
 
 </body>
 

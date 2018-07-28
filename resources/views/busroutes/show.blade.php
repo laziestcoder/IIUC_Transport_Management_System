@@ -11,24 +11,26 @@
     </section>
     <br><br>
     <section class="content">
-            <h1>{{$titleinfo}}</h1>
+        <h1>{{$titleinfo}}</h1>
         @if(count($BusRoute) > 0)
             <table class="table table-hover">
                 <thead>
-                    <tr>
-                        <th>Serial No</th>
-                        <th>Point Name</th>
-                        <th>Day</th>
-                        <th>Student No</th>
-                        <th>Bus No</th>
-                    </tr>
+                <tr>
+                    <th>Serial No</th>
+                    <th>Point Name</th>
+                    <th>Day</th>
+                    <th>Student No</th>
+                    <th>Bus No</th>
+                </tr>
                 </thead>
                 <tbody>
                 <?php $flag = 0; ?>
                 @foreach($BusRoute as $route)
-                    <tr> <?php $bus = 1; ?>  
+                    <tr> <?php $bus = 1; ?>
                         <td>{{$flag+=1}}</td>
-                        <td><a href="/../{{$route->pointid}}">{{DB::table('points')->where('id', $route->pointid)->first()->pointname}}</a></td>
+                        <td>
+                            <a href="/../{{$route->pointid}}">{{DB::table('points')->where('id', $route->pointid)->first()->pointname}}</a>
+                        </td>
                         <td>{{DB::table('day')->where('id', $route->dayid)->first()->dayname}}</td>
                         <td>{{$studentSum = DB::table('bus_student_information')
                             ->where('bus_student_information.routeid', '=', $route->routeid)
@@ -44,15 +46,15 @@
                 @endforeach
                 </tbody>
             </table>
-                {{$BusRoutes->links()}}    
+            {{$BusRoutes->links()}}
         @else
             <p>No information found</p>
         @endif
 
-           {{--  @include('admin::partials.error')
-            @include('admin::partials.success')
-            @include('admin::partials.exception')
-            @include('admin::partials.toastr') --}}
-            {{-- {!! $content !!} --}}
+        {{--  @include('admin::partials.error')
+         @include('admin::partials.success')
+         @include('admin::partials.exception')
+         @include('admin::partials.toastr') --}}
+        {{-- {!! $content !!} --}}
     </section>
 @endsection

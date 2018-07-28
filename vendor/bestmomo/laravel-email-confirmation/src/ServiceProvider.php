@@ -2,8 +2,8 @@
 
 namespace Bestmomo\LaravelEmailConfirmation;
 
-use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -17,20 +17,20 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot()
     {
-        $packagePath = __DIR__.'/../';
+        $packagePath = __DIR__ . '/../';
 
         // Routes
         $this->app->router->group([
-                'middleware' => 'web',
-                'namespace' => $this->getAppNamespace() . 'Http\Controllers'
-            ], function() use($packagePath) {
-                require $packagePath . 'routes/web.php';
-            }
+            'middleware' => 'web',
+            'namespace' => $this->getAppNamespace() . 'Http\Controllers'
+        ], function () use ($packagePath) {
+            require $packagePath . 'routes/web.php';
+        }
         );
 
         // Translations
         $translationsPath = $packagePath . 'publishable/translations';
-        
+
         $this->loadTranslationsFrom($translationsPath, 'confirmation');
 
         $this->publishes([

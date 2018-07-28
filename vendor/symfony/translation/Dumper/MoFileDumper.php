@@ -11,8 +11,8 @@
 
 namespace Symfony\Component\Translation\Dumper;
 
-use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Loader\MoFileLoader;
+use Symfony\Component\Translation\MessageCatalogue;
 
 /**
  * MoFileDumper generates a gettext formatted string representation of a message catalogue.
@@ -32,8 +32,8 @@ class MoFileDumper extends FileDumper
 
         foreach ($messages->all($domain) as $source => $target) {
             $offsets[] = array_map('strlen', array($sources, $source, $targets, $target));
-            $sources .= "\0".$source;
-            $targets .= "\0".$target;
+            $sources .= "\0" . $source;
+            $targets .= "\0" . $target;
             ++$size;
         }
 
@@ -52,19 +52,23 @@ class MoFileDumper extends FileDumper
 
         foreach ($offsets as $offset) {
             $sourceOffsets .= $this->writeLong($offset[1])
-                          .$this->writeLong($offset[0] + $sourcesStart);
+                . $this->writeLong($offset[0] + $sourcesStart);
             $targetOffsets .= $this->writeLong($offset[3])
-                          .$this->writeLong($offset[2] + $sourcesStart + $sourcesSize);
+                . $this->writeLong($offset[2] + $sourcesStart + $sourcesSize);
         }
 
         $output = implode(array_map(array($this, 'writeLong'), $header))
-               .$sourceOffsets
-               .$targetOffsets
-               .$sources
-               .$targets
-                ;
+            . $sourceOffsets
+            . $targetOffsets
+            . $sources
+            . $targets;
 
         return $output;
+    }
+
+    private function writeLong($str)
+    {
+        return pack('V*', $str);
     }
 
     /**
@@ -73,10 +77,5 @@ class MoFileDumper extends FileDumper
     protected function getExtension()
     {
         return 'mo';
-    }
-
-    private function writeLong($str)
-    {
-        return pack('V*', $str);
     }
 }

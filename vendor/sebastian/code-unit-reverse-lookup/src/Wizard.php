@@ -32,7 +32,7 @@ class Wizard
 
     /**
      * @param string $filename
-     * @param int    $lineNumber
+     * @param int $lineNumber
      *
      * @return string
      */
@@ -72,19 +72,6 @@ class Wizard
         }
     }
 
-    private function processFunctions()
-    {
-        foreach (get_defined_functions()['user'] as $function) {
-            if (isset($this->processedFunctions[$function])) {
-                continue;
-            }
-
-            $this->processFunctionOrMethod(new \ReflectionFunction($function));
-
-            $this->processedFunctions[$function] = true;
-        }
-    }
-
     /**
      * @param \ReflectionFunctionAbstract $functionOrMethod
      */
@@ -106,6 +93,19 @@ class Wizard
 
         foreach (range($functionOrMethod->getStartLine(), $functionOrMethod->getEndLine()) as $line) {
             $this->lookupTable[$functionOrMethod->getFileName()][$line] = $name;
+        }
+    }
+
+    private function processFunctions()
+    {
+        foreach (get_defined_functions()['user'] as $function) {
+            if (isset($this->processedFunctions[$function])) {
+                continue;
+            }
+
+            $this->processFunctionOrMethod(new \ReflectionFunction($function));
+
+            $this->processedFunctions[$function] = true;
         }
     }
 }

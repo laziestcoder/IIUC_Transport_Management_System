@@ -31,10 +31,10 @@ class InputArgument
     private $description;
 
     /**
-     * @param string $name        The argument name
-     * @param int    $mode        The argument mode: self::REQUIRED or self::OPTIONAL
+     * @param string $name The argument name
+     * @param int $mode The argument mode: self::REQUIRED or self::OPTIONAL
      * @param string $description A description text
-     * @param mixed  $default     The default value (for self::OPTIONAL mode only)
+     * @param mixed $default The default value (for self::OPTIONAL mode only)
      *
      * @throws InvalidArgumentException When argument mode is not valid
      */
@@ -84,6 +84,16 @@ class InputArgument
     }
 
     /**
+     * Returns the default value.
+     *
+     * @return mixed The default value
+     */
+    public function getDefault()
+    {
+        return $this->default;
+    }
+
+    /**
      * Sets the default value.
      *
      * @param mixed $default The default value
@@ -105,16 +115,6 @@ class InputArgument
         }
 
         $this->default = $default;
-    }
-
-    /**
-     * Returns the default value.
-     *
-     * @return mixed The default value
-     */
-    public function getDefault()
-    {
-        return $this->default;
     }
 
     /**

@@ -29,18 +29,6 @@ class FileUploadTest extends TestCase
             ->seeInElement('button[type=submit]', 'Submit');
     }
 
-    protected function uploadFiles()
-    {
-        return $this->visit('admin/files/create')
-            ->attach(__DIR__.'/AuthTest.php', 'file1')
-            ->attach(__DIR__.'/InstallTest.php', 'file2')
-            ->attach(__DIR__.'/IndexTest.php', 'file3')
-            ->attach(__DIR__.'/LaravelTest.php', 'file4')
-            ->attach(__DIR__.'/routes.php', 'file5')
-            ->attach(__DIR__.'/migrations/2016_11_22_093148_create_test_tables.php', 'file6')
-            ->press('Submit');
-    }
-
     public function testUploadFile()
     {
         File::cleanDirectory(public_path('uploads/files'));
@@ -64,10 +52,22 @@ class FileUploadTest extends TestCase
         $files = FileModel::first()->toArray();
 
         foreach (range(1, 6) as $index) {
-            $this->assertFileExists(public_path('uploads/'.$files['file'.$index]));
+            $this->assertFileExists(public_path('uploads/' . $files['file' . $index]));
         }
 
         File::cleanDirectory(public_path('uploads/files'));
+    }
+
+    protected function uploadFiles()
+    {
+        return $this->visit('admin/files/create')
+            ->attach(__DIR__ . '/AuthTest.php', 'file1')
+            ->attach(__DIR__ . '/InstallTest.php', 'file2')
+            ->attach(__DIR__ . '/IndexTest.php', 'file3')
+            ->attach(__DIR__ . '/LaravelTest.php', 'file4')
+            ->attach(__DIR__ . '/routes.php', 'file5')
+            ->attach(__DIR__ . '/migrations/2016_11_22_093148_create_test_tables.php', 'file6')
+            ->press('Submit');
     }
 
     public function testUpdateFile()
@@ -92,9 +92,9 @@ class FileUploadTest extends TestCase
             ->seeInElement('button[type=reset]', 'Reset')
             ->seeInElement('button[type=submit]', 'Save');
 
-        $this->attach(__DIR__.'/RolesTest.php', 'file3')
-            ->attach(__DIR__.'/MenuTest.php', 'file4')
-            ->attach(__DIR__.'/TestCase.php', 'file5')
+        $this->attach(__DIR__ . '/RolesTest.php', 'file3')
+            ->attach(__DIR__ . '/MenuTest.php', 'file4')
+            ->attach(__DIR__ . '/TestCase.php', 'file5')
             ->press('Save');
 
         $new = FileModel::first();
@@ -126,7 +126,7 @@ class FileUploadTest extends TestCase
             ->dontSeeInDatabase('test_files', ['id' => 1]);
 
         foreach (range(1, 6) as $index) {
-            $this->assertFileNotExists(public_path('uploads/'.$files['file'.$index]));
+            $this->assertFileNotExists(public_path('uploads/' . $files['file' . $index]));
         }
 
         $this->visit('admin/files')

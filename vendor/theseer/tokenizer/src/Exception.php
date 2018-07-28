@@ -1,6 +1,8 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
+
 namespace TheSeer\Tokenizer;
 
-class Exception extends \Exception {
+class Exception extends \Exception
+{
 
 }

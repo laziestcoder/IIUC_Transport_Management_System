@@ -28,11 +28,6 @@ class BlacklistTest extends TestCase
      */
     private $blacklist;
 
-    protected function setUp()
-    {
-        $this->blacklist = new Blacklist;
-    }
-
     public function testGlobalVariableThatIsNotBlacklistedIsNotTreatedAsBlacklisted()
     {
         $this->assertFalse($this->blacklist->isGlobalVariableBlacklisted('variable'));
@@ -116,5 +111,10 @@ class BlacklistTest extends TestCase
                 'attribute'
             )
         );
+    }
+
+    protected function setUp()
+    {
+        $this->blacklist = new Blacklist;
     }
 }

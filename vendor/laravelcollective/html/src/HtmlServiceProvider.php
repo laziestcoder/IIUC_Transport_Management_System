@@ -2,7 +2,6 @@
 
 namespace Collective\Html;
 
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\View\Compilers\BladeCompiler;
@@ -14,7 +13,7 @@ class HtmlServiceProvider extends ServiceProvider
      *
      * @var array
      */
-    protected $directives = ['entities','decode','script','style','image','favicon','link','secureLink','linkAsset','linkSecureAsset','linkRoute','linkAction','mailto','email','ol','ul','dl','meta','tag','open','model','close','token','label','input','text','password','hidden','email','tel','number','date','datetime','datetimeLocal','time','url','file','textarea','select','selectRange','selectYear','selectMonth','getSelectOption','checkbox','radio','reset','image','color','submit','button','old'
+    protected $directives = ['entities', 'decode', 'script', 'style', 'image', 'favicon', 'link', 'secureLink', 'linkAsset', 'linkSecureAsset', 'linkRoute', 'linkAction', 'mailto', 'email', 'ol', 'ul', 'dl', 'meta', 'tag', 'open', 'model', 'close', 'token', 'label', 'input', 'text', 'password', 'hidden', 'email', 'tel', 'number', 'date', 'datetime', 'datetimeLocal', 'time', 'url', 'file', 'textarea', 'select', 'selectRange', 'selectYear', 'selectMonth', 'getSelectOption', 'checkbox', 'radio', 'reset', 'image', 'color', 'submit', 'button', 'old'
     ];
 
     /**
@@ -84,7 +83,7 @@ class HtmlServiceProvider extends ServiceProvider
                 foreach ($methods as $method) {
                     if (in_array($method, $this->directives)) {
                         $snakeMethod = Str::snake($method);
-                        $directive = strtolower($namespace).'_'.$snakeMethod;
+                        $directive = strtolower($namespace) . '_' . $snakeMethod;
 
                         $bladeCompiler->directive($directive, function ($expression) use ($namespace, $method) {
                             return "<?php echo $namespace::$method($expression); ?>";

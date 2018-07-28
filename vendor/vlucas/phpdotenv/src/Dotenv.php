@@ -39,26 +39,6 @@ class Dotenv
     }
 
     /**
-     * Load environment file in given directory.
-     *
-     * @return array
-     */
-    public function load()
-    {
-        return $this->loadData();
-    }
-
-    /**
-     * Load environment file in given directory.
-     *
-     * @return array
-     */
-    public function overload()
-    {
-        return $this->loadData(true);
-    }
-
-    /**
      * Returns the full path to the file.
      *
      * @param string $path
@@ -72,9 +52,19 @@ class Dotenv
             $file = '.env';
         }
 
-        $filePath = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file;
+        $filePath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file;
 
         return $filePath;
+    }
+
+    /**
+     * Load environment file in given directory.
+     *
+     * @return array
+     */
+    public function load()
+    {
+        return $this->loadData();
     }
 
     /**
@@ -92,6 +82,16 @@ class Dotenv
     }
 
     /**
+     * Load environment file in given directory.
+     *
+     * @return array
+     */
+    public function overload()
+    {
+        return $this->loadData(true);
+    }
+
+    /**
      * Required ensures that the specified variables exist, and returns a new validator object.
      *
      * @param string|string[] $variable
@@ -100,6 +100,6 @@ class Dotenv
      */
     public function required($variable)
     {
-        return new Validator((array) $variable, $this->loader);
+        return new Validator((array)$variable, $this->loader);
     }
 }

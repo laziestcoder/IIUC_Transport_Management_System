@@ -42,7 +42,6 @@ class ControllerArgumentValueResolverPass implements CompilerPassInterface
 
         $container
             ->getDefinition($this->argumentResolverService)
-            ->replaceArgument(1, new IteratorArgument($this->findAndSortTaggedServices($this->argumentValueResolverTag, $container)))
-        ;
+            ->replaceArgument(1, new IteratorArgument($this->findAndSortTaggedServices($this->argumentValueResolverTag, $container)));
     }
 }

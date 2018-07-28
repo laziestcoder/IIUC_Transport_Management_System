@@ -8,7 +8,6 @@ use Symfony\Component\CssSelector\Exception\ExceptionInterface;
 use TijsVerkoyen\CssToInlineStyles\Css\Processor;
 use TijsVerkoyen\CssToInlineStyles\Css\Property\Processor as PropertyProcessor;
 use TijsVerkoyen\CssToInlineStyles\Css\Rule\Processor as RuleProcessor;
-use TijsVerkoyen\CssToInlineStyles\Css\Rule\Rule;
 
 class CssToInlineStyles
 {
@@ -51,58 +50,6 @@ class CssToInlineStyles
     }
 
     /**
-     * Inline the given properties on an given DOMElement
-     *
-     * @param \DOMElement             $element
-     * @param Css\Property\Property[] $properties
-     * @return \DOMElement
-     */
-    public function inlineCssOnElement(\DOMElement $element, array $properties)
-    {
-        if (empty($properties)) {
-            return $element;
-        }
-
-        $cssProperties = array();
-        $inlineProperties = array();
-
-        foreach ($this->getInlineStyles($element) as $property) {
-            $inlineProperties[$property->getName()] = $property;
-        }
-
-        foreach ($properties as $property) {
-            if (!isset($inlineProperties[$property->getName()])) {
-                $cssProperties[$property->getName()] = $property;
-            }
-        }
-
-        $rules = array();
-        foreach (array_merge($cssProperties, $inlineProperties) as $property) {
-            $rules[] = $property->toString();
-        }
-        $element->setAttribute('style', implode(' ', $rules));
-
-        return $element;
-    }
-
-    /**
-     * Get the current inline styles for a given DOMElement
-     *
-     * @param \DOMElement $element
-     * @return Css\Property\Property[]
-     */
-    public function getInlineStyles(\DOMElement $element)
-    {
-        $processor = new PropertyProcessor();
-
-        return $processor->convertArrayToObjects(
-            $processor->splitIntoSeparateProperties(
-                $element->getAttribute('style')
-            )
-        );
-    }
-
-    /**
      * @param string $html
      * @return \DOMDocument
      */
@@ -119,31 +66,6 @@ class CssToInlineStyles
 
     /**
      * @param \DOMDocument $document
-     * @return string
-     */
-    protected function getHtmlFromDocument(\DOMDocument $document)
-    {
-        // retrieve the document element
-        // we do it this way to preserve the utf-8 encoding
-        $htmlElement = $document->documentElement;
-        $html = $document->saveHTML($htmlElement);
-        $html = trim($html);
-
-        // retrieve the doctype
-        $document->removeChild($htmlElement);
-        $doctype = $document->saveHTML();
-        $doctype = trim($doctype);
-
-        // if it is the html5 doctype convert it to lowercase
-        if ($doctype === '<!DOCTYPE html>') {
-            $doctype = strtolower($doctype);
-        }
-
-        return $doctype."\n".$html;
-    }
-
-    /**
-     * @param \DOMDocument    $document
      * @param Css\Rule\Rule[] $rules
      * @return \DOMDocument
      */
@@ -231,5 +153,82 @@ class CssToInlineStyles
         }
 
         return $cssProperties;
+    }
+
+    /**
+     * Inline the given properties on an given DOMElement
+     *
+     * @param \DOMElement $element
+     * @param Css\Property\Property[] $properties
+     * @return \DOMElement
+     */
+    public function inlineCssOnElement(\DOMElement $element, array $properties)
+    {
+        if (empty($properties)) {
+            return $element;
+        }
+
+        $cssProperties = array();
+        $inlineProperties = array();
+
+        foreach ($this->getInlineStyles($element) as $property) {
+            $inlineProperties[$property->getName()] = $property;
+        }
+
+        foreach ($properties as $property) {
+            if (!isset($inlineProperties[$property->getName()])) {
+                $cssProperties[$property->getName()] = $property;
+            }
+        }
+
+        $rules = array();
+        foreach (array_merge($cssProperties, $inlineProperties) as $property) {
+            $rules[] = $property->toString();
+        }
+        $element->setAttribute('style', implode(' ', $rules));
+
+        return $element;
+    }
+
+    /**
+     * Get the current inline styles for a given DOMElement
+     *
+     * @param \DOMElement $element
+     * @return Css\Property\Property[]
+     */
+    public function getInlineStyles(\DOMElement $element)
+    {
+        $processor = new PropertyProcessor();
+
+        return $processor->convertArrayToObjects(
+            $processor->splitIntoSeparateProperties(
+                $element->getAttribute('style')
+            )
+        );
+    }
+
+    /**
+     * @param \DOMDocument $document
+     * @return string
+     */
+    protected function getHtmlFromDocument(\DOMDocument $document)
+    {
+        // retrieve the document element
+        // we do it this way to preserve the utf-8 encoding
+        $htmlElement = $document->documentElement;
+        $html = $document->saveHTML($htmlElement);
+        $html = trim($html);
+
+        // retrieve the doctype
+        $document->removeChild($htmlElement);
+        $doctype = $document->saveHTML();
+        $doctype = trim($doctype);
+
+        // if it is the html5 doctype convert it to lowercase
+        if ($doctype === '<!DOCTYPE html>') {
+            $doctype = strtolower($doctype);
+        }
+
+        return $doctype . "\n" . $html;
     }
 }

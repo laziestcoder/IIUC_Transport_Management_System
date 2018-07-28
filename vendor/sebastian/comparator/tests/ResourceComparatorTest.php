@@ -23,20 +23,15 @@ class ResourceComparatorTest extends TestCase
 {
     private $comparator;
 
-    protected function setUp()
-    {
-        $this->comparator = new ResourceComparator;
-    }
-
     public function acceptsSucceedsProvider()
     {
         $tmpfile1 = \tmpfile();
         $tmpfile2 = \tmpfile();
 
         return [
-          [$tmpfile1, $tmpfile1],
-          [$tmpfile2, $tmpfile2],
-          [$tmpfile1, $tmpfile2]
+            [$tmpfile1, $tmpfile1],
+            [$tmpfile2, $tmpfile2],
+            [$tmpfile1, $tmpfile2]
         ];
     }
 
@@ -45,9 +40,9 @@ class ResourceComparatorTest extends TestCase
         $tmpfile1 = \tmpfile();
 
         return [
-          [$tmpfile1, null],
-          [null, $tmpfile1],
-          [null, null]
+            [$tmpfile1, null],
+            [null, $tmpfile1],
+            [null, null]
         ];
     }
 
@@ -57,8 +52,8 @@ class ResourceComparatorTest extends TestCase
         $tmpfile2 = \tmpfile();
 
         return [
-          [$tmpfile1, $tmpfile1],
-          [$tmpfile2, $tmpfile2]
+            [$tmpfile1, $tmpfile1],
+            [$tmpfile2, $tmpfile2]
         ];
     }
 
@@ -68,8 +63,8 @@ class ResourceComparatorTest extends TestCase
         $tmpfile2 = \tmpfile();
 
         return [
-          [$tmpfile1, $tmpfile2],
-          [$tmpfile2, $tmpfile1]
+            [$tmpfile1, $tmpfile2],
+            [$tmpfile2, $tmpfile1]
         ];
     }
 
@@ -83,7 +78,7 @@ class ResourceComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual)
     {
         $this->assertTrue(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -97,7 +92,7 @@ class ResourceComparatorTest extends TestCase
     public function testAcceptsFails($expected, $actual)
     {
         $this->assertFalse(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -132,5 +127,10 @@ class ResourceComparatorTest extends TestCase
         $this->expectException(ComparisonFailure::class);
 
         $this->comparator->assertEquals($expected, $actual);
+    }
+
+    protected function setUp()
+    {
+        $this->comparator = new ResourceComparator;
     }
 }

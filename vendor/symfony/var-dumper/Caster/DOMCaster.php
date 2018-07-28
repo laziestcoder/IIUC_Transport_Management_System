@@ -63,7 +63,7 @@ class DOMCaster
 
     public static function castException(\DOMException $e, array $a, Stub $stub, $isNested)
     {
-        $k = Caster::PREFIX_PROTECTED.'code';
+        $k = Caster::PREFIX_PROTECTED . 'code';
         if (isset($a[$k], self::$errorCodes[$a[$k]])) {
             $a[$k] = new ConstStub(self::$errorCodes[$a[$k]], $a[$k]);
         }
@@ -83,8 +83,8 @@ class DOMCaster
     public static function castImplementation($dom, array $a, Stub $stub, $isNested)
     {
         $a += array(
-            Caster::PREFIX_VIRTUAL.'Core' => '1.0',
-            Caster::PREFIX_VIRTUAL.'XML' => '2.0',
+            Caster::PREFIX_VIRTUAL . 'Core' => '1.0',
+            Caster::PREFIX_VIRTUAL . 'XML' => '2.0',
         );
 
         return $a;
@@ -157,7 +157,7 @@ class DOMCaster
         if (!($filter & Caster::EXCLUDE_VERBOSE)) {
             $formatOutput = $dom->formatOutput;
             $dom->formatOutput = true;
-            $a += array(Caster::PREFIX_VIRTUAL.'xml' => $dom->saveXML());
+            $a += array(Caster::PREFIX_VIRTUAL . 'xml' => $dom->saveXML());
             $dom->formatOutput = $formatOutput;
         }
 

@@ -1,37 +1,34 @@
 <?php $__env->startSection('content'); ?>
-    
+
     <section class="content-header">
         <?php echo $__env->make('inc.messages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         <h1><?php echo e($title); ?></h1>
-        <?php echo Form :: open(['action' => 'NoticesController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data' ]); ?>
+        <?php echo Form:: open(['action' => 'NoticesController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data']); ?>
 
         <div class="form-group">
-            <?php echo e(Form :: label('title','Title')); ?>
+            <?php echo e(Form:: label('title', 'Title')); ?>
 
-            <?php echo e(Form :: text('title' , '', [ 'class' => 'form-control', 'placeholder' => 'Title', ])); ?>
+            <?php echo e(Form:: text('title', '', ['class' => 'form-control', 'placeholder' => 'Title',])); ?>
 
         </div>
         <div class="form-group">
-            <?php echo e(Form :: label('body','Body')); ?>
+            <?php echo e(Form:: label('body', 'Body')); ?>
 
-            <?php echo e(Form :: textarea('body' , '', ['id' => 'article-ckeditor','class' => 'form-control', 'placeholder' => 'Body Text', ])); ?>
+            <?php echo e(Form:: textarea('body', '', ['id' => 'article-ckeditor', 'class' => 'form-control', 'placeholder' => 'Body Text',])); ?>
 
         </div>
         <div class="form-group">
             <?php echo e(Form::file('cover_image')); ?>
 
         </div>
-        <?php echo e(Form :: submit('Submit',['class' => 'btn btn-primary'])); ?>
+        <?php echo e(Form:: submit('Submit', ['class' => 'btn btn-primary'])); ?>
 
         <?php echo Form::close(); ?>
 
 
     </section>
     <br>
-    
-    
-    
-    
+
 
     <script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
     <script>

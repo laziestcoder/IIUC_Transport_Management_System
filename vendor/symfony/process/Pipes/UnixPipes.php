@@ -148,6 +148,6 @@ class UnixPipes extends AbstractPipes
      */
     public function areOpen()
     {
-        return (bool) $this->pipes;
+        return (bool)$this->pipes;
     }
 }

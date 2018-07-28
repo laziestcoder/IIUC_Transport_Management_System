@@ -23,7 +23,7 @@ class RestorerTest extends TestCase
     {
         $GLOBALS['varBool'] = false;
         $GLOBALS['varNull'] = null;
-        $_GET['varGet']     = 0;
+        $_GET['varGet'] = 0;
     }
 
     /**
@@ -32,16 +32,16 @@ class RestorerTest extends TestCase
      * @covers \SebastianBergmann\GlobalState\Restorer::restoreGlobalVariables
      * @covers \SebastianBergmann\GlobalState\Restorer::restoreSuperGlobalArray
      *
-     * @uses \SebastianBergmann\GlobalState\Blacklist::isGlobalVariableBlacklisted
-     * @uses \SebastianBergmann\GlobalState\Snapshot::__construct
-     * @uses \SebastianBergmann\GlobalState\Snapshot::blacklist
-     * @uses \SebastianBergmann\GlobalState\Snapshot::canBeSerialized
-     * @uses \SebastianBergmann\GlobalState\Snapshot::globalVariables
-     * @uses \SebastianBergmann\GlobalState\Snapshot::setupSuperGlobalArrays
-     * @uses \SebastianBergmann\GlobalState\Snapshot::snapshotGlobals
-     * @uses \SebastianBergmann\GlobalState\Snapshot::snapshotSuperGlobalArray
-     * @uses \SebastianBergmann\GlobalState\Snapshot::superGlobalArrays
-     * @uses \SebastianBergmann\GlobalState\Snapshot::superGlobalVariables
+     * @uses   \SebastianBergmann\GlobalState\Blacklist::isGlobalVariableBlacklisted
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::__construct
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::blacklist
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::canBeSerialized
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::globalVariables
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::setupSuperGlobalArrays
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::snapshotGlobals
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::snapshotSuperGlobalArray
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::superGlobalArrays
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::superGlobalVariables
      */
     public function testRestorerGlobalVariable()
     {
@@ -66,17 +66,17 @@ class RestorerTest extends TestCase
      * @covers \SebastianBergmann\GlobalState\Restorer::restoreGlobalVariables
      * @covers \SebastianBergmann\GlobalState\Restorer::restoreSuperGlobalArray
      *
-     * @uses \SebastianBergmann\GlobalState\Blacklist::addClassNamePrefix
-     * @uses \SebastianBergmann\GlobalState\Blacklist::isGlobalVariableBlacklisted
-     * @uses \SebastianBergmann\GlobalState\Snapshot::__construct
-     * @uses \SebastianBergmann\GlobalState\Snapshot::blacklist
-     * @uses \SebastianBergmann\GlobalState\Snapshot::canBeSerialized
-     * @uses \SebastianBergmann\GlobalState\Snapshot::globalVariables
-     * @uses \SebastianBergmann\GlobalState\Snapshot::setupSuperGlobalArrays
-     * @uses \SebastianBergmann\GlobalState\Snapshot::snapshotGlobals
-     * @uses \SebastianBergmann\GlobalState\Snapshot::snapshotSuperGlobalArray
-     * @uses \SebastianBergmann\GlobalState\Snapshot::superGlobalArrays
-     * @uses \SebastianBergmann\GlobalState\Snapshot::superGlobalVariables
+     * @uses   \SebastianBergmann\GlobalState\Blacklist::addClassNamePrefix
+     * @uses   \SebastianBergmann\GlobalState\Blacklist::isGlobalVariableBlacklisted
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::__construct
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::blacklist
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::canBeSerialized
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::globalVariables
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::setupSuperGlobalArrays
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::snapshotGlobals
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::snapshotSuperGlobalArray
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::superGlobalArrays
+     * @uses   \SebastianBergmann\GlobalState\Snapshot::superGlobalVariables
      */
     public function testIntegrationRestorerGlobalVariables()
     {

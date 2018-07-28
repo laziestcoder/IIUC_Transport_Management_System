@@ -2,11 +2,11 @@
     <div class="jumbotron text-center">
         <h1><?php echo e($title); ?></h1>
         <p>This is the home page of IIUC TMD</p>
-        <?php if(auth()->guard()->guest()): ?>
-        <p>
-            <a class="btn btn-primary btn-lg" href="/login" role="button">Login</a>
-            <a class="btn btn-success btn-lg" href="/register" role="button">Register</a>
-        </p>
+        <?php if (auth()->guard()->guest()): ?>
+            <p>
+                <a class="btn btn-primary btn-lg" href="/login" role="button">Login</a>
+                <a class="btn btn-success btn-lg" href="/register" role="button">Register</a>
+            </p>
         <?php endif; ?>
     </div>
 <?php $__env->stopSection(); ?>

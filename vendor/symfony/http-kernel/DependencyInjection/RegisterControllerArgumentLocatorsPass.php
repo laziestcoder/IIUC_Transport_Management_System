@@ -127,12 +127,12 @@ class RegisterControllerArgumentLocatorsPass implements CompilerPassInterface
                         $target = $arguments[$r->name][$p->name];
                         if ('?' !== $target[0]) {
                             $invalidBehavior = ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE;
-                        } elseif ('' === $target = (string) substr($target, 1)) {
+                        } elseif ('' === $target = (string)substr($target, 1)) {
                             throw new InvalidArgumentException(sprintf('A "%s" tag must have non-empty "id" attributes for service "%s".', $this->controllerTag, $id));
                         } elseif ($p->allowsNull() && !$p->isOptional()) {
                             $invalidBehavior = ContainerInterface::NULL_ON_INVALID_REFERENCE;
                         }
-                    } elseif (isset($bindings[$bindingName = '$'.$p->name]) || isset($bindings[$bindingName = $type])) {
+                    } elseif (isset($bindings[$bindingName = '$' . $p->name]) || isset($bindings[$bindingName = $type])) {
                         $binding = $bindings[$bindingName];
 
                         list($bindingValue, $bindingId) = $binding->getValues();
@@ -168,7 +168,7 @@ class RegisterControllerArgumentLocatorsPass implements CompilerPassInterface
                 }
                 // register the maps as a per-method service-locators
                 if ($args) {
-                    $controllers[$id.':'.$r->name] = ServiceLocatorTagPass::register($container, $args);
+                    $controllers[$id . ':' . $r->name] = ServiceLocatorTagPass::register($container, $args);
                 }
             }
         }

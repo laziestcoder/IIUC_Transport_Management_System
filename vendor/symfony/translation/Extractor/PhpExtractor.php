@@ -24,14 +24,6 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
     const MESSAGE_TOKEN = 300;
     const METHOD_ARGUMENTS_TOKEN = 1000;
     const DOMAIN_TOKEN = 1001;
-
-    /**
-     * Prefix for new found message.
-     *
-     * @var string
-     */
-    private $prefix = '';
-
     /**
      * The sequence that captures translation messages.
      *
@@ -73,6 +65,12 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
             self::MESSAGE_TOKEN,
         ),
     );
+    /**
+     * Prefix for new found message.
+     *
+     * @var string
+     */
+    private $prefix = '';
 
     /**
      * {@inheritdoc}
@@ -89,11 +87,63 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Extracts trans message from PHP tokens.
+     *
+     * @param array $tokens
+     * @param MessageCatalogue $catalog
      */
-    public function setPrefix($prefix)
+    protected function parseTokens($tokens, MessageCatalogue $catalog)
     {
-        $this->prefix = $prefix;
+        $tokenIterator = new \ArrayIterator($tokens);
+
+        for ($key = 0; $key < $tokenIterator->count(); ++$key) {
+            foreach ($this->sequences as $sequence) {
+                $message = '';
+                $domain = 'messages';
+                $tokenIterator->seek($key);
+
+                foreach ($sequence as $sequenceKey => $item) {
+                    $this->seekToNextRelevantToken($tokenIterator);
+
+                    if ($this->normalizeToken($tokenIterator->current()) === $item) {
+                        $tokenIterator->next();
+                        continue;
+                    } elseif (self::MESSAGE_TOKEN === $item) {
+                        $message = $this->getValue($tokenIterator);
+
+                        if (count($sequence) === ($sequenceKey + 1)) {
+                            break;
+                        }
+                    } elseif (self::METHOD_ARGUMENTS_TOKEN === $item) {
+                        $this->skipMethodArgument($tokenIterator);
+                    } elseif (self::DOMAIN_TOKEN === $item) {
+                        $domain = $this->getValue($tokenIterator);
+
+                        break;
+                    } else {
+                        break;
+                    }
+                }
+
+                if ($message) {
+                    $catalog->set($message, $this->prefix . $message, $domain);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Seeks to a non-whitespace token.
+     */
+    private function seekToNextRelevantToken(\Iterator $tokenIterator)
+    {
+        for (; $tokenIterator->valid(); $tokenIterator->next()) {
+            $t = $tokenIterator->current();
+            if (T_WHITESPACE !== $t[0]) {
+                break;
+            }
+        }
     }
 
     /**
@@ -110,40 +160,6 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
         }
 
         return $token;
-    }
-
-    /**
-     * Seeks to a non-whitespace token.
-     */
-    private function seekToNextRelevantToken(\Iterator $tokenIterator)
-    {
-        for (; $tokenIterator->valid(); $tokenIterator->next()) {
-            $t = $tokenIterator->current();
-            if (T_WHITESPACE !== $t[0]) {
-                break;
-            }
-        }
-    }
-
-    private function skipMethodArgument(\Iterator $tokenIterator)
-    {
-        $openBraces = 0;
-
-        for (; $tokenIterator->valid(); $tokenIterator->next()) {
-            $t = $tokenIterator->current();
-
-            if ('[' === $t[0] || '(' === $t[0]) {
-                ++$openBraces;
-            }
-
-            if (']' === $t[0] || ')' === $t[0]) {
-                --$openBraces;
-            }
-
-            if ((0 === $openBraces && ',' === $t[0]) || (-1 === $openBraces && ')' === $t[0])) {
-                break;
-            }
-        }
     }
 
     /**
@@ -183,51 +199,33 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
         return $message;
     }
 
-    /**
-     * Extracts trans message from PHP tokens.
-     *
-     * @param array            $tokens
-     * @param MessageCatalogue $catalog
-     */
-    protected function parseTokens($tokens, MessageCatalogue $catalog)
+    private function skipMethodArgument(\Iterator $tokenIterator)
     {
-        $tokenIterator = new \ArrayIterator($tokens);
+        $openBraces = 0;
 
-        for ($key = 0; $key < $tokenIterator->count(); ++$key) {
-            foreach ($this->sequences as $sequence) {
-                $message = '';
-                $domain = 'messages';
-                $tokenIterator->seek($key);
+        for (; $tokenIterator->valid(); $tokenIterator->next()) {
+            $t = $tokenIterator->current();
 
-                foreach ($sequence as $sequenceKey => $item) {
-                    $this->seekToNextRelevantToken($tokenIterator);
+            if ('[' === $t[0] || '(' === $t[0]) {
+                ++$openBraces;
+            }
 
-                    if ($this->normalizeToken($tokenIterator->current()) === $item) {
-                        $tokenIterator->next();
-                        continue;
-                    } elseif (self::MESSAGE_TOKEN === $item) {
-                        $message = $this->getValue($tokenIterator);
+            if (']' === $t[0] || ')' === $t[0]) {
+                --$openBraces;
+            }
 
-                        if (count($sequence) === ($sequenceKey + 1)) {
-                            break;
-                        }
-                    } elseif (self::METHOD_ARGUMENTS_TOKEN === $item) {
-                        $this->skipMethodArgument($tokenIterator);
-                    } elseif (self::DOMAIN_TOKEN === $item) {
-                        $domain = $this->getValue($tokenIterator);
-
-                        break;
-                    } else {
-                        break;
-                    }
-                }
-
-                if ($message) {
-                    $catalog->set($message, $this->prefix.$message, $domain);
-                    break;
-                }
+            if ((0 === $openBraces && ',' === $t[0]) || (-1 === $openBraces && ')' === $t[0])) {
+                break;
             }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setPrefix($prefix)
+    {
+        $this->prefix = $prefix;
     }
 
     /**

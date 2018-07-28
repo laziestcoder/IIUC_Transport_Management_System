@@ -24,46 +24,41 @@ class TypeComparatorTest extends TestCase
 {
     private $comparator;
 
-    protected function setUp()
-    {
-        $this->comparator = new TypeComparator;
-    }
-
     public function acceptsSucceedsProvider()
     {
         return [
-          [true, 1],
-          [false, [1]],
-          [null, new stdClass],
-          [1.0, 5],
-          ['', '']
+            [true, 1],
+            [false, [1]],
+            [null, new stdClass],
+            [1.0, 5],
+            ['', '']
         ];
     }
 
     public function assertEqualsSucceedsProvider()
     {
         return [
-          [true, true],
-          [true, false],
-          [false, false],
-          [null, null],
-          [new stdClass, new stdClass],
-          [0, 0],
-          [1.0, 2.0],
-          ['hello', 'world'],
-          ['', ''],
-          [[], [1, 2, 3]]
+            [true, true],
+            [true, false],
+            [false, false],
+            [null, null],
+            [new stdClass, new stdClass],
+            [0, 0],
+            [1.0, 2.0],
+            ['hello', 'world'],
+            ['', ''],
+            [[], [1, 2, 3]]
         ];
     }
 
     public function assertEqualsFailsProvider()
     {
         return [
-          [true, null],
-          [null, false],
-          [1.0, 0],
-          [new stdClass, []],
-          ['1', 1]
+            [true, null],
+            [null, false],
+            [1.0, 0],
+            [new stdClass, []],
+            ['1', 1]
         ];
     }
 
@@ -77,7 +72,7 @@ class TypeComparatorTest extends TestCase
     public function testAcceptsSucceeds($expected, $actual)
     {
         $this->assertTrue(
-          $this->comparator->accepts($expected, $actual)
+            $this->comparator->accepts($expected, $actual)
         );
     }
 
@@ -113,5 +108,10 @@ class TypeComparatorTest extends TestCase
         $this->expectExceptionMessage('does not match expected type');
 
         $this->comparator->assertEquals($expected, $actual);
+    }
+
+    protected function setUp()
+    {
+        $this->comparator = new TypeComparator;
     }
 }

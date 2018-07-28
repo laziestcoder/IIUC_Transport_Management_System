@@ -13,9 +13,9 @@ namespace Symfony\Component\HttpKernel\Fragment;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerReference;
 use Symfony\Component\HttpKernel\UriSigner;
+use Symfony\Component\Templating\EngineInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Loader\ExistsLoaderInterface;
@@ -33,10 +33,10 @@ class HIncludeFragmentRenderer extends RoutableFragmentRenderer
     private $charset;
 
     /**
-     * @param EngineInterface|Environment $templating            An EngineInterface or a Twig instance
-     * @param UriSigner                   $signer                A UriSigner instance
-     * @param string                      $globalDefaultTemplate The global default content (it can be a template name or the content)
-     * @param string                      $charset
+     * @param EngineInterface|Environment $templating An EngineInterface or a Twig instance
+     * @param UriSigner $signer A UriSigner instance
+     * @param string $globalDefaultTemplate The global default content (it can be a template name or the content)
+     * @param string $charset
      */
     public function __construct($templating = null, UriSigner $signer = null, string $globalDefaultTemplate = null, string $charset = 'utf-8')
     {

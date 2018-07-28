@@ -1,31 +1,38 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
+
 namespace TheSeer\Tokenizer;
 
 use PHPUnit\Framework\TestCase;
 
-class TokenTest extends TestCase {
+class TokenTest extends TestCase
+{
 
     /** @var  Token */
     private $token;
 
-    protected function setUp() {
-        $this->token = new Token(1,'test-dummy', 'blank');
-    }
-
-    public function testTokenCanBeCreated() {
+    public function testTokenCanBeCreated()
+    {
         $this->assertInstanceOf(Token::class, $this->token);
     }
 
-    public function testTokenLineCanBeRetrieved() {
+    public function testTokenLineCanBeRetrieved()
+    {
         $this->assertEquals(1, $this->token->getLine());
     }
 
-    public function testTokenNameCanBeRetrieved() {
+    public function testTokenNameCanBeRetrieved()
+    {
         $this->assertEquals('test-dummy', $this->token->getName());
     }
 
-    public function testTokenValueCanBeRetrieved() {
+    public function testTokenValueCanBeRetrieved()
+    {
         $this->assertEquals('blank', $this->token->getValue());
+    }
+
+    protected function setUp()
+    {
+        $this->token = new Token(1, 'test-dummy', 'blank');
     }
 
 }

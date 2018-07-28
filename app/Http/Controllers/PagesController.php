@@ -3,14 +3,13 @@
 namespace App\Http\Controllers;
 
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use App\Notice;
 use DB;
 
 class PagesController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $title = 'Welcome to IIUC Transport Management System';
         //return  view('pages.index',compact('title'));
         // $posts = Post::all ();
@@ -19,11 +18,11 @@ class PagesController extends Controller
         // $posts =  Post::orderBy('id','desc')->take(1)->get();
         // $posts =  Post::orderBy('id','desc')->get();
         $noticetitle = 'Latest News';
-        $notices =  Notice::orderBy('id','desc')->paginate(25);
+        $notices = Notice::orderBy('id', 'desc')->paginate(25);
         $description = "";
 
         $data = array(
-            'titile' =>$title,
+            'titile' => $title,
             'noticetitle' => $noticetitle,
             'notices' => $notices,
             'description' => $description
@@ -42,12 +41,13 @@ class PagesController extends Controller
 //        );
 //        return  view('pages.services')->with($data);
 //    }
-    public function test(){
-        $data = array (
+    public function test()
+    {
+        $data = array(
             'title' => 'Services',
             'services' => ['Transportation', 'Travelling', 'Picnic']
         );
-        return  view('pages.test')->with($data);
+        return view('pages.test')->with($data);
     }
 
 }

@@ -24,16 +24,16 @@ final class OperatingSystemTest extends TestCase
      */
     private $os;
 
-    protected function setUp()/*: void*/
-    {
-        $this->os = new OperatingSystem;
-    }
-
     /**
      * @requires OS Linux
      */
     public function testFamilyCanBeRetrieved()/*: void*/
     {
         $this->assertEquals('Linux', $this->os->getFamily());
+    }
+
+    protected function setUp()/*: void*/
+    {
+        $this->os = new OperatingSystem;
     }
 }

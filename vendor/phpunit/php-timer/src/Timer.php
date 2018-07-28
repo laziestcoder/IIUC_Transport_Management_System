@@ -16,7 +16,7 @@ final class Timer
      * @var array
      */
     private static $times = [
-        'hour'   => 3600000,
+        'hour' => 3600000,
         'minute' => 60000,
         'second' => 1000
     ];
@@ -36,19 +36,16 @@ final class Timer
         return \microtime(true) - \array_pop(self::$startTimes);
     }
 
-    public static function secondsToTimeString(float $time): string
+    /**
+     * @throws RuntimeException
+     */
+    public static function resourceUsage(): string
     {
-        $ms = \round($time * 1000);
-
-        foreach (self::$times as $unit => $value) {
-            if ($ms >= $value) {
-                $time = \floor($ms / $value * 100.0) / 100.0;
-
-                return $time . ' ' . ($time == 1 ? $unit : $unit . 's');
-            }
-        }
-
-        return $ms . ' ms';
+        return \sprintf(
+            'Time: %s, Memory: %4.2fMB',
+            self::timeSinceStartOfRequest(),
+            \memory_get_peak_usage(true) / 1048576
+        );
     }
 
     /**
@@ -67,15 +64,18 @@ final class Timer
         return self::secondsToTimeString(\microtime(true) - $startOfRequest);
     }
 
-    /**
-     * @throws RuntimeException
-     */
-    public static function resourceUsage(): string
+    public static function secondsToTimeString(float $time): string
     {
-        return \sprintf(
-            'Time: %s, Memory: %4.2fMB',
-            self::timeSinceStartOfRequest(),
-            \memory_get_peak_usage(true) / 1048576
-        );
+        $ms = \round($time * 1000);
+
+        foreach (self::$times as $unit => $value) {
+            if ($ms >= $value) {
+                $time = \floor($ms / $value * 100.0) / 100.0;
+
+                return $time . ' ' . ($time == 1 ? $unit : $unit . 's');
+            }
+        }
+
+        return $ms . ' ms';
     }
 }

@@ -11,10 +11,10 @@
 
 namespace Symfony\Component\HttpKernel\DataCollector;
 
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\VarDumper\Caster\LinkStub;
 
 /**
@@ -31,7 +31,7 @@ class ConfigDataCollector extends DataCollector implements LateDataCollectorInte
     private $hasVarDumper;
 
     /**
-     * @param string $name    The name of the application using the web profiler
+     * @param string $name The name of the application using the web profiler
      * @param string $version The version of the application using the web profiler
      */
     public function __construct(string $name = null, string $version = null)
@@ -91,6 +91,30 @@ class ConfigDataCollector extends DataCollector implements LateDataCollectorInte
             $this->data['php_version'] = $matches[1];
             $this->data['php_version_extra'] = $matches[2];
         }
+    }
+
+    /**
+     * Tries to retrieve information about the current Symfony version.
+     *
+     * @return string One of: dev, stable, eom, eol
+     */
+    private function determineSymfonyState()
+    {
+        $now = new \DateTime();
+        $eom = \DateTime::createFromFormat('m/Y', Kernel::END_OF_MAINTENANCE)->modify('last day of this month');
+        $eol = \DateTime::createFromFormat('m/Y', Kernel::END_OF_LIFE)->modify('last day of this month');
+
+        if ($now > $eol) {
+            $versionState = 'eol';
+        } elseif ($now > $eom) {
+            $versionState = 'eom';
+        } elseif ('' !== Kernel::EXTRA_VERSION) {
+            $versionState = 'dev';
+        } else {
+            $versionState = 'stable';
+        }
+
+        return $versionState;
     }
 
     /**
@@ -304,29 +328,5 @@ class ConfigDataCollector extends DataCollector implements LateDataCollectorInte
     public function getName()
     {
         return 'config';
-    }
-
-    /**
-     * Tries to retrieve information about the current Symfony version.
-     *
-     * @return string One of: dev, stable, eom, eol
-     */
-    private function determineSymfonyState()
-    {
-        $now = new \DateTime();
-        $eom = \DateTime::createFromFormat('m/Y', Kernel::END_OF_MAINTENANCE)->modify('last day of this month');
-        $eol = \DateTime::createFromFormat('m/Y', Kernel::END_OF_LIFE)->modify('last day of this month');
-
-        if ($now > $eol) {
-            $versionState = 'eol';
-        } elseif ($now > $eom) {
-            $versionState = 'eom';
-        } elseif ('' !== Kernel::EXTRA_VERSION) {
-            $versionState = 'dev';
-        } else {
-            $versionState = 'stable';
-        }
-
-        return $versionState;
     }
 }

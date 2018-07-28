@@ -34,9 +34,9 @@ abstract class AbstractUriElement
     protected $currentUri;
 
     /**
-     * @param \DOMElement $node       A \DOMElement instance
-     * @param string      $currentUri The URI of the page where the link is embedded (or the base href)
-     * @param string      $method     The method to use for the link (get by default)
+     * @param \DOMElement $node A \DOMElement instance
+     * @param string $currentUri The URI of the page where the link is embedded (or the base href)
+     * @param string $method The method to use for the link (get by default)
      *
      * @throws \InvalidArgumentException if the node is not a link
      */
@@ -60,6 +60,15 @@ abstract class AbstractUriElement
     {
         return $this->node;
     }
+
+    /**
+     * Sets current \DOMElement instance.
+     *
+     * @param \DOMElement $node A \DOMElement instance
+     *
+     * @throws \LogicException If given node is not an anchor
+     */
+    abstract protected function setNode(\DOMElement $node);
 
     /**
      * Gets the method associated with this link.
@@ -92,32 +101,32 @@ abstract class AbstractUriElement
 
         // an anchor
         if ('#' === $uri[0]) {
-            return $this->cleanupAnchor($this->currentUri).$uri;
+            return $this->cleanupAnchor($this->currentUri) . $uri;
         }
 
         $baseUri = $this->cleanupUri($this->currentUri);
 
         if ('?' === $uri[0]) {
-            return $baseUri.$uri;
+            return $baseUri . $uri;
         }
 
         // absolute URL with relative schema
         if (0 === strpos($uri, '//')) {
-            return preg_replace('#^([^/]*)//.*$#', '$1', $baseUri).$uri;
+            return preg_replace('#^([^/]*)//.*$#', '$1', $baseUri) . $uri;
         }
 
         $baseUri = preg_replace('#^(.*?//[^/]*)(?:\/.*)?$#', '$1', $baseUri);
 
         // absolute path
         if ('/' === $uri[0]) {
-            return $baseUri.$uri;
+            return $baseUri . $uri;
         }
 
         // relative path
         $path = parse_url(substr($this->currentUri, strlen($baseUri)), PHP_URL_PATH);
-        $path = $this->canonicalizePath(substr($path, 0, strrpos($path, '/')).'/'.$uri);
+        $path = $this->canonicalizePath(substr($path, 0, strrpos($path, '/')) . '/' . $uri);
 
-        return $baseUri.('' === $path || '/' !== $path[0] ? '/' : '').$path;
+        return $baseUri . ('' === $path || '/' !== $path[0] ? '/' : '') . $path;
     }
 
     /**
@@ -128,43 +137,20 @@ abstract class AbstractUriElement
     abstract protected function getRawUri();
 
     /**
-     * Returns the canonicalized URI path (see RFC 3986, section 5.2.4).
+     * Remove the anchor from the uri.
      *
-     * @param string $path URI path
+     * @param string $uri
      *
      * @return string
      */
-    protected function canonicalizePath($path)
+    private function cleanupAnchor($uri)
     {
-        if ('' === $path || '/' === $path) {
-            return $path;
+        if (false !== $pos = strpos($uri, '#')) {
+            return substr($uri, 0, $pos);
         }
 
-        if ('.' === substr($path, -1)) {
-            $path .= '/';
-        }
-
-        $output = array();
-
-        foreach (explode('/', $path) as $segment) {
-            if ('..' === $segment) {
-                array_pop($output);
-            } elseif ('.' !== $segment) {
-                $output[] = $segment;
-            }
-        }
-
-        return implode('/', $output);
+        return $uri;
     }
-
-    /**
-     * Sets current \DOMElement instance.
-     *
-     * @param \DOMElement $node A \DOMElement instance
-     *
-     * @throws \LogicException If given node is not an anchor
-     */
-    abstract protected function setNode(\DOMElement $node);
 
     /**
      * Removes the query string and the anchor from the given uri.
@@ -195,18 +181,32 @@ abstract class AbstractUriElement
     }
 
     /**
-     * Remove the anchor from the uri.
+     * Returns the canonicalized URI path (see RFC 3986, section 5.2.4).
      *
-     * @param string $uri
+     * @param string $path URI path
      *
      * @return string
      */
-    private function cleanupAnchor($uri)
+    protected function canonicalizePath($path)
     {
-        if (false !== $pos = strpos($uri, '#')) {
-            return substr($uri, 0, $pos);
+        if ('' === $path || '/' === $path) {
+            return $path;
         }
 
-        return $uri;
+        if ('.' === substr($path, -1)) {
+            $path .= '/';
+        }
+
+        $output = array();
+
+        foreach (explode('/', $path) as $segment) {
+            if ('..' === $segment) {
+                array_pop($output);
+            } elseif ('.' !== $segment) {
+                $output[] = $segment;
+            }
+        }
+
+        return implode('/', $output);
     }
 }

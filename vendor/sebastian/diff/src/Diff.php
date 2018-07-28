@@ -28,14 +28,14 @@ final class Diff
     private $chunks;
 
     /**
-     * @param string  $from
-     * @param string  $to
+     * @param string $from
+     * @param string $to
      * @param Chunk[] $chunks
      */
     public function __construct(string $from, string $to, array $chunks = [])
     {
-        $this->from   = $from;
-        $this->to     = $to;
+        $this->from = $from;
+        $this->to = $to;
         $this->chunks = $chunks;
     }
 

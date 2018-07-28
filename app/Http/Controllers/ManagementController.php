@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use App\User;
-use App\BusRoute;
 use App\BusPoint;
+use App\BusRoute;
+use App\User;
 use DB;
+use Illuminate\Http\Request;
 
 class ManagementController extends Controller
 {
@@ -39,7 +38,7 @@ class ManagementController extends Controller
             'BusRoutes' => $BusRoutes,
             'pointtitle' => $pointtitle,
             'BusPoints' => $BusPoints,
-            'user'      => $user,
+            'user' => $user,
         );
         //dd($data);
         //return view('buspoints.create',compact('data')); 
@@ -54,13 +53,13 @@ class ManagementController extends Controller
      */
     public function create()
     {
-       //
+        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -71,7 +70,7 @@ class ManagementController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -82,7 +81,7 @@ class ManagementController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -93,8 +92,8 @@ class ManagementController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -105,7 +104,7 @@ class ManagementController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

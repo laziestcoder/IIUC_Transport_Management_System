@@ -26,7 +26,7 @@ class ResponseFunctionalTest extends TestCase
             1 => array('file', '/dev/null', 'w'),
             2 => array('file', '/dev/null', 'w'),
         );
-        if (!self::$server = @proc_open('exec php -S localhost:8054', $spec, $pipes, __DIR__.'/Fixtures/response-functional')) {
+        if (!self::$server = @proc_open('exec php -S localhost:8054', $spec, $pipes, __DIR__ . '/Fixtures/response-functional')) {
             self::markTestSkipped('PHP server unable to start.');
         }
         sleep(1);
@@ -46,12 +46,12 @@ class ResponseFunctionalTest extends TestCase
     public function testCookie($fixture)
     {
         $result = file_get_contents(sprintf('http://localhost:8054/%s.php', $fixture));
-        $this->assertStringMatchesFormatFile(__DIR__.sprintf('/Fixtures/response-functional/%s.expected', $fixture), $result);
+        $this->assertStringMatchesFormatFile(__DIR__ . sprintf('/Fixtures/response-functional/%s.expected', $fixture), $result);
     }
 
     public function provideCookie()
     {
-        foreach (glob(__DIR__.'/Fixtures/response-functional/*.php') as $file) {
+        foreach (glob(__DIR__ . '/Fixtures/response-functional/*.php') as $file) {
             yield array(pathinfo($file, PATHINFO_FILENAME));
         }
     }

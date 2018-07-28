@@ -29,19 +29,14 @@ class DateTimeComparatorTest extends TestCase
      */
     private $comparator;
 
-    protected function setUp()
-    {
-        $this->comparator = new DateTimeComparator;
-    }
-
     public function acceptsFailsProvider()
     {
         $datetime = new DateTime;
 
         return [
-          [$datetime, null],
-          [null, $datetime],
-          [null, null]
+            [$datetime, null],
+            [null, $datetime],
+            [null, null]
         ];
     }
 
@@ -235,5 +230,10 @@ class DateTimeComparatorTest extends TestCase
                 new DateTimeImmutable('2013-03-29 04:13:35', new DateTimeZone('America/New_York'))
             )
         );
+    }
+
+    protected function setUp()
+    {
+        $this->comparator = new DateTimeComparator;
     }
 }

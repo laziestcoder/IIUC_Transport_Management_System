@@ -30,7 +30,7 @@ final class DocBlockFactory implements DocBlockFactoryInterface
      * Initializes this factory with the required subcontractors.
      *
      * @param DescriptionFactory $descriptionFactory
-     * @param TagFactory         $tagFactory
+     * @param TagFactory $tagFactory
      */
     public function __construct(DescriptionFactory $descriptionFactory, TagFactory $tagFactory)
     {
@@ -62,11 +62,16 @@ final class DocBlockFactory implements DocBlockFactoryInterface
         return $docBlockFactory;
     }
 
+    public function registerTagHandler($tagName, $handler)
+    {
+        $this->tagFactory->registerTagHandler($tagName, $handler);
+    }
+
     /**
      * @param object|string $docblock A string containing the DocBlock to parse or an object supporting the
      *                                getDocComment method (such as a ReflectionClass object).
      * @param Types\Context $context
-     * @param Location      $location
+     * @param Location $location
      *
      * @return DocBlock
      */
@@ -101,30 +106,6 @@ final class DocBlockFactory implements DocBlockFactoryInterface
             $templateMarker === '#@+',
             $templateMarker === '#@-'
         );
-    }
-
-    public function registerTagHandler($tagName, $handler)
-    {
-        $this->tagFactory->registerTagHandler($tagName, $handler);
-    }
-
-    /**
-     * Strips the asterisks from the DocBlock comment.
-     *
-     * @param string $comment String containing the comment text.
-     *
-     * @return string
-     */
-    private function stripDocComment($comment)
-    {
-        $comment = trim(preg_replace('#[ \t]*(?:\/\*\*|\*\/|\*)?[ \t]{0,1}(.*)?#u', '$1', $comment));
-
-        // reg ex above is not able to remove */ from a single line docblock
-        if (substr($comment, -2) === '*/') {
-            $comment = trim(substr($comment, 0, -2));
-        }
-
-        return str_replace(["\r\n", "\r"], "\n", $comment);
     }
 
     /**
@@ -212,6 +193,25 @@ final class DocBlockFactory implements DocBlockFactoryInterface
     }
 
     /**
+     * Strips the asterisks from the DocBlock comment.
+     *
+     * @param string $comment String containing the comment text.
+     *
+     * @return string
+     */
+    private function stripDocComment($comment)
+    {
+        $comment = trim(preg_replace('#[ \t]*(?:\/\*\*|\*\/|\*)?[ \t]{0,1}(.*)?#u', '$1', $comment));
+
+        // reg ex above is not able to remove */ from a single line docblock
+        if (substr($comment, -2) === '*/') {
+            $comment = trim(substr($comment, 0, -2));
+        }
+
+        return str_replace(["\r\n", "\r"], "\n", $comment);
+    }
+
+    /**
      * Creates the tag objects.
      *
      * @param string $tags Tag block to parse.
@@ -229,25 +229,6 @@ final class DocBlockFactory implements DocBlockFactoryInterface
         $result = $this->splitTagBlockIntoTagLines($tags);
         foreach ($result as $key => $tagLine) {
             $result[$key] = $this->tagFactory->create(trim($tagLine), $context);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param string $tags
-     *
-     * @return string[]
-     */
-    private function splitTagBlockIntoTagLines($tags)
-    {
-        $result = [];
-        foreach (explode("\n", $tags) as $tag_line) {
-            if (isset($tag_line[0]) && ($tag_line[0] === '@')) {
-                $result[] = $tag_line;
-            } else {
-                $result[count($result) - 1] .= "\n" . $tag_line;
-            }
         }
 
         return $result;
@@ -273,5 +254,24 @@ final class DocBlockFactory implements DocBlockFactoryInterface
         }
 
         return $tags;
+    }
+
+    /**
+     * @param string $tags
+     *
+     * @return string[]
+     */
+    private function splitTagBlockIntoTagLines($tags)
+    {
+        $result = [];
+        foreach (explode("\n", $tags) as $tag_line) {
+            if (isset($tag_line[0]) && ($tag_line[0] === '@')) {
+                $result[] = $tag_line;
+            } else {
+                $result[count($result) - 1] .= "\n" . $tag_line;
+            }
+        }
+
+        return $result;
     }
 }

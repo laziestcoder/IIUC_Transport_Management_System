@@ -7,7 +7,7 @@
         @if(count($notices) > 0)
             <?php $count = 0; ?>
             @foreach($notices as $notice)
-                <?php $count = $count+1; ?>
+                <?php $count = $count + 1; ?>
                 <div class="well">
                     <div class="row">
                         <b>{{$count}}</b>
@@ -19,7 +19,8 @@
                         </div>
                         <div class="col-md-8 col-sm-8">
                             <h3><a href="/admin/auth/notices/{{$notice->id}}">{{$notice->title}}</a></h3>
-                            <small>Written on {{$notice->created_at}} by {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}</small>
+                            <small>Written on {{$notice->created_at}}
+                                by {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}</small>
                         </div>
                     </div>
 

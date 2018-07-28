@@ -1,5 +1,4 @@
 {
-	"root": true,
-
-	"extends": "../.eslintrc-browser.json"
+  "root": true,
+  "extends": "../.eslintrc-browser.json"
 }

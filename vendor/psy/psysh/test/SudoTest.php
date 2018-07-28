@@ -44,7 +44,7 @@ class SudoTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(
             'private and method with ["foo",2]',
             Sudo::callMethod($obj, 'privateMethod', ['foo', 2]
-        ));
+            ));
     }
 
     public function testFetchStaticProperty()
@@ -69,7 +69,7 @@ class SudoTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(
             'private and static and method with ["foo",2]',
             Sudo::callStatic($obj, 'privateStaticMethod', ['foo', 2]
-        ));
+            ));
     }
 
     public function testFetchClassConst()

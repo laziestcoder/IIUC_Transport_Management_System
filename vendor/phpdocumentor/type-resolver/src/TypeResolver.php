@@ -77,7 +77,7 @@ final class TypeResolver
      * This method only works as expected if the namespace and aliases are set;
      * no dynamic reflection is being performed here.
      *
-     * @param string $type     The relative or absolute type.
+     * @param string $type The relative or absolute type.
      * @param Context $context
      *
      * @uses Context::getNamespace()        to determine with what to prefix the type name.
@@ -127,6 +127,150 @@ final class TypeResolver
     }
 
     /**
+     * Test whether the given type is a nullable type (i.e. `?string`)
+     *
+     * @param string $type
+     *
+     * @return bool
+     */
+    private function isNullableType($type)
+    {
+        return $type[0] === '?';
+    }
+
+    /**
+     * Resolve nullable types (i.e. `?string`) into a Nullable type wrapper
+     *
+     * @param string $type
+     * @param Context $context
+     *
+     * @return Nullable
+     */
+    private function resolveNullableType($type, Context $context)
+    {
+        return new Nullable($this->resolve(ltrim($type, '?'), $context));
+    }
+
+    /**
+     * Detects whether the given type represents a PHPDoc keyword.
+     *
+     * @param string $type A relative or absolute type as defined in the phpDocumentor documentation.
+     *
+     * @return bool
+     */
+    private function isKeyword($type)
+    {
+        return in_array(strtolower($type), array_keys($this->keywords), true);
+    }
+
+    /**
+     * Resolves the given keyword (such as `string`) into a Type object representing that keyword.
+     *
+     * @param string $type
+     *
+     * @return Type
+     */
+    private function resolveKeyword($type)
+    {
+        $className = $this->keywords[strtolower($type)];
+
+        return new $className();
+    }
+
+    /**
+     * Tests whether the given type is a compound type (i.e. `string|int`).
+     *
+     * @param string $type
+     *
+     * @return bool
+     */
+    private function isCompoundType($type)
+    {
+        return strpos($type, '|') !== false;
+    }
+
+    /**
+     * Resolves a compound type (i.e. `string|int`) into the appropriate Type objects or FQSEN.
+     *
+     * @param string $type
+     * @param Context $context
+     *
+     * @return Compound
+     */
+    private function resolveCompoundType($type, Context $context)
+    {
+        $types = [];
+
+        foreach (explode('|', $type) as $part) {
+            $types[] = $this->resolve($part, $context);
+        }
+
+        return new Compound($types);
+    }
+
+    /**
+     * Detects whether the given type represents an array.
+     *
+     * @param string $type A relative or absolute type as defined in the phpDocumentor documentation.
+     *
+     * @return bool
+     */
+    private function isTypedArray($type)
+    {
+        return substr($type, -2) === self::OPERATOR_ARRAY;
+    }
+
+    /**
+     * Resolves the given typed array string (i.e. `string[]`) into an Array object with the right types set.
+     *
+     * @param string $type
+     * @param Context $context
+     *
+     * @return Array_
+     */
+    private function resolveTypedArray($type, Context $context)
+    {
+        return new Array_($this->resolve(substr($type, 0, -2), $context));
+    }
+
+    /**
+     * Tests whether the given type is a Fully Qualified Structural Element Name.
+     *
+     * @param string $type
+     *
+     * @return bool
+     */
+    private function isFqsen($type)
+    {
+        return strpos($type, self::OPERATOR_NAMESPACE) === 0;
+    }
+
+    /**
+     * Resolves the given FQSEN string into an FQSEN object.
+     *
+     * @param string $type
+     * @param Context|null $context
+     *
+     * @return Object_
+     */
+    private function resolveTypedObject($type, Context $context = null)
+    {
+        return new Object_($this->fqsenResolver->resolve($type, $context));
+    }
+
+    /**
+     * Detects whether the given type represents a relative structural element name.
+     *
+     * @param string $type A relative or absolute type as defined in the phpDocumentor documentation.
+     *
+     * @return bool
+     */
+    private function isPartialStructuralElementName($type)
+    {
+        return ($type[0] !== self::OPERATOR_NAMESPACE) && !$this->isKeyword($type);
+    }
+
+    /**
      * Adds a keyword to the list of Keywords and associates it with a specific Value Object.
      *
      * @param string $keyword
@@ -150,149 +294,5 @@ final class TypeResolver
         }
 
         $this->keywords[$keyword] = $typeClassName;
-    }
-
-    /**
-     * Detects whether the given type represents an array.
-     *
-     * @param string $type A relative or absolute type as defined in the phpDocumentor documentation.
-     *
-     * @return bool
-     */
-    private function isTypedArray($type)
-    {
-        return substr($type, -2) === self::OPERATOR_ARRAY;
-    }
-
-    /**
-     * Detects whether the given type represents a PHPDoc keyword.
-     *
-     * @param string $type A relative or absolute type as defined in the phpDocumentor documentation.
-     *
-     * @return bool
-     */
-    private function isKeyword($type)
-    {
-        return in_array(strtolower($type), array_keys($this->keywords), true);
-    }
-
-    /**
-     * Detects whether the given type represents a relative structural element name.
-     *
-     * @param string $type A relative or absolute type as defined in the phpDocumentor documentation.
-     *
-     * @return bool
-     */
-    private function isPartialStructuralElementName($type)
-    {
-        return ($type[0] !== self::OPERATOR_NAMESPACE) && !$this->isKeyword($type);
-    }
-
-    /**
-     * Tests whether the given type is a Fully Qualified Structural Element Name.
-     *
-     * @param string $type
-     *
-     * @return bool
-     */
-    private function isFqsen($type)
-    {
-        return strpos($type, self::OPERATOR_NAMESPACE) === 0;
-    }
-
-    /**
-     * Tests whether the given type is a compound type (i.e. `string|int`).
-     *
-     * @param string $type
-     *
-     * @return bool
-     */
-    private function isCompoundType($type)
-    {
-        return strpos($type, '|') !== false;
-    }
-
-    /**
-     * Test whether the given type is a nullable type (i.e. `?string`)
-     *
-     * @param string $type
-     *
-     * @return bool
-     */
-    private function isNullableType($type)
-    {
-        return $type[0] === '?';
-    }
-
-    /**
-     * Resolves the given typed array string (i.e. `string[]`) into an Array object with the right types set.
-     *
-     * @param string $type
-     * @param Context $context
-     *
-     * @return Array_
-     */
-    private function resolveTypedArray($type, Context $context)
-    {
-        return new Array_($this->resolve(substr($type, 0, -2), $context));
-    }
-
-    /**
-     * Resolves the given keyword (such as `string`) into a Type object representing that keyword.
-     *
-     * @param string $type
-     *
-     * @return Type
-     */
-    private function resolveKeyword($type)
-    {
-        $className = $this->keywords[strtolower($type)];
-
-        return new $className();
-    }
-
-    /**
-     * Resolves the given FQSEN string into an FQSEN object.
-     *
-     * @param string $type
-     * @param Context|null $context
-     *
-     * @return Object_
-     */
-    private function resolveTypedObject($type, Context $context = null)
-    {
-        return new Object_($this->fqsenResolver->resolve($type, $context));
-    }
-
-    /**
-     * Resolves a compound type (i.e. `string|int`) into the appropriate Type objects or FQSEN.
-     *
-     * @param string $type
-     * @param Context $context
-     *
-     * @return Compound
-     */
-    private function resolveCompoundType($type, Context $context)
-    {
-        $types = [];
-
-        foreach (explode('|', $type) as $part) {
-            $types[] = $this->resolve($part, $context);
-        }
-
-        return new Compound($types);
-    }
-
-    /**
-     * Resolve nullable types (i.e. `?string`) into a Nullable type wrapper
-     *
-     * @param string $type
-     * @param Context $context
-     *
-     * @return Nullable
-     */
-    private function resolveNullableType($type, Context $context)
-    {
-        return new Nullable($this->resolve(ltrim($type, '?'), $context));
     }
 }

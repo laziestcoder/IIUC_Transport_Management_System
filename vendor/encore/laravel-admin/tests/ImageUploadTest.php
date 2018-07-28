@@ -35,18 +35,6 @@ class ImageUploadTest extends TestCase
             ->seeInElement('button[type=submit]', 'Submit');
     }
 
-    protected function uploadImages()
-    {
-        return $this->visit('admin/images/create')
-            ->attach(__DIR__.'/assets/test.jpg', 'image1')
-            ->attach(__DIR__.'/assets/test.jpg', 'image2')
-            ->attach(__DIR__.'/assets/test.jpg', 'image3')
-            ->attach(__DIR__.'/assets/test.jpg', 'image4')
-            ->attach(__DIR__.'/assets/test.jpg', 'image5')
-            ->attach(__DIR__.'/assets/test.jpg', 'image6')
-            ->press('Submit');
-    }
-
     public function testUploadImage()
     {
         File::cleanDirectory(public_path('uploads/images'));
@@ -61,12 +49,24 @@ class ImageUploadTest extends TestCase
         $images = Image::first()->toArray();
 
         foreach (range(1, 6) as $index) {
-            $this->assertFileExists(public_path('uploads/'.$images['image'.$index]));
+            $this->assertFileExists(public_path('uploads/' . $images['image' . $index]));
         }
 
         $this->assertFileExists(public_path('uploads/images/asdasdasdasdasd.jpeg'));
 
         File::cleanDirectory(public_path('uploads/images'));
+    }
+
+    protected function uploadImages()
+    {
+        return $this->visit('admin/images/create')
+            ->attach(__DIR__ . '/assets/test.jpg', 'image1')
+            ->attach(__DIR__ . '/assets/test.jpg', 'image2')
+            ->attach(__DIR__ . '/assets/test.jpg', 'image3')
+            ->attach(__DIR__ . '/assets/test.jpg', 'image4')
+            ->attach(__DIR__ . '/assets/test.jpg', 'image5')
+            ->attach(__DIR__ . '/assets/test.jpg', 'image6')
+            ->press('Submit');
     }
 
     public function testRemoveImage()
@@ -76,6 +76,13 @@ class ImageUploadTest extends TestCase
         $this->uploadImages();
 
         $this->assertEquals($this->fileCountInImageDir(), 6);
+    }
+
+    protected function fileCountInImageDir($dir = 'uploads/images')
+    {
+        $file = new FilesystemIterator(public_path($dir), FilesystemIterator::SKIP_DOTS);
+
+        return iterator_count($file);
     }
 
     public function testUpdateImage()
@@ -99,9 +106,9 @@ class ImageUploadTest extends TestCase
             ->seeInElement('button[type=reset]', 'Reset')
             ->seeInElement('button[type=submit]', 'Save');
 
-        $this->attach(__DIR__.'/assets/test.jpg', 'image3')
-            ->attach(__DIR__.'/assets/test.jpg', 'image4')
-            ->attach(__DIR__.'/assets/test.jpg', 'image5')
+        $this->attach(__DIR__ . '/assets/test.jpg', 'image3')
+            ->attach(__DIR__ . '/assets/test.jpg', 'image4')
+            ->attach(__DIR__ . '/assets/test.jpg', 'image5')
             ->press('Save');
 
         $new = Image::first();
@@ -133,7 +140,7 @@ class ImageUploadTest extends TestCase
             ->dontSeeInDatabase('test_images', ['id' => 1]);
 
         foreach (range(1, 6) as $index) {
-            $this->assertFileNotExists(public_path('uploads/'.$images['image'.$index]));
+            $this->assertFileNotExists(public_path('uploads/' . $images['image' . $index]));
         }
 
         $this->visit('admin/images')
@@ -176,7 +183,7 @@ class ImageUploadTest extends TestCase
         $this->visit('admin/multiple-images/create')
             ->seeElement('input[type=file][name="pictures[]"][multiple=1]');
 
-        $path = __DIR__.'/assets/test.jpg';
+        $path = __DIR__ . '/assets/test.jpg';
 
         $file = new \Illuminate\Http\UploadedFile(
             $path, 'test.jpg', 'image/jpeg', filesize($path), null, true
@@ -203,7 +210,7 @@ class ImageUploadTest extends TestCase
         $this->assertCount($size, $pictures);
 
         foreach ($pictures as $picture) {
-            $this->assertFileExists(public_path('uploads/'.$picture));
+            $this->assertFileExists(public_path('uploads/' . $picture));
         }
     }
 
@@ -212,7 +219,7 @@ class ImageUploadTest extends TestCase
         File::cleanDirectory(public_path('uploads/images'));
 
         // upload files
-        $path = __DIR__.'/assets/test.jpg';
+        $path = __DIR__ . '/assets/test.jpg';
 
         $file = new \Illuminate\Http\UploadedFile(
             $path, 'test.jpg', 'image/jpeg', filesize($path), null, true
@@ -230,12 +237,5 @@ class ImageUploadTest extends TestCase
         );
 
         $this->assertEquals($this->fileCountInImageDir(), $size);
-    }
-
-    protected function fileCountInImageDir($dir = 'uploads/images')
-    {
-        $file = new FilesystemIterator(public_path($dir), FilesystemIterator::SKIP_DOTS);
-
-        return iterator_count($file);
     }
 }
