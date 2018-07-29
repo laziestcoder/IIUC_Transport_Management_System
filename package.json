@@ -20,6 +20,9 @@
     "vue": "^2.5.7"
   },
   "dependencies": {
+    "ajv": "^6.5.2",
+    "hoek": "^4.2.1",
+    "popper.js": "^1.14.3",
     "startbootstrap-agency": "^4.1.1"
   }
 }
