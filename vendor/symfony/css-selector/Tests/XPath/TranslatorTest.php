@@ -35,7 +35,7 @@ class TranslatorTest extends TestCase
     public function testXmlLang($css, array $elementsId)
     {
         $translator = new Translator();
-        $document = new \SimpleXMLElement(file_get_contents(__DIR__.'/Fixtures/lang.xml'));
+        $document = new \SimpleXMLElement(file_get_contents(__DIR__ . '/Fixtures/lang.xml'));
         $elements = $document->xpath($translator->cssToXPath($css));
         $this->assertCount(count($elementsId), $elements);
         foreach ($elements as $element) {
@@ -51,7 +51,7 @@ class TranslatorTest extends TestCase
         $document = new \DOMDocument();
         $document->strictErrorChecking = false;
         $internalErrors = libxml_use_internal_errors(true);
-        $document->loadHTMLFile(__DIR__.'/Fixtures/ids.html');
+        $document->loadHTMLFile(__DIR__ . '/Fixtures/ids.html');
         $document = simplexml_import_dom($document);
         $elements = $document->xpath($translator->cssToXPath($css));
         $this->assertCount(count($elementsId), $elementsId);
@@ -71,7 +71,7 @@ class TranslatorTest extends TestCase
         $translator->registerExtension(new HtmlExtension($translator));
         $document = new \DOMDocument();
         $document->strictErrorChecking = false;
-        $document->loadHTMLFile(__DIR__.'/Fixtures/shakespear.html');
+        $document->loadHTMLFile(__DIR__ . '/Fixtures/shakespear.html');
         $document = simplexml_import_dom($document);
         $bodies = $document->xpath('//body');
         $elements = $bodies[0]->xpath($translator->cssToXPath($css));

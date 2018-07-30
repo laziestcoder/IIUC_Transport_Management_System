@@ -52,8 +52,8 @@ class AuthCommand extends Command
     {
         foreach ($this->views as $key => $value) {
             copy(
-                __DIR__.'/stubs/views/'.$key,
-                base_path('resources/views/'.$value)
+                __DIR__ . '/stubs/views/' . $key,
+                base_path('resources/views/' . $value)
             );
         }
     }

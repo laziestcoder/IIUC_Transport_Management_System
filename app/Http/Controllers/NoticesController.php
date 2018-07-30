@@ -38,12 +38,13 @@ class NoticesController extends Controller
         $notices = Notice::orderBy('id', 'desc')->paginate(25);
         $description = "";
 
-        $data = array(
+        $message = array(
             'title' => $title,
             'notices' => $notices,
             'description' => $description
         );
-        return view('notices.index')->with($data);
+        //return view('notices.index')->with($data);
+        return view('notices.index')->with($message);
     }
 
     /**
@@ -211,7 +212,16 @@ class NoticesController extends Controller
         //Check for correct user
 
         if (Admin::user()->id !== $notice->user_id) {
-            return redirect('/admin/auth/notices')->with('error', 'Unauthorized Access Denied!');
+            $message = array(
+                'title' => '',
+                'notices' => '',
+                'description' => '',
+                'error' => 'Unauthorized Access Denied!',
+                'message' => 'Unauthorized Access Denied!'
+
+            );
+            //return redirect('/admin/auth/notices')->with('error', 'Unauthorized Access Denied!');
+            return redirect('/admin/auth/notices')->with($message);
 
         }
         if ($notice->cover_image != 'noimage.jpeg') {
@@ -220,6 +230,15 @@ class NoticesController extends Controller
         }
 
         $notice->delete();
-        return redirect('/admin/auth/notices')->with('success', 'Notice Removed Successfully!');
+        $message = array(
+            'title' => '',
+            'notices' => '',
+            'description' => '',
+            'success' => 'Notice Removed Successfully!',
+            'message' => 'Notice Removed Successfully!'
+
+        );
+        //return redirect('/admin/auth/notices')->with('success', 'Notice Removed Successfully!');
+        return redirect('/admin/auth/notices')->with($message);
     }
 }

@@ -11,8 +11,6 @@
 
 namespace Psy\VersionUpdater;
 
-use Psy\Shell;
-
 class IntervalChecker extends GitHubChecker
 {
     private $cacheFile;
@@ -21,7 +19,7 @@ class IntervalChecker extends GitHubChecker
     public function __construct($cacheFile, $interval)
     {
         $this->cacheFile = $cacheFile;
-        $this->interval  = $interval;
+        $this->interval = $interval;
     }
 
     public function fetchLatestRelease()
@@ -61,7 +59,7 @@ class IntervalChecker extends GitHubChecker
     {
         $data = [
             'last_check' => date(DATE_ATOM),
-            'release'    => $release,
+            'release' => $release,
         ];
 
         file_put_contents($this->cacheFile, json_encode($data));

@@ -62,6 +62,36 @@ class DescriptionFactory
     }
 
     /**
+     * Parses the stream of tokens in to a new set of tokens containing Tags.
+     *
+     * @param string[] $tokens
+     * @param TypeContext $context
+     *
+     * @return string[]|Tag[]
+     */
+    private function parse($tokens, TypeContext $context)
+    {
+        $count = count($tokens);
+        $tagCount = 0;
+        $tags = [];
+
+        for ($i = 1; $i < $count; $i += 2) {
+            $tags[] = $this->tagFactory->create($tokens[$i], $context);
+            $tokens[$i] = '%' . ++$tagCount . '$s';
+        }
+
+        //In order to allow "literal" inline tags, the otherwise invalid
+        //sequence "{@}" is changed to "@", and "{}" is changed to "}".
+        //"%" is escaped to "%%" because of vsprintf.
+        //See unit tests for examples.
+        for ($i = 0; $i < $count; $i += 2) {
+            $tokens[$i] = str_replace(['{@}', '{}', '%'], ['@', '}', '%%'], $tokens[$i]);
+        }
+
+        return [implode('', $tokens), $tags];
+    }
+
+    /**
      * Strips the contents from superfluous whitespace and splits the description into a series of tokens.
      *
      * @param string $contents
@@ -106,36 +136,6 @@ class DescriptionFactory
             null,
             PREG_SPLIT_DELIM_CAPTURE
         );
-    }
-
-    /**
-     * Parses the stream of tokens in to a new set of tokens containing Tags.
-     *
-     * @param string[] $tokens
-     * @param TypeContext $context
-     *
-     * @return string[]|Tag[]
-     */
-    private function parse($tokens, TypeContext $context)
-    {
-        $count = count($tokens);
-        $tagCount = 0;
-        $tags  = [];
-
-        for ($i = 1; $i < $count; $i += 2) {
-            $tags[] = $this->tagFactory->create($tokens[$i], $context);
-            $tokens[$i] = '%' . ++$tagCount . '$s';
-        }
-
-        //In order to allow "literal" inline tags, the otherwise invalid
-        //sequence "{@}" is changed to "@", and "{}" is changed to "}".
-        //"%" is escaped to "%%" because of vsprintf.
-        //See unit tests for examples.
-        for ($i = 0; $i < $count; $i += 2) {
-            $tokens[$i] = str_replace(['{@}', '{}', '%'], ['@', '}', '%%'], $tokens[$i]);
-        }
-
-        return [implode('', $tokens), $tags];
     }
 
     /**

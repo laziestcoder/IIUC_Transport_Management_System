@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Framework\MockObject\Invocation;
 
 /**
@@ -22,10 +23,10 @@ class ObjectInvocation extends StaticInvocation
     /**
      * @param string $className
      * @param string $methodName
-     * @param array  $parameters
+     * @param array $parameters
      * @param string $returnType
      * @param object $object
-     * @param bool   $cloneObjects
+     * @param bool $cloneObjects
      */
     public function __construct($className, $methodName, array $parameters, $returnType, $object, $cloneObjects = false)
     {

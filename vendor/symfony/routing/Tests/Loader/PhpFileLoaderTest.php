@@ -33,7 +33,7 @@ class PhpFileLoaderTest extends TestCase
 
     public function testLoadWithRoute()
     {
-        $loader = new PhpFileLoader(new FileLocator(array(__DIR__.'/../Fixtures')));
+        $loader = new PhpFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures')));
         $routeCollection = $loader->load('validpattern.php');
         $routes = $routeCollection->all();
 
@@ -52,7 +52,7 @@ class PhpFileLoaderTest extends TestCase
 
     public function testLoadWithImport()
     {
-        $loader = new PhpFileLoader(new FileLocator(array(__DIR__.'/../Fixtures')));
+        $loader = new PhpFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures')));
         $routeCollection = $loader->load('validresource.php');
         $routes = $routeCollection->all();
 
@@ -71,7 +71,7 @@ class PhpFileLoaderTest extends TestCase
 
     public function testThatDefiningVariableInConfigFileHasNoSideEffects()
     {
-        $locator = new FileLocator(array(__DIR__.'/../Fixtures'));
+        $locator = new FileLocator(array(__DIR__ . '/../Fixtures'));
         $loader = new PhpFileLoader($locator);
         $routeCollection = $loader->load('with_define_path_variable.php');
         $resources = $routeCollection->getResources();
@@ -80,13 +80,13 @@ class PhpFileLoaderTest extends TestCase
         $fileResource = reset($resources);
         $this->assertSame(
             realpath($locator->locate('with_define_path_variable.php')),
-            (string) $fileResource
+            (string)$fileResource
         );
     }
 
     public function testRoutingConfigurator()
     {
-        $locator = new FileLocator(array(__DIR__.'/../Fixtures'));
+        $locator = new FileLocator(array(__DIR__ . '/../Fixtures'));
         $loader = new PhpFileLoader($locator);
         $routeCollection = $loader->load('php_dsl.php');
 
@@ -112,15 +112,15 @@ class PhpFileLoaderTest extends TestCase
             ->setDefaults(array('id' => 0))
         );
 
-        $expectedCollection->addResource(new FileResource(realpath(__DIR__.'/../Fixtures/php_dsl_sub.php')));
-        $expectedCollection->addResource(new FileResource(realpath(__DIR__.'/../Fixtures/php_dsl.php')));
+        $expectedCollection->addResource(new FileResource(realpath(__DIR__ . '/../Fixtures/php_dsl_sub.php')));
+        $expectedCollection->addResource(new FileResource(realpath(__DIR__ . '/../Fixtures/php_dsl.php')));
 
         $this->assertEquals($expectedCollection, $routeCollection);
     }
 
     public function testRoutingConfiguratorCanImportGlobPatterns()
     {
-        $locator = new FileLocator(array(__DIR__.'/../Fixtures/glob'));
+        $locator = new FileLocator(array(__DIR__ . '/../Fixtures/glob'));
         $loader = new PhpFileLoader($locator);
         $routeCollection = $loader->load('php_dsl.php');
 

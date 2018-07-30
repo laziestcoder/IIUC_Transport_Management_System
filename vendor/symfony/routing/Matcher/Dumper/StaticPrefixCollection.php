@@ -57,7 +57,7 @@ class StaticPrefixCollection
      * Adds a route to a group.
      *
      * @param string $prefix
-     * @param mixed  $route
+     * @param mixed $route
      */
     public function addRoute(string $prefix, $route)
     {
@@ -100,11 +100,33 @@ class StaticPrefixCollection
     }
 
     /**
+     * Guards against adding incompatible prefixes in a group.
+     *
+     * @throws \LogicException when a prefix does not belong in a group
+     */
+    private function guardAgainstAddingNotAcceptedRoutes(string $prefix)
+    {
+        if (!$this->accepts($prefix)) {
+            $message = sprintf('Could not add route with prefix %s to collection with prefix %s', $prefix, $this->prefix);
+
+            throw new \LogicException($message);
+        }
+    }
+
+    /**
+     * Checks whether a prefix can be contained within the group.
+     */
+    private function accepts(string $prefix): bool
+    {
+        return '' === $this->prefix || 0 === strpos($prefix, $this->prefix);
+    }
+
+    /**
      * Tries to combine a route with another route or group.
      *
      * @param StaticPrefixCollection|array $item
-     * @param string                       $prefix
-     * @param mixed                        $route
+     * @param string $prefix
+     * @param mixed $route
      *
      * @return null|StaticPrefixCollection
      */
@@ -128,14 +150,6 @@ class StaticPrefixCollection
         $child->addRoute($prefix, $route);
 
         return $child;
-    }
-
-    /**
-     * Checks whether a prefix can be contained within the group.
-     */
-    private function accepts(string $prefix): bool
-    {
-        return '' === $this->prefix || 0 === strpos($prefix, $this->prefix);
     }
 
     /**
@@ -211,19 +225,5 @@ class StaticPrefixCollection
         }
 
         return true;
-    }
-
-    /**
-     * Guards against adding incompatible prefixes in a group.
-     *
-     * @throws \LogicException when a prefix does not belong in a group
-     */
-    private function guardAgainstAddingNotAcceptedRoutes(string $prefix)
-    {
-        if (!$this->accepts($prefix)) {
-            $message = sprintf('Could not add route with prefix %s to collection with prefix %s', $prefix, $this->prefix);
-
-            throw new \LogicException($message);
-        }
     }
 }

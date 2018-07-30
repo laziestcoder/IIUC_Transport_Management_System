@@ -1,5 +1,5 @@
 .. index::
-    single: Cookbook; Mocking Hard Dependencies
+single: Cookbook; Mocking Hard Dependencies
 
 Mocking Hard Dependencies (new Keyword)
 =======================================

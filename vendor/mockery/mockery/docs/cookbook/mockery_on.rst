@@ -1,5 +1,5 @@
 .. index::
-    single: Cookbook; Complex Argument Matching With Mockery::on
+single: Cookbook; Complex Argument Matching With Mockery::on
 
 Complex Argument Matching With Mockery::on
 ==========================================

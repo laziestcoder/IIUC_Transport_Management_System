@@ -55,7 +55,8 @@
                     <ul class="timeline">
                         <li>
                             <div class="timeline-image">
-                                <img class="rounded-circle img-fluid" src="/storage/img/about/1.jpg" alt="">
+                                <!-- <img class="rounded-circle img-fluid" src="/storage/img/about/1.jpg" alt=""> -->
+                                <h4>12:30 pm<br>AK KHAN<br>FEMALE</h4>
                             </div>
                             <div class="timeline-panel">
                                 <div class="timeline-heading">
@@ -72,7 +73,8 @@
                         </li>
                         <li class="timeline-inverted">
                             <div class="timeline-image">
-                                <img class="rounded-circle img-fluid" src="/storage/img/about/2.jpg" alt="">
+                                <!-- <img class="rounded-circle img-fluid" src="/storage/img/about/2.jpg" alt=""> -->
+                                <h4>12:30 pm<br>AK KHAN<br>Male</h4>
                             </div>
                             <div class="timeline-panel">
                                 <div class="timeline-heading">
@@ -89,7 +91,8 @@
                         </li>
                         <li>
                             <div class="timeline-image">
-                                <img class="rounded-circle img-fluid" src="/storage/img/about/3.jpg" alt="">
+                                <!-- <img class="rounded-circle img-fluid" src="/storage/img/about/3.jpg" alt=""> -->
+                                <h4>12:30 pm<br>ALL ROUTE<br>Female</h4>
                             </div>
                             <div class="timeline-panel">
                                 <div class="timeline-heading">
@@ -106,7 +109,8 @@
                         </li>
                         <li class="timeline-inverted">
                             <div class="timeline-image">
-                                <img class="rounded-circle img-fluid" src="/storage/img/about/4.jpg" alt="">
+                                <!-- <img class="rounded-circle img-fluid" src="/storage/img/about/4.jpg" alt=""> -->
+                                <h4>12:30 pm<br>ALL ROUTE<br>Male</h4>
                             </div>
                             <div class="timeline-panel">
                                 <div class="timeline-heading">
@@ -155,7 +159,7 @@
                     <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <?php $count = $count + 1; ?>
                         <?php if($count<=12): ?>
-                            <div class="col-md-4 col-sm-6 portfolio-item">
+                            <div class="col-md-3 col-md-3 portfolio-item">
                                 <a class="portfolio-link" data-toggle="modal" href="#portfolioModal<?php echo e($count); ?>">
                                     <div class="portfolio-hover">
                                         <div class="portfolio-hover-content">
@@ -166,15 +170,17 @@
                                          alt="<?php echo e($notice->title); ?>"> </a>
                                 <div class="portfolio-caption">
                                     <h4><?php echo e($notice->title); ?></h4>
-                                    <p class="text-muted">
-                                        By:
-                                        <i>
-                                            <?php echo e(DB::table('admin_users')->where('id', $notice->user_id)->first()->name); ?>
+                                    <small>
+                                        <p class="text-muted">
+                                            Posted By:
+                                            <i>
+                                                <?php echo e(DB::table('admin_users')->where('id', $notice->user_id)->first()->name); ?>
 
-                                        </i><br>
-                                        At: <?php echo e($notice->created_at); ?>
+                                            </i><br>
+                                            Posted At: <?php echo e($notice->created_at); ?>
 
-                                    </p>
+                                        </p>
+                                    </small>
                                 </div>
                             </div>
 
@@ -204,26 +210,26 @@
                 <div class="col-md-4">
                     <span class="fa-stack fa-4x">
               <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-mobile fa-stack-1x fa-inverse"></i>
+              <i class="fa fa-headphones fa-stack-1x fa-inverse"></i>
             </span>
                     <h4 class="service-heading">Md. Iqbal</h4>
-                    <p class="text-muted">Description</p>
+                    <p class="text-muted"><i class="fa fa-mobile"></i> +8801824979830</p>
                 </div>
                 <div class="col-md-4">
                     <span class="fa-stack fa-4x">
               <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-mobile fa-stack-1x fa-inverse"></i>
+              <i class="fa fa-headphones fa-stack-1x fa-inverse"></i>
             </span>
                     <h4 class="service-heading">Md. Habib</h4>
-                    <p class="text-muted">Description</p>
+                    <p class="text-muted"><i class="fa fa-mobile"></i> +8801843471983</p>
                 </div>
                 <div class="col-md-4">
                     <span class="fa-stack fa-4x">
               <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-mobile fa-stack-1x fa-inverse"></i>
+              <i class="fa fa-headphones fa-stack-1x fa-inverse"></i>
             </span>
                     <h4 class="service-heading">Md. Shabuj</h4>
-                    <p class="text-muted">Description</p>
+                    <p class="text-muted"><i class="fa fa-mobile"></i> +8801861642510</p>
                 </div>
             </div>
         </div>
@@ -471,15 +477,24 @@
 
                                             <!-- Project Details Go Here -->
 
-                                            <h2 class="text-uppercase"><?php echo e($notice->title); ?></h2>
+                                            <h2 class="text-uppercase"><?php echo $notice->title; ?></h2>
                                             <p class="item-intro text-muted">Posted
-                                                By: <?php echo e(DB::table('admin_users')->where('id', $notice->user_id)->first()->name); ?></p>
+                                                By: <?php echo DB::table('admin_users')->where('id', $notice->user_id)->first()->name; ?></p>
                                             <img class="img-fluid d-block mx-auto"
-                                                 src="/storage/cover_images/<?php echo e($notice->cover_image); ?>"
-                                                 alt="<?php echo e($notice->title); ?>">
-                                            <p><?php echo e($notice->body); ?></p>
-                                            <ul class="list-inline">
-                                                <li>Date: <?php echo e($notice->created_at); ?></li>
+                                                 src="/storage/cover_images/<?php echo $notice->cover_image; ?>"
+                                                 alt="<?php echo $notice->title; ?>">
+                                            <div style="text-align:left;">
+                                                <?php echo $notice->body; ?>
+
+                                            </div>
+                                            <br><br>
+                                            <ul class="list-inline" style="text-align:left;">
+                                                <li>
+                                                    <small>
+                                                        Date: <?php echo $notice->created_at; ?>
+
+                                                    </small>
+                                                </li>
                                                 
                                                 
                                             </ul>

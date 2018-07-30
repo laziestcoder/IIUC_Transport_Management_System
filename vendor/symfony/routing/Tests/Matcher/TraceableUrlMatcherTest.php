@@ -13,10 +13,10 @@ namespace Symfony\Component\Routing\Tests\Matcher;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Matcher\TraceableUrlMatcher;
+use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\Matcher\TraceableUrlMatcher;
 
 class TraceableUrlMatcherTest extends TestCase
 {
@@ -60,6 +60,16 @@ class TraceableUrlMatcherTest extends TestCase
         $this->assertSame(array(0, 0, 0, 0, 0, 1), $this->getLevels($traces));
     }
 
+    public function getLevels($traces)
+    {
+        $levels = array();
+        foreach ($traces as $trace) {
+            $levels[] = $trace['level'];
+        }
+
+        return $levels;
+    }
+
     public function testMatchRouteOnMultipleHosts()
     {
         $routes = new RouteCollection();
@@ -89,16 +99,6 @@ class TraceableUrlMatcherTest extends TestCase
             array(TraceableUrlMatcher::ROUTE_ALMOST_MATCHES, TraceableUrlMatcher::ROUTE_ALMOST_MATCHES),
             $this->getLevels($traces)
         );
-    }
-
-    public function getLevels($traces)
-    {
-        $levels = array();
-        foreach ($traces as $trace) {
-            $levels[] = $trace['level'];
-        }
-
-        return $levels;
     }
 
     public function testRoutesWithConditions()

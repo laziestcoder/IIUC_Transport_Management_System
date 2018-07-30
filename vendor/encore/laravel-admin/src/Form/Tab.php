@@ -37,9 +37,9 @@ class Tab
     /**
      * Append a tab section.
      *
-     * @param string   $title
+     * @param string $title
      * @param \Closure $content
-     * @param bool     $active
+     * @param bool $active
      *
      * @return $this
      */
@@ -47,7 +47,7 @@ class Tab
     {
         $fields = $this->collectFields($content);
 
-        $id = 'form-'.($this->tabs->count() + 1);
+        $id = 'form-' . ($this->tabs->count() + 1);
 
         $this->tabs->push(compact('id', 'title', 'fields', 'active'));
 

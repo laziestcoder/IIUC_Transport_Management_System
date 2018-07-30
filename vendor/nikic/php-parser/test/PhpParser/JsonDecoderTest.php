@@ -6,7 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 class JsonDecoderTest extends TestCase
 {
-    public function testRoundTrip() {
+    public function testRoundTrip()
+    {
         $code = <<<'PHP'
 <?php
 // comment
@@ -26,14 +27,16 @@ PHP;
     }
 
     /** @dataProvider provideTestDecodingError */
-    public function testDecodingError($json, $expectedMessage) {
+    public function testDecodingError($json, $expectedMessage)
+    {
         $jsonDecoder = new JsonDecoder();
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage($expectedMessage);
         $jsonDecoder->decode($json);
     }
 
-    public function provideTestDecodingError() {
+    public function provideTestDecodingError()
+    {
         return [
             ['???', 'JSON decoding error: Syntax error'],
             ['{"nodeType":123}', 'Node type must be a string'],

@@ -123,6 +123,24 @@ class ProgressIndicator
         self::$formatters[$name] = $callable;
     }
 
+    private static function initPlaceholderFormatters()
+    {
+        return array(
+            'indicator' => function (ProgressIndicator $indicator) {
+                return $indicator->indicatorValues[$indicator->indicatorCurrent % count($indicator->indicatorValues)];
+            },
+            'message' => function (ProgressIndicator $indicator) {
+                return $indicator->message;
+            },
+            'elapsed' => function (ProgressIndicator $indicator) {
+                return Helper::formatTime(time() - $indicator->startTime);
+            },
+            'memory' => function () {
+                return Helper::formatMemory(memory_get_usage(true));
+            },
+        );
+    }
+
     /**
      * Sets the current indicator message.
      *
@@ -179,24 +197,6 @@ class ProgressIndicator
         }
 
         return isset(self::$formatters[$name]) ? self::$formatters[$name] : null;
-    }
-
-    private static function initPlaceholderFormatters()
-    {
-        return array(
-            'indicator' => function (ProgressIndicator $indicator) {
-                return $indicator->indicatorValues[$indicator->indicatorCurrent % count($indicator->indicatorValues)];
-            },
-            'message' => function (ProgressIndicator $indicator) {
-                return $indicator->message;
-            },
-            'elapsed' => function (ProgressIndicator $indicator) {
-                return Helper::formatTime(time() - $indicator->startTime);
-            },
-            'memory' => function () {
-                return Helper::formatMemory(memory_get_usage(true));
-            },
-        );
     }
 
     /**

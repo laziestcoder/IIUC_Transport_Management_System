@@ -1,5 +1,5 @@
 .. index::
-    single: Mockery; Gotchas
+single: Mockery; Gotchas
 
 Gotchas!
 ========

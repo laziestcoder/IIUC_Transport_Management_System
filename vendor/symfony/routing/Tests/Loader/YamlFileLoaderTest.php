@@ -13,8 +13,8 @@ namespace Symfony\Component\Routing\Tests\Loader;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\Routing\Loader\YamlFileLoader;
 
 class YamlFileLoaderTest extends TestCase
 {
@@ -33,11 +33,11 @@ class YamlFileLoaderTest extends TestCase
 
     public function testLoadDoesNothingIfEmpty()
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures')));
         $collection = $loader->load('empty.yml');
 
         $this->assertEquals(array(), $collection->all());
-        $this->assertEquals(array(new FileResource(realpath(__DIR__.'/../Fixtures/empty.yml'))), $collection->getResources());
+        $this->assertEquals(array(new FileResource(realpath(__DIR__ . '/../Fixtures/empty.yml'))), $collection->getResources());
     }
 
     /**
@@ -46,7 +46,7 @@ class YamlFileLoaderTest extends TestCase
      */
     public function testLoadThrowsExceptionWithInvalidFile($filePath)
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures')));
         $loader->load($filePath);
     }
 
@@ -65,7 +65,7 @@ class YamlFileLoaderTest extends TestCase
 
     public function testLoadSpecialRouteName()
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures')));
         $routeCollection = $loader->load('special_route_name.yml');
         $route = $routeCollection->get('#$péß^a|');
 
@@ -75,7 +75,7 @@ class YamlFileLoaderTest extends TestCase
 
     public function testLoadWithRoute()
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures')));
         $routeCollection = $loader->load('validpattern.yml');
         $route = $routeCollection->get('blog_show');
 
@@ -92,7 +92,7 @@ class YamlFileLoaderTest extends TestCase
 
     public function testLoadWithResource()
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures')));
         $routeCollection = $loader->load('validresource.yml');
         $routes = $routeCollection->all();
 
@@ -111,7 +111,7 @@ class YamlFileLoaderTest extends TestCase
 
     public function testLoadRouteWithControllerAttribute()
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures/controller')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures/controller')));
         $routeCollection = $loader->load('routing.yml');
 
         $route = $routeCollection->get('app_homepage');
@@ -121,7 +121,7 @@ class YamlFileLoaderTest extends TestCase
 
     public function testLoadRouteWithoutControllerAttribute()
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures/controller')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures/controller')));
         $routeCollection = $loader->load('routing.yml');
 
         $route = $routeCollection->get('app_logout');
@@ -131,7 +131,7 @@ class YamlFileLoaderTest extends TestCase
 
     public function testLoadRouteWithControllerSetInDefaults()
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures/controller')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures/controller')));
         $routeCollection = $loader->load('routing.yml');
 
         $route = $routeCollection->get('app_blog');
@@ -145,7 +145,7 @@ class YamlFileLoaderTest extends TestCase
      */
     public function testOverrideControllerInDefaults()
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures/controller')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures/controller')));
         $loader->load('override_defaults.yml');
     }
 
@@ -154,7 +154,7 @@ class YamlFileLoaderTest extends TestCase
      */
     public function testImportRouteWithController($file)
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures/controller')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures/controller')));
         $routeCollection = $loader->load($file);
 
         $route = $routeCollection->get('app_homepage');
@@ -179,13 +179,13 @@ class YamlFileLoaderTest extends TestCase
      */
     public function testImportWithOverriddenController()
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures/controller')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures/controller')));
         $loader->load('import_override_defaults.yml');
     }
 
     public function testImportRouteWithGlobMatchingSingleFile()
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures/glob')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures/glob')));
         $routeCollection = $loader->load('import_single.yml');
 
         $route = $routeCollection->get('bar_route');
@@ -194,7 +194,7 @@ class YamlFileLoaderTest extends TestCase
 
     public function testImportRouteWithGlobMatchingMultipleFiles()
     {
-        $loader = new YamlFileLoader(new FileLocator(array(__DIR__.'/../Fixtures/glob')));
+        $loader = new YamlFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures/glob')));
         $routeCollection = $loader->load('import_multiple.yml');
 
         $route = $routeCollection->get('bar_route');

@@ -404,6 +404,175 @@ class Parsedown
     #
     # Markup
 
+    protected function lines(array $lines)
+    {
+        $CurrentBlock = null;
+
+        foreach ($lines as $line) {
+            if (chop($line) === '') {
+                if (isset($CurrentBlock)) {
+                    $CurrentBlock['interrupted'] = true;
+                }
+
+                continue;
+            }
+
+            if (strpos($line, "\t") !== false) {
+                $parts = explode("\t", $line);
+
+                $line = $parts[0];
+
+                unset($parts[0]);
+
+                foreach ($parts as $part) {
+                    $shortage = 4 - mb_strlen($line, 'utf-8') % 4;
+
+                    $line .= str_repeat(' ', $shortage);
+                    $line .= $part;
+                }
+            }
+
+            $indent = 0;
+
+            while (isset($line[$indent]) and $line[$indent] === ' ') {
+                $indent++;
+            }
+
+            $text = $indent > 0 ? substr($line, $indent) : $line;
+
+            # ~
+
+            $Line = array('body' => $line, 'indent' => $indent, 'text' => $text);
+
+            # ~
+
+            if (isset($CurrentBlock['continuable'])) {
+                $Block = $this->{'block' . $CurrentBlock['type'] . 'Continue'}($Line, $CurrentBlock);
+
+                if (isset($Block)) {
+                    $CurrentBlock = $Block;
+
+                    continue;
+                } else {
+                    if ($this->isBlockCompletable($CurrentBlock['type'])) {
+                        $CurrentBlock = $this->{'block' . $CurrentBlock['type'] . 'Complete'}($CurrentBlock);
+                    }
+                }
+            }
+
+            # ~
+
+            $marker = $text[0];
+
+            # ~
+
+            $blockTypes = $this->unmarkedBlockTypes;
+
+            if (isset($this->BlockTypes[$marker])) {
+                foreach ($this->BlockTypes[$marker] as $blockType) {
+                    $blockTypes [] = $blockType;
+                }
+            }
+
+            #
+            # ~
+
+            foreach ($blockTypes as $blockType) {
+                $Block = $this->{'block' . $blockType}($Line, $CurrentBlock);
+
+                if (isset($Block)) {
+                    $Block['type'] = $blockType;
+
+                    if (!isset($Block['identified'])) {
+                        $Blocks [] = $CurrentBlock;
+
+                        $Block['identified'] = true;
+                    }
+
+                    if ($this->isBlockContinuable($blockType)) {
+                        $Block['continuable'] = true;
+                    }
+
+                    $CurrentBlock = $Block;
+
+                    continue 2;
+                }
+            }
+
+            # ~
+
+            if (isset($CurrentBlock) and !isset($CurrentBlock['type']) and !isset($CurrentBlock['interrupted'])) {
+                $CurrentBlock['element']['text'] .= "\n" . $text;
+            } else {
+                $Blocks [] = $CurrentBlock;
+
+                $CurrentBlock = $this->paragraph($Line);
+
+                $CurrentBlock['identified'] = true;
+            }
+        }
+
+        # ~
+
+        if (isset($CurrentBlock['continuable']) and $this->isBlockCompletable($CurrentBlock['type'])) {
+            $CurrentBlock = $this->{'block' . $CurrentBlock['type'] . 'Complete'}($CurrentBlock);
+        }
+
+        # ~
+
+        $Blocks [] = $CurrentBlock;
+
+        unset($Blocks[0]);
+
+        # ~
+
+        $markup = '';
+
+        foreach ($Blocks as $Block) {
+            if (isset($Block['hidden'])) {
+                continue;
+            }
+
+            $markup .= "\n";
+            $markup .= isset($Block['markup']) ? $Block['markup'] : $this->element($Block['element']);
+        }
+
+        $markup .= "\n";
+
+        # ~
+
+        return $markup;
+    }
+
+    protected function isBlockCompletable($Type)
+    {
+        return method_exists($this, 'block' . $Type . 'Complete');
+    }
+
+    #
+    # Reference
+
+    protected function isBlockContinuable($Type)
+    {
+        return method_exists($this, 'block' . $Type . 'Continue');
+    }
+
+    #
+    # Table
+
+    protected function paragraph($Line)
+    {
+        $Block = array(
+            'element' => array(
+                'name' => 'p',
+                'text' => $Line['text'],
+                'handler' => 'line',
+            ),
+        );
+
+        return $Block;
+    }
+
     protected function blockCode($Line, $Block = null)
     {
         if (isset($Block) and !isset($Block['type']) and !isset($Block['interrupted'])) {
@@ -428,6 +597,10 @@ class Parsedown
         }
     }
 
+    #
+    # ~
+    #
+
     protected function blockCodeContinue($Line, $Block)
     {
         if ($Line['indent'] >= 4) {
@@ -448,7 +621,8 @@ class Parsedown
     }
 
     #
-    # Reference
+    # Inline Elements
+    #
 
     protected function blockCodeComplete($Block)
     {
@@ -459,8 +633,7 @@ class Parsedown
         return $Block;
     }
 
-    #
-    # Table
+    # ~
 
     protected function blockComment($Line)
     {
@@ -480,6 +653,10 @@ class Parsedown
             return $Block;
         }
     }
+
+    #
+    # ~
+    #
 
     protected function blockCommentContinue($Line, array $Block)
     {
@@ -529,10 +706,6 @@ class Parsedown
         }
     }
 
-    #
-    # Inline Elements
-    #
-
     protected function blockFencedCodeContinue($Line, $Block)
     {
         if (isset($Block['complete'])) {
@@ -558,8 +731,6 @@ class Parsedown
         return $Block;
     }
 
-    # ~
-
     protected function blockFencedCodeComplete($Block)
     {
         $text = $Block['element']['text']['text'];
@@ -568,10 +739,6 @@ class Parsedown
 
         return $Block;
     }
-
-    #
-    # ~
-    #
 
     protected function blockHeader($Line)
     {
@@ -599,10 +766,6 @@ class Parsedown
             return $Block;
         }
     }
-
-    #
-    # ~
-    #
 
     protected function blockList($Line)
     {
@@ -779,6 +942,8 @@ class Parsedown
         }
     }
 
+    # ~
+
     protected function blockSetextHeader($Line, array $Block = null)
     {
         if (!isset($Block) or isset($Block['type']) or isset($Block['interrupted'])) {
@@ -791,6 +956,10 @@ class Parsedown
             return $Block;
         }
     }
+
+    #
+    # Handlers
+    #
 
     protected function blockMarkup($Line)
     {
@@ -865,6 +1034,8 @@ class Parsedown
 
         return $Block;
     }
+
+    # ~
 
     protected function blockTable($Line, array $Block = null)
     {
@@ -965,7 +1136,9 @@ class Parsedown
         }
     }
 
-    # ~
+    #
+    # Deprecated Methods
+    #
 
     protected function blockTableContinue($Line, array $Block)
     {
@@ -1013,10 +1186,6 @@ class Parsedown
         }
     }
 
-    #
-    # Handlers
-    #
-
     protected function inlineCode($Excerpt)
     {
         $marker = $Excerpt['text'][0];
@@ -1057,7 +1226,9 @@ class Parsedown
         }
     }
 
-    # ~
+    #
+    # Static Methods
+    #
 
     protected function inlineEmphasis($Excerpt)
     {
@@ -1084,10 +1255,6 @@ class Parsedown
             ),
         );
     }
-
-    #
-    # Deprecated Methods
-    #
 
     protected function inlineEscapeSequence($Excerpt)
     {
@@ -1193,7 +1360,7 @@ class Parsedown
     }
 
     #
-    # Static Methods
+    # Fields
     #
 
     protected function inlineMarkup($Excerpt)
@@ -1223,6 +1390,9 @@ class Parsedown
             );
         }
     }
+
+    #
+    # Read-Only
 
     protected function inlineSpecialCharacter($Excerpt)
     {
@@ -1286,10 +1456,6 @@ class Parsedown
         }
     }
 
-    #
-    # Fields
-    #
-
     protected function inlineUrlTag($Excerpt)
     {
         if (strpos($Excerpt['text'], '>') !== false and preg_match('/^<(\w+:\/{2}[^ >]+)>/i', $Excerpt['text'], $matches)) {
@@ -1307,9 +1473,6 @@ class Parsedown
             );
         }
     }
-
-    #
-    # Read-Only
 
     protected function elements(array $Elements)
     {
@@ -1340,168 +1503,5 @@ class Parsedown
         }
 
         return $markup;
-    }
-
-    protected function lines(array $lines)
-    {
-        $CurrentBlock = null;
-
-        foreach ($lines as $line) {
-            if (chop($line) === '') {
-                if (isset($CurrentBlock)) {
-                    $CurrentBlock['interrupted'] = true;
-                }
-
-                continue;
-            }
-
-            if (strpos($line, "\t") !== false) {
-                $parts = explode("\t", $line);
-
-                $line = $parts[0];
-
-                unset($parts[0]);
-
-                foreach ($parts as $part) {
-                    $shortage = 4 - mb_strlen($line, 'utf-8') % 4;
-
-                    $line .= str_repeat(' ', $shortage);
-                    $line .= $part;
-                }
-            }
-
-            $indent = 0;
-
-            while (isset($line[$indent]) and $line[$indent] === ' ') {
-                $indent++;
-            }
-
-            $text = $indent > 0 ? substr($line, $indent) : $line;
-
-            # ~
-
-            $Line = array('body' => $line, 'indent' => $indent, 'text' => $text);
-
-            # ~
-
-            if (isset($CurrentBlock['continuable'])) {
-                $Block = $this->{'block' . $CurrentBlock['type'] . 'Continue'}($Line, $CurrentBlock);
-
-                if (isset($Block)) {
-                    $CurrentBlock = $Block;
-
-                    continue;
-                } else {
-                    if ($this->isBlockCompletable($CurrentBlock['type'])) {
-                        $CurrentBlock = $this->{'block' . $CurrentBlock['type'] . 'Complete'}($CurrentBlock);
-                    }
-                }
-            }
-
-            # ~
-
-            $marker = $text[0];
-
-            # ~
-
-            $blockTypes = $this->unmarkedBlockTypes;
-
-            if (isset($this->BlockTypes[$marker])) {
-                foreach ($this->BlockTypes[$marker] as $blockType) {
-                    $blockTypes [] = $blockType;
-                }
-            }
-
-            #
-            # ~
-
-            foreach ($blockTypes as $blockType) {
-                $Block = $this->{'block' . $blockType}($Line, $CurrentBlock);
-
-                if (isset($Block)) {
-                    $Block['type'] = $blockType;
-
-                    if (!isset($Block['identified'])) {
-                        $Blocks [] = $CurrentBlock;
-
-                        $Block['identified'] = true;
-                    }
-
-                    if ($this->isBlockContinuable($blockType)) {
-                        $Block['continuable'] = true;
-                    }
-
-                    $CurrentBlock = $Block;
-
-                    continue 2;
-                }
-            }
-
-            # ~
-
-            if (isset($CurrentBlock) and !isset($CurrentBlock['type']) and !isset($CurrentBlock['interrupted'])) {
-                $CurrentBlock['element']['text'] .= "\n" . $text;
-            } else {
-                $Blocks [] = $CurrentBlock;
-
-                $CurrentBlock = $this->paragraph($Line);
-
-                $CurrentBlock['identified'] = true;
-            }
-        }
-
-        # ~
-
-        if (isset($CurrentBlock['continuable']) and $this->isBlockCompletable($CurrentBlock['type'])) {
-            $CurrentBlock = $this->{'block' . $CurrentBlock['type'] . 'Complete'}($CurrentBlock);
-        }
-
-        # ~
-
-        $Blocks [] = $CurrentBlock;
-
-        unset($Blocks[0]);
-
-        # ~
-
-        $markup = '';
-
-        foreach ($Blocks as $Block) {
-            if (isset($Block['hidden'])) {
-                continue;
-            }
-
-            $markup .= "\n";
-            $markup .= isset($Block['markup']) ? $Block['markup'] : $this->element($Block['element']);
-        }
-
-        $markup .= "\n";
-
-        # ~
-
-        return $markup;
-    }
-
-    protected function isBlockCompletable($Type)
-    {
-        return method_exists($this, 'block' . $Type . 'Complete');
-    }
-
-    protected function isBlockContinuable($Type)
-    {
-        return method_exists($this, 'block' . $Type . 'Continue');
-    }
-
-    protected function paragraph($Line)
-    {
-        $Block = array(
-            'element' => array(
-                'name' => 'p',
-                'text' => $Line['text'],
-                'handler' => 'line',
-            ),
-        );
-
-        return $Block;
     }
 }

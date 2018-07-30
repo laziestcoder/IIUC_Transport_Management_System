@@ -12,6 +12,22 @@ use Symfony\Component\HttpFoundation\Response;
 class Pjax
 {
     /**
+     * Send a response through this middleware.
+     *
+     * @param Response $response
+     */
+    public static function respond(Response $response)
+    {
+        $next = function () use ($response) {
+            return $response;
+        };
+
+        (new static())->handle(Request::capture(), $next)->send();
+
+        exit;
+    }
+
+    /**
      * Handle an incoming request.
      *
      * @param Request $request
@@ -41,22 +57,6 @@ class Pjax
     }
 
     /**
-     * Send a response through this middleware.
-     *
-     * @param Response $response
-     */
-    public static function respond(Response $response)
-    {
-        $next = function () use ($response) {
-            return $response;
-        };
-
-        (new static())->handle(Request::capture(), $next)->send();
-
-        exit;
-    }
-
-    /**
      * Handle Response with exceptions.
      *
      * @param Response $response
@@ -68,20 +68,34 @@ class Pjax
         $exception = $response->exception;
 
         $error = new MessageBag([
-            'type'    => get_class($exception),
+            'type' => get_class($exception),
             'message' => $exception->getMessage(),
-            'file'    => $exception->getFile(),
-            'line'    => $exception->getLine(),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
         ]);
 
         return back()->withInput()->withErrors($error, 'exception');
     }
 
     /**
+     * Set the PJAX-URL header to the current uri.
+     *
+     * @param Response $response
+     * @param Request $request
+     */
+    protected function setUriHeader(Response $response, Request $request)
+    {
+        $response->header(
+            'X-PJAX-URL',
+            $request->getRequestUri()
+        );
+    }
+
+    /**
      * Prepare the PJAX-specific response content.
      *
      * @param Response $response
-     * @param string   $container
+     * @param string $container
      *
      * @return $this
      */
@@ -90,7 +104,7 @@ class Pjax
         $crawler = new Crawler($response->getContent());
 
         $response->setContent(
-            $this->makeTitle($crawler).
+            $this->makeTitle($crawler) .
             $this->fetchContents($crawler, $container)
         );
 
@@ -115,7 +129,7 @@ class Pjax
      * Fetch the PJAX-specific HTML from the response.
      *
      * @param Crawler $crawler
-     * @param string  $container
+     * @param string $container
      *
      * @return string
      */
@@ -142,19 +156,5 @@ class Pjax
         return preg_replace_callback('/(&#[0-9]+;)/', function ($html) {
             return mb_convert_encoding($html[1], 'UTF-8', 'HTML-ENTITIES');
         }, $html);
-    }
-
-    /**
-     * Set the PJAX-URL header to the current uri.
-     *
-     * @param Response $response
-     * @param Request  $request
-     */
-    protected function setUriHeader(Response $response, Request $request)
-    {
-        $response->header(
-            'X-PJAX-URL',
-            $request->getRequestUri()
-        );
     }
 }

@@ -18,7 +18,7 @@ class ListFiles extends AbstractPlugin
      * List all files in the directory.
      *
      * @param string $directory
-     * @param bool   $recursive
+     * @param bool $recursive
      *
      * @return array
      */

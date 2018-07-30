@@ -2,24 +2,28 @@
 
 namespace PharIo\Manifest;
 
-class ExtensionElementTest extends \PHPUnit_Framework_TestCase {
+class ExtensionElementTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var ExtensionElement
      */
     private $extension;
 
-    protected function setUp() {
-        $dom = new \DOMDocument();
-        $dom->loadXML('<?xml version="1.0" ?><extension xmlns="https://phar.io/xml/manifest/1.0" for="phar-io/phive" compatible="~0.6" />');
-        $this->extension = new ExtensionElement($dom->documentElement);
-    }
-
-    public function testNForCanBeRetrieved() {
+    public function testNForCanBeRetrieved()
+    {
         $this->assertEquals('phar-io/phive', $this->extension->getFor());
     }
 
-    public function testCompatibleVersionConstraintCanBeRetrieved() {
+    public function testCompatibleVersionConstraintCanBeRetrieved()
+    {
         $this->assertEquals('~0.6', $this->extension->getCompatible());
+    }
+
+    protected function setUp()
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML('<?xml version="1.0" ?><extension xmlns="https://phar.io/xml/manifest/1.0" for="phar-io/phive" compatible="~0.6" />');
+        $this->extension = new ExtensionElement($dom->documentElement);
     }
 
 }

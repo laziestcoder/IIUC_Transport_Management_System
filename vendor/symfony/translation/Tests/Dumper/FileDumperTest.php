@@ -12,8 +12,8 @@
 namespace Symfony\Component\Translation\Tests\Dumper;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Dumper\FileDumper;
+use Symfony\Component\Translation\MessageCatalogue;
 
 class FileDumperTest extends TestCase
 {
@@ -27,16 +27,16 @@ class FileDumperTest extends TestCase
         $dumper = new ConcreteFileDumper();
         $dumper->dump($catalogue, array('path' => $tempDir));
 
-        $this->assertFileExists($tempDir.'/messages.en.concrete');
+        $this->assertFileExists($tempDir . '/messages.en.concrete');
 
-        @unlink($tempDir.'/messages.en.concrete');
+        @unlink($tempDir . '/messages.en.concrete');
     }
 
     public function testDumpCreatesNestedDirectoriesAndFile()
     {
         $tempDir = sys_get_temp_dir();
-        $translationsDir = $tempDir.'/test/translations';
-        $file = $translationsDir.'/messages.en.concrete';
+        $translationsDir = $tempDir . '/test/translations';
+        $file = $translationsDir . '/messages.en.concrete';
 
         $catalogue = new MessageCatalogue('en');
         $catalogue->add(array('foo' => 'bar'));

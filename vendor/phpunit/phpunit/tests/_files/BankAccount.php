@@ -25,16 +25,6 @@ class BankAccount
     protected $balance = 0;
 
     /**
-     * Returns the bank account's balance.
-     *
-     * @return float
-     */
-    public function getBalance()
-    {
-        return $this->balance;
-    }
-
-    /**
      * Deposits an amount of money to the bank account.
      *
      * @param float $balance
@@ -49,17 +39,13 @@ class BankAccount
     }
 
     /**
-     * Withdraws an amount of money from the bank account.
+     * Returns the bank account's balance.
      *
-     * @param float $balance
-     *
-     * @throws BankAccountException
+     * @return float
      */
-    public function withdrawMoney($balance)
+    public function getBalance()
     {
-        $this->setBalance($this->getBalance() - $balance);
-
-        return $this->getBalance();
+        return $this->balance;
     }
 
     /**
@@ -76,5 +62,19 @@ class BankAccount
         } else {
             throw new BankAccountException;
         }
+    }
+
+    /**
+     * Withdraws an amount of money from the bank account.
+     *
+     * @param float $balance
+     *
+     * @throws BankAccountException
+     */
+    public function withdrawMoney($balance)
+    {
+        $this->setBalance($this->getBalance() - $balance);
+
+        return $this->getBalance();
     }
 }

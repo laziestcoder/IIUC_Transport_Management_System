@@ -12,8 +12,8 @@
 namespace Symfony\Component\Routing\Tests\Loader;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Config\Resource\GlobResource;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Resource\GlobResource;
 use Symfony\Component\Routing\Loader\GlobFileLoader;
 use Symfony\Component\Routing\RouteCollection;
 
@@ -30,9 +30,9 @@ class GlobFileLoaderTest extends TestCase
     public function testLoadAddsTheGlobResourceToTheContainer()
     {
         $loader = new GlobFileLoaderWithoutImport(new FileLocator());
-        $collection = $loader->load(__DIR__.'/../Fixtures/directory/*.yml');
+        $collection = $loader->load(__DIR__ . '/../Fixtures/directory/*.yml');
 
-        $this->assertEquals(new GlobResource(__DIR__.'/../Fixtures/directory', '/*.yml', false), $collection->getResources()[0]);
+        $this->assertEquals(new GlobResource(__DIR__ . '/../Fixtures/directory', '/*.yml', false), $collection->getResources()[0]);
     }
 }
 

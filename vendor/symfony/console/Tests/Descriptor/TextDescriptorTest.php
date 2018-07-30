@@ -38,7 +38,7 @@ class TextDescriptorTest extends AbstractDescriptorTest
     {
         $application = new DescriptorApplication2();
 
-        $this->assertDescription(file_get_contents(__DIR__.'/../Fixtures/application_filtered_namespace.txt'), $application, array('namespace' => 'command4'));
+        $this->assertDescription(file_get_contents(__DIR__ . '/../Fixtures/application_filtered_namespace.txt'), $application, array('namespace' => 'command4'));
     }
 
     protected function getDescriptor()

@@ -12,104 +12,89 @@ use Illuminate\Support\Str;
 
 class Column
 {
-    /**
-     * @var Grid
-     */
-    protected $grid;
-
-    /**
-     * Name of column.
-     *
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * Label of column.
-     *
-     * @var string
-     */
-    protected $label;
-
-    /**
-     * Original value of column.
-     *
-     * @var mixed
-     */
-    protected $original;
-
-    /**
-     * Is column sortable.
-     *
-     * @var bool
-     */
-    protected $sortable = false;
-
-    /**
-     * Sort arguments.
-     *
-     * @var array
-     */
-    protected $sort;
-
-    /**
-     * Attributes of column.
-     *
-     * @var array
-     */
-    protected $attributes = [];
-
-    /**
-     * Relation name.
-     *
-     * @var bool
-     */
-    protected $relation = false;
-
-    /**
-     * Relation column.
-     *
-     * @var string
-     */
-    protected $relationColumn;
-
-    /**
-     * Original grid data.
-     *
-     * @var array
-     */
-    protected static $originalGridData = [];
-
-    /**
-     * @var []Closure
-     */
-    protected $displayCallbacks = [];
-
+    const SELECT_COLUMN_NAME = '__row_selector__';
     /**
      * Displayers for grid column.
      *
      * @var array
      */
     public static $displayers = [];
-
     /**
      * Defined columns.
      *
      * @var array
      */
     public static $defined = [];
-
+    /**
+     * Original grid data.
+     *
+     * @var array
+     */
+    protected static $originalGridData = [];
     /**
      * @var array
      */
     protected static $htmlAttributes = [];
-
     /**
      * @var
      */
     protected static $model;
-
-    const SELECT_COLUMN_NAME = '__row_selector__';
+    /**
+     * @var Grid
+     */
+    protected $grid;
+    /**
+     * Name of column.
+     *
+     * @var string
+     */
+    protected $name;
+    /**
+     * Label of column.
+     *
+     * @var string
+     */
+    protected $label;
+    /**
+     * Original value of column.
+     *
+     * @var mixed
+     */
+    protected $original;
+    /**
+     * Is column sortable.
+     *
+     * @var bool
+     */
+    protected $sortable = false;
+    /**
+     * Sort arguments.
+     *
+     * @var array
+     */
+    protected $sort;
+    /**
+     * Attributes of column.
+     *
+     * @var array
+     */
+    protected $attributes = [];
+    /**
+     * Relation name.
+     *
+     * @var bool
+     */
+    protected $relation = false;
+    /**
+     * Relation column.
+     *
+     * @var string
+     */
+    protected $relationColumn;
+    /**
+     * @var []Closure
+     */
+    protected $displayCallbacks = [];
 
     /**
      * @param string $name
@@ -120,6 +105,20 @@ class Column
         $this->name = $name;
 
         $this->label = $this->formatLabel($label);
+    }
+
+    /**
+     * Format label.
+     *
+     * @param $label
+     *
+     * @return mixed
+     */
+    protected function formatLabel($label)
+    {
+        $label = $label ?: ucfirst($this->name);
+
+        return str_replace(['.', '_'], ' ', $label);
     }
 
     /**
@@ -137,11 +136,33 @@ class Column
      * Define a column globally.
      *
      * @param string $name
-     * @param mixed  $definition
+     * @param mixed $definition
      */
     public static function define($name, $definition)
     {
         static::$defined[$name] = $definition;
+    }
+
+    /**
+     * Set original data for column.
+     *
+     * @param array $input
+     */
+    public static function setOriginalGridData(array $input)
+    {
+        static::$originalGridData = $input;
+    }
+
+    /**
+     * Get column attributes.
+     *
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public static function getAttributes($name)
+    {
+        return array_get(static::$htmlAttributes, $name, '');
     }
 
     /**
@@ -169,13 +190,15 @@ class Column
     }
 
     /**
-     * Set original data for column.
+     * Set style of this column.
      *
-     * @param array $input
+     * @param string $style
+     *
+     * @return Column
      */
-    public static function setOriginalGridData(array $input)
+    public function style($style)
     {
-        static::$originalGridData = $input;
+        return $this->setAttributes(compact('style'));
     }
 
     /**
@@ -193,30 +216,6 @@ class Column
     }
 
     /**
-     * Get column attributes.
-     *
-     * @param string $name
-     *
-     * @return mixed
-     */
-    public static function getAttributes($name)
-    {
-        return array_get(static::$htmlAttributes, $name, '');
-    }
-
-    /**
-     * Set style of this column.
-     *
-     * @param string $style
-     *
-     * @return Column
-     */
-    public function style($style)
-    {
-        return $this->setAttributes(compact('style'));
-    }
-
-    /**
      * Get name of this column.
      *
      * @return mixed
@@ -224,20 +223,6 @@ class Column
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Format label.
-     *
-     * @param $label
-     *
-     * @return mixed
-     */
-    protected function formatLabel($label)
-    {
-        $label = $label ?: ucfirst($this->name);
-
-        return str_replace(['.', '_'], ' ', $label);
     }
 
     /**
@@ -251,32 +236,6 @@ class Column
     }
 
     /**
-     * Set relation.
-     *
-     * @param string $relation
-     * @param string $relationColumn
-     *
-     * @return $this
-     */
-    public function setRelation($relation, $relationColumn = null)
-    {
-        $this->relation = $relation;
-        $this->relationColumn = $relationColumn;
-
-        return $this;
-    }
-
-    /**
-     * If this column is relation column.
-     *
-     * @return bool
-     */
-    protected function isRelation()
-    {
-        return (bool) $this->relation;
-    }
-
-    /**
      * Mark this column as sortable.
      *
      * @return Column
@@ -286,63 +245,6 @@ class Column
         $this->sortable = true;
 
         return $this;
-    }
-
-    /**
-     * Add a display callback.
-     *
-     * @param Closure $callback
-     *
-     * @return $this
-     */
-    public function display(Closure $callback)
-    {
-        $this->displayCallbacks[] = $callback;
-
-        return $this;
-    }
-
-    /**
-     * If has display callbacks.
-     *
-     * @return bool
-     */
-    protected function hasDisplayCallbacks()
-    {
-        return !empty($this->displayCallbacks);
-    }
-
-    /**
-     * Call all of the "display" callbacks column.
-     *
-     * @param mixed $value
-     * @param int   $key
-     *
-     * @return mixed
-     */
-    protected function callDisplayCallbacks($value, $key)
-    {
-        foreach ($this->displayCallbacks as $callback) {
-            $callback = $this->bindOriginalRow($callback, $key);
-            $value = call_user_func($callback, $value);
-        }
-
-        return $value;
-    }
-
-    /**
-     * Set original grid data to column.
-     *
-     * @param Closure $callback
-     * @param int     $key
-     *
-     * @return Closure
-     */
-    protected function bindOriginalRow(Closure $callback, $key)
-    {
-        $originalRow = static::$originalGridData[$key];
-
-        return $callback->bindTo(static::$model->newFromBuilder($originalRow));
     }
 
     /**
@@ -372,6 +274,26 @@ class Column
         }
 
         return $data;
+    }
+
+    /**
+     * Convert characters to HTML entities recursively.
+     *
+     * @param array|string $item
+     *
+     * @return mixed
+     */
+    protected function htmlEntityEncode($item)
+    {
+        if (is_array($item)) {
+            array_walk_recursive($item, function (&$value) {
+                $value = htmlentities($value);
+            });
+        } else {
+            $item = htmlentities($item);
+        }
+
+        return $item;
     }
 
     /**
@@ -417,23 +339,60 @@ class Column
     }
 
     /**
-     * Convert characters to HTML entities recursively.
+     * Add a display callback.
      *
-     * @param array|string $item
+     * @param Closure $callback
+     *
+     * @return $this
+     */
+    public function display(Closure $callback)
+    {
+        $this->displayCallbacks[] = $callback;
+
+        return $this;
+    }
+
+    /**
+     * If has display callbacks.
+     *
+     * @return bool
+     */
+    protected function hasDisplayCallbacks()
+    {
+        return !empty($this->displayCallbacks);
+    }
+
+    /**
+     * Call all of the "display" callbacks column.
+     *
+     * @param mixed $value
+     * @param int $key
      *
      * @return mixed
      */
-    protected function htmlEntityEncode($item)
+    protected function callDisplayCallbacks($value, $key)
     {
-        if (is_array($item)) {
-            array_walk_recursive($item, function (&$value) {
-                $value = htmlentities($value);
-            });
-        } else {
-            $item = htmlentities($item);
+        foreach ($this->displayCallbacks as $callback) {
+            $callback = $this->bindOriginalRow($callback, $key);
+            $value = call_user_func($callback, $value);
         }
 
-        return $item;
+        return $value;
+    }
+
+    /**
+     * Set original grid data to column.
+     *
+     * @param Closure $callback
+     * @param int $key
+     *
+     * @return Closure
+     */
+    protected function bindOriginalRow(Closure $callback, $key)
+    {
+        $originalRow = static::$originalGridData[$key];
+
+        return $callback->bindTo(static::$model->newFromBuilder($originalRow));
     }
 
     /**
@@ -458,7 +417,7 @@ class Column
         $query = app('request')->all();
         $query = array_merge($query, [$this->grid->model()->getSortName() => ['column' => $this->name, 'type' => $type]]);
 
-        $url = URL::current().'?'.http_build_query($query);
+        $url = URL::current() . '?' . http_build_query($query);
 
         return "<a class=\"fa fa-fw $icon\" href=\"$url\"></a>";
     }
@@ -480,10 +439,60 @@ class Column
     }
 
     /**
+     * Passes through all unknown calls to builtin displayer or supported displayer.
+     *
+     * Allow fluent calls on the Column object.
+     *
+     * @param string $method
+     * @param array $arguments
+     *
+     * @return $this
+     */
+    public function __call($method, $arguments)
+    {
+        if ($this->isRelation() && !$this->relationColumn) {
+            $this->name = "{$this->relation}.$method";
+            $this->label = isset($arguments[0]) ? $arguments[0] : ucfirst($method);
+
+            $this->relationColumn = $method;
+
+            return $this;
+        }
+
+        return $this->resolveDisplayer($method, $arguments);
+    }
+
+    /**
+     * If this column is relation column.
+     *
+     * @return bool
+     */
+    protected function isRelation()
+    {
+        return (bool)$this->relation;
+    }
+
+    /**
+     * Set relation.
+     *
+     * @param string $relation
+     * @param string $relationColumn
+     *
+     * @return $this
+     */
+    public function setRelation($relation, $relationColumn = null)
+    {
+        $this->relation = $relation;
+        $this->relationColumn = $relationColumn;
+
+        return $this;
+    }
+
+    /**
      * Find a displayer to display column.
      *
      * @param string $abstract
-     * @param array  $arguments
+     * @param array $arguments
      *
      * @return Column
      */
@@ -497,33 +506,10 @@ class Column
     }
 
     /**
-     * Call Illuminate/Support displayer.
-     *
-     * @param string $abstract
-     * @param array  $arguments
-     *
-     * @return Column
-     */
-    protected function callSupportDisplayer($abstract, $arguments)
-    {
-        return $this->display(function ($value) use ($abstract, $arguments) {
-            if (is_array($value) || $value instanceof Arrayable) {
-                return call_user_func_array([collect($value), $abstract], $arguments);
-            }
-
-            if (is_string($value)) {
-                return call_user_func_array([Str::class, $abstract], array_merge([$value], $arguments));
-            }
-
-            return $value;
-        });
-    }
-
-    /**
      * Call Builtin displayer.
      *
      * @param string $abstract
-     * @param array  $arguments
+     * @param array $arguments
      *
      * @return Column
      */
@@ -550,26 +536,25 @@ class Column
     }
 
     /**
-     * Passes through all unknown calls to builtin displayer or supported displayer.
+     * Call Illuminate/Support displayer.
      *
-     * Allow fluent calls on the Column object.
+     * @param string $abstract
+     * @param array $arguments
      *
-     * @param string $method
-     * @param array  $arguments
-     *
-     * @return $this
+     * @return Column
      */
-    public function __call($method, $arguments)
+    protected function callSupportDisplayer($abstract, $arguments)
     {
-        if ($this->isRelation() && !$this->relationColumn) {
-            $this->name = "{$this->relation}.$method";
-            $this->label = isset($arguments[0]) ? $arguments[0] : ucfirst($method);
+        return $this->display(function ($value) use ($abstract, $arguments) {
+            if (is_array($value) || $value instanceof Arrayable) {
+                return call_user_func_array([collect($value), $abstract], $arguments);
+            }
 
-            $this->relationColumn = $method;
+            if (is_string($value)) {
+                return call_user_func_array([Str::class, $abstract], array_merge([$value], $arguments));
+            }
 
-            return $this;
-        }
-
-        return $this->resolveDisplayer($method, $arguments);
+            return $value;
+        });
     }
 }

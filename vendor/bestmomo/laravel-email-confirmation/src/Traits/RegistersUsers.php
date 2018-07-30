@@ -2,11 +2,11 @@
 
 namespace Bestmomo\LaravelEmailConfirmation\Traits;
 
-use Illuminate\Http\Request;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Foundation\Auth\RegistersUsers as BaseRegistersUsers;
 use Bestmomo\LaravelEmailConfirmation\Notifications\ConfirmEmail;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Foundation\Auth\RegistersUsers as BaseRegistersUsers;
+use Illuminate\Http\Request;
 
 trait RegistersUsers
 {
@@ -15,7 +15,7 @@ trait RegistersUsers
     /**
      * Handle a registration request for the application.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function register(Request $request)
@@ -35,10 +35,27 @@ trait RegistersUsers
     }
 
     /**
+     * Notify user with email
+     *
+     * @param  Model $user
+     * @return void
+     */
+    protected function notifyUser($user)
+    {
+        $class = $this->getAppNamespace() . 'Notifications\ConfirmEmail';
+
+        if (!class_exists($class)) {
+            $class = ConfirmEmail::class;
+        }
+
+        $user->notify(new $class);
+    }
+
+    /**
      * Handle a confirmation request
      *
      * @param  integer $id
-     * @param  string  $confirmation_code
+     * @param  string $confirmation_code
      * @return \Illuminate\Http\Response
      */
     public function confirm($id, $confirmation_code)
@@ -71,27 +88,10 @@ trait RegistersUsers
             }
 
             $this->notifyUser($user);
-            
+
             return redirect(route('login'))->with('confirmation-success', trans('confirmation::confirmation.resend'));
         }
 
         return redirect('/');
-    }
-
-    /**
-     * Notify user with email
-     *
-     * @param  Model $user
-     * @return void
-     */
-    protected function notifyUser($user)
-    {
-        $class = $this->getAppNamespace() . 'Notifications\ConfirmEmail';
-
-        if (!class_exists($class)) {
-            $class = ConfirmEmail::class;
-        }
-
-        $user->notify(new $class);
     }
 }

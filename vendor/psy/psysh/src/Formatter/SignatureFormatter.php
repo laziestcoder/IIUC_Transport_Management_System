@@ -56,6 +56,23 @@ class SignatureFormatter implements Formatter
     }
 
     /**
+     * Format a function signature.
+     *
+     * @param \ReflectionFunction $reflector
+     *
+     * @return string Formatted signature
+     */
+    private static function formatFunction(\ReflectionFunctionAbstract $reflector)
+    {
+        return sprintf(
+            '<keyword>function</keyword> %s<function>%s</function>(%s)',
+            $reflector->returnsReference() ? '&' : '',
+            self::formatName($reflector),
+            implode(', ', self::formatFunctionParams($reflector))
+        );
+    }
+
+    /**
      * Print the signature name.
      *
      * @param \Reflector $reflector
@@ -68,27 +85,83 @@ class SignatureFormatter implements Formatter
     }
 
     /**
-     * Print the method, property or class modifiers.
+     * Print the function params.
      *
-     * Technically this should be a trait. Can't wait for 5.4 :)
+     * @param \ReflectionFunctionAbstract $reflector
      *
-     * @param \Reflector $reflector
-     *
-     * @return string Formatted modifiers
+     * @return array
      */
-    private static function formatModifiers(\Reflector $reflector)
+    private static function formatFunctionParams(\ReflectionFunctionAbstract $reflector)
     {
-        if ($reflector instanceof \ReflectionClass && $reflector->isTrait()) {
-            // For some reason, PHP 5.x returns `abstract public` modifiers for
-            // traits. Let's just ignore that business entirely.
-            if (version_compare(PHP_VERSION, '7.0.0', '<')) {
-                return [];
+        $params = [];
+        foreach ($reflector->getParameters() as $param) {
+            $hint = '';
+            try {
+                if ($param->isArray()) {
+                    $hint = '<keyword>array</keyword> ';
+                } elseif ($class = $param->getClass()) {
+                    $hint = sprintf('<class>%s</class> ', $class->getName());
+                }
+            } catch (\Exception $e) {
+                // sometimes we just don't know...
+                // bad class names, or autoloaded classes that haven't been loaded yet, or whathaveyou.
+                // come to think of it, the only time I've seen this is with the intl extension.
+
+                // Hax: we'll try to extract it :P
+
+                // @codeCoverageIgnoreStart
+                $chunks = explode('$' . $param->getName(), (string)$param);
+                $chunks = explode(' ', trim($chunks[0]));
+                $guess = end($chunks);
+
+                $hint = sprintf('<urgent>%s</urgent> ', $guess);
+                // @codeCoverageIgnoreEnd
             }
+
+            if ($param->isOptional()) {
+                if (!$param->isDefaultValueAvailable()) {
+                    $value = 'unknown';
+                    $typeStyle = 'urgent';
+                } else {
+                    $value = $param->getDefaultValue();
+                    $typeStyle = self::getTypeStyle($value);
+                    $value = is_array($value) ? 'array()' : is_null($value) ? 'null' : var_export($value, true);
+                }
+                $default = sprintf(' = <%s>%s</%s>', $typeStyle, OutputFormatter::escape($value), $typeStyle);
+            } else {
+                $default = '';
+            }
+
+            $params[] = sprintf(
+                '%s%s<strong>$%s</strong>%s',
+                $param->isPassedByReference() ? '&' : '',
+                $hint,
+                $param->getName(),
+                $default
+            );
         }
 
-        return implode(' ', array_map(function ($modifier) {
-            return sprintf('<keyword>%s</keyword>', $modifier);
-        }, \Reflection::getModifierNames($reflector->getModifiers())));
+        return $params;
+    }
+
+    /**
+     * Helper for getting output style for a given value's type.
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
+    private static function getTypeStyle($value)
+    {
+        if (is_int($value) || is_float($value)) {
+            return 'number';
+        } elseif (is_string($value)) {
+            return 'string';
+        } elseif (is_bool($value) || is_null($value)) {
+            return 'bool';
+        } else {
+            return 'strong'; // @codeCoverageIgnore
+        }
     }
 
     /**
@@ -133,6 +206,30 @@ class SignatureFormatter implements Formatter
     }
 
     /**
+     * Print the method, property or class modifiers.
+     *
+     * Technically this should be a trait. Can't wait for 5.4 :)
+     *
+     * @param \Reflector $reflector
+     *
+     * @return string Formatted modifiers
+     */
+    private static function formatModifiers(\Reflector $reflector)
+    {
+        if ($reflector instanceof \ReflectionClass && $reflector->isTrait()) {
+            // For some reason, PHP 5.x returns `abstract public` modifiers for
+            // traits. Let's just ignore that business entirely.
+            if (version_compare(PHP_VERSION, '7.0.0', '<')) {
+                return [];
+            }
+        }
+
+        return implode(' ', array_map(function ($modifier) {
+            return sprintf('<keyword>%s</keyword>', $modifier);
+        }, \Reflection::getModifierNames($reflector->getModifiers())));
+    }
+
+    /**
      * Format a constant signature.
      *
      * @param ReflectionConstant $reflector
@@ -154,59 +251,6 @@ class SignatureFormatter implements Formatter
     }
 
     /**
-     * Helper for getting output style for a given value's type.
-     *
-     * @param mixed $value
-     *
-     * @return string
-     */
-    private static function getTypeStyle($value)
-    {
-        if (is_int($value) || is_float($value)) {
-            return 'number';
-        } elseif (is_string($value)) {
-            return 'string';
-        } elseif (is_bool($value) || is_null($value)) {
-            return 'bool';
-        } else {
-            return 'strong'; // @codeCoverageIgnore
-        }
-    }
-
-    /**
-     * Format a property signature.
-     *
-     * @param \ReflectionProperty $reflector
-     *
-     * @return string Formatted signature
-     */
-    private static function formatProperty(\ReflectionProperty $reflector)
-    {
-        return sprintf(
-            '%s <strong>$%s</strong>',
-            self::formatModifiers($reflector),
-            $reflector->getName()
-        );
-    }
-
-    /**
-     * Format a function signature.
-     *
-     * @param \ReflectionFunction $reflector
-     *
-     * @return string Formatted signature
-     */
-    private static function formatFunction(\ReflectionFunctionAbstract $reflector)
-    {
-        return sprintf(
-            '<keyword>function</keyword> %s<function>%s</function>(%s)',
-            $reflector->returnsReference() ? '&' : '',
-            self::formatName($reflector),
-            implode(', ', self::formatFunctionParams($reflector))
-        );
-    }
-
-    /**
      * Format a method signature.
      *
      * @param \ReflectionMethod $reflector
@@ -223,62 +267,18 @@ class SignatureFormatter implements Formatter
     }
 
     /**
-     * Print the function params.
+     * Format a property signature.
      *
-     * @param \ReflectionFunctionAbstract $reflector
+     * @param \ReflectionProperty $reflector
      *
-     * @return array
+     * @return string Formatted signature
      */
-    private static function formatFunctionParams(\ReflectionFunctionAbstract $reflector)
+    private static function formatProperty(\ReflectionProperty $reflector)
     {
-        $params = [];
-        foreach ($reflector->getParameters() as $param) {
-            $hint = '';
-            try {
-                if ($param->isArray()) {
-                    $hint = '<keyword>array</keyword> ';
-                } elseif ($class = $param->getClass()) {
-                    $hint = sprintf('<class>%s</class> ', $class->getName());
-                }
-            } catch (\Exception $e) {
-                // sometimes we just don't know...
-                // bad class names, or autoloaded classes that haven't been loaded yet, or whathaveyou.
-                // come to think of it, the only time I've seen this is with the intl extension.
-
-                // Hax: we'll try to extract it :P
-
-                // @codeCoverageIgnoreStart
-                $chunks = explode('$' . $param->getName(), (string) $param);
-                $chunks = explode(' ', trim($chunks[0]));
-                $guess  = end($chunks);
-
-                $hint = sprintf('<urgent>%s</urgent> ', $guess);
-                // @codeCoverageIgnoreEnd
-            }
-
-            if ($param->isOptional()) {
-                if (!$param->isDefaultValueAvailable()) {
-                    $value     = 'unknown';
-                    $typeStyle = 'urgent';
-                } else {
-                    $value     = $param->getDefaultValue();
-                    $typeStyle = self::getTypeStyle($value);
-                    $value     = is_array($value) ? 'array()' : is_null($value) ? 'null' : var_export($value, true);
-                }
-                $default = sprintf(' = <%s>%s</%s>', $typeStyle, OutputFormatter::escape($value), $typeStyle);
-            } else {
-                $default = '';
-            }
-
-            $params[] = sprintf(
-                '%s%s<strong>$%s</strong>%s',
-                $param->isPassedByReference() ? '&' : '',
-                $hint,
-                $param->getName(),
-                $default
-            );
-        }
-
-        return $params;
+        return sprintf(
+            '%s <strong>$%s</strong>',
+            self::formatModifiers($reflector),
+            $reflector->getName()
+        );
     }
 }

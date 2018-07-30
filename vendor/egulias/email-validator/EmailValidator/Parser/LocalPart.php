@@ -2,10 +2,9 @@
 
 namespace Egulias\EmailValidator\Parser;
 
+use Egulias\EmailValidator\EmailLexer;
 use Egulias\EmailValidator\Exception\DotAtEnd;
 use Egulias\EmailValidator\Exception\DotAtStart;
-use Egulias\EmailValidator\EmailLexer;
-use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Exception\ExpectingAT;
 use Egulias\EmailValidator\Exception\ExpectingATEXT;
 use Egulias\EmailValidator\Exception\UnclosedQuotedString;

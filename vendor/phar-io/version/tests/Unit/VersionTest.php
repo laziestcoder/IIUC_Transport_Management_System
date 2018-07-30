@@ -15,7 +15,8 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \PharIo\Version\Version
  */
-class VersionTest extends TestCase {
+class VersionTest extends TestCase
+{
     /**
      * @dataProvider versionProvider
      *
@@ -24,9 +25,10 @@ class VersionTest extends TestCase {
      * @param string $expectedMinor
      * @param string $expectedPatch
      * @param string $expectedPreReleaseValue
-     * @param int    $expectedReleaseCount
+     * @param int $expectedReleaseCount
      */
-    public function testParsesVersionNumbers($versionString, $expectedMajor, $expectedMinor, $expectedPatch, $expectedPreReleaseValue = '', $expectedReleaseCount = 0) {
+    public function testParsesVersionNumbers($versionString, $expectedMajor, $expectedMinor, $expectedPatch, $expectedPreReleaseValue = '', $expectedReleaseCount = 0)
+    {
         $version = new Version($versionString);
 
         $this->assertSame($expectedMajor, $version->getMajor()->getValue());
@@ -42,7 +44,8 @@ class VersionTest extends TestCase {
         $this->assertSame($versionString, $version->getVersionString());
     }
 
-    public function versionProvider() {
+    public function versionProvider()
+    {
         return [
             ['0.0.1', '0', '0', '1'],
             ['0.1.2', '0', '1', '2'],
@@ -56,16 +59,18 @@ class VersionTest extends TestCase {
      *
      * @param Version $versionA
      * @param Version $versionB
-     * @param bool    $expectedResult
+     * @param bool $expectedResult
      */
-    public function testIsGreaterThan(Version $versionA, Version $versionB, $expectedResult) {
+    public function testIsGreaterThan(Version $versionA, Version $versionB, $expectedResult)
+    {
         $this->assertSame($expectedResult, $versionA->isGreaterThan($versionB));
     }
 
     /**
      * @return array
      */
-    public function versionGreaterThanProvider() {
+    public function versionGreaterThanProvider()
+    {
         return [
             [new Version('1.0.0'), new Version('1.0.1'), false],
             [new Version('1.0.1'), new Version('1.0.0'), true],

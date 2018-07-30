@@ -19,7 +19,7 @@ abstract class AbstractNodeTest extends TestCase
     /** @dataProvider getToStringConversionTestData */
     public function testToStringConversion(NodeInterface $node, $representation)
     {
-        $this->assertEquals($representation, (string) $node);
+        $this->assertEquals($representation, (string)$node);
     }
 
     /** @dataProvider getSpecificityValueTestData */

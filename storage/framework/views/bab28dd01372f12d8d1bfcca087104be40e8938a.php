@@ -6,10 +6,10 @@
                         <!-- Copyright &copy; Your Website 2017 -->
                     <b>Today:</b><?php echo e(date("l, d M, Y")); ?> <b>Time:</b><?php echo e(date("h:i A")); ?>
 
-                        
+
                         <p>&copy <?php echo e(date("Y")); ?>
 
-                            
+
                             ITMS & <a href="https://github.com/laziestcoder"> Towfiqul Islam </a> | All Rights Reserved</p>
                     </span>
         </div>

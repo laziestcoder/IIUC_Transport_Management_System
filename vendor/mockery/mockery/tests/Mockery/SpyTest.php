@@ -22,8 +22,8 @@
 namespace test\Mockery;
 
 use Mockery as m;
-use Mockery\Spy;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\Spy;
 
 class SpyTest extends MockeryTestCase
 {

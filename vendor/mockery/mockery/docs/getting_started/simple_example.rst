@@ -1,5 +1,5 @@
 .. index::
-    single: Getting Started; Simple Example
+single: Getting Started; Simple Example
 
 Simple Example
 ==============

@@ -14,19 +14,19 @@ namespace Symfony\Component\Debug\Tests\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\Exception\LengthRequiredHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
 use Symfony\Component\HttpKernel\Exception\PreconditionRequiredHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 
 class FlattenExceptionTest extends TestCase
@@ -202,12 +202,13 @@ class FlattenExceptionTest extends TestCase
         $incomplete = unserialize('O:14:"BogusTestClass":0:{}');
 
         $exception = $this->createException(array(
-            (object) array('foo' => 1),
+            (object)array('foo' => 1),
             new NotFoundHttpException(),
             $incomplete,
             $dh,
             $fh,
-            function () {},
+            function () {
+            },
             array(1, 2),
             array('foo' => 123),
             null,
@@ -256,6 +257,11 @@ class FlattenExceptionTest extends TestCase
         $this->assertTrue(is_nan($array[$i++][1]));
     }
 
+    private function createException($foo)
+    {
+        return new \Exception();
+    }
+
     public function testRecursionInArguments()
     {
         $a = null;
@@ -290,10 +296,5 @@ class FlattenExceptionTest extends TestCase
 
         $this->assertContains('*SKIPPED over 10000 entries*', $serializeTrace);
         $this->assertNotContains('*value1*', $serializeTrace);
-    }
-
-    private function createException($foo)
-    {
-        return new \Exception();
     }
 }

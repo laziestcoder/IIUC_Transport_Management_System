@@ -50,9 +50,9 @@ class ErrorHandler
     private static $reservedMemory;
     private static $toStringException = null;
     private static $silencedErrorCache = array(); // E_ALL - E_DEPRECATED - E_USER_DEPRECATED
-        private static $silencedErrorCount = 0; // E_ALL - E_DEPRECATED - E_USER_DEPRECATED
-        private static $exitCode = 0; // E_ALL - E_STRICT - E_PARSE
-        private $levels = array(
+    private static $silencedErrorCount = 0; // E_ALL - E_DEPRECATED - E_USER_DEPRECATED
+    private static $exitCode = 0; // E_ALL - E_STRICT - E_PARSE
+    private $levels = array(
         E_DEPRECATED => 'Deprecated',
         E_USER_DEPRECATED => 'User Deprecated',
         E_NOTICE => 'Notice',
@@ -86,10 +86,10 @@ class ErrorHandler
         E_ERROR => array(null, LogLevel::CRITICAL),
         E_CORE_ERROR => array(null, LogLevel::CRITICAL),
     );
-private $thrownErrors = 0x1FFF;
-private $scopedErrors = 0x1FFF;
-private $tracedErrors = 0x77FB;
-private $screamedErrors = 0x55;
+    private $thrownErrors = 0x1FFF;
+    private $scopedErrors = 0x1FFF;
+    private $tracedErrors = 0x77FB;
+    private $screamedErrors = 0x55;
     private $loggedErrors = 0;
     private $traceReflector;
     private $isRecursive = 0;
@@ -193,6 +193,26 @@ private $screamedErrors = 0x55;
     }
 
     /**
+     * Re-registers as a PHP error handler if levels changed.
+     */
+    private function reRegister($prev)
+    {
+        if ($prev !== $this->thrownErrors | $this->loggedErrors) {
+            $handler = set_error_handler('var_dump');
+            $handler = is_array($handler) ? $handler[0] : null;
+            restore_error_handler();
+            if ($handler === $this) {
+                restore_error_handler();
+                if ($this->isRoot) {
+                    set_error_handler(array($this, 'handleError'), $this->thrownErrors | $this->loggedErrors);
+                } else {
+                    set_error_handler(array($this, 'handleError'));
+                }
+            }
+        }
+    }
+
+    /**
      * Registers the error handler.
      *
      * @param self|null $handler The handler to register
@@ -280,26 +300,6 @@ private $screamedErrors = 0x55;
         $this->reRegister($prev | $this->loggedErrors);
 
         return $prev;
-    }
-
-    /**
-     * Re-registers as a PHP error handler if levels changed.
-     */
-    private function reRegister($prev)
-    {
-        if ($prev !== $this->thrownErrors | $this->loggedErrors) {
-            $handler = set_error_handler('var_dump');
-            $handler = is_array($handler) ? $handler[0] : null;
-            restore_error_handler();
-            if ($handler === $this) {
-                restore_error_handler();
-                if ($this->isRoot) {
-                    set_error_handler(array($this, 'handleError'), $this->thrownErrors | $this->loggedErrors);
-                } else {
-                    set_error_handler(array($this, 'handleError'));
-                }
-            }
-        }
     }
 
     /**

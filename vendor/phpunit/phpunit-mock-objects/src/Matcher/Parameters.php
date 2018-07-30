@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Framework\MockObject\Matcher;
 
 use PHPUnit\Framework\Constraint\Constraint;
@@ -84,7 +85,7 @@ class Parameters extends StatelessInvocation
      */
     public function matches(BaseInvocation $invocation)
     {
-        $this->invocation                  = $invocation;
+        $this->invocation = $invocation;
         $this->parameterVerificationResult = null;
 
         try {
@@ -160,6 +161,6 @@ class Parameters extends StatelessInvocation
             throw $this->parameterVerificationResult;
         }
 
-        return (bool) $this->parameterVerificationResult;
+        return (bool)$this->parameterVerificationResult;
     }
 }

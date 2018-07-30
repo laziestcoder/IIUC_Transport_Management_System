@@ -3,7 +3,6 @@
 namespace Encore\Admin\Form;
 
 use Encore\Admin\Facades\Admin;
-use Encore\Admin\Form;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Collection;
@@ -41,57 +40,6 @@ class Tools implements Renderable
         $this->form = $builder;
 
         $this->tools = new Collection();
-    }
-
-    /**
-     * @return string
-     */
-    protected function backButton()
-    {
-        $script = <<<'EOT'
-$('.form-history-back').on('click', function (event) {
-    event.preventDefault();
-    history.back(1);
-});
-EOT;
-
-        Admin::script($script);
-
-        $text = trans('admin.back');
-
-        return <<<EOT
-<div class="btn-group pull-right" style="margin-right: 10px">
-    <a class="btn btn-sm btn-default form-history-back"><i class="fa fa-arrow-left"></i>&nbsp;$text</a>
-</div>
-EOT;
-    }
-
-    public function listButton()
-    {
-        $slice = Str::contains($this->form->getResource(0), '/edit') ? null : -1;
-        $resource = $this->form->getResource($slice);
-
-        $text = trans('admin.list');
-
-        return <<<EOT
-<div class="btn-group pull-right" style="margin-right: 10px">
-    <a href="$resource" class="btn btn-sm btn-default"><i class="fa fa-list"></i>&nbsp;$text</a>
-</div>
-EOT;
-    }
-
-    /**
-     * Prepend a tool.
-     *
-     * @param string $tool
-     *
-     * @return $this
-     */
-    public function add($tool)
-    {
-        $this->tools->push($tool);
-
-        return $this;
     }
 
     /**
@@ -142,7 +90,58 @@ EOT;
                 return $tool->toHtml();
             }
 
-            return (string) $tool;
+            return (string)$tool;
         })->implode(' ');
+    }
+
+    /**
+     * Prepend a tool.
+     *
+     * @param string $tool
+     *
+     * @return $this
+     */
+    public function add($tool)
+    {
+        $this->tools->push($tool);
+
+        return $this;
+    }
+
+    public function listButton()
+    {
+        $slice = Str::contains($this->form->getResource(0), '/edit') ? null : -1;
+        $resource = $this->form->getResource($slice);
+
+        $text = trans('admin.list');
+
+        return <<<EOT
+<div class="btn-group pull-right" style="margin-right: 10px">
+    <a href="$resource" class="btn btn-sm btn-default"><i class="fa fa-list"></i>&nbsp;$text</a>
+</div>
+EOT;
+    }
+
+    /**
+     * @return string
+     */
+    protected function backButton()
+    {
+        $script = <<<'EOT'
+$('.form-history-back').on('click', function (event) {
+    event.preventDefault();
+    history.back(1);
+});
+EOT;
+
+        Admin::script($script);
+
+        $text = trans('admin.back');
+
+        return <<<EOT
+<div class="btn-group pull-right" style="margin-right: 10px">
+    <a class="btn btn-sm btn-default form-history-back"><i class="fa fa-arrow-left"></i>&nbsp;$text</a>
+</div>
+EOT;
     }
 }

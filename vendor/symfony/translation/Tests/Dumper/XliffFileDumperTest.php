@@ -12,8 +12,8 @@
 namespace Symfony\Component\Translation\Tests\Dumper;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Dumper\XliffFileDumper;
+use Symfony\Component\Translation\MessageCatalogue;
 
 class XliffFileDumperTest extends TestCase
 {
@@ -31,7 +31,7 @@ class XliffFileDumperTest extends TestCase
         $dumper = new XliffFileDumper();
 
         $this->assertStringEqualsFile(
-            __DIR__.'/../fixtures/resources-clean.xlf',
+            __DIR__ . '/../fixtures/resources-clean.xlf',
             $dumper->formatCatalogue($catalogue, 'messages', array('default_locale' => 'fr_FR'))
         );
     }
@@ -49,7 +49,7 @@ class XliffFileDumperTest extends TestCase
         $dumper = new XliffFileDumper();
 
         $this->assertStringEqualsFile(
-            __DIR__.'/../fixtures/resources-2.0-clean.xlf',
+            __DIR__ . '/../fixtures/resources-2.0-clean.xlf',
             $dumper->formatCatalogue($catalogue, 'messages', array('default_locale' => 'fr_FR', 'xliff_version' => '2.0'))
         );
     }
@@ -67,7 +67,7 @@ class XliffFileDumperTest extends TestCase
         $dumper = new XliffFileDumper();
 
         $this->assertStringEqualsFile(
-            __DIR__.'/../fixtures/resources-tool-info.xlf',
+            __DIR__ . '/../fixtures/resources-tool-info.xlf',
             $dumper->formatCatalogue($catalogue, 'messages', $options)
         );
     }
@@ -83,7 +83,7 @@ class XliffFileDumperTest extends TestCase
         $dumper = new XliffFileDumper();
 
         $this->assertStringEqualsFile(
-            __DIR__.'/../fixtures/resources-target-attributes.xlf',
+            __DIR__ . '/../fixtures/resources-target-attributes.xlf',
             $dumper->formatCatalogue($catalogue, 'messages', array('default_locale' => 'fr_FR'))
         );
     }
@@ -108,7 +108,7 @@ class XliffFileDumperTest extends TestCase
         $dumper = new XliffFileDumper();
 
         $this->assertStringEqualsFile(
-            __DIR__.'/../fixtures/resources-notes-meta.xlf',
+            __DIR__ . '/../fixtures/resources-notes-meta.xlf',
             $dumper->formatCatalogue($catalogue, 'messages', array('default_locale' => 'fr_FR', 'xliff_version' => '2.0'))
         );
     }

@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Framework;
 
 use RecursiveIterator;
@@ -43,14 +44,6 @@ class TestSuiteIterator implements RecursiveIterator
     }
 
     /**
-     * Checks if there is a current element after calls to rewind() or next().
-     */
-    public function valid(): bool
-    {
-        return $this->position < \count($this->tests);
-    }
-
-    /**
      * Returns the key of the current element.
      */
     public function key(): int
@@ -64,6 +57,14 @@ class TestSuiteIterator implements RecursiveIterator
     public function current(): Test
     {
         return $this->valid() ? $this->tests[$this->position] : null;
+    }
+
+    /**
+     * Checks if there is a current element after calls to rewind() or next().
+     */
+    public function valid(): bool
+    {
+        return $this->position < \count($this->tests);
     }
 
     /**

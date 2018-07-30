@@ -293,16 +293,16 @@
                            class="btn btn-default"><i class="fa fa-th"></i></a>
                     </div>
 
-
+                    
                     <div class="input-group input-group-sm pull-right goto-url" style="width: 250px;">
                         <input type="text" name="path" class="form-control pull-right"
-                               value="<?php echo e('/' . trim($url['path'], '/')); ?>">
+                               value="<?php echo e('/'.trim($url['path'], '/')); ?>">
 
                         <div class="input-group-btn">
                             <button type="submit" class="btn btn-default"><i class="fa fa-arrow-right"></i></button>
                         </div>
                     </div>
-
+                    
 
                 </div>
 
@@ -314,17 +314,12 @@
 
                     <li><a href="<?php echo e(route('media-index')); ?>"><i class="fa fa-th-large"></i> </a></li>
 
-                    <?php $__currentLoopData = $nav;
-                    $__env->addLoop($__currentLoopData);
-                    foreach ($__currentLoopData as $item): $__env->incrementLoopIndices();
-                        $loop = $__env->getLastLoop(); ?>
+                    <?php $__currentLoopData = $nav; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <li><a href="<?php echo e($item['url']); ?>"> <?php echo e($item['name']); ?></a></li>
-                    <?php endforeach;
-                    $__env->popLoop();
-                    $loop = $__env->getLastLoop(); ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </ol>
 
-                <?php if (!empty($list)): ?>
+                <?php if(!empty($list)): ?>
                     <table class="table table-hover">
                         <tbody>
                         <tr>
@@ -338,10 +333,7 @@
                             <th width="200px;"><?php echo e(trans('admin.time')); ?></th>
                             <th width="100px;"><?php echo e(trans('admin.size')); ?></th>
                         </tr>
-                        <?php $__currentLoopData = $list;
-                        $__env->addLoop($__currentLoopData);
-                        foreach ($__currentLoopData as $item): $__env->incrementLoopIndices();
-                            $loop = $__env->getLastLoop(); ?>
+                        <?php $__currentLoopData = $list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <tr>
                                 <td style="padding-top: 15px;">
                             <span class="file-select">
@@ -352,10 +344,9 @@
                                     <?php echo $item['preview']; ?>
 
 
-                                    <a <?php if (!$item['isDir']): ?>target="_blank"<?php endif; ?>
-                                       href="<?php echo e($item['link']); ?>" class="file-name"
-                                       title="<?php echo e($item['name']); ?>">
-                                        <?php echo e($item['icon']); ?><?php echo e(basename($item['name'])); ?>
+                                    <a <?php if(!$item['isDir']): ?>target="_blank" <?php endif; ?> href="<?php echo e($item['link']); ?>"
+                                       class="file-name" title="<?php echo e($item['name']); ?>">
+                                        <?php echo e($item['icon']); ?> <?php echo e(basename($item['name'])); ?>
 
                                     </a>
                                 </td>
@@ -365,24 +356,21 @@
                                         <a class="btn btn-default file-rename" data-toggle="modal"
                                            data-target="#moveModal" data-name="<?php echo e($item['name']); ?>"><i
                                                     class="fa fa-edit"></i></a>
-                                        <a class="btn btn-default file-delete"
-                                           data-path="<?php echo e($item['name']); ?>"><i class="fa fa-trash"></i></a>
-                                        <?php if (!($item['isDir'])): ?>
-                                            <a target="_blank" href="<?php echo e($item['download']); ?>"
-                                               class="btn btn-default"><i class="fa fa-download"></i></a>
+                                        <a class="btn btn-default file-delete" data-path="<?php echo e($item['name']); ?>"><i
+                                                    class="fa fa-trash"></i></a>
+                                        <?php if (! ($item['isDir'])): ?>
+                                            <a target="_blank" href="<?php echo e($item['download']); ?>" class="btn btn-default"><i
+                                                        class="fa fa-download"></i></a>
                                         <?php endif; ?>
                                         <a class="btn btn-default" data-toggle="modal" data-target="#urlModal"
-                                           data-url="<?php echo e($item['url']); ?>"><i
-                                                    class="fa fa-internet-explorer"></i></a>
+                                           data-url="<?php echo e($item['url']); ?>"><i class="fa fa-internet-explorer"></i></a>
                                     </div>
 
                                 </td>
                                 <td><?php echo e($item['time']); ?>&nbsp;</td>
                                 <td><?php echo e($item['size']); ?>&nbsp;</td>
                             </tr>
-                        <?php endforeach;
-                        $__env->popLoop();
-                        $loop = $__env->getLastLoop(); ?>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
                     </table>
                 <?php endif; ?>

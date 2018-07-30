@@ -1,5 +1,5 @@
 .. index::
-    single: Mocking; Protected Methods
+single: Mocking; Protected Methods
 
 Mocking Protected Methods
 =========================

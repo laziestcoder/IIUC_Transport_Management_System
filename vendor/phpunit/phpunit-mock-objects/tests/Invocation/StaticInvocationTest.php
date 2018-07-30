@@ -8,8 +8,8 @@
  * file that was distributed with this source code.
  */
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\Invocation\StaticInvocation;
+use PHPUnit\Framework\TestCase;
 
 class StaticInvocationTest extends TestCase
 {
@@ -53,7 +53,7 @@ class StaticInvocationTest extends TestCase
     public function testAllowToGetMethodParametersSetInConstructor()
     {
         $expectedParameters = [
-          'foo', 5, ['a', 'b'], new stdClass, null, false
+            'foo', 5, ['a', 'b'], new stdClass, null, false
         ];
 
         $invocation = new StaticInvocation(
@@ -68,7 +68,7 @@ class StaticInvocationTest extends TestCase
 
     public function testConstructorAllowToSetFlagCloneObjectsInParameters()
     {
-        $parameters   = [new stdClass];
+        $parameters = [new stdClass];
         $cloneObjects = true;
 
         $invocation = new StaticInvocation(

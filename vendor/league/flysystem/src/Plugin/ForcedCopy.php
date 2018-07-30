@@ -18,7 +18,7 @@ class ForcedCopy extends AbstractPlugin
     /**
      * Copies a file, overwriting any existing files.
      *
-     * @param string $path    Path to the existing file.
+     * @param string $path Path to the existing file.
      * @param string $newpath The new path of the file.
      *
      * @throws FileExistsException

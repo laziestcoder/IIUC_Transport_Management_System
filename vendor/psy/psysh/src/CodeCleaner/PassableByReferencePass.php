@@ -42,7 +42,7 @@ class PassableByReferencePass extends CodeCleanerPass
                 return;
             }
 
-            $name = (string) $node->name;
+            $name = (string)$node->name;
 
             if ($name === 'array_multisort') {
                 return $this->validateArrayMultisort($node);
@@ -64,18 +64,6 @@ class PassableByReferencePass extends CodeCleanerPass
                 }
             }
         }
-    }
-
-    private function isPassableByReference(Node $arg)
-    {
-        // FuncCall, MethodCall and StaticCall are all PHP _warnings_ not fatal errors, so we'll let
-        // PHP handle those ones :)
-        return $arg->value instanceof ClassConstFetch ||
-            $arg->value instanceof PropertyFetch ||
-            $arg->value instanceof Variable ||
-            $arg->value instanceof FuncCall ||
-            $arg->value instanceof MethodCall ||
-            $arg->value instanceof StaticCall;
     }
 
     /**
@@ -105,5 +93,17 @@ class PassableByReferencePass extends CodeCleanerPass
                 throw new FatalErrorException(self::EXCEPTION_MESSAGE, 0, E_ERROR, null, $node->getLine());
             }
         }
+    }
+
+    private function isPassableByReference(Node $arg)
+    {
+        // FuncCall, MethodCall and StaticCall are all PHP _warnings_ not fatal errors, so we'll let
+        // PHP handle those ones :)
+        return $arg->value instanceof ClassConstFetch ||
+            $arg->value instanceof PropertyFetch ||
+            $arg->value instanceof Variable ||
+            $arg->value instanceof FuncCall ||
+            $arg->value instanceof MethodCall ||
+            $arg->value instanceof StaticCall;
     }
 }

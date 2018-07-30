@@ -46,7 +46,7 @@ class ParseCommand extends Command implements ContextAware, PresenterAware
     public function __construct($name = null)
     {
         $this->parserFactory = new ParserFactory();
-        $this->parsers       = [];
+        $this->parsers = [];
 
         parent::__construct($name);
     }
@@ -72,7 +72,7 @@ class ParseCommand extends Command implements ContextAware, PresenterAware
         $this->presenter->addCasters([
             'PhpParser\Node' => function (Node $node, array $a) {
                 $a = [
-                    Caster::PREFIX_VIRTUAL . 'type'       => $node->getType(),
+                    Caster::PREFIX_VIRTUAL . 'type' => $node->getType(),
                     Caster::PREFIX_VIRTUAL . 'attributes' => $node->getAttributes(),
                 ];
 
@@ -133,8 +133,8 @@ HELP
         }
 
         $parserKind = $this->parserFactory->hasKindsSupport() ? $input->getOption('kind') : null;
-        $depth      = $input->getOption('depth');
-        $nodes      = $this->parse($this->getParser($parserKind), $code);
+        $depth = $input->getOption('depth');
+        $nodes = $this->parse($this->getParser($parserKind), $code);
         $output->page($this->presenter->present($nodes, $depth));
 
         $this->context->setReturnValue($nodes);

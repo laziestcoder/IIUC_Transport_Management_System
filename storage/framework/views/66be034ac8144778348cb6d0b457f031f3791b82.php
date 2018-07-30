@@ -1,4 +1,5 @@
 <?php $__env->startSection('content'); ?>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
 
     <section class="content-header">
@@ -38,6 +39,7 @@
             <?php echo e(Form:: label('title', 'Bus Stop Point')); ?>
 
             <?php echo e(Form:: text('pointname', '', ['class' => 'form-control', 'placeholder' => 'Type Stop Point Name', 'required' => 'True'])); ?>
+
         </div>
 
         <?php echo e(Form:: submit('Submit', ['class' => 'btn btn-primary'])); ?>
@@ -98,6 +100,7 @@
                 </tbody>
             </table>
             <?php echo e($BusPoints->links()); ?>
+
         <?php else: ?>
             <p>No notices found</p>
         <?php endif; ?>

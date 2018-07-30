@@ -45,48 +45,6 @@ class ExampleFinder
     }
 
     /**
-     * Registers the project's root directory where an 'examples' folder can be expected.
-     *
-     * @param string $directory
-     *
-     * @return void
-     */
-    public function setSourceDirectory($directory = '')
-    {
-        $this->sourceDirectory = $directory;
-    }
-
-    /**
-     * Returns the project's root directory where an 'examples' folder can be expected.
-     *
-     * @return string
-     */
-    public function getSourceDirectory()
-    {
-        return $this->sourceDirectory;
-    }
-
-    /**
-     * Registers a series of directories that may contain examples.
-     *
-     * @param string[] $directories
-     */
-    public function setExampleDirectories(array $directories)
-    {
-        $this->exampleDirectories = $directories;
-    }
-
-    /**
-     * Returns a series of directories that may contain examples.
-     *
-     * @return string[]
-     */
-    public function getExampleDirectories()
-    {
-        return $this->exampleDirectories;
-    }
-
-    /**
      * Attempts to find the requested example file and returns its contents or null if no file was found.
      *
      * This method will try several methods in search of the given example file, the first one it encounters is
@@ -127,18 +85,6 @@ class ExampleFinder
     }
 
     /**
-     * Get example filepath based on the example directory inside your project.
-     *
-     * @param string $file
-     *
-     * @return string
-     */
-    private function getExamplePathFromExampleDirectory($file)
-    {
-        return getcwd() . DIRECTORY_SEPARATOR . 'examples' . DIRECTORY_SEPARATOR . $file;
-    }
-
-    /**
      * Returns a path to the example file in the given directory..
      *
      * @param string $directory
@@ -166,5 +112,59 @@ class ExampleFinder
             DIRECTORY_SEPARATOR,
             trim($file, '"')
         );
+    }
+
+    /**
+     * Returns the project's root directory where an 'examples' folder can be expected.
+     *
+     * @return string
+     */
+    public function getSourceDirectory()
+    {
+        return $this->sourceDirectory;
+    }
+
+    /**
+     * Registers the project's root directory where an 'examples' folder can be expected.
+     *
+     * @param string $directory
+     *
+     * @return void
+     */
+    public function setSourceDirectory($directory = '')
+    {
+        $this->sourceDirectory = $directory;
+    }
+
+    /**
+     * Get example filepath based on the example directory inside your project.
+     *
+     * @param string $file
+     *
+     * @return string
+     */
+    private function getExamplePathFromExampleDirectory($file)
+    {
+        return getcwd() . DIRECTORY_SEPARATOR . 'examples' . DIRECTORY_SEPARATOR . $file;
+    }
+
+    /**
+     * Returns a series of directories that may contain examples.
+     *
+     * @return string[]
+     */
+    public function getExampleDirectories()
+    {
+        return $this->exampleDirectories;
+    }
+
+    /**
+     * Registers a series of directories that may contain examples.
+     *
+     * @param string[] $directories
+     */
+    public function setExampleDirectories(array $directories)
+    {
+        $this->exampleDirectories = $directories;
     }
 }

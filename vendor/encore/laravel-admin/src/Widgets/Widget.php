@@ -12,11 +12,6 @@ abstract class Widget extends Fluent
     protected $view;
 
     /**
-     * @return mixed
-     */
-    abstract public function render();
-
-    /**
      * Set view of widget.
      *
      * @param string $view
@@ -34,14 +29,14 @@ abstract class Widget extends Fluent
     public function formatAttributes()
     {
         $html = [];
-        foreach ((array) $this->getAttributes() as $key => $value) {
+        foreach ((array)$this->getAttributes() as $key => $value) {
             $element = $this->attributeElement($key, $value);
             if (!is_null($element)) {
                 $html[] = $element;
             }
         }
 
-        return count($html) > 0 ? ' '.implode(' ', $html) : '';
+        return count($html) > 0 ? ' ' . implode(' ', $html) : '';
     }
 
     /**
@@ -58,7 +53,7 @@ abstract class Widget extends Fluent
             $key = $value;
         }
         if (!is_null($value)) {
-            return $key.'="'.htmlentities($value, ENT_QUOTES, 'UTF-8').'"';
+            return $key . '="' . htmlentities($value, ENT_QUOTES, 'UTF-8') . '"';
         }
     }
 
@@ -69,4 +64,9 @@ abstract class Widget extends Fluent
     {
         return $this->render();
     }
+
+    /**
+     * @return mixed
+     */
+    abstract public function render();
 }

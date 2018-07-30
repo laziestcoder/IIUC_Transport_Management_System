@@ -13,7 +13,8 @@ namespace PharIo\Manifest;
 use DOMElement;
 use DOMNodeList;
 
-class ManifestElement {
+class ManifestElement
+{
     const XMLNS = 'https://phar.io/xml/manifest/1.0';
 
     /**
@@ -26,7 +27,8 @@ class ManifestElement {
      *
      * @param DOMElement $element
      */
-    public function __construct(DOMElement $element) {
+    public function __construct(DOMElement $element)
+    {
         $this->element = $element;
     }
 
@@ -37,7 +39,8 @@ class ManifestElement {
      *
      * @throws ManifestElementException
      */
-    protected function getAttributeValue($name) {
+    protected function getAttributeValue($name)
+    {
         if (!$this->element->hasAttribute($name)) {
             throw new ManifestElementException(
                 sprintf(
@@ -58,7 +61,8 @@ class ManifestElement {
      *
      * @throws ManifestElementException
      */
-    protected function getChildByName($elementName) {
+    protected function getChildByName($elementName)
+    {
         $element = $this->element->getElementsByTagNameNS(self::XMLNS, $elementName)->item(0);
 
         if (!$element instanceof DOMElement) {
@@ -77,7 +81,8 @@ class ManifestElement {
      *
      * @throws ManifestElementException
      */
-    protected function getChildrenByName($elementName) {
+    protected function getChildrenByName($elementName)
+    {
         $elementList = $this->element->getElementsByTagNameNS(self::XMLNS, $elementName);
 
         if ($elementList->length === 0) {
@@ -94,7 +99,8 @@ class ManifestElement {
      *
      * @return bool
      */
-    protected function hasChild($elementName) {
+    protected function hasChild($elementName)
+    {
         return $this->element->getElementsByTagNameNS(self::XMLNS, $elementName)->length !== 0;
     }
 }

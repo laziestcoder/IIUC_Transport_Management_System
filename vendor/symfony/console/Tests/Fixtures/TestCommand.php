@@ -12,8 +12,7 @@ class TestCommand extends Command
             ->setName('namespace:name')
             ->setAliases(array('name'))
             ->setDescription('description')
-            ->setHelp('help')
-        ;
+            ->setHelp('help');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

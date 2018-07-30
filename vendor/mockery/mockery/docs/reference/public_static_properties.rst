@@ -1,5 +1,5 @@
 .. index::
-    single: Mocking; Public Static Methods
+single: Mocking; Public Static Methods
 
 Mocking Public Static Methods
 =============================

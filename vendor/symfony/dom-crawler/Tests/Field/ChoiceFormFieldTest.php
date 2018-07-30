@@ -112,6 +112,28 @@ class ChoiceFormFieldTest extends FormFieldTestCase
         }
     }
 
+    protected function createSelectNode($options, $attributes = array(), $selectedAttrText = 'selected')
+    {
+        $document = new \DOMDocument();
+        $node = $document->createElement('select');
+
+        foreach ($attributes as $name => $value) {
+            $node->setAttribute($name, $value);
+        }
+        $node->setAttribute('name', 'name');
+
+        foreach ($options as $value => $selected) {
+            $option = $document->createElement('option', $value);
+            $option->setAttribute('value', $value);
+            if ($selected) {
+                $option->setAttribute('selected', $selectedAttrText);
+            }
+            $node->appendChild($option);
+        }
+
+        return $node;
+    }
+
     public function testSelectWithEmptyBooleanAttribute()
     {
         $node = $this->createSelectNode(array('foo' => false, 'bar' => true), array(), '');
@@ -336,6 +358,27 @@ class ChoiceFormFieldTest extends FormFieldTestCase
         $this->assertEquals('foo', $field->getValue(), '->select() changes the selected option');
     }
 
+    protected function createSelectNodeWithEmptyOption($options, $attributes = array())
+    {
+        $document = new \DOMDocument();
+        $node = $document->createElement('select');
+
+        foreach ($attributes as $name => $value) {
+            $node->setAttribute($name, $value);
+        }
+        $node->setAttribute('name', 'name');
+
+        foreach ($options as $value => $selected) {
+            $option = $document->createElement('option', $value);
+            if ($selected) {
+                $option->setAttribute('selected', 'selected');
+            }
+            $node->appendChild($option);
+        }
+
+        return $node;
+    }
+
     public function testDisableValidation()
     {
         $node = $this->createSelectNode(array('foo' => false, 'bar' => false));
@@ -357,48 +400,5 @@ class ChoiceFormFieldTest extends FormFieldTestCase
         $field = new ChoiceFormField($node);
 
         $this->assertSame('', $field->getValue());
-    }
-
-    protected function createSelectNode($options, $attributes = array(), $selectedAttrText = 'selected')
-    {
-        $document = new \DOMDocument();
-        $node = $document->createElement('select');
-
-        foreach ($attributes as $name => $value) {
-            $node->setAttribute($name, $value);
-        }
-        $node->setAttribute('name', 'name');
-
-        foreach ($options as $value => $selected) {
-            $option = $document->createElement('option', $value);
-            $option->setAttribute('value', $value);
-            if ($selected) {
-                $option->setAttribute('selected', $selectedAttrText);
-            }
-            $node->appendChild($option);
-        }
-
-        return $node;
-    }
-
-    protected function createSelectNodeWithEmptyOption($options, $attributes = array())
-    {
-        $document = new \DOMDocument();
-        $node = $document->createElement('select');
-
-        foreach ($attributes as $name => $value) {
-            $node->setAttribute($name, $value);
-        }
-        $node->setAttribute('name', 'name');
-
-        foreach ($options as $value => $selected) {
-            $option = $document->createElement('option', $value);
-            if ($selected) {
-                $option->setAttribute('selected', 'selected');
-            }
-            $node->appendChild($option);
-        }
-
-        return $node;
     }
 }

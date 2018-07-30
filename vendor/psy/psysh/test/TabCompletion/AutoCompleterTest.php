@@ -22,8 +22,8 @@ class AutoCompleterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @param string $line
-     * @param array  $mustContain
-     * @param array  $mustNotContain
+     * @param array $mustContain
+     * @param array $mustNotContain
      * @dataProvider classesInput
      */
     public function testClassesCompletion($line, $mustContain, $mustNotContain)
@@ -60,9 +60,9 @@ class AutoCompleterTest extends \PHPUnit\Framework\TestCase
         $context->setAll(['foo' => 12, 'bar' => new \DOMDocument()]);
 
         $code = $tabCompletion->processCallback('', 0, [
-           'line_buffer' => $line,
-           'point'       => 0,
-           'end'         => strlen($line),
+            'line_buffer' => $line,
+            'point' => 0,
+            'end' => strlen($line),
         ]);
 
         foreach ($mustContain as $mc) {

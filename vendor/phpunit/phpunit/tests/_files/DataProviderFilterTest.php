@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 use PHPUnit\Framework\TestCase;
 
 class DataProviderFilterTest extends TestCase
@@ -14,20 +15,20 @@ class DataProviderFilterTest extends TestCase
     public static function truthProvider()
     {
         return [
-           [true],
-           [true],
-           [true],
-           [true]
+            [true],
+            [true],
+            [true],
+            [true]
         ];
     }
 
     public static function falseProvider()
     {
         return [
-          'false test'       => [false],
-          'false test 2'     => [false],
-          'other false test' => [false],
-          'other false test2'=> [false]
+            'false test' => [false],
+            'false test 2' => [false],
+            'other false test' => [false],
+            'other false test2' => [false]
         ];
     }
 

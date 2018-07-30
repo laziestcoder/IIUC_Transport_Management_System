@@ -10,7 +10,8 @@
 
 namespace PharIo\Manifest;
 
-class Author {
+class Author
+{
     /**
      * @var string
      */
@@ -23,31 +24,35 @@ class Author {
 
     /**
      * @param string $name
-     * @param Email  $email
+     * @param Email $email
      */
-    public function __construct($name, Email $email) {
-        $this->name  = $name;
+    public function __construct($name, Email $email)
+    {
+        $this->name = $name;
         $this->email = $email;
     }
 
     /**
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
     /**
      * @return Email
      */
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
     /**
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return sprintf(
             '%s <%s>',
             $this->name,

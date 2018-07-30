@@ -15,14 +15,16 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \PharIo\Version\VersionConstraintParser
  */
-class VersionConstraintParserTest extends TestCase {
+class VersionConstraintParserTest extends TestCase
+{
     /**
      * @dataProvider versionStringProvider
      *
-     * @param string            $versionString
+     * @param string $versionString
      * @param VersionConstraint $expectedConstraint
      */
-    public function testReturnsExpectedConstraint($versionString, VersionConstraint $expectedConstraint) {
+    public function testReturnsExpectedConstraint($versionString, VersionConstraint $expectedConstraint)
+    {
         $parser = new VersionConstraintParser;
 
         $this->assertEquals($expectedConstraint, $parser->parse($versionString));
@@ -33,7 +35,8 @@ class VersionConstraintParserTest extends TestCase {
      *
      * @param string $versionString
      */
-    public function testThrowsExceptionIfVersionStringIsNotSupported($versionString) {
+    public function testThrowsExceptionIfVersionStringIsNotSupported($versionString)
+    {
         $parser = new VersionConstraintParser;
 
         $this->expectException(UnsupportedVersionConstraintException::class);
@@ -44,7 +47,8 @@ class VersionConstraintParserTest extends TestCase {
     /**
      * @return array
      */
-    public function versionStringProvider() {
+    public function versionStringProvider()
+    {
         return [
             ['1.0.2', new ExactVersionConstraint('1.0.2')],
             [
@@ -113,7 +117,8 @@ class VersionConstraintParserTest extends TestCase {
         ];
     }
 
-    public function unsupportedVersionStringProvider() {
+    public function unsupportedVersionStringProvider()
+    {
         return [
             ['foo'],
             ['+1.0.2'],

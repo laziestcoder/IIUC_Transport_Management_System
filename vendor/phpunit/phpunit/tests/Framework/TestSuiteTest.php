@@ -17,16 +17,6 @@ class TestSuiteTest extends TestCase
      */
     private $result;
 
-    protected function setUp(): void
-    {
-        $this->result = new TestResult;
-    }
-
-    protected function tearDown(): void
-    {
-        $this->result = null;
-    }
-
     public function testAddTestSuite(): void
     {
         $suite = new TestSuite(\OneTestCase::class);
@@ -159,9 +149,9 @@ class TestSuiteTest extends TestCase
 
         $suite->run($this->result);
 
-        $skipped           = $this->result->skipped();
+        $skipped = $this->result->skipped();
         $lastSkippedResult = \array_pop($skipped);
-        $message           = $lastSkippedResult->thrownException()->getMessage();
+        $message = $lastSkippedResult->thrownException()->getMessage();
 
         $this->assertContains('Test for DataProviderDependencyTest::testDependency skipped by data provider', $message);
     }
@@ -200,5 +190,15 @@ class TestSuiteTest extends TestCase
         $result = $suite->run();
 
         $this->assertCount(2, $result);
+    }
+
+    protected function setUp(): void
+    {
+        $this->result = new TestResult;
+    }
+
+    protected function tearDown(): void
+    {
+        $this->result = null;
     }
 }

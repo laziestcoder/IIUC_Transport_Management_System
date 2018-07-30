@@ -22,22 +22,6 @@ class PHP_Token_ClassTest extends TestCase
      */
     private $function;
 
-    protected function setUp()
-    {
-        $ts = new PHP_Token_Stream(TEST_FILES_PATH . 'source2.php');
-
-        foreach ($ts as $token) {
-            if ($token instanceof PHP_Token_CLASS) {
-                $this->class = $token;
-            }
-
-            if ($token instanceof PHP_Token_FUNCTION) {
-                $this->function = $token;
-                break;
-            }
-        }
-    }
-
     /**
      * @covers PHP_Token_CLASS::getKeywords
      */
@@ -165,5 +149,21 @@ class PHP_Token_ClassTest extends TestCase
 
         $this->assertSame(7, $classes['Example']['methods']['anonymousFunction:7#28']['startLine']);
         $this->assertSame(9, $classes['Example']['methods']['anonymousFunction:7#28']['endLine']);
+    }
+
+    protected function setUp()
+    {
+        $ts = new PHP_Token_Stream(TEST_FILES_PATH . 'source2.php');
+
+        foreach ($ts as $token) {
+            if ($token instanceof PHP_Token_CLASS) {
+                $this->class = $token;
+            }
+
+            if ($token instanceof PHP_Token_FUNCTION) {
+                $this->function = $token;
+                break;
+            }
+        }
     }
 }

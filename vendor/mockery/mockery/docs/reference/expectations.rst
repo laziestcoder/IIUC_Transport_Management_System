@@ -1,5 +1,5 @@
 .. index::
-    single: Expectations
+single: Expectations
 
 Expectation Declarations
 ========================

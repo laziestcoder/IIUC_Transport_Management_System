@@ -201,6 +201,30 @@ class Uuid implements UuidInterface
     }
 
     /**
+     * Returns the currently set factory used to create UUIDs.
+     *
+     * @return UuidFactoryInterface
+     */
+    public static function getFactory()
+    {
+        if (!self::$factory) {
+            self::$factory = new UuidFactory();
+        }
+
+        return self::$factory;
+    }
+
+    /**
+     * Sets the factory used to create UUIDs.
+     *
+     * @param UuidFactoryInterface $factory
+     */
+    public static function setFactory(UuidFactoryInterface $factory)
+    {
+        self::$factory = $factory;
+    }
+
+    /**
      * Creates a UUID from a 128-bit integer string.
      *
      * @param string $integer String representation of 128-bit integer
@@ -347,30 +371,6 @@ class Uuid implements UuidInterface
     public static function fromString($name)
     {
         return self::getFactory()->fromString($name);
-    }
-
-    /**
-     * Returns the currently set factory used to create UUIDs.
-     *
-     * @return UuidFactoryInterface
-     */
-    public static function getFactory()
-    {
-        if (!self::$factory) {
-            self::$factory = new UuidFactory();
-        }
-
-        return self::$factory;
-    }
-
-    /**
-     * Sets the factory used to create UUIDs.
-     *
-     * @param UuidFactoryInterface $factory
-     */
-    public static function setFactory(UuidFactoryInterface $factory)
-    {
-        self::$factory = $factory;
     }
 
     public function equals($other)

@@ -34,7 +34,7 @@ class NotificationCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/stubs/Notifications/ConfirmEmail.stub';
+        return __DIR__ . '/stubs/Notifications/ConfirmEmail.stub';
     }
 
     /**
@@ -50,12 +50,12 @@ class NotificationCommand extends GeneratorCommand
     /**
      * Get the default namespace for the class.
      *
-     * @param  string  $rootNamespace
+     * @param  string $rootNamespace
      * @return string
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Notifications';
+        return $rootNamespace . '\Notifications';
     }
 
     /**

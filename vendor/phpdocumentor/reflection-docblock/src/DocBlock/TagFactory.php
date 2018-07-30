@@ -35,7 +35,7 @@ interface TagFactory
      * These parameters are injected at the last moment and will override any existing parameter with those names.
      *
      * @param string $name
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return void
      */

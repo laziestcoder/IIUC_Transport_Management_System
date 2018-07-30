@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Util;
 
 use PHPUnit\Framework\Exception;
@@ -27,20 +28,20 @@ final class Filter
 
         if ($t instanceof SyntheticError) {
             $eTrace = $t->getSyntheticTrace();
-            $eFile  = $t->getSyntheticFile();
-            $eLine  = $t->getSyntheticLine();
+            $eFile = $t->getSyntheticFile();
+            $eLine = $t->getSyntheticLine();
         } elseif ($t instanceof Exception) {
             $eTrace = $t->getSerializableTrace();
-            $eFile  = $t->getFile();
-            $eLine  = $t->getLine();
+            $eFile = $t->getFile();
+            $eLine = $t->getLine();
         } else {
             if ($t->getPrevious()) {
                 $t = $t->getPrevious();
             }
 
             $eTrace = $t->getTrace();
-            $eFile  = $t->getFile();
-            $eLine  = $t->getLine();
+            $eFile = $t->getFile();
+            $eLine = $t->getLine();
         }
 
         if (!self::frameExists($eTrace, $eFile, $eLine)) {

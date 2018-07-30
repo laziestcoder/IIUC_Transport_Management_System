@@ -13,7 +13,7 @@ class LogOperation
      * Handle an incoming request.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
+     * @param \Closure $next
      *
      * @return mixed
      */
@@ -22,10 +22,10 @@ class LogOperation
         if ($this->shouldLogOperation($request)) {
             $log = [
                 'user_id' => Admin::user()->id,
-                'path'    => $request->path(),
-                'method'  => $request->method(),
-                'ip'      => $request->getClientIp(),
-                'input'   => json_encode($request->input()),
+                'path' => $request->path(),
+                'method' => $request->method(),
+                'ip' => $request->getClientIp(),
+                'input' => json_encode($request->input()),
             ];
 
             OperationLogModel::create($log);

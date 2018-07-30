@@ -26,13 +26,8 @@ class AssertTest extends TestCase
     {
         return [
             'error syntax in expected JSON' => ['{"Mascott"::}', '{"Mascott" : "Tux"}'],
-            'error UTF-8 in actual JSON'    => ['{"Mascott" : "Tux"}', '{"Mascott" : :}'],
+            'error UTF-8 in actual JSON' => ['{"Mascott" : "Tux"}', '{"Mascott" : :}'],
         ];
-    }
-
-    protected function setUp(): void
-    {
-        $this->filesDirectory = \dirname(__DIR__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR;
     }
 
     public function testFail(): void
@@ -205,9 +200,9 @@ class AssertTest extends TestCase
 
     public function testAssertArraySubsetWithNoStrictCheckAndObjects(): void
     {
-        $obj       = new \stdClass;
+        $obj = new \stdClass;
         $reference = &$obj;
-        $array     = ['a' => $obj];
+        $array = ['a' => $obj];
 
         $this->assertArraySubset(['a' => $reference], $array);
         $this->assertArraySubset(['a' => new \stdClass], $array);
@@ -215,9 +210,9 @@ class AssertTest extends TestCase
 
     public function testAssertArraySubsetWithStrictCheckAndObjects(): void
     {
-        $obj       = new \stdClass;
+        $obj = new \stdClass;
         $reference = &$obj;
-        $array     = ['a' => $obj];
+        $array = ['a' => $obj];
 
         $this->assertArraySubset(['a' => $reference], $array, true);
 
@@ -297,7 +292,7 @@ class AssertTest extends TestCase
 
     public function testAssertArrayHasKeyAcceptsArrayObjectValue(): void
     {
-        $array        = new \ArrayObject;
+        $array = new \ArrayObject;
         $array['foo'] = 'bar';
 
         $this->assertArrayHasKey('foo', $array);
@@ -305,7 +300,7 @@ class AssertTest extends TestCase
 
     public function testAssertArrayHasKeyProperlyFailsWithArrayObjectValue(): void
     {
-        $array        = new \ArrayObject;
+        $array = new \ArrayObject;
         $array['bar'] = 'bar';
 
         $this->expectException(AssertionFailedError::class);
@@ -315,7 +310,7 @@ class AssertTest extends TestCase
 
     public function testAssertArrayHasKeyAcceptsArrayAccessValue(): void
     {
-        $array        = new \SampleArrayAccess;
+        $array = new \SampleArrayAccess;
         $array['foo'] = 'bar';
 
         $this->assertArrayHasKey('foo', $array);
@@ -323,7 +318,7 @@ class AssertTest extends TestCase
 
     public function testAssertArrayHasKeyProperlyFailsWithArrayAccessValue(): void
     {
-        $array        = new \SampleArrayAccess;
+        $array = new \SampleArrayAccess;
         $array['bar'] = 'bar';
 
         $this->expectException(AssertionFailedError::class);
@@ -333,7 +328,7 @@ class AssertTest extends TestCase
 
     public function testAssertArrayNotHasKeyAcceptsArrayAccessValue(): void
     {
-        $array        = new \ArrayObject;
+        $array = new \ArrayObject;
         $array['foo'] = 'bar';
 
         $this->assertArrayNotHasKey('bar', $array);
@@ -341,7 +336,7 @@ class AssertTest extends TestCase
 
     public function testAssertArrayNotHasKeyPropertlyFailsWithArrayAccessValue(): void
     {
-        $array        = new \ArrayObject;
+        $array = new \ArrayObject;
         $array['bar'] = 'bar';
 
         $this->expectException(AssertionFailedError::class);
@@ -522,9 +517,295 @@ class AssertTest extends TestCase
         return \array_merge($this->equalValues(), $this->sameValues());
     }
 
+    protected function equalValues()
+    {
+        // cyclic dependencies
+        $book1 = new \Book;
+        $book1->author = new \Author('Terry Pratchett');
+        $book1->author->books[] = $book1;
+        $book2 = new \Book;
+        $book2->author = new \Author('Terry Pratchett');
+        $book2->author->books[] = $book2;
+
+        $object1 = new \SampleClass(4, 8, 15);
+        $object2 = new \SampleClass(4, 8, 15);
+        $storage1 = new \SplObjectStorage;
+        $storage1->attach($object1);
+        $storage2 = new \SplObjectStorage;
+        $storage2->attach($object1);
+
+        return [
+            // strings
+            ['a', 'A', 0, false, true], // ignore case
+            // arrays
+            [['a' => 1, 'b' => 2], ['b' => 2, 'a' => 1]],
+            [[1], ['1']],
+            [[3, 2, 1], [2, 3, 1], 0, true], // canonicalized comparison
+            // floats
+            [2.3, 2.5, 0.5],
+            [[2.3], [2.5], 0.5],
+            [[[2.3]], [[2.5]], 0.5],
+            [new \Struct(2.3), new \Struct(2.5), 0.5],
+            [[new \Struct(2.3)], [new \Struct(2.5)], 0.5],
+            // numeric with delta
+            [1, 2, 1],
+            // objects
+            [$object1, $object2],
+            [$book1, $book2],
+            // SplObjectStorage
+            [$storage1, $storage2],
+            // DOMDocument
+            [
+                Xml::load('<root></root>'),
+                Xml::load('<root/>'),
+            ],
+            [
+                Xml::load('<root attr="bar"></root>'),
+                Xml::load('<root attr="bar"/>'),
+            ],
+            [
+                Xml::load('<root><foo attr="bar"></foo></root>'),
+                Xml::load('<root><foo attr="bar"/></root>'),
+            ],
+            [
+                Xml::load("<root>\n  <child/>\n</root>"),
+                Xml::load('<root><child/></root>'),
+            ],
+            [
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
+            ],
+            [
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29 04:13:25', new \DateTimeZone('America/New_York')),
+                10
+            ],
+            [
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29 04:14:40', new \DateTimeZone('America/New_York')),
+                65
+            ],
+            [
+                new \DateTime('2013-03-29', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29', new \DateTimeZone('America/New_York')),
+            ],
+            [
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29 03:13:35', new \DateTimeZone('America/Chicago')),
+            ],
+            [
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29 03:13:49', new \DateTimeZone('America/Chicago')),
+                15
+            ],
+            [
+                new \DateTime('2013-03-30', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29 23:00:00', new \DateTimeZone('America/Chicago')),
+            ],
+            [
+                new \DateTime('2013-03-30', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29 23:01:30', new \DateTimeZone('America/Chicago')),
+                100
+            ],
+            [
+                new \DateTime('@1364616000'),
+                new \DateTime('2013-03-29 23:00:00', new \DateTimeZone('America/Chicago')),
+            ],
+            [
+                new \DateTime('2013-03-29T05:13:35-0500'),
+                new \DateTime('2013-03-29T04:13:35-0600'),
+            ],
+            // Exception
+            //array(new Exception('Exception 1'), new Exception('Exception 1')),
+            // mixed types
+            [0, '0'],
+            ['0', 0],
+            [2.3, '2.3'],
+            ['2.3', 2.3],
+            [(string)(1 / 3), 1 - 2 / 3],
+            [1 / 3, (string)(1 - 2 / 3)],
+            ['string representation', new \ClassWithToString],
+            [new \ClassWithToString, 'string representation'],
+        ];
+    }
+
+    protected function sameValues()
+    {
+        $object = new \SampleClass(4, 8, 15);
+        // cannot use $filesDirectory, because neither setUp() nor
+        // setUpBeforeClass() are executed before the data providers
+        $file = \dirname(__DIR__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'foo.xml';
+        $resource = \fopen($file, 'r');
+
+        return [
+            // null
+            [null, null],
+            // strings
+            ['a', 'a'],
+            // integers
+            [0, 0],
+            // floats
+            [2.3, 2.3],
+            [1 / 3, 1 - 2 / 3],
+            [\log(0), \log(0)],
+            // arrays
+            [[], []],
+            [[0 => 1], [0 => 1]],
+            [[0 => null], [0 => null]],
+            [['a', 'b' => [1, 2]], ['a', 'b' => [1, 2]]],
+            // objects
+            [$object, $object],
+            // resources
+            [$resource, $resource],
+        ];
+    }
+
     public function notEqualProvider()
     {
         return $this->notEqualValues();
+    }
+
+    protected function notEqualValues()
+    {
+        // cyclic dependencies
+        $book1 = new \Book;
+        $book1->author = new \Author('Terry Pratchett');
+        $book1->author->books[] = $book1;
+        $book2 = new \Book;
+        $book2->author = new \Author('Terry Pratch');
+        $book2->author->books[] = $book2;
+
+        $book3 = new \Book;
+        $book3->author = 'Terry Pratchett';
+        $book4 = new \stdClass;
+        $book4->author = 'Terry Pratchett';
+
+        $object1 = new \SampleClass(4, 8, 15);
+        $object2 = new \SampleClass(16, 23, 42);
+        $object3 = new \SampleClass(4, 8, 15);
+        $storage1 = new \SplObjectStorage;
+        $storage1->attach($object1);
+        $storage2 = new \SplObjectStorage;
+        $storage2->attach($object3); // same content, different object
+
+        // cannot use $filesDirectory, because neither setUp() nor
+        // setUpBeforeClass() are executed before the data providers
+        $file = \dirname(__DIR__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'foo.xml';
+
+        return [
+            // strings
+            ['a', 'b'],
+            ['a', 'A'],
+            // https://github.com/sebastianbergmann/phpunit/issues/1023
+            ['9E6666666', '9E7777777'],
+            // integers
+            [1, 2],
+            [2, 1],
+            // floats
+            [2.3, 4.2],
+            [2.3, 4.2, 0.5],
+            [[2.3], [4.2], 0.5],
+            [[[2.3]], [[4.2]], 0.5],
+            [new \Struct(2.3), new \Struct(4.2), 0.5],
+            [[new \Struct(2.3)], [new \Struct(4.2)], 0.5],
+            // NAN
+            [NAN, NAN],
+            // arrays
+            [[], [0 => 1]],
+            [[0 => 1], []],
+            [[0 => null], []],
+            [[0 => 1, 1 => 2], [0 => 1, 1 => 3]],
+            [['a', 'b' => [1, 2]], ['a', 'b' => [2, 1]]],
+            // objects
+            [new \SampleClass(4, 8, 15), new \SampleClass(16, 23, 42)],
+            [$object1, $object2],
+            [$book1, $book2],
+            [$book3, $book4], // same content, different class
+            // resources
+            [\fopen($file, 'r'), \fopen($file, 'r')],
+            // SplObjectStorage
+            [$storage1, $storage2],
+            // DOMDocument
+            [
+                Xml::load('<root></root>'),
+                Xml::load('<bar/>'),
+            ],
+            [
+                Xml::load('<foo attr1="bar"/>'),
+                Xml::load('<foo attr1="foobar"/>'),
+            ],
+            [
+                Xml::load('<foo> bar </foo>'),
+                Xml::load('<foo />'),
+            ],
+            [
+                Xml::load('<foo xmlns="urn:myns:bar"/>'),
+                Xml::load('<foo xmlns="urn:notmyns:bar"/>'),
+            ],
+            [
+                Xml::load('<foo> bar </foo>'),
+                Xml::load('<foo> bir </foo>'),
+            ],
+            [
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29 03:13:35', new \DateTimeZone('America/New_York')),
+            ],
+            [
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29 03:13:35', new \DateTimeZone('America/New_York')),
+                3500
+            ],
+            [
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29 05:13:35', new \DateTimeZone('America/New_York')),
+                3500
+            ],
+            [
+                new \DateTime('2013-03-29', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-30', new \DateTimeZone('America/New_York')),
+            ],
+            [
+                new \DateTime('2013-03-29', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-30', new \DateTimeZone('America/New_York')),
+                43200
+            ],
+            [
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/Chicago')),
+            ],
+            [
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/Chicago')),
+                3500
+            ],
+            [
+                new \DateTime('2013-03-30', new \DateTimeZone('America/New_York')),
+                new \DateTime('2013-03-30', new \DateTimeZone('America/Chicago')),
+            ],
+            [
+                new \DateTime('2013-03-29T05:13:35-0600'),
+                new \DateTime('2013-03-29T04:13:35-0600'),
+            ],
+            [
+                new \DateTime('2013-03-29T05:13:35-0600'),
+                new \DateTime('2013-03-29T05:13:35-0500'),
+            ],
+            // Exception
+            //array(new Exception('Exception 1'), new Exception('Exception 2')),
+            // different types
+            [new \SampleClass(4, 8, 15), false],
+            [false, new \SampleClass(4, 8, 15)],
+            [[0 => 1, 1 => 2], false],
+            [false, [0 => 1, 1 => 2]],
+            [[], new \stdClass],
+            [new \stdClass, []],
+            // PHP: 0 == 'Foobar' => true!
+            // We want these values to differ
+            [0, 'Foobar'],
+            ['Foobar', 0],
+            [3, \acos(8)],
+            [\acos(8), 3]
+        ];
     }
 
     public function sameProvider()
@@ -1747,7 +2028,7 @@ XML;
 
     public function testObjectHasOnTheFlyAttribute(): void
     {
-        $obj      = new \stdClass;
+        $obj = new \stdClass;
         $obj->foo = 'bar';
 
         $this->assertObjectHasAttribute('foo', $obj);
@@ -1759,7 +2040,7 @@ XML;
 
     public function testObjectNotHasOnTheFlyAttribute(): void
     {
-        $obj      = new \stdClass;
+        $obj = new \stdClass;
         $obj->foo = 'bar';
 
         $this->assertObjectNotHasAttribute('bar', $obj);
@@ -1966,7 +2247,7 @@ XML;
 
     public function testAssertThatIdenticalTo(): void
     {
-        $value      = new \stdClass;
+        $value = new \stdClass;
         $constraint = $this->identicalTo($value);
 
         $this->assertThat($value, $constraint);
@@ -2176,7 +2457,7 @@ XML;
 
     public function testAssertAttributeEmpty(): void
     {
-        $o    = new \stdClass;
+        $o = new \stdClass;
         $o->a = [];
 
         $this->assertAttributeEmpty('a', $o);
@@ -2190,7 +2471,7 @@ XML;
 
     public function testAssertAttributeNotEmpty(): void
     {
-        $o    = new \stdClass;
+        $o = new \stdClass;
         $o->a = ['b'];
 
         $this->assertAttributeNotEmpty('a', $o);
@@ -2261,7 +2542,7 @@ XML;
 
     public function testAssertAttributeCount(): void
     {
-        $o    = new \stdClass;
+        $o = new \stdClass;
         $o->a = [];
 
         $this->assertAttributeCount(0, 'a', $o);
@@ -2285,7 +2566,7 @@ XML;
 
     public function testAssertAttributeNotCount(): void
     {
-        $o    = new \stdClass;
+        $o = new \stdClass;
         $o->a = [];
 
         $this->assertAttributeNotCount(1, 'a', $o);
@@ -2357,8 +2638,8 @@ XML;
     public function testAssertJsonStringEqualsJsonString(): void
     {
         $expected = '{"Mascott" : "Tux"}';
-        $actual   = '{"Mascott" : "Tux"}';
-        $message  = 'Given Json strings do not match';
+        $actual = '{"Mascott" : "Tux"}';
+        $message = 'Given Json strings do not match';
 
         $this->assertJsonStringEqualsJsonString($expected, $actual, $message);
     }
@@ -2382,8 +2663,8 @@ XML;
     public function testAssertJsonStringNotEqualsJsonString(): void
     {
         $expected = '{"Mascott" : "Beastie"}';
-        $actual   = '{"Mascott" : "Tux"}';
-        $message  = 'Given Json strings do match';
+        $actual = '{"Mascott" : "Tux"}';
+        $message = 'Given Json strings do match';
 
         $this->assertJsonStringNotEqualsJsonString($expected, $actual, $message);
     }
@@ -2406,8 +2687,8 @@ XML;
 
     public function testAssertJsonStringEqualsJsonFile(): void
     {
-        $file    = __DIR__ . '/../_files/JsonData/simpleObject.json';
-        $actual  = \json_encode(['Mascott' => 'Tux']);
+        $file = __DIR__ . '/../_files/JsonData/simpleObject.json';
+        $actual = \json_encode(['Mascott' => 'Tux']);
         $message = '';
 
         $this->assertJsonStringEqualsJsonFile($file, $actual, $message);
@@ -2415,8 +2696,8 @@ XML;
 
     public function testAssertJsonStringEqualsJsonFileExpectingExpectationFailedException(): void
     {
-        $file    = __DIR__ . '/../_files/JsonData/simpleObject.json';
-        $actual  = \json_encode(['Mascott' => 'Beastie']);
+        $file = __DIR__ . '/../_files/JsonData/simpleObject.json';
+        $actual = \json_encode(['Mascott' => 'Beastie']);
         $message = '';
 
         try {
@@ -2435,8 +2716,8 @@ XML;
 
     public function testAssertJsonStringNotEqualsJsonFile(): void
     {
-        $file    = __DIR__ . '/../_files/JsonData/simpleObject.json';
-        $actual  = \json_encode(['Mascott' => 'Beastie']);
+        $file = __DIR__ . '/../_files/JsonData/simpleObject.json';
+        $actual = \json_encode(['Mascott' => 'Beastie']);
         $message = '';
 
         $this->assertJsonStringNotEqualsJsonFile($file, $actual, $message);
@@ -2445,15 +2726,15 @@ XML;
     public function testAssertJsonFileNotEqualsJsonFile(): void
     {
         $fileExpected = __DIR__ . '/../_files/JsonData/simpleObject.json';
-        $fileActual   = __DIR__ . '/../_files/JsonData/arrayObject.json';
-        $message      = '';
+        $fileActual = __DIR__ . '/../_files/JsonData/arrayObject.json';
+        $message = '';
 
         $this->assertJsonFileNotEqualsJsonFile($fileExpected, $fileActual, $message);
     }
 
     public function testAssertJsonFileEqualsJsonFile(): void
     {
-        $file    = __DIR__ . '/../_files/JsonData/simpleObject.json';
+        $file = __DIR__ . '/../_files/JsonData/simpleObject.json';
         $message = '';
 
         $this->assertJsonFileEqualsJsonFile($file, $file, $message);
@@ -2470,7 +2751,7 @@ XML;
 
     public function testAssertAttributeInstanceOf(): void
     {
-        $o    = new \stdClass;
+        $o = new \stdClass;
         $o->a = new \stdClass;
 
         $this->assertAttributeInstanceOf(\stdClass::class, 'a', $o);
@@ -2487,7 +2768,7 @@ XML;
 
     public function testAssertAttributeNotInstanceOf(): void
     {
-        $o    = new \stdClass;
+        $o = new \stdClass;
         $o->a = new \stdClass;
 
         $this->assertAttributeNotInstanceOf(\Exception::class, 'a', $o);
@@ -2513,7 +2794,7 @@ XML;
 
     public function testAssertAttributeInternalType(): void
     {
-        $o    = new \stdClass;
+        $o = new \stdClass;
         $o->a = 1;
 
         $this->assertAttributeInternalType('integer', 'a', $o);
@@ -2530,7 +2811,7 @@ XML;
 
     public function testAssertAttributeNotInternalType(): void
     {
-        $o    = new \stdClass;
+        $o = new \stdClass;
         $o->a = 1;
 
         $this->assertAttributeNotInternalType('string', 'a', $o);
@@ -2568,289 +2849,8 @@ XML;
         $this->assertStringNotMatchesFormatFile($this->filesDirectory . 'expectedFileFormat.txt', "FOO\n");
     }
 
-    protected function sameValues()
+    protected function setUp(): void
     {
-        $object = new \SampleClass(4, 8, 15);
-        // cannot use $filesDirectory, because neither setUp() nor
-        // setUpBeforeClass() are executed before the data providers
-        $file     = \dirname(__DIR__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'foo.xml';
-        $resource = \fopen($file, 'r');
-
-        return [
-            // null
-            [null, null],
-            // strings
-            ['a', 'a'],
-            // integers
-            [0, 0],
-            // floats
-            [2.3, 2.3],
-            [1 / 3, 1 - 2 / 3],
-            [\log(0), \log(0)],
-            // arrays
-            [[], []],
-            [[0 => 1], [0 => 1]],
-            [[0 => null], [0 => null]],
-            [['a', 'b' => [1, 2]], ['a', 'b' => [1, 2]]],
-            // objects
-            [$object, $object],
-            // resources
-            [$resource, $resource],
-        ];
-    }
-
-    protected function notEqualValues()
-    {
-        // cyclic dependencies
-        $book1                  = new \Book;
-        $book1->author          = new \Author('Terry Pratchett');
-        $book1->author->books[] = $book1;
-        $book2                  = new \Book;
-        $book2->author          = new \Author('Terry Pratch');
-        $book2->author->books[] = $book2;
-
-        $book3         = new \Book;
-        $book3->author = 'Terry Pratchett';
-        $book4         = new \stdClass;
-        $book4->author = 'Terry Pratchett';
-
-        $object1  = new \SampleClass(4, 8, 15);
-        $object2  = new \SampleClass(16, 23, 42);
-        $object3  = new \SampleClass(4, 8, 15);
-        $storage1 = new \SplObjectStorage;
-        $storage1->attach($object1);
-        $storage2 = new \SplObjectStorage;
-        $storage2->attach($object3); // same content, different object
-
-        // cannot use $filesDirectory, because neither setUp() nor
-        // setUpBeforeClass() are executed before the data providers
-        $file = \dirname(__DIR__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'foo.xml';
-
-        return [
-            // strings
-            ['a', 'b'],
-            ['a', 'A'],
-            // https://github.com/sebastianbergmann/phpunit/issues/1023
-            ['9E6666666', '9E7777777'],
-            // integers
-            [1, 2],
-            [2, 1],
-            // floats
-            [2.3, 4.2],
-            [2.3, 4.2, 0.5],
-            [[2.3], [4.2], 0.5],
-            [[[2.3]], [[4.2]], 0.5],
-            [new \Struct(2.3), new \Struct(4.2), 0.5],
-            [[new \Struct(2.3)], [new \Struct(4.2)], 0.5],
-            // NAN
-            [NAN, NAN],
-            // arrays
-            [[], [0 => 1]],
-            [[0     => 1], []],
-            [[0     => null], []],
-            [[0     => 1, 1 => 2], [0     => 1, 1 => 3]],
-            [['a', 'b' => [1, 2]], ['a', 'b' => [2, 1]]],
-            // objects
-            [new \SampleClass(4, 8, 15), new \SampleClass(16, 23, 42)],
-            [$object1, $object2],
-            [$book1, $book2],
-            [$book3, $book4], // same content, different class
-            // resources
-            [\fopen($file, 'r'), \fopen($file, 'r')],
-            // SplObjectStorage
-            [$storage1, $storage2],
-            // DOMDocument
-            [
-                Xml::load('<root></root>'),
-                Xml::load('<bar/>'),
-            ],
-            [
-                Xml::load('<foo attr1="bar"/>'),
-                Xml::load('<foo attr1="foobar"/>'),
-            ],
-            [
-                Xml::load('<foo> bar </foo>'),
-                Xml::load('<foo />'),
-            ],
-            [
-                Xml::load('<foo xmlns="urn:myns:bar"/>'),
-                Xml::load('<foo xmlns="urn:notmyns:bar"/>'),
-            ],
-            [
-                Xml::load('<foo> bar </foo>'),
-                Xml::load('<foo> bir </foo>'),
-            ],
-            [
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29 03:13:35', new \DateTimeZone('America/New_York')),
-            ],
-            [
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29 03:13:35', new \DateTimeZone('America/New_York')),
-                3500
-            ],
-            [
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29 05:13:35', new \DateTimeZone('America/New_York')),
-                3500
-            ],
-            [
-                new \DateTime('2013-03-29', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-30', new \DateTimeZone('America/New_York')),
-            ],
-            [
-                new \DateTime('2013-03-29', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-30', new \DateTimeZone('America/New_York')),
-                43200
-            ],
-            [
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/Chicago')),
-            ],
-            [
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/Chicago')),
-                3500
-            ],
-            [
-                new \DateTime('2013-03-30', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-30', new \DateTimeZone('America/Chicago')),
-            ],
-            [
-                new \DateTime('2013-03-29T05:13:35-0600'),
-                new \DateTime('2013-03-29T04:13:35-0600'),
-            ],
-            [
-                new \DateTime('2013-03-29T05:13:35-0600'),
-                new \DateTime('2013-03-29T05:13:35-0500'),
-            ],
-            // Exception
-            //array(new Exception('Exception 1'), new Exception('Exception 2')),
-            // different types
-            [new \SampleClass(4, 8, 15), false],
-            [false, new \SampleClass(4, 8, 15)],
-            [[0        => 1, 1 => 2], false],
-            [false, [0 => 1, 1 => 2]],
-            [[], new \stdClass],
-            [new \stdClass, []],
-            // PHP: 0 == 'Foobar' => true!
-            // We want these values to differ
-            [0, 'Foobar'],
-            ['Foobar', 0],
-            [3, \acos(8)],
-            [\acos(8), 3]
-        ];
-    }
-
-    protected function equalValues()
-    {
-        // cyclic dependencies
-        $book1                  = new \Book;
-        $book1->author          = new \Author('Terry Pratchett');
-        $book1->author->books[] = $book1;
-        $book2                  = new \Book;
-        $book2->author          = new \Author('Terry Pratchett');
-        $book2->author->books[] = $book2;
-
-        $object1  = new \SampleClass(4, 8, 15);
-        $object2  = new \SampleClass(4, 8, 15);
-        $storage1 = new \SplObjectStorage;
-        $storage1->attach($object1);
-        $storage2 = new \SplObjectStorage;
-        $storage2->attach($object1);
-
-        return [
-            // strings
-            ['a', 'A', 0, false, true], // ignore case
-            // arrays
-            [['a' => 1, 'b' => 2], ['b' => 2, 'a' => 1]],
-            [[1], ['1']],
-            [[3, 2, 1], [2, 3, 1], 0, true], // canonicalized comparison
-            // floats
-            [2.3, 2.5, 0.5],
-            [[2.3], [2.5], 0.5],
-            [[[2.3]], [[2.5]], 0.5],
-            [new \Struct(2.3), new \Struct(2.5), 0.5],
-            [[new \Struct(2.3)], [new \Struct(2.5)], 0.5],
-            // numeric with delta
-            [1, 2, 1],
-            // objects
-            [$object1, $object2],
-            [$book1, $book2],
-            // SplObjectStorage
-            [$storage1, $storage2],
-            // DOMDocument
-            [
-                Xml::load('<root></root>'),
-                Xml::load('<root/>'),
-            ],
-            [
-                Xml::load('<root attr="bar"></root>'),
-                Xml::load('<root attr="bar"/>'),
-            ],
-            [
-                Xml::load('<root><foo attr="bar"></foo></root>'),
-                Xml::load('<root><foo attr="bar"/></root>'),
-            ],
-            [
-                Xml::load("<root>\n  <child/>\n</root>"),
-                Xml::load('<root><child/></root>'),
-            ],
-            [
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
-            ],
-            [
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29 04:13:25', new \DateTimeZone('America/New_York')),
-                10
-            ],
-            [
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29 04:14:40', new \DateTimeZone('America/New_York')),
-                65
-            ],
-            [
-                new \DateTime('2013-03-29', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29', new \DateTimeZone('America/New_York')),
-            ],
-            [
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29 03:13:35', new \DateTimeZone('America/Chicago')),
-            ],
-            [
-                new \DateTime('2013-03-29 04:13:35', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29 03:13:49', new \DateTimeZone('America/Chicago')),
-                15
-            ],
-            [
-                new \DateTime('2013-03-30', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29 23:00:00', new \DateTimeZone('America/Chicago')),
-            ],
-            [
-                new \DateTime('2013-03-30', new \DateTimeZone('America/New_York')),
-                new \DateTime('2013-03-29 23:01:30', new \DateTimeZone('America/Chicago')),
-                100
-            ],
-            [
-                new \DateTime('@1364616000'),
-                new \DateTime('2013-03-29 23:00:00', new \DateTimeZone('America/Chicago')),
-            ],
-            [
-                new \DateTime('2013-03-29T05:13:35-0500'),
-                new \DateTime('2013-03-29T04:13:35-0600'),
-            ],
-            // Exception
-            //array(new Exception('Exception 1'), new Exception('Exception 1')),
-            // mixed types
-            [0, '0'],
-            ['0', 0],
-            [2.3, '2.3'],
-            ['2.3', 2.3],
-            [(string) (1 / 3), 1 - 2 / 3],
-            [1 / 3, (string) (1 - 2 / 3)],
-            ['string representation', new \ClassWithToString],
-            [new \ClassWithToString, 'string representation'],
-        ];
+        $this->filesDirectory = \dirname(__DIR__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR;
     }
 }

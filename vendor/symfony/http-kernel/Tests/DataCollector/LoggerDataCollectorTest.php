@@ -26,7 +26,7 @@ class LoggerDataCollectorTest extends TestCase
         $logger->expects($this->once())->method('countErrors')->will($this->returnValue('foo'));
         $logger->expects($this->exactly(2))->method('getLogs')->will($this->returnValue(array()));
 
-        $c = new LoggerDataCollector($logger, __DIR__.'/');
+        $c = new LoggerDataCollector($logger, __DIR__ . '/');
         $c->lateCollect();
         $compilerLogs = $c->getCompilerLogs()->getValue('message');
 

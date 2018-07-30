@@ -4,7 +4,7 @@ class Example
 {
     public function even($numbers)
     {
-        $numbers = array_filter($numbers, function($number) {
+        $numbers = array_filter($numbers, function ($number) {
             return $number % 2 === 0;
         });
 

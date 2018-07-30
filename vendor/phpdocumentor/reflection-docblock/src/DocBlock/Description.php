@@ -81,6 +81,16 @@ class Description
     }
 
     /**
+     * Returns a plain string representation of this description.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->render();
+    }
+
+    /**
      * Renders this description as a string where the provided formatter will format the tags in the expected string
      * format.
      *
@@ -100,15 +110,5 @@ class Description
         }
 
         return vsprintf($this->bodyTemplate, $tags);
-    }
-
-    /**
-     * Returns a plain string representation of this description.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->render();
     }
 }

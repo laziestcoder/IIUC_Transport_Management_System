@@ -29,8 +29,7 @@ class ContainerControllerResolverTest extends ControllerResolverTest
         $container->expects($this->once())
             ->method('get')
             ->with('foo')
-            ->will($this->returnValue($this))
-        ;
+            ->will($this->returnValue($this));
 
         $resolver = $this->createControllerResolver(null, $container);
         $request = Request::create('/');
@@ -42,6 +41,20 @@ class ContainerControllerResolverTest extends ControllerResolverTest
         $this->assertSame('controllerMethod1', $controller[1]);
     }
 
+    protected function createMockContainer()
+    {
+        return $this->getMockBuilder(ContainerInterface::class)->getMock();
+    }
+
+    protected function createControllerResolver(LoggerInterface $logger = null, ContainerInterface $container = null)
+    {
+        if (!$container) {
+            $container = $this->createMockContainer();
+        }
+
+        return new ContainerControllerResolver($container, $logger);
+    }
+
     public function testGetControllerInvokableService()
     {
         $invokableController = new InvokableController('bar');
@@ -50,13 +63,11 @@ class ContainerControllerResolverTest extends ControllerResolverTest
         $container->expects($this->once())
             ->method('has')
             ->with('foo')
-            ->will($this->returnValue(true))
-        ;
+            ->will($this->returnValue(true));
         $container->expects($this->once())
             ->method('get')
             ->with('foo')
-            ->will($this->returnValue($invokableController))
-        ;
+            ->will($this->returnValue($invokableController));
 
         $resolver = $this->createControllerResolver(null, $container);
         $request = Request::create('/');
@@ -70,19 +81,17 @@ class ContainerControllerResolverTest extends ControllerResolverTest
     public function testGetControllerInvokableServiceWithClassNameAsName()
     {
         $invokableController = new InvokableController('bar');
-        $className = __NAMESPACE__.'\InvokableController';
+        $className = __NAMESPACE__ . '\InvokableController';
 
         $container = $this->createMockContainer();
         $container->expects($this->once())
             ->method('has')
             ->with($className)
-            ->will($this->returnValue(true))
-        ;
+            ->will($this->returnValue(true));
         $container->expects($this->once())
             ->method('get')
             ->with($className)
-            ->will($this->returnValue($invokableController))
-        ;
+            ->will($this->returnValue($invokableController));
 
         $resolver = $this->createControllerResolver(null, $container);
         $request = Request::create('/');
@@ -99,8 +108,7 @@ class ContainerControllerResolverTest extends ControllerResolverTest
         $container->expects($this->once())
             ->method('has')
             ->with(NonInstantiableController::class)
-            ->will($this->returnValue(false))
-        ;
+            ->will($this->returnValue(false));
 
         $resolver = $this->createControllerResolver(null, $container);
         $request = Request::create('/');
@@ -121,20 +129,17 @@ class ContainerControllerResolverTest extends ControllerResolverTest
         $container->expects($this->at(0))
             ->method('has')
             ->with(ImpossibleConstructController::class)
-            ->will($this->returnValue(true))
-        ;
+            ->will($this->returnValue(true));
 
         $container->expects($this->at(1))
             ->method('has')
             ->with(ImpossibleConstructController::class)
-            ->will($this->returnValue(false))
-        ;
+            ->will($this->returnValue(false));
 
         $container->expects($this->atLeastOnce())
             ->method('getRemovedIds')
             ->with()
-            ->will($this->returnValue(array(ImpossibleConstructController::class => true)))
-        ;
+            ->will($this->returnValue(array(ImpossibleConstructController::class => true)));
 
         $resolver = $this->createControllerResolver(null, $container);
         $request = Request::create('/');
@@ -151,13 +156,11 @@ class ContainerControllerResolverTest extends ControllerResolverTest
         $container->expects($this->atLeastOnce())
             ->method('has')
             ->with(NonInstantiableController::class)
-            ->will($this->returnValue(true))
-        ;
+            ->will($this->returnValue(true));
         $container->expects($this->atLeastOnce())
             ->method('get')
             ->with(NonInstantiableController::class)
-            ->will($this->returnValue($service))
-        ;
+            ->will($this->returnValue($service));
 
         $resolver = $this->createControllerResolver(null, $container);
         $request = Request::create('/');
@@ -178,14 +181,12 @@ class ContainerControllerResolverTest extends ControllerResolverTest
         $container->expects($this->at(0))
             ->method('has')
             ->with('app.my_controller')
-            ->will($this->returnValue(false))
-        ;
+            ->will($this->returnValue(false));
 
         $container->expects($this->atLeastOnce())
             ->method('getRemovedIds')
             ->with()
-            ->will($this->returnValue(array('app.my_controller' => true)))
-        ;
+            ->will($this->returnValue(array('app.my_controller' => true)));
 
         $resolver = $this->createControllerResolver(null, $container);
 
@@ -204,13 +205,11 @@ class ContainerControllerResolverTest extends ControllerResolverTest
         $container->expects($this->once())
             ->method('has')
             ->with('app.my_controller')
-            ->will($this->returnValue(true))
-        ;
+            ->will($this->returnValue(true));
         $container->expects($this->once())
             ->method('get')
             ->with('app.my_controller')
-            ->will($this->returnValue(new ImpossibleConstructController('toto', 'controller')))
-        ;
+            ->will($this->returnValue(new ImpossibleConstructController('toto', 'controller')));
 
         $resolver = $this->createControllerResolver(null, $container);
 
@@ -250,20 +249,6 @@ class ContainerControllerResolverTest extends ControllerResolverTest
                 '/.?[cC]ontroller(.*?) for URI "\/" is not callable\.( Expected method(.*) Available methods)?/',
             ),
         );
-    }
-
-    protected function createControllerResolver(LoggerInterface $logger = null, ContainerInterface $container = null)
-    {
-        if (!$container) {
-            $container = $this->createMockContainer();
-        }
-
-        return new ContainerControllerResolver($container, $logger);
-    }
-
-    protected function createMockContainer()
-    {
-        return $this->getMockBuilder(ContainerInterface::class)->getMock();
     }
 }
 

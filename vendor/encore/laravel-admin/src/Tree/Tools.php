@@ -64,7 +64,7 @@ class Tools implements Renderable
                 return $tool->toHtml();
             }
 
-            return (string) $tool;
+            return (string)$tool;
         })->implode(' ');
     }
 }

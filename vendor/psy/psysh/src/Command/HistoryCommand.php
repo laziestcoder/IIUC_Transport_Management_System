@@ -60,19 +60,19 @@ class HistoryCommand extends Command
             ->setName('history')
             ->setAliases(['hist'])
             ->setDefinition([
-                new InputOption('show',        's', InputOption::VALUE_REQUIRED, 'Show the given range of lines.'),
-                new InputOption('head',        'H', InputOption::VALUE_REQUIRED, 'Display the first N items.'),
-                new InputOption('tail',        'T', InputOption::VALUE_REQUIRED, 'Display the last N items.'),
+                new InputOption('show', 's', InputOption::VALUE_REQUIRED, 'Show the given range of lines.'),
+                new InputOption('head', 'H', InputOption::VALUE_REQUIRED, 'Display the first N items.'),
+                new InputOption('tail', 'T', InputOption::VALUE_REQUIRED, 'Display the last N items.'),
 
                 $grep,
                 $insensitive,
                 $invert,
 
-                new InputOption('no-numbers',  'N', InputOption::VALUE_NONE,     'Omit line numbers.'),
+                new InputOption('no-numbers', 'N', InputOption::VALUE_NONE, 'Omit line numbers.'),
 
-                new InputOption('save',        '',  InputOption::VALUE_REQUIRED, 'Save history to a file.'),
-                new InputOption('replay',      '',  InputOption::VALUE_NONE,     'Replay.'),
-                new InputOption('clear',       '',  InputOption::VALUE_NONE,     'Clear the history.'),
+                new InputOption('save', '', InputOption::VALUE_REQUIRED, 'Save history to a file.'),
+                new InputOption('replay', '', InputOption::VALUE_NONE, 'Replay.'),
+                new InputOption('clear', '', InputOption::VALUE_NONE, 'Clear the history.'),
             ])
             ->setDescription('Show the Psy Shell history.')
             ->setHelp(
@@ -105,14 +105,14 @@ HELP
 
         $this->filter->bind($input);
         if ($this->filter->hasFilter()) {
-            $matches     = [];
+            $matches = [];
             $highlighted = [];
             foreach ($history as $i => $line) {
                 if ($this->filter->match($line, $matches)) {
                     if (isset($matches[0])) {
                         $chunks = explode($matches[0], $history[$i]);
                         $chunks = array_map([__CLASS__, 'escape'], $chunks);
-                        $glue   = sprintf('<urgent>%s</urgent>', self::escape($matches[0]));
+                        $glue = sprintf('<urgent>%s</urgent>', self::escape($matches[0]));
 
                         $highlighted[$i] = implode($glue, $chunks);
                     }
@@ -148,27 +148,23 @@ HELP
     }
 
     /**
-     * Extract a range from a string.
+     * Validate that only one of the given $options is set.
      *
-     * @param string $range
-     *
-     * @return array [ start, end ]
+     * @param InputInterface $input
+     * @param array $options
      */
-    private function extractRange($range)
+    private function validateOnlyOne(InputInterface $input, array $options)
     {
-        if (preg_match('/^\d+$/', $range)) {
-            return [$range, $range + 1];
+        $count = 0;
+        foreach ($options as $opt) {
+            if ($input->getOption($opt)) {
+                $count++;
+            }
         }
 
-        $matches = [];
-        if ($range !== '..' && preg_match('/^(\d*)\.\.(\d*)$/', $range, $matches)) {
-            $start = $matches[1] ? intval($matches[1]) : 0;
-            $end   = $matches[2] ? intval($matches[2]) + 1 : PHP_INT_MAX;
-
-            return [$start, $end];
+        if ($count > 1) {
+            throw new \InvalidArgumentException('Please specify only one of --' . implode(', --', $options));
         }
-
-        throw new \InvalidArgumentException('Unexpected range: ' . $range);
     }
 
     /**
@@ -195,14 +191,14 @@ HELP
                 throw new \InvalidArgumentException('Please specify an integer argument for --head');
             }
 
-            $start  = 0;
+            $start = 0;
             $length = intval($head);
         } elseif ($tail) {
             if (!preg_match('/^\d+$/', $tail)) {
                 throw new \InvalidArgumentException('Please specify an integer argument for --tail');
             }
 
-            $start  = count($history) - $tail;
+            $start = count($history) - $tail;
             $length = intval($tail) + 1;
         } else {
             return $history;
@@ -212,23 +208,32 @@ HELP
     }
 
     /**
-     * Validate that only one of the given $options is set.
+     * Extract a range from a string.
      *
-     * @param InputInterface $input
-     * @param array          $options
+     * @param string $range
+     *
+     * @return array [ start, end ]
      */
-    private function validateOnlyOne(InputInterface $input, array $options)
+    private function extractRange($range)
     {
-        $count = 0;
-        foreach ($options as $opt) {
-            if ($input->getOption($opt)) {
-                $count++;
-            }
+        if (preg_match('/^\d+$/', $range)) {
+            return [$range, $range + 1];
         }
 
-        if ($count > 1) {
-            throw new \InvalidArgumentException('Please specify only one of --' . implode(', --', $options));
+        $matches = [];
+        if ($range !== '..' && preg_match('/^(\d*)\.\.(\d*)$/', $range, $matches)) {
+            $start = $matches[1] ? intval($matches[1]) : 0;
+            $end = $matches[2] ? intval($matches[2]) + 1 : PHP_INT_MAX;
+
+            return [$start, $end];
         }
+
+        throw new \InvalidArgumentException('Unexpected range: ' . $range);
+    }
+
+    public static function escape($string)
+    {
+        return OutputFormatter::escape($string);
     }
 
     /**
@@ -237,10 +242,5 @@ HELP
     private function clearHistory()
     {
         $this->readline->clearHistory();
-    }
-
-    public static function escape($string)
-    {
-        return OutputFormatter::escape($string);
     }
 }

@@ -4,8 +4,8 @@ namespace Egulias\EmailValidator\Validation;
 
 use Egulias\EmailValidator\EmailLexer;
 use Egulias\EmailValidator\Exception\InvalidEmail;
-use Egulias\EmailValidator\Warning\NoDNSMXRecord;
 use Egulias\EmailValidator\Exception\NoDNSRecord;
+use Egulias\EmailValidator\Warning\NoDNSMXRecord;
 
 class DNSCheckValidation implements EmailValidation
 {
@@ -32,16 +32,6 @@ class DNSCheckValidation implements EmailValidation
         return $this->checkDNS($host);
     }
 
-    public function getError()
-    {
-        return $this->error;
-    }
-
-    public function getWarnings()
-    {
-        return $this->warnings;
-    }
-
     protected function checkDNS($host)
     {
         $host = rtrim(idn_to_ascii($host, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46), '.') . '.';
@@ -57,5 +47,15 @@ class DNSCheckValidation implements EmailValidation
             }
         }
         return $MXresult || $Aresult;
+    }
+
+    public function getError()
+    {
+        return $this->error;
+    }
+
+    public function getWarnings()
+    {
+        return $this->warnings;
     }
 }

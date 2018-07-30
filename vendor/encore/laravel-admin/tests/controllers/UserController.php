@@ -31,37 +31,6 @@ class UserController extends Controller
     }
 
     /**
-     * Edit interface.
-     *
-     * @param $id
-     *
-     * @return Content
-     */
-    public function edit($id)
-    {
-        return Admin::content(function (Content $content) use ($id) {
-            $content->header('Edit user');
-            $content->description('description');
-
-            $content->body($this->form()->edit($id));
-        });
-    }
-
-    /**
-     * Create interface.
-     *
-     * @return Content
-     */
-    public function create()
-    {
-        return Admin::content(function (Content $content) {
-            $content->header('Create user');
-
-            $content->body($this->form());
-        });
-    }
-
-    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -86,11 +55,11 @@ class UserController extends Controller
             $grid->profile()->end_at('结束时间');
 
             $grid->column('column1_not_in_table')->display(function () {
-                return 'full name:'.$this->full_name;
+                return 'full name:' . $this->full_name;
             });
 
             $grid->column('column2_not_in_table')->display(function () {
-                return $this->email.'#'.$this->profile['color'];
+                return $this->email . '#' . $this->profile['color'];
             });
 
             $grid->tags()->display(function ($tags) {
@@ -117,6 +86,23 @@ class UserController extends Controller
                     $actions->append('<a href="/" class="btn btn-xs btn-danger">detail</a>');
                 }
             });
+        });
+    }
+
+    /**
+     * Edit interface.
+     *
+     * @param $id
+     *
+     * @return Content
+     */
+    public function edit($id)
+    {
+        return Admin::content(function (Content $content) use ($id) {
+            $content->header('Edit user');
+            $content->description('description');
+
+            $content->body($this->form()->edit($id));
         });
     }
 
@@ -159,6 +145,20 @@ class UserController extends Controller
             $form->display('updated_at', 'Updated At');
 
             $form->html('<a html-field>html...</a>');
+        });
+    }
+
+    /**
+     * Create interface.
+     *
+     * @return Content
+     */
+    public function create()
+    {
+        return Admin::content(function (Content $content) {
+            $content->header('Create user');
+
+            $content->body($this->form());
         });
     }
 }

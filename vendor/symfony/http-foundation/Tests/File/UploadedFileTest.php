@@ -16,19 +16,12 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploadedFileTest extends TestCase
 {
-    protected function setUp()
-    {
-        if (!ini_get('file_uploads')) {
-            $this->markTestSkipped('file_uploads is disabled in php.ini');
-        }
-    }
-
     public function testConstructWhenFileNotExists()
     {
         $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}('Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException');
 
         new UploadedFile(
-            __DIR__.'/Fixtures/not_here',
+            __DIR__ . '/Fixtures/not_here',
             'original.gif',
             null
         );
@@ -37,10 +30,10 @@ class UploadedFileTest extends TestCase
     public function testFileUploadsWithNoMimeType()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             'original.gif',
             null,
-            filesize(__DIR__.'/Fixtures/test.gif'),
+            filesize(__DIR__ . '/Fixtures/test.gif'),
             UPLOAD_ERR_OK
         );
 
@@ -54,10 +47,10 @@ class UploadedFileTest extends TestCase
     public function testFileUploadsWithUnknownMimeType()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/.unknownextension',
+            __DIR__ . '/Fixtures/.unknownextension',
             'original.gif',
             null,
-            filesize(__DIR__.'/Fixtures/.unknownextension'),
+            filesize(__DIR__ . '/Fixtures/.unknownextension'),
             UPLOAD_ERR_OK
         );
 
@@ -67,10 +60,10 @@ class UploadedFileTest extends TestCase
     public function testGuessClientExtension()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             'original.gif',
             'image/gif',
-            filesize(__DIR__.'/Fixtures/test.gif'),
+            filesize(__DIR__ . '/Fixtures/test.gif'),
             null
         );
 
@@ -80,10 +73,10 @@ class UploadedFileTest extends TestCase
     public function testGuessClientExtensionWithIncorrectMimeType()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             'original.gif',
             'image/jpeg',
-            filesize(__DIR__.'/Fixtures/test.gif'),
+            filesize(__DIR__ . '/Fixtures/test.gif'),
             null
         );
 
@@ -93,10 +86,10 @@ class UploadedFileTest extends TestCase
     public function testErrorIsOkByDefault()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             'original.gif',
             'image/gif',
-            filesize(__DIR__.'/Fixtures/test.gif'),
+            filesize(__DIR__ . '/Fixtures/test.gif'),
             null
         );
 
@@ -106,10 +99,10 @@ class UploadedFileTest extends TestCase
     public function testGetClientOriginalName()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             'original.gif',
             'image/gif',
-            filesize(__DIR__.'/Fixtures/test.gif'),
+            filesize(__DIR__ . '/Fixtures/test.gif'),
             null
         );
 
@@ -119,10 +112,10 @@ class UploadedFileTest extends TestCase
     public function testGetClientOriginalExtension()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             'original.gif',
             'image/gif',
-            filesize(__DIR__.'/Fixtures/test.gif'),
+            filesize(__DIR__ . '/Fixtures/test.gif'),
             null
         );
 
@@ -135,24 +128,24 @@ class UploadedFileTest extends TestCase
     public function testMoveLocalFileIsNotAllowed()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             'original.gif',
             'image/gif',
-            filesize(__DIR__.'/Fixtures/test.gif'),
+            filesize(__DIR__ . '/Fixtures/test.gif'),
             UPLOAD_ERR_OK
         );
 
-        $movedFile = $file->move(__DIR__.'/Fixtures/directory');
+        $movedFile = $file->move(__DIR__ . '/Fixtures/directory');
     }
 
     public function testMoveLocalFileIsAllowedInTestMode()
     {
-        $path = __DIR__.'/Fixtures/test.copy.gif';
-        $targetDir = __DIR__.'/Fixtures/directory';
-        $targetPath = $targetDir.'/test.copy.gif';
+        $path = __DIR__ . '/Fixtures/test.copy.gif';
+        $targetDir = __DIR__ . '/Fixtures/directory';
+        $targetPath = $targetDir . '/test.copy.gif';
         @unlink($path);
         @unlink($targetPath);
-        copy(__DIR__.'/Fixtures/test.gif', $path);
+        copy(__DIR__ . '/Fixtures/test.gif', $path);
 
         $file = new UploadedFile(
             $path,
@@ -163,7 +156,7 @@ class UploadedFileTest extends TestCase
             true
         );
 
-        $movedFile = $file->move(__DIR__.'/Fixtures/directory');
+        $movedFile = $file->move(__DIR__ . '/Fixtures/directory');
 
         $this->assertFileExists($targetPath);
         $this->assertFileNotExists($path);
@@ -175,10 +168,10 @@ class UploadedFileTest extends TestCase
     public function testGetClientOriginalNameSanitizeFilename()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             '../../original.gif',
             'image/gif',
-            filesize(__DIR__.'/Fixtures/test.gif'),
+            filesize(__DIR__ . '/Fixtures/test.gif'),
             null
         );
 
@@ -188,28 +181,28 @@ class UploadedFileTest extends TestCase
     public function testGetSize()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             'original.gif',
             'image/gif',
-            filesize(__DIR__.'/Fixtures/test.gif'),
+            filesize(__DIR__ . '/Fixtures/test.gif'),
             null
         );
 
-        $this->assertEquals(filesize(__DIR__.'/Fixtures/test.gif'), $file->getSize());
+        $this->assertEquals(filesize(__DIR__ . '/Fixtures/test.gif'), $file->getSize());
 
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test',
+            __DIR__ . '/Fixtures/test',
             'original.gif',
             'image/gif'
         );
 
-        $this->assertEquals(filesize(__DIR__.'/Fixtures/test'), $file->getSize());
+        $this->assertEquals(filesize(__DIR__ . '/Fixtures/test'), $file->getSize());
     }
 
     public function testGetExtension()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             'original.gif',
             null
         );
@@ -220,10 +213,10 @@ class UploadedFileTest extends TestCase
     public function testIsValid()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             'original.gif',
             null,
-            filesize(__DIR__.'/Fixtures/test.gif'),
+            filesize(__DIR__ . '/Fixtures/test.gif'),
             UPLOAD_ERR_OK,
             true
         );
@@ -237,10 +230,10 @@ class UploadedFileTest extends TestCase
     public function testIsInvalidOnUploadError($error)
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             'original.gif',
             null,
-            filesize(__DIR__.'/Fixtures/test.gif'),
+            filesize(__DIR__ . '/Fixtures/test.gif'),
             $error
         );
 
@@ -261,13 +254,20 @@ class UploadedFileTest extends TestCase
     public function testIsInvalidIfNotHttpUpload()
     {
         $file = new UploadedFile(
-            __DIR__.'/Fixtures/test.gif',
+            __DIR__ . '/Fixtures/test.gif',
             'original.gif',
             null,
-            filesize(__DIR__.'/Fixtures/test.gif'),
+            filesize(__DIR__ . '/Fixtures/test.gif'),
             UPLOAD_ERR_OK
         );
 
         $this->assertFalse($file->isValid());
+    }
+
+    protected function setUp()
+    {
+        if (!ini_get('file_uploads')) {
+            $this->markTestSkipped('file_uploads is disabled in php.ini');
+        }
     }
 }

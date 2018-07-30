@@ -50,31 +50,31 @@ class FilecontentFilterIteratorTest extends IteratorTestCase
         $inner = new MockFileListIterator();
 
         $inner[] = new MockSplFileInfo(array(
-            'name' => 'a.txt',
-            'contents' => 'Lorem ipsum...',
-            'type' => 'file',
-            'mode' => 'r+', )
+                'name' => 'a.txt',
+                'contents' => 'Lorem ipsum...',
+                'type' => 'file',
+                'mode' => 'r+',)
         );
 
         $inner[] = new MockSplFileInfo(array(
-            'name' => 'b.yml',
-            'contents' => 'dolor sit...',
-            'type' => 'file',
-            'mode' => 'r+', )
+                'name' => 'b.yml',
+                'contents' => 'dolor sit...',
+                'type' => 'file',
+                'mode' => 'r+',)
         );
 
         $inner[] = new MockSplFileInfo(array(
-            'name' => 'some/other/dir/third.php',
-            'contents' => 'amet...',
-            'type' => 'file',
-            'mode' => 'r+', )
+                'name' => 'some/other/dir/third.php',
+                'contents' => 'amet...',
+                'type' => 'file',
+                'mode' => 'r+',)
         );
 
         $inner[] = new MockSplFileInfo(array(
-            'name' => 'unreadable-file.txt',
-            'contents' => false,
-            'type' => 'file',
-            'mode' => 'r+', )
+                'name' => 'unreadable-file.txt',
+                'contents' => false,
+                'type' => 'file',
+                'mode' => 'r+',)
         );
 
         return array(

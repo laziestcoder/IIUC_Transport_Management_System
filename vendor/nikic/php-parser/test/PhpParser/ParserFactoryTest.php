@@ -9,11 +9,13 @@ use PHPUnit\Framework\TestCase;
 class ParserFactoryTest extends TestCase
 {
     /** @dataProvider provideTestCreate */
-    public function testCreate($kind, $lexer, $expected) {
+    public function testCreate($kind, $lexer, $expected)
+    {
         $this->assertInstanceOf($expected, (new ParserFactory)->create($kind, $lexer));
     }
 
-    public function provideTestCreate() {
+    public function provideTestCreate()
+    {
         $lexer = new Lexer();
         return [
             [

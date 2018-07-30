@@ -1,5 +1,5 @@
 .. index::
-    single: Reserved Method Names
+single: Reserved Method Names
 
 Reserved Method Names
 =====================

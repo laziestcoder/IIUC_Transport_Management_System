@@ -30,16 +30,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ThrowUpCommand extends Command implements ContextAware
 {
     const THROW_CLASS = 'Psy\Exception\ThrowUpException';
-
-    private $parser;
-    private $printer;
-
     /**
      * Context instance (for ContextAware interface).
      *
      * @var Context
      */
     protected $context;
+    private $parser;
+    private $printer;
 
     /**
      * {@inheritdoc}
@@ -48,7 +46,7 @@ class ThrowUpCommand extends Command implements ContextAware
     {
         $parserFactory = new ParserFactory();
 
-        $this->parser  = $parserFactory->createParser();
+        $this->parser = $parserFactory->createParser();
         $this->printer = new Printer();
 
         parent::__construct($name);

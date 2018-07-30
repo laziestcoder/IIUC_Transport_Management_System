@@ -38,7 +38,7 @@ final class ServiceValueResolver implements ArgumentValueResolverInterface
         $controller = $request->attributes->get('_controller');
 
         if (\is_array($controller) && \is_callable($controller, true) && \is_string($controller[0])) {
-            $controller = $controller[0].'::'.$controller[1];
+            $controller = $controller[0] . '::' . $controller[1];
         } elseif (!\is_string($controller) || '' === $controller) {
             return false;
         }
@@ -56,7 +56,7 @@ final class ServiceValueResolver implements ArgumentValueResolverInterface
     public function resolve(Request $request, ArgumentMetadata $argument)
     {
         if (\is_array($controller = $request->attributes->get('_controller'))) {
-            $controller = $controller[0].'::'.$controller[1];
+            $controller = $controller[0] . '::' . $controller[1];
         }
 
         if ('\\' === $controller[0]) {

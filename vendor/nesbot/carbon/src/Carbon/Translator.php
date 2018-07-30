@@ -20,6 +20,12 @@ class Translator extends Translation\Translator
      */
     protected static $messages = array();
 
+    public function __construct($locale, Translation\Formatter\MessageFormatterInterface $formatter = null, $cacheDir = null, $debug = false)
+    {
+        $this->addLoader('array', new Translation\Loader\ArrayLoader());
+        parent::__construct($locale, $formatter, $cacheDir, $debug);
+    }
+
     /**
      * Return a singleton instance of Translator.
      *
@@ -36,37 +42,24 @@ class Translator extends Translation\Translator
         return static::$singleton;
     }
 
-    public function __construct($locale, Translation\Formatter\MessageFormatterInterface $formatter = null, $cacheDir = null, $debug = false)
-    {
-        $this->addLoader('array', new Translation\Loader\ArrayLoader());
-        parent::__construct($locale, $formatter, $cacheDir, $debug);
-    }
-
     /**
-     * Reset messages of a locale (all locale if no locale passed).
-     * Remove custom messages and reload initial messages from matching
-     * file in Lang directory.
+     * Set messages of a locale and take file first if present.
      *
-     * @param string|null $locale
+     * @param string $locale
+     * @param array $messages
      *
-     * @return bool
+     * @return $this
      */
-    public function resetMessages($locale = null)
+    public function setMessages($locale, $messages)
     {
-        if ($locale === null) {
-            static::$messages = array();
+        $this->loadMessagesFromFile($locale);
+        $this->addResource('array', $messages, $locale);
+        static::$messages[$locale] = array_merge(
+            isset(static::$messages[$locale]) ? static::$messages[$locale] : array(),
+            $messages
+        );
 
-            return true;
-        }
-
-        if (file_exists($filename = __DIR__.'/Lang/'.$locale.'.php')) {
-            static::$messages[$locale] = require $filename;
-            $this->addResource('array', static::$messages[$locale], $locale);
-
-            return true;
-        }
-
-        return false;
+        return $this;
     }
 
     /**
@@ -86,23 +79,30 @@ class Translator extends Translation\Translator
     }
 
     /**
-     * Set messages of a locale and take file first if present.
+     * Reset messages of a locale (all locale if no locale passed).
+     * Remove custom messages and reload initial messages from matching
+     * file in Lang directory.
      *
-     * @param string $locale
-     * @param array  $messages
+     * @param string|null $locale
      *
-     * @return $this
+     * @return bool
      */
-    public function setMessages($locale, $messages)
+    public function resetMessages($locale = null)
     {
-        $this->loadMessagesFromFile($locale);
-        $this->addResource('array', $messages, $locale);
-        static::$messages[$locale] = array_merge(
-            isset(static::$messages[$locale]) ? static::$messages[$locale] : array(),
-            $messages
-        );
+        if ($locale === null) {
+            static::$messages = array();
 
-        return $this;
+            return true;
+        }
+
+        if (file_exists($filename = __DIR__ . '/Lang/' . $locale . '.php')) {
+            static::$messages[$locale] = require $filename;
+            $this->addResource('array', static::$messages[$locale], $locale);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -129,7 +129,7 @@ class Translator extends Translation\Translator
     {
         $locale = preg_replace_callback('/[-_]([a-z]{2,})/', function ($matches) {
             // _2-letters is a region, _3+-letters is a variant
-            return '_'.call_user_func(strlen($matches[1]) > 2 ? 'ucfirst' : 'strtoupper', $matches[1]);
+            return '_' . call_user_func(strlen($matches[1]) > 2 ? 'ucfirst' : 'strtoupper', $matches[1]);
         }, strtolower($locale));
 
         if ($this->loadMessagesFromFile($locale)) {

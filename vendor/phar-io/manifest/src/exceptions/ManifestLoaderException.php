@@ -2,5 +2,6 @@
 
 namespace PharIo\Manifest;
 
-class ManifestLoaderException extends \Exception implements Exception {
+class ManifestLoaderException extends \Exception implements Exception
+{
 }

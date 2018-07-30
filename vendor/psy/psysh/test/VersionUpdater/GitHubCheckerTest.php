@@ -34,7 +34,7 @@ class GitHubCheckerTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider jsonResults
      *
-     * @param bool  $assertion
+     * @param bool $assertion
      * @param mixed $input
      */
     public function testDataSetResults($assertion, $input)

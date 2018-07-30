@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 use PHPUnit\Framework\TestCase;
 
 class BeforeAndAfterTest extends TestCase
@@ -17,7 +18,7 @@ class BeforeAndAfterTest extends TestCase
     public static function resetProperties(): void
     {
         self::$beforeWasRun = 0;
-        self::$afterWasRun  = 0;
+        self::$afterWasRun = 0;
     }
 
     /**

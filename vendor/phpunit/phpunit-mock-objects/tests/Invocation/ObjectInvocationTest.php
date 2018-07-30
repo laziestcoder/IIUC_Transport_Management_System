@@ -71,7 +71,7 @@ class ObjectInvocationTest extends TestCase
     public function testAllowToGetMethodParametersSetInConstructor()
     {
         $expectedParameters = [
-          'foo', 5, ['a', 'b'], new stdClass, null, false
+            'foo', 5, ['a', 'b'], new stdClass, null, false
         ];
 
         $invocation = new ObjectInvocation(
@@ -87,7 +87,7 @@ class ObjectInvocationTest extends TestCase
 
     public function testConstructorAllowToSetFlagCloneObjectsInParameters()
     {
-        $parameters   = [new stdClass];
+        $parameters = [new stdClass];
         $cloneObjects = true;
 
         $invocation = new ObjectInvocation(

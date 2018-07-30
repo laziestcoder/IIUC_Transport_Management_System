@@ -141,7 +141,7 @@ final class Directory extends AbstractNode implements \IteratorAggregate
     {
         $directory = new self($name, $this);
 
-        $this->children[]    = $directory;
+        $this->children[] = $directory;
         $this->directories[] = &$this->children[\count($this->children) - 1];
 
         return $directory;
@@ -157,10 +157,10 @@ final class Directory extends AbstractNode implements \IteratorAggregate
         $file = new File($name, $this, $coverageData, $testData, $cacheTokens);
 
         $this->children[] = $file;
-        $this->files[]    = &$this->children[\count($this->children) - 1];
+        $this->files[] = &$this->children[\count($this->children) - 1];
 
         $this->numExecutableLines = -1;
-        $this->numExecutedLines   = -1;
+        $this->numExecutedLines = -1;
 
         return $file;
     }

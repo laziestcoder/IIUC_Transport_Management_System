@@ -53,7 +53,7 @@ class ShowCommand extends ReflectingCommand
             ->setName('show')
             ->setDefinition([
                 new CodeArgument('target', CodeArgument::OPTIONAL, 'Function, class, instance, constant, method or property to show.'),
-                new InputOption('ex', null,  InputOption::VALUE_OPTIONAL, 'Show last exception context. Optionally specify a stack index.', 1),
+                new InputOption('ex', null, InputOption::VALUE_OPTIONAL, 'Show last exception context. Optionally specify a stack index.', 1),
             ])
             ->setDescription('Show the code for an object, class, constant, method or property.')
             ->setHelp(
@@ -107,21 +107,6 @@ HELP
         }
 
         throw new RuntimeException('Not enough arguments (missing: "target")');
-    }
-
-    private function writeCodeContext(InputInterface $input, OutputInterface $output)
-    {
-        list($target, $reflector) = $this->getTargetAndReflector($input->getArgument('target'));
-
-        // Set some magic local variables
-        $this->setCommandScopeVariables($reflector);
-
-        try {
-            $output->page(CodeFormatter::format($reflector, $this->colorMode), ShellOutput::OUTPUT_RAW);
-        } catch (RuntimeException $e) {
-            $output->writeln(SignatureFormatter::format($reflector));
-            throw $e;
-        }
     }
 
     private function writeExceptionContext(InputInterface $input, OutputInterface $output)
@@ -219,6 +204,13 @@ HELP
         $output->write($this->getHighlighter()->getCodeSnippet($code, $line, 5, 5), ShellOutput::OUTPUT_RAW);
     }
 
+    private function extractEvalFileAndLine($file)
+    {
+        if (preg_match('/(.*)\\((\\d+)\\) : eval\\(\\)\'d code$/', $file, $matches)) {
+            return [$matches[1], $matches[2]];
+        }
+    }
+
     private function getHighlighter()
     {
         if (!$this->highlighter) {
@@ -280,10 +272,18 @@ HELP
         $this->context->setCommandScopeVariables($vars);
     }
 
-    private function extractEvalFileAndLine($file)
+    private function writeCodeContext(InputInterface $input, OutputInterface $output)
     {
-        if (preg_match('/(.*)\\((\\d+)\\) : eval\\(\\)\'d code$/', $file, $matches)) {
-            return [$matches[1], $matches[2]];
+        list($target, $reflector) = $this->getTargetAndReflector($input->getArgument('target'));
+
+        // Set some magic local variables
+        $this->setCommandScopeVariables($reflector);
+
+        try {
+            $output->page(CodeFormatter::format($reflector, $this->colorMode), ShellOutput::OUTPUT_RAW);
+        } catch (RuntimeException $e) {
+            $output->writeln(SignatureFormatter::format($reflector));
+            throw $e;
         }
     }
 }

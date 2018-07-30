@@ -26,7 +26,7 @@ class HtmlDumperTest extends TestCase
             $this->markTestSkipped('A custom file_link_format is defined.');
         }
 
-        require __DIR__.'/../Fixtures/dumb-var.php';
+        require __DIR__ . '/../Fixtures/dumb-var.php';
 
         $dumper = new HtmlDumper('php://output');
         $dumper->setDumpHeader('<foo></foo>');
@@ -49,7 +49,7 @@ class HtmlDumperTest extends TestCase
         $intMax = PHP_INT_MAX;
         preg_match('/sf-dump-\d+/', $out, $dumpId);
         $dumpId = $dumpId[0];
-        $res = (int) $var['res'];
+        $res = (int)$var['res'];
 
         $this->assertStringMatchesFormat(
             <<<EOTXT

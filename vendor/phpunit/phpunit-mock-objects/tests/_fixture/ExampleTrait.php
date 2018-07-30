@@ -1,4 +1,5 @@
 <?php
+
 trait ExampleTrait
 {
     public function ohHai()

@@ -39,8 +39,8 @@ class Serializer
      * Create a Serializer instance.
      *
      * @param int $indent The number of times the indent string is repeated.
-     * @param string   $indentString    The string to indent the comment with.
-     * @param bool     $indentFirstLine Whether to indent the first line.
+     * @param string $indentString The string to indent the comment with.
+     * @param bool $indentFirstLine Whether to indent the first line.
      * @param int|null $lineLength The max length of a line or NULL to disable line wrapping.
      * @param DocBlock\Tags\Formatter $tagFormatter A custom tag formatter, defaults to PassthroughFormatter.
      */

@@ -23,17 +23,6 @@ class ExceptionCasterTest extends TestCase
 {
     use VarDumperTestTrait;
 
-    private function getTestException($msg, &$ref = null)
-    {
-        return new \Exception(''.$msg);
-    }
-
-    protected function tearDown()
-    {
-        ExceptionCaster::$srcContext = 1;
-        ExceptionCaster::$traceArgs = true;
-    }
-
     public function testDefaultSettings()
     {
         $ref = array('foo');
@@ -58,6 +47,11 @@ EODUMP;
 
         $this->assertDumpMatchesFormat($expectedDump, $e);
         $this->assertSame(array('foo'), $ref);
+    }
+
+    private function getTestException($msg, &$ref = null)
+    {
+        return new \Exception('' . $msg);
     }
 
     public function testSeek()
@@ -164,16 +158,16 @@ EODUMP;
      */
     public function testFrameWithTwig()
     {
-        require_once dirname(__DIR__).'/Fixtures/Twig.php';
+        require_once dirname(__DIR__) . '/Fixtures/Twig.php';
 
         $f = array(
             new FrameStub(array(
-                'file' => dirname(__DIR__).'/Fixtures/Twig.php',
+                'file' => dirname(__DIR__) . '/Fixtures/Twig.php',
                 'line' => 20,
                 'class' => '__TwigTemplate_VarDumperFixture_u75a09',
             )),
             new FrameStub(array(
-                'file' => dirname(__DIR__).'/Fixtures/Twig.php',
+                'file' => dirname(__DIR__) . '/Fixtures/Twig.php',
                 'line' => 21,
                 'class' => '__TwigTemplate_VarDumperFixture_u75a09',
                 'object' => new \__TwigTemplate_VarDumperFixture_u75a09(null, __FILE__),
@@ -226,5 +220,11 @@ Exception {
 EODUMP;
 
         $this->assertDumpMatchesFormat($expectedDump, $e, Caster::EXCLUDE_VERBOSE);
+    }
+
+    protected function tearDown()
+    {
+        ExceptionCaster::$srcContext = 1;
+        ExceptionCaster::$traceArgs = true;
     }
 }

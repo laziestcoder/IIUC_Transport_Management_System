@@ -22,7 +22,6 @@
 namespace test\Mockery;
 
 use Mockery\Adapter\Phpunit\MockeryTestCase;
-use Mockery\Generator\Method;
 use test\Mockery\Fixtures\MethodWithNullableReturnType;
 
 /**
@@ -34,13 +33,6 @@ class MockingNullableMethodsTest extends MockeryTestCase
      * @var \Mockery\Container
      */
     private $container;
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        require_once __DIR__."/Fixtures/MethodWithNullableReturnType.php";
-    }
 
     /**
      * @test
@@ -180,7 +172,7 @@ class MockingNullableMethodsTest extends MockeryTestCase
     /** @test */
     public function it_allows_returning_null_for_nullable_object_return_types()
     {
-        $double= \Mockery::mock(MethodWithNullableReturnType::class);
+        $double = \Mockery::mock(MethodWithNullableReturnType::class);
 
         $double->shouldReceive("nullableClass")->andReturnNull();
 
@@ -190,7 +182,7 @@ class MockingNullableMethodsTest extends MockeryTestCase
     /** @test */
     public function it_allows_returning_null_for_nullable_string_return_types()
     {
-        $double= \Mockery::mock(MethodWithNullableReturnType::class);
+        $double = \Mockery::mock(MethodWithNullableReturnType::class);
 
         $double->shouldReceive("nullableString")->andReturnNull();
 
@@ -200,7 +192,7 @@ class MockingNullableMethodsTest extends MockeryTestCase
     /** @test */
     public function it_allows_returning_null_for_nullable_int_return_types()
     {
-        $double= \Mockery::mock(MethodWithNullableReturnType::class);
+        $double = \Mockery::mock(MethodWithNullableReturnType::class);
 
         $double->shouldReceive("nullableInt")->andReturnNull();
 
@@ -213,5 +205,12 @@ class MockingNullableMethodsTest extends MockeryTestCase
         $double = \Mockery::spy(MethodWithNullableReturnType::class);
 
         $this->assertNull($double->nullableClass());
+    }
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        require_once __DIR__ . "/Fixtures/MethodWithNullableReturnType.php";
     }
 }

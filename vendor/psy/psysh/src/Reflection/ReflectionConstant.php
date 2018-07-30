@@ -25,7 +25,7 @@ class ReflectionConstant implements \Reflector
     /**
      * Construct a ReflectionConstant object.
      *
-     * @param mixed  $class
+     * @param mixed $class
      * @param string $name
      */
     public function __construct($class, $name)
@@ -35,7 +35,7 @@ class ReflectionConstant implements \Reflector
         }
 
         $this->class = $class;
-        $this->name  = $name;
+        $this->name = $name;
 
         $constants = $class->getConstants();
         if (!array_key_exists($name, $constants)) {
@@ -43,6 +43,16 @@ class ReflectionConstant implements \Reflector
         }
 
         $this->value = $constants[$name];
+    }
+
+    /**
+     * Export the constant? I don't think this is possible.
+     *
+     * @throws \RuntimeException
+     */
+    public static function export()
+    {
+        throw new \RuntimeException('Not yet implemented because it\'s unclear what I should do here :)');
     }
 
     /**
@@ -60,21 +70,11 @@ class ReflectionConstant implements \Reflector
         //
         // While this isn't _technically_ correct, it's prolly close enough.
         do {
-            $class  = $parent;
+            $class = $parent;
             $parent = $class->getParentClass();
         } while ($parent && $parent->hasConstant($this->name) && $parent->getConstant($this->name) === $this->value);
 
         return $class;
-    }
-
-    /**
-     * Gets the constant name.
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 
     /**
@@ -100,16 +100,6 @@ class ReflectionConstant implements \Reflector
     }
 
     /**
-     * Get the code start line.
-     *
-     * @throws \RuntimeException
-     */
-    public function getStartLine()
-    {
-        throw new \RuntimeException('Not yet implemented because it\'s unclear what I should do here :)');
-    }
-
-    /**
      * Get the code end line.
      *
      * @throws \RuntimeException
@@ -117,6 +107,16 @@ class ReflectionConstant implements \Reflector
     public function getEndLine()
     {
         return $this->getStartLine();
+    }
+
+    /**
+     * Get the code start line.
+     *
+     * @throws \RuntimeException
+     */
+    public function getStartLine()
+    {
+        throw new \RuntimeException('Not yet implemented because it\'s unclear what I should do here :)');
     }
 
     /**
@@ -130,16 +130,6 @@ class ReflectionConstant implements \Reflector
     }
 
     /**
-     * Export the constant? I don't think this is possible.
-     *
-     * @throws \RuntimeException
-     */
-    public static function export()
-    {
-        throw new \RuntimeException('Not yet implemented because it\'s unclear what I should do here :)');
-    }
-
-    /**
      * To string.
      *
      * @return string
@@ -147,5 +137,15 @@ class ReflectionConstant implements \Reflector
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * Gets the constant name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }

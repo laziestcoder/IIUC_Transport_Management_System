@@ -70,20 +70,6 @@ class StringCodec implements CodecInterface
     }
 
     /**
-     * Decodes a string representation of a UUID into a UuidInterface object instance
-     *
-     * @param string $encodedUuid
-     * @return UuidInterface
-     */
-    public function decode($encodedUuid)
-    {
-        $components = $this->extractComponents($encodedUuid);
-        $fields = $this->getFields($components);
-
-        return $this->builder->build($this, $fields);
-    }
-
-    /**
      * Decodes a binary representation of a UUID into a UuidInterface object instance
      *
      * @param string $bytes
@@ -101,13 +87,17 @@ class StringCodec implements CodecInterface
     }
 
     /**
-     * Returns the UUID builder
+     * Decodes a string representation of a UUID into a UuidInterface object instance
      *
-     * @return UuidBuilderInterface
+     * @param string $encodedUuid
+     * @return UuidInterface
      */
-    protected function getBuilder()
+    public function decode($encodedUuid)
     {
-        return $this->builder;
+        $components = $this->extractComponents($encodedUuid);
+        $fields = $this->getFields($components);
+
+        return $this->builder->build($this, $fields);
     }
 
     /**
@@ -163,5 +153,15 @@ class StringCodec implements CodecInterface
             'clock_seq_low' => str_pad(substr($components[3], 2), 2, '0', STR_PAD_LEFT),
             'node' => str_pad($components[4], 12, '0', STR_PAD_LEFT)
         );
+    }
+
+    /**
+     * Returns the UUID builder
+     *
+     * @return UuidBuilderInterface
+     */
+    protected function getBuilder()
+    {
+        return $this->builder;
     }
 }

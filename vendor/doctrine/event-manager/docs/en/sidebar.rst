@@ -1,4 +1,4 @@
 .. toctree::
-    :depth: 3
+:depth: 3
 
-    reference/index
+        reference/index

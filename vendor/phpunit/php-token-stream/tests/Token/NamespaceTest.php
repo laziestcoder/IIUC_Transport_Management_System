@@ -18,7 +18,7 @@ class PHP_Token_NamespaceTest extends TestCase
     public function testGetName()
     {
         $tokenStream = new PHP_Token_Stream(
-          TEST_FILES_PATH . 'classInNamespace.php'
+            TEST_FILES_PATH . 'classInNamespace.php'
         );
 
         foreach ($tokenStream as $token) {
@@ -47,6 +47,7 @@ class PHP_Token_NamespaceTest extends TestCase
             }
         }
     }
+
     public function testGetStartLineWithScopedNamespace()
     {
         $tokenStream = new PHP_Token_Stream(TEST_FILES_PATH . 'classInScopedNamespace.php');

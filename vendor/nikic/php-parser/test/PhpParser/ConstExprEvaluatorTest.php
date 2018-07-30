@@ -9,14 +9,16 @@ use PHPUnit\Framework\TestCase;
 class ConstExprEvaluatorTest extends TestCase
 {
     /** @dataProvider provideTestEvaluate */
-    public function testEvaluate($exprString, $expected) {
+    public function testEvaluate($exprString, $expected)
+    {
         $parser = new Parser\Php7(new Lexer());
         $expr = $parser->parse('<?php ' . $exprString . ';')[0]->expr;
         $evaluator = new ConstExprEvaluator();
         $this->assertSame($expected, $evaluator->evaluateDirectly($expr));
     }
 
-    public function provideTestEvaluate() {
+    public function provideTestEvaluate()
+    {
         return [
             ['1', 1],
             ['1.0', 1.0],
@@ -77,13 +79,15 @@ class ConstExprEvaluatorTest extends TestCase
      * @expectedException \PhpParser\ConstExprEvaluationException
      * @expectedExceptionMessage Expression of type Expr_Variable cannot be evaluated
      */
-    public function testEvaluateFails() {
+    public function testEvaluateFails()
+    {
         $evaluator = new ConstExprEvaluator();
         $evaluator->evaluateDirectly(new Expr\Variable('a'));
     }
 
-    public function testEvaluateFallback() {
-        $evaluator = new ConstExprEvaluator(function(Expr $expr) {
+    public function testEvaluateFallback()
+    {
+        $evaluator = new ConstExprEvaluator(function (Expr $expr) {
             if ($expr instanceof Scalar\MagicConst\Line) {
                 return 42;
             }
@@ -99,7 +103,8 @@ class ConstExprEvaluatorTest extends TestCase
     /**
      * @dataProvider provideTestEvaluateSilently
      */
-    public function testEvaluateSilently($expr, $exception, $msg) {
+    public function testEvaluateSilently($expr, $exception, $msg)
+    {
         $evaluator = new ConstExprEvaluator();
 
         try {
@@ -116,7 +121,8 @@ class ConstExprEvaluatorTest extends TestCase
         }
     }
 
-    public function provideTestEvaluateSilently() {
+    public function provideTestEvaluateSilently()
+    {
         return [
             [
                 new Expr\BinaryOp\Mod(new Scalar\LNumber(42), new Scalar\LNumber(0)),

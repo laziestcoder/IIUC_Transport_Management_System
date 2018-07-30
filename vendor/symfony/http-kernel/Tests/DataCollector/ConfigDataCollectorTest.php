@@ -12,11 +12,11 @@
 namespace Symfony\Component\HttpKernel\Tests\DataCollector;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\DataCollector\ConfigDataCollector;
-use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\DataCollector\ConfigDataCollector;
+use Symfony\Component\HttpKernel\Kernel;
 
 class ConfigDataCollectorTest extends TestCase
 {
@@ -31,8 +31,8 @@ class ConfigDataCollectorTest extends TestCase
         $this->assertTrue($c->isDebug());
         $this->assertSame('config', $c->getName());
         $this->assertSame('testkernel', $c->getAppName());
-        $this->assertRegExp('~^'.preg_quote($c->getPhpVersion(), '~').'~', PHP_VERSION);
-        $this->assertRegExp('~'.preg_quote((string) $c->getPhpVersionExtra(), '~').'$~', PHP_VERSION);
+        $this->assertRegExp('~^' . preg_quote($c->getPhpVersion(), '~') . '~', PHP_VERSION);
+        $this->assertRegExp('~' . preg_quote((string)$c->getPhpVersionExtra(), '~') . '$~', PHP_VERSION);
         $this->assertSame(PHP_INT_SIZE * 8, $c->getPhpArchitecture());
         $this->assertSame(class_exists('Locale', false) && \Locale::getDefault() ? \Locale::getDefault() : 'n/a', $c->getPhpIntlLocale());
         $this->assertSame(date_default_timezone_get(), $c->getPhpTimezone());

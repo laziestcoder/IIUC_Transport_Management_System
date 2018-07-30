@@ -34,6 +34,122 @@ trait ModelTree
     protected $queryCallback;
 
     /**
+     * Save tree order from a tree like array.
+     *
+     * @param array $tree
+     * @param int $parentId
+     */
+    public static function saveOrder($tree = [], $parentId = 0)
+    {
+        if (empty(static::$branchOrder)) {
+            static::setBranchOrder($tree);
+        }
+
+        foreach ($tree as $branch) {
+            $node = static::find($branch['id']);
+
+            $node->{$node->getParentColumn()} = $parentId;
+            $node->{$node->getOrderColumn()} = static::$branchOrder[$branch['id']];
+            $node->save();
+
+            if (isset($branch['children'])) {
+                static::saveOrder($branch['children'], $branch['id']);
+            }
+        }
+    }
+
+    /**
+     * Set the order of branches in the tree.
+     *
+     * @param array $order
+     *
+     * @return void
+     */
+    protected static function setBranchOrder(array $order)
+    {
+        static::$branchOrder = array_flip(array_flatten($order));
+
+        static::$branchOrder = array_map(function ($item) {
+            return ++$item;
+        }, static::$branchOrder);
+    }
+
+    /**
+     * Get options for Select field in form.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function selectOptions()
+    {
+        $options = (new static())->buildSelectOptions();
+
+        return collect($options)->prepend('Root', 0)->all();
+    }
+
+    /**
+     * Build options of select field in form.
+     *
+     * @param array $nodes
+     * @param int $parentId
+     * @param string $prefix
+     *
+     * @return array
+     */
+    protected function buildSelectOptions(array $nodes = [], $parentId = 0, $prefix = '')
+    {
+        $prefix = $prefix ?: str_repeat('&nbsp;', 6);
+
+        $options = [];
+
+        if (empty($nodes)) {
+            $nodes = $this->allNodes();
+        }
+
+        foreach ($nodes as $node) {
+            $node[$this->titleColumn] = $prefix . '&nbsp;' . $node[$this->titleColumn];
+            if ($node[$this->parentColumn] == $parentId) {
+                $children = $this->buildSelectOptions($nodes, $node[$this->getKeyName()], $prefix . $prefix);
+
+                $options[$node[$this->getKeyName()]] = $node[$this->titleColumn];
+
+                if ($children) {
+                    $options += $children;
+                }
+            }
+        }
+
+        return $options;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function (Model $branch) {
+            $parentColumn = $branch->getParentColumn();
+
+            if (Request::has($parentColumn) && Request::input($parentColumn) == $branch->getKey()) {
+                throw new \Exception(trans('admin.parent_select_error'));
+            }
+
+            if (Request::has('_order')) {
+                $order = Request::input('_order');
+
+                Request::offsetUnset('_order');
+
+                static::tree()->saveOrder($order);
+
+                return false;
+            }
+
+            return $branch;
+        });
+    }
+
+    /**
      * Get children of current node.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -139,7 +255,7 @@ trait ModelTree
      * Build Nested array.
      *
      * @param array $nodes
-     * @param int   $parentId
+     * @param int $parentId
      *
      * @return array
      */
@@ -174,7 +290,7 @@ trait ModelTree
     public function allNodes()
     {
         $orderColumn = DB::getQueryGrammar()->wrap($this->orderColumn);
-        $byOrder = $orderColumn.' = 0,'.$orderColumn;
+        $byOrder = $orderColumn . ' = 0,' . $orderColumn;
 
         $self = new static();
 
@@ -186,94 +302,6 @@ trait ModelTree
     }
 
     /**
-     * Set the order of branches in the tree.
-     *
-     * @param array $order
-     *
-     * @return void
-     */
-    protected static function setBranchOrder(array $order)
-    {
-        static::$branchOrder = array_flip(array_flatten($order));
-
-        static::$branchOrder = array_map(function ($item) {
-            return ++$item;
-        }, static::$branchOrder);
-    }
-
-    /**
-     * Save tree order from a tree like array.
-     *
-     * @param array $tree
-     * @param int   $parentId
-     */
-    public static function saveOrder($tree = [], $parentId = 0)
-    {
-        if (empty(static::$branchOrder)) {
-            static::setBranchOrder($tree);
-        }
-
-        foreach ($tree as $branch) {
-            $node = static::find($branch['id']);
-
-            $node->{$node->getParentColumn()} = $parentId;
-            $node->{$node->getOrderColumn()} = static::$branchOrder[$branch['id']];
-            $node->save();
-
-            if (isset($branch['children'])) {
-                static::saveOrder($branch['children'], $branch['id']);
-            }
-        }
-    }
-
-    /**
-     * Get options for Select field in form.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public static function selectOptions()
-    {
-        $options = (new static())->buildSelectOptions();
-
-        return collect($options)->prepend('Root', 0)->all();
-    }
-
-    /**
-     * Build options of select field in form.
-     *
-     * @param array  $nodes
-     * @param int    $parentId
-     * @param string $prefix
-     *
-     * @return array
-     */
-    protected function buildSelectOptions(array $nodes = [], $parentId = 0, $prefix = '')
-    {
-        $prefix = $prefix ?: str_repeat('&nbsp;', 6);
-
-        $options = [];
-
-        if (empty($nodes)) {
-            $nodes = $this->allNodes();
-        }
-
-        foreach ($nodes as $node) {
-            $node[$this->titleColumn] = $prefix.'&nbsp;'.$node[$this->titleColumn];
-            if ($node[$this->parentColumn] == $parentId) {
-                $children = $this->buildSelectOptions($nodes, $node[$this->getKeyName()], $prefix.$prefix);
-
-                $options[$node[$this->getKeyName()]] = $node[$this->titleColumn];
-
-                if ($children) {
-                    $options += $children;
-                }
-            }
-        }
-
-        return $options;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function delete()
@@ -281,33 +309,5 @@ trait ModelTree
         $this->where($this->parentColumn, $this->getKey())->delete();
 
         return parent::delete();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function (Model $branch) {
-            $parentColumn = $branch->getParentColumn();
-
-            if (Request::has($parentColumn) && Request::input($parentColumn) == $branch->getKey()) {
-                throw new \Exception(trans('admin.parent_select_error'));
-            }
-
-            if (Request::has('_order')) {
-                $order = Request::input('_order');
-
-                Request::offsetUnset('_order');
-
-                static::tree()->saveOrder($order);
-
-                return false;
-            }
-
-            return $branch;
-        });
     }
 }

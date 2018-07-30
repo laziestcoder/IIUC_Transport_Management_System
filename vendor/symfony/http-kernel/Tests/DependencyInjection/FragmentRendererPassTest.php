@@ -52,7 +52,7 @@ class FragmentRendererPassTest extends TestCase
         $pass = new FragmentRendererPass();
         $pass->process($builder);
 
-        $serviceLocatorDefinition = $builder->getDefinition((string) $fragmentHandlerDefinition->getArgument(0));
+        $serviceLocatorDefinition = $builder->getDefinition((string)$fragmentHandlerDefinition->getArgument(0));
         $this->assertSame(ServiceLocator::class, $serviceLocatorDefinition->getClass());
         $this->assertEquals(array('foo' => new ServiceClosureArgument(new Reference('my_content_renderer'))), $serviceLocatorDefinition->getArgument(0));
     }

@@ -320,7 +320,7 @@ EOTXT;
             $this->markTestSkipped('xdebug is active');
         }
 
-        $data = (array) json_decode('{"1":{}}');
+        $data = (array)json_decode('{"1":{}}');
 
         $cloner = new VarCloner();
         $clone = $cloner->cloneVar($data);

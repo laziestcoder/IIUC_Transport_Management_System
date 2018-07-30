@@ -70,7 +70,7 @@ class InstallCommand extends Command
         }
 
         $this->makeDir('/');
-        $this->line('<info>Admin directory was created:</info> '.str_replace(base_path(), '', $this->directory));
+        $this->line('<info>Admin directory was created:</info> ' . str_replace(base_path(), '', $this->directory));
 
         $this->makeDir('Controllers');
 
@@ -82,65 +82,30 @@ class InstallCommand extends Command
     }
 
     /**
+     * Make new directory.
+     *
+     * @param string $path
+     */
+    protected function makeDir($path = '')
+    {
+        $this->laravel['files']->makeDirectory("{$this->directory}/$path", 0755, true, true);
+    }
+
+    /**
      * Create HomeController.
      *
      * @return void
      */
     public function createHomeController()
     {
-        $homeController = $this->directory.'/Controllers/HomeController.php';
+        $homeController = $this->directory . '/Controllers/HomeController.php';
         $contents = $this->getStub('HomeController');
 
         $this->laravel['files']->put(
             $homeController,
             str_replace('DummyNamespace', config('admin.route.namespace'), $contents)
         );
-        $this->line('<info>HomeController file was created:</info> '.str_replace(base_path(), '', $homeController));
-    }
-
-    /**
-     * Create HomeController.
-     *
-     * @return void
-     */
-    public function createExampleController()
-    {
-        $exampleController = $this->directory.'/Controllers/ExampleController.php';
-        $contents = $this->getStub('ExampleController');
-
-        $this->laravel['files']->put(
-            $exampleController,
-            str_replace('DummyNamespace', config('admin.route.namespace'), $contents)
-        );
-        $this->line('<info>ExampleController file was created:</info> '.str_replace(base_path(), '', $exampleController));
-    }
-
-    /**
-     * Create routes file.
-     *
-     * @return void
-     */
-    protected function createBootstrapFile()
-    {
-        $file = $this->directory.'/bootstrap.php';
-
-        $contents = $this->getStub('bootstrap');
-        $this->laravel['files']->put($file, $contents);
-        $this->line('<info>Bootstrap file was created:</info> '.str_replace(base_path(), '', $file));
-    }
-
-    /**
-     * Create routes file.
-     *
-     * @return void
-     */
-    protected function createRoutesFile()
-    {
-        $file = $this->directory.'/routes.php';
-
-        $contents = $this->getStub('routes');
-        $this->laravel['files']->put($file, str_replace('DummyNamespace', config('admin.route.namespace'), $contents));
-        $this->line('<info>Routes file was created:</info> '.str_replace(base_path(), '', $file));
+        $this->line('<info>HomeController file was created:</info> ' . str_replace(base_path(), '', $homeController));
     }
 
     /**
@@ -152,16 +117,51 @@ class InstallCommand extends Command
      */
     protected function getStub($name)
     {
-        return $this->laravel['files']->get(__DIR__."/stubs/$name.stub");
+        return $this->laravel['files']->get(__DIR__ . "/stubs/$name.stub");
     }
 
     /**
-     * Make new directory.
+     * Create HomeController.
      *
-     * @param string $path
+     * @return void
      */
-    protected function makeDir($path = '')
+    public function createExampleController()
     {
-        $this->laravel['files']->makeDirectory("{$this->directory}/$path", 0755, true, true);
+        $exampleController = $this->directory . '/Controllers/ExampleController.php';
+        $contents = $this->getStub('ExampleController');
+
+        $this->laravel['files']->put(
+            $exampleController,
+            str_replace('DummyNamespace', config('admin.route.namespace'), $contents)
+        );
+        $this->line('<info>ExampleController file was created:</info> ' . str_replace(base_path(), '', $exampleController));
+    }
+
+    /**
+     * Create routes file.
+     *
+     * @return void
+     */
+    protected function createBootstrapFile()
+    {
+        $file = $this->directory . '/bootstrap.php';
+
+        $contents = $this->getStub('bootstrap');
+        $this->laravel['files']->put($file, $contents);
+        $this->line('<info>Bootstrap file was created:</info> ' . str_replace(base_path(), '', $file));
+    }
+
+    /**
+     * Create routes file.
+     *
+     * @return void
+     */
+    protected function createRoutesFile()
+    {
+        $file = $this->directory . '/routes.php';
+
+        $contents = $this->getStub('routes');
+        $this->laravel['files']->put($file, str_replace('DummyNamespace', config('admin.route.namespace'), $contents));
+        $this->line('<info>Routes file was created:</info> ' . str_replace(base_path(), '', $file));
     }
 }

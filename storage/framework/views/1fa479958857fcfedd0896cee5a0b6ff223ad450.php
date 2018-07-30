@@ -12,13 +12,13 @@
                                     <!-- <div class="panel-heading">Login</div> -->
                                     <div class="panel-body" style="background:#212529">
                                         <br>
-                                        <?php if(session('confirmation-success')): ?>
+                                        <?php if (session('confirmation-success')): ?>
                                             <div class="alert alert-success">
                                                 <?php echo e(session('confirmation-success')); ?>
 
                                             </div>
                                         <?php endif; ?>
-                                        <?php if(session('confirmation-danger')): ?>
+                                        <?php if (session('confirmation-danger')): ?>
                                             <div class="alert alert-danger">
                                                 <?php echo session('confirmation-danger'); ?>
 
@@ -36,7 +36,7 @@
                                                     <input id="email" type="email" class="form-control" name="email"
                                                            value="<?php echo e(old('email')); ?>" required autofocus>
 
-                                                    <?php if($errors->has('email')): ?>
+                                                    <?php if ($errors->has('email')): ?>
                                                         <span class="help-block">
                                                 <strong><?php echo e($errors->first('email')); ?></strong>
                                             </span>
@@ -51,7 +51,7 @@
                                                     <input id="password" type="password" class="form-control"
                                                            name="password" required>
 
-                                                    <?php if($errors->has('password')): ?>
+                                                    <?php if ($errors->has('password')): ?>
                                                         <span class="help-block">
                                                 <strong><?php echo e($errors->first('password')); ?></strong>
                                             </span>
@@ -78,7 +78,8 @@
                                                         Login
                                                     </button>
 
-                                                    <a class="btn btn-link" href="<?php echo e(url('/password/reset')); ?>">
+                                                    <a class="btn btn-link"
+                                                       href="<?php echo e(url('/password/reset')); ?>">
                                                         Forgot Your Password?
                                                     </a>
                                                 </div>
@@ -106,13 +107,13 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Login</div>
                 <div class="panel-body">
-                    <?php if(session('confirmation-success')): ?>
+                    <?php if (session('confirmation-success')): ?>
         <div class="alert alert-success">
 <?php echo e(session('confirmation-success')); ?>
 
                 </div>
 <?php endif; ?>
-    <?php if(session('confirmation-danger')): ?>
+    <?php if (session('confirmation-danger')): ?>
         <div class="alert alert-danger">
 <?php echo session('confirmation-danger'); ?>
 
@@ -128,7 +129,7 @@
                             <div class="col-md-6">
                                 <input id="email" type="email" class="form-control" name="email" value="<?php echo e(old('email')); ?>" required autofocus>
 
-                                <?php if($errors->has('email')): ?>
+                                <?php if ($errors->has('email')): ?>
         <span class="help-block">
             <strong><?php echo e($errors->first('email')); ?></strong>
                                     </span>
@@ -142,7 +143,7 @@
                             <div class="col-md-6">
                                 <input id="password" type="password" class="form-control" name="password" required>
 
-                                <?php if($errors->has('password')): ?>
+                                <?php if ($errors->has('password')): ?>
         <span class="help-block">
             <strong><?php echo e($errors->first('password')); ?></strong>
                                     </span>

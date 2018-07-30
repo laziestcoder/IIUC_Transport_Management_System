@@ -10,7 +10,8 @@
 
 namespace PharIo\Manifest;
 
-class PhpExtensionRequirement implements Requirement {
+class PhpExtensionRequirement implements Requirement
+{
     /**
      * @var string
      */
@@ -19,14 +20,16 @@ class PhpExtensionRequirement implements Requirement {
     /**
      * @param string $extension
      */
-    public function __construct($extension) {
+    public function __construct($extension)
+    {
         $this->extension = $extension;
     }
 
     /**
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->extension;
     }
 }

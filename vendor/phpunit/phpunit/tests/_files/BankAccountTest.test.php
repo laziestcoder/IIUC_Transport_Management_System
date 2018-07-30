@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -15,11 +16,6 @@ use PHPUnit\Framework\TestCase;
 class BankAccountWithCustomExtensionTest extends TestCase
 {
     protected $ba;
-
-    protected function setUp(): void
-    {
-        $this->ba = new BankAccount;
-    }
 
     /**
      * @covers BankAccount::getBalance
@@ -65,6 +61,11 @@ class BankAccountWithCustomExtensionTest extends TestCase
         }
 
         $this->fail();
+    }
+
+    protected function setUp(): void
+    {
+        $this->ba = new BankAccount;
     }
 
     /*

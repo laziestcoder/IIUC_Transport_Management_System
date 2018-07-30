@@ -49,18 +49,6 @@ class MenuController extends Controller
     }
 
     /**
-     * Redirect to edit page.
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function show($id)
-    {
-        return redirect()->route('menu.edit', ['id' => $id]);
-    }
-
-    /**
      * @return \Encore\Admin\Tree
      */
     protected function treeView()
@@ -84,6 +72,28 @@ class MenuController extends Controller
                 return $payload;
             });
         });
+    }
+
+    /**
+     * Help message for icon field.
+     *
+     * @return string
+     */
+    protected function iconHelp()
+    {
+        return 'For more icons please see <a href="http://fontawesome.io/icons/" target="_blank">http://fontawesome.io/icons/</a>';
+    }
+
+    /**
+     * Redirect to edit page.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function show($id)
+    {
+        return redirect()->route('menu.edit', ['id' => $id]);
     }
 
     /**
@@ -122,15 +132,5 @@ class MenuController extends Controller
             $form->display('created_at', trans('admin.created_at'));
             $form->display('updated_at', trans('admin.updated_at'));
         });
-    }
-
-    /**
-     * Help message for icon field.
-     *
-     * @return string
-     */
-    protected function iconHelp()
-    {
-        return 'For more icons please see <a href="http://fontawesome.io/icons/" target="_blank">http://fontawesome.io/icons/</a>';
     }
 }

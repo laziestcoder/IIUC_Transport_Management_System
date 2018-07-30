@@ -10,7 +10,8 @@
 
 namespace PharIo\Manifest;
 
-class BundledComponentCollectionIterator implements \Iterator {
+class BundledComponentCollectionIterator implements \Iterator
+{
     /**
      * @var BundledComponent[]
      */
@@ -21,36 +22,42 @@ class BundledComponentCollectionIterator implements \Iterator {
      */
     private $position;
 
-    public function __construct(BundledComponentCollection $bundledComponents) {
+    public function __construct(BundledComponentCollection $bundledComponents)
+    {
         $this->bundledComponents = $bundledComponents->getBundledComponents();
     }
 
-    public function rewind() {
+    public function rewind()
+    {
         $this->position = 0;
     }
 
     /**
      * @return bool
      */
-    public function valid() {
+    public function valid()
+    {
         return $this->position < count($this->bundledComponents);
     }
 
     /**
      * @return int
      */
-    public function key() {
+    public function key()
+    {
         return $this->position;
     }
 
     /**
      * @return BundledComponent
      */
-    public function current() {
+    public function current()
+    {
         return $this->bundledComponents[$this->position];
     }
 
-    public function next() {
+    public function next()
+    {
         $this->position++;
     }
 }

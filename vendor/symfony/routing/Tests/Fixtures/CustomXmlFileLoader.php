@@ -11,8 +11,8 @@
 
 namespace Symfony\Component\Routing\Tests\Fixtures;
 
-use Symfony\Component\Routing\Loader\XmlFileLoader;
 use Symfony\Component\Config\Util\XmlUtils;
+use Symfony\Component\Routing\Loader\XmlFileLoader;
 
 /**
  * XmlFileLoader with schema validation turned off.
@@ -21,6 +21,8 @@ class CustomXmlFileLoader extends XmlFileLoader
 {
     protected function loadFile($file)
     {
-        return XmlUtils::loadFile($file, function () { return true; });
+        return XmlUtils::loadFile($file, function () {
+            return true;
+        });
     }
 }

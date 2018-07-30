@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Util;
 
 use PHPUnit\Framework\Exception;
@@ -77,22 +78,6 @@ class Printer
         }
     }
 
-    /**
-     * Performs a safe, incremental flush.
-     *
-     * Do not confuse this function with the flush() function of this class,
-     * since the flush() function may close the file being written to, rendering
-     * the current object no longer usable.
-     */
-    public function incrementalFlush(): void
-    {
-        if ($this->out) {
-            \fflush($this->out);
-        } else {
-            \flush();
-        }
-    }
-
     public function write(string $buffer): void
     {
         if ($this->out) {
@@ -111,6 +96,22 @@ class Printer
             if ($this->autoFlush) {
                 $this->incrementalFlush();
             }
+        }
+    }
+
+    /**
+     * Performs a safe, incremental flush.
+     *
+     * Do not confuse this function with the flush() function of this class,
+     * since the flush() function may close the file being written to, rendering
+     * the current object no longer usable.
+     */
+    public function incrementalFlush(): void
+    {
+        if ($this->out) {
+            \fflush($this->out);
+        } else {
+            \flush();
         }
     }
 

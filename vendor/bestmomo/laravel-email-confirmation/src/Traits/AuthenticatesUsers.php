@@ -12,7 +12,7 @@ trait AuthenticatesUsers
     /**
      * Handle a login request to the application.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
     public function login(Request $request)
@@ -36,9 +36,9 @@ trait AuthenticatesUsers
 
             return $this->sendFailedLoginResponse($request);
         }
-        
+
         $user = $this->guard()->getLastAttempted();
-        
+
         if ($user->confirmed) {
             // If user is confirmed we make the login and delete session information if needed
             $this->attemptLogin($request);
@@ -52,11 +52,11 @@ trait AuthenticatesUsers
 
         return back()->with('confirmation-danger', __('confirmation::confirmation.again'));
     }
-    
+
     /**
      * Check credential.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return boolean
      */
     protected function checkCredential($request)

@@ -16,7 +16,7 @@ class GlobalStateTest extends TestCase
 {
     public function testIncludedFilesAsStringSkipsVfsProtocols(): void
     {
-        $dir   = __DIR__;
+        $dir = __DIR__;
         $files = [
             'phpunit', // The 0 index is not used
             $dir . '/ConfigurationTest.php',

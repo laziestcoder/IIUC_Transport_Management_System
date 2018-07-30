@@ -37,7 +37,7 @@ use Illuminate\Support\Collection;
  * @method Field\Number         number($column, $label = '')
  * @method Field\Currency       currency($column, $label = '')
  * @method Field\HasMany        hasMany($relationName, $callback)
- * @method Field\SwitchField    switch($column, $label = '')
+ * @method Field\SwitchField    switch ($column, $label = '')
  * @method Field\Display        display($column, $label = '')
  * @method Field\Rate           rate($column, $label = '')
  * @method Field\Divide         divider()
@@ -152,27 +152,6 @@ class EmbeddedForm
     }
 
     /**
-     * Do prepare work for each field.
-     *
-     * @param string $key
-     * @param string $record
-     *
-     * @return mixed
-     */
-    protected function prepareValue($key, $record)
-    {
-        $field = $this->fields->first(function (Field $field) use ($key) {
-            return in_array($key, (array) $field->column());
-        });
-
-        if (method_exists($field, 'prepare')) {
-            return $field->prepare($record);
-        }
-
-        return $record;
-    }
-
-    /**
      * Set original data for each field.
      *
      * @param string $key
@@ -191,6 +170,27 @@ class EmbeddedForm
     }
 
     /**
+     * Do prepare work for each field.
+     *
+     * @param string $key
+     * @param string $record
+     *
+     * @return mixed
+     */
+    protected function prepareValue($key, $record)
+    {
+        $field = $this->fields->first(function (Field $field) use ($key) {
+            return in_array($key, (array)$field->column());
+        });
+
+        if (method_exists($field, 'prepare')) {
+            return $field->prepare($record);
+        }
+
+        return $record;
+    }
+
+    /**
      * Fill data to all fields in form.
      *
      * @param array $data
@@ -202,6 +202,48 @@ class EmbeddedForm
         $this->fields->each(function (Field $field) use ($data) {
             $field->fill($data);
         });
+
+        return $this;
+    }
+
+    /**
+     * Add nested-form fields dynamically.
+     *
+     * @param string $method
+     * @param array $arguments
+     *
+     * @return Field|$this
+     */
+    public function __call($method, $arguments)
+    {
+        if ($className = Form::findFieldClass($method)) {
+            $column = array_get($arguments, 0, '');
+
+            /** @var Field $field */
+            $field = new $className($column, array_slice($arguments, 1));
+
+            $field->setForm($this->parent);
+
+            $this->pushField($field);
+
+            return $field;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add a field to form.
+     *
+     * @param Field $field
+     *
+     * @return $this
+     */
+    public function pushField(Field $field)
+    {
+        $field = $this->formatField($field);
+
+        $this->fields->push($field);
 
         return $this;
     }
@@ -236,47 +278,5 @@ class EmbeddedForm
             ->setElementClass($elementClass);
 
         return $field;
-    }
-
-    /**
-     * Add a field to form.
-     *
-     * @param Field $field
-     *
-     * @return $this
-     */
-    public function pushField(Field $field)
-    {
-        $field = $this->formatField($field);
-
-        $this->fields->push($field);
-
-        return $this;
-    }
-
-    /**
-     * Add nested-form fields dynamically.
-     *
-     * @param string $method
-     * @param array  $arguments
-     *
-     * @return Field|$this
-     */
-    public function __call($method, $arguments)
-    {
-        if ($className = Form::findFieldClass($method)) {
-            $column = array_get($arguments, 0, '');
-
-            /** @var Field $field */
-            $field = new $className($column, array_slice($arguments, 1));
-
-            $field->setForm($this->parent);
-
-            $this->pushField($field);
-
-            return $field;
-        }
-
-        return $this;
     }
 }

@@ -1,5 +1,5 @@
 .. index::
-    single: PHPUnit Integration
+single: PHPUnit Integration
 
 PHPUnit Integration
 ===================

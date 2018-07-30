@@ -1,5 +1,5 @@
 .. index::
-    single: Mocking; Final Classes/Methods
+single: Mocking; Final Classes/Methods
 
 Dealing with Final Classes/Methods
 ==================================

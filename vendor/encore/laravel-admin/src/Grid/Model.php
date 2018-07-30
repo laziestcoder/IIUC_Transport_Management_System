@@ -186,6 +186,29 @@ class Model
     }
 
     /**
+     * @param callable $callback
+     * @param int $count
+     *
+     * @return bool
+     */
+    public function chunk($callback, $count = 100)
+    {
+        if ($this->usePaginate) {
+            return $this->buildData(false)->chunk($count)->each($callback);
+        }
+
+        $this->setSort();
+
+        $this->queries->reject(function ($query) {
+            return $query['method'] == 'paginate';
+        })->each(function ($query) {
+            $this->model = $this->model->{$query['method']}(...$query['arguments']);
+        });
+
+        return $this->model->chunk($count, $callback);
+    }
+
+    /**
      * Build.
      *
      * @param bool $toArray
@@ -209,55 +232,6 @@ class Model
         }
 
         return $this->data;
-    }
-
-    /**
-     * @param callable $callback
-     * @param int      $count
-     *
-     * @return bool
-     */
-    public function chunk($callback, $count = 100)
-    {
-        if ($this->usePaginate) {
-            return $this->buildData(false)->chunk($count)->each($callback);
-        }
-
-        $this->setSort();
-
-        $this->queries->reject(function ($query) {
-            return $query['method'] == 'paginate';
-        })->each(function ($query) {
-            $this->model = $this->model->{$query['method']}(...$query['arguments']);
-        });
-
-        return $this->model->chunk($count, $callback);
-    }
-
-    /**
-     * Add conditions to grid model.
-     *
-     * @param array $conditions
-     *
-     * @return $this
-     */
-    public function addConditions(array $conditions)
-    {
-        foreach ($conditions as $condition) {
-            call_user_func_array([$this, key($condition)], current($condition));
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get table of the model.
-     *
-     * @return string
-     */
-    public function getTable()
-    {
-        return $this->model->getTable();
     }
 
     /**
@@ -292,92 +266,6 @@ class Model
     }
 
     /**
-     * If current page is greater than last page, then redirect to last page.
-     *
-     * @param LengthAwarePaginator $paginator
-     *
-     * @return void
-     */
-    protected function handleInvalidPage(LengthAwarePaginator $paginator)
-    {
-        if ($paginator->lastPage() && $paginator->currentPage() > $paginator->lastPage()) {
-            $lastPageUrl = Request::fullUrlWithQuery([
-                $paginator->getPageName() => $paginator->lastPage(),
-            ]);
-
-            Pjax::respond(redirect($lastPageUrl));
-        }
-    }
-
-    /**
-     * Set the grid paginate.
-     *
-     * @return void
-     */
-    protected function setPaginate()
-    {
-        $paginate = $this->findQueryByMethod('paginate');
-
-        $this->queries = $this->queries->reject(function ($query) {
-            return $query['method'] == 'paginate';
-        });
-
-        if (!$this->usePaginate) {
-            $query = [
-                'method'    => 'get',
-                'arguments' => [],
-            ];
-        } else {
-            $query = [
-                'method'    => 'paginate',
-                'arguments' => $this->resolvePerPage($paginate),
-            ];
-        }
-
-        $this->queries->push($query);
-    }
-
-    /**
-     * Resolve perPage for pagination.
-     *
-     * @param array|null $paginate
-     *
-     * @return array
-     */
-    protected function resolvePerPage($paginate)
-    {
-        if ($perPage = app('request')->input($this->perPageName)) {
-            if (is_array($paginate)) {
-                $paginate['arguments'][0] = (int) $perPage;
-
-                return $paginate['arguments'];
-            }
-
-            $this->perPage = (int) $perPage;
-        }
-
-        if (isset($paginate['arguments'][0])) {
-            return $paginate['arguments'];
-        }
-
-        return [$this->perPage];
-    }
-
-    /**
-     * Find query by method name.
-     *
-     * @param $method
-     *
-     * @return static
-     */
-    protected function findQueryByMethod($method)
-    {
-        return $this->queries->first(function ($query) use ($method) {
-            return $query['method'] == $method;
-        });
-    }
-
-    /**
      * Set the grid sort.
      *
      * @return void
@@ -399,7 +287,7 @@ class Model
             $this->resetOrderBy();
 
             $this->queries->push([
-                'method'    => 'orderBy',
+                'method' => 'orderBy',
                 'arguments' => [$this->sort['column'], $this->sort['type']],
             ]);
         }
@@ -422,32 +310,20 @@ class Model
             $relation = $this->model->$relationName();
 
             $this->queries->push([
-                'method'    => 'join',
+                'method' => 'join',
                 'arguments' => $this->joinParameters($relation),
             ]);
 
             $this->resetOrderBy();
 
             $this->queries->push([
-                'method'    => 'orderBy',
+                'method' => 'orderBy',
                 'arguments' => [
-                    $relation->getRelated()->getTable().'.'.$relationColumn,
+                    $relation->getRelated()->getTable() . '.' . $relationColumn,
                     $this->sort['type'],
                 ],
             ]);
         }
-    }
-
-    /**
-     * Reset orderBy query.
-     *
-     * @return void
-     */
-    public function resetOrderBy()
-    {
-        $this->queries = $this->queries->reject(function ($query) {
-            return $query['method'] == 'orderBy' || $query['method'] == 'orderByDesc';
-        });
     }
 
     /**
@@ -470,7 +346,7 @@ class Model
                 $relatedTable,
                 $relation->getForeignKey(),
                 '=',
-                $relatedTable.'.'.$relation->getRelated()->getKeyName(),
+                $relatedTable . '.' . $relation->getRelated()->getKeyName(),
             ];
         }
 
@@ -487,15 +363,139 @@ class Model
     }
 
     /**
+     * Reset orderBy query.
+     *
+     * @return void
+     */
+    public function resetOrderBy()
+    {
+        $this->queries = $this->queries->reject(function ($query) {
+            return $query['method'] == 'orderBy' || $query['method'] == 'orderByDesc';
+        });
+    }
+
+    /**
+     * Set the grid paginate.
+     *
+     * @return void
+     */
+    protected function setPaginate()
+    {
+        $paginate = $this->findQueryByMethod('paginate');
+
+        $this->queries = $this->queries->reject(function ($query) {
+            return $query['method'] == 'paginate';
+        });
+
+        if (!$this->usePaginate) {
+            $query = [
+                'method' => 'get',
+                'arguments' => [],
+            ];
+        } else {
+            $query = [
+                'method' => 'paginate',
+                'arguments' => $this->resolvePerPage($paginate),
+            ];
+        }
+
+        $this->queries->push($query);
+    }
+
+    /**
+     * Find query by method name.
+     *
+     * @param $method
+     *
+     * @return static
+     */
+    protected function findQueryByMethod($method)
+    {
+        return $this->queries->first(function ($query) use ($method) {
+            return $query['method'] == $method;
+        });
+    }
+
+    /**
+     * Resolve perPage for pagination.
+     *
+     * @param array|null $paginate
+     *
+     * @return array
+     */
+    protected function resolvePerPage($paginate)
+    {
+        if ($perPage = app('request')->input($this->perPageName)) {
+            if (is_array($paginate)) {
+                $paginate['arguments'][0] = (int)$perPage;
+
+                return $paginate['arguments'];
+            }
+
+            $this->perPage = (int)$perPage;
+        }
+
+        if (isset($paginate['arguments'][0])) {
+            return $paginate['arguments'];
+        }
+
+        return [$this->perPage];
+    }
+
+    /**
+     * If current page is greater than last page, then redirect to last page.
+     *
+     * @param LengthAwarePaginator $paginator
+     *
+     * @return void
+     */
+    protected function handleInvalidPage(LengthAwarePaginator $paginator)
+    {
+        if ($paginator->lastPage() && $paginator->currentPage() > $paginator->lastPage()) {
+            $lastPageUrl = Request::fullUrlWithQuery([
+                $paginator->getPageName() => $paginator->lastPage(),
+            ]);
+
+            Pjax::respond(redirect($lastPageUrl));
+        }
+    }
+
+    /**
+     * Add conditions to grid model.
+     *
+     * @param array $conditions
+     *
+     * @return $this
+     */
+    public function addConditions(array $conditions)
+    {
+        foreach ($conditions as $condition) {
+            call_user_func_array([$this, key($condition)], current($condition));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get table of the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        return $this->model->getTable();
+    }
+
+    /**
      * @param string $method
-     * @param array  $arguments
+     * @param array $arguments
      *
      * @return $this
      */
     public function __call($method, $arguments)
     {
         $this->queries->push([
-            'method'    => $method,
+            'method' => $method,
             'arguments' => $arguments,
         ]);
 

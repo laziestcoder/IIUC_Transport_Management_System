@@ -16,10 +16,9 @@ namespace Symfony\Component\HttpFoundation\Session\Attribute;
  */
 class AttributeBag implements AttributeBagInterface, \IteratorAggregate, \Countable
 {
+    protected $attributes = array();
     private $name = 'attributes';
     private $storageKey;
-
-    protected $attributes = array();
 
     /**
      * @param string $storageKey The key used to store attributes in the session
@@ -77,14 +76,6 @@ class AttributeBag implements AttributeBagInterface, \IteratorAggregate, \Counta
     /**
      * {@inheritdoc}
      */
-    public function set($name, $value)
-    {
-        $this->attributes[$name] = $value;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function all()
     {
         return $this->attributes;
@@ -99,6 +90,14 @@ class AttributeBag implements AttributeBagInterface, \IteratorAggregate, \Counta
         foreach ($attributes as $key => $value) {
             $this->set($key, $value);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function set($name, $value)
+    {
+        $this->attributes[$name] = $value;
     }
 
     /**

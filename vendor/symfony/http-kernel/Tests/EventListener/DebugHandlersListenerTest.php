@@ -13,9 +13,9 @@ namespace Symfony\Component\HttpKernel\Tests\EventListener;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LogLevel;
-use Symfony\Component\Console\Event\ConsoleEvent;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Event\ConsoleEvent;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -36,7 +36,8 @@ class DebugHandlersListenerTest extends TestCase
     public function testConfigure()
     {
         $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
-        $userHandler = function () {};
+        $userHandler = function () {
+        };
         $listener = new DebugHandlersListener($userHandler, $logger);
         $xHandler = new ExceptionHandler();
         $eHandler = new ErrorHandler();
@@ -133,7 +134,8 @@ class DebugHandlersListenerTest extends TestCase
 
     public function testReplaceExistingExceptionHandler()
     {
-        $userHandler = function () {};
+        $userHandler = function () {
+        };
         $listener = new DebugHandlersListener($userHandler);
         $eHandler = new ErrorHandler();
         $eHandler->setExceptionHandler('var_dump');

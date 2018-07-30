@@ -20,40 +20,35 @@ use SebastianBergmann\Diff\Differ;
  */
 final class StrictUnifiedDiffOutputBuilder implements DiffOutputBuilderInterface
 {
+    private static $default = [
+        'collapseRanges' => true, // ranges of length one are rendered with the trailing `,1`
+        'commonLineThreshold' => 6,    // number of same lines before ending a new hunk and creating a new one (if needed)
+        'contextLines' => 3,    // like `diff:  -u, -U NUM, --unified[=NUM]`, for patch/git apply compatibility best to keep at least @ 3
+        'fromFile' => null,
+        'fromFileDate' => null,
+        'toFile' => null,
+        'toFileDate' => null,
+    ];
     /**
      * @var bool
      */
     private $changed;
-
     /**
      * @var bool
      */
     private $collapseRanges;
-
     /**
      * @var int >= 0
      */
     private $commonLineThreshold;
-
     /**
      * @var string
      */
     private $header;
-
     /**
      * @var int >= 0
      */
     private $contextLines;
-
-    private static $default = [
-        'collapseRanges'      => true, // ranges of length one are rendered with the trailing `,1`
-        'commonLineThreshold' => 6,    // number of same lines before ending a new hunk and creating a new one (if needed)
-        'contextLines'        => 3,    // like `diff:  -u, -U NUM, --unified[=NUM]`, for patch/git apply compatibility best to keep at least @ 3
-        'fromFile'            => null,
-        'fromFileDate'        => null,
-        'toFile'              => null,
-        'toFileDate'          => null,
-    ];
 
     public function __construct(array $options = [])
     {
@@ -91,9 +86,9 @@ final class StrictUnifiedDiffOutputBuilder implements DiffOutputBuilderInterface
             null === $options['toFileDate'] ? '' : "\t" . $options['toFileDate']
         );
 
-        $this->collapseRanges      = $options['collapseRanges'];
+        $this->collapseRanges = $options['collapseRanges'];
         $this->commonLineThreshold = $options['commonLineThreshold'];
-        $this->contextLines        = $options['contextLines'];
+        $this->contextLines = $options['contextLines'];
     }
 
     public function getDiff(array $diff): string
@@ -125,8 +120,7 @@ final class StrictUnifiedDiffOutputBuilder implements DiffOutputBuilderInterface
 
         return "\n" !== $last && "\r" !== $last
             ? $diff . "\n"
-            : $diff
-        ;
+            : $diff;
     }
 
     private function writeDiffHunks($output, array $diff): void
@@ -161,10 +155,10 @@ final class StrictUnifiedDiffOutputBuilder implements DiffOutputBuilderInterface
 
         // write hunks to output buffer
 
-        $cutOff      = \max($this->commonLineThreshold, $this->contextLines);
+        $cutOff = \max($this->commonLineThreshold, $this->contextLines);
         $hunkCapture = false;
-        $sameCount   = $toRange = $fromRange = 0;
-        $toStart     = $fromStart = 1;
+        $sameCount = $toRange = $fromRange = 0;
+        $toStart = $fromStart = 1;
 
         foreach ($diff as $i => $entry) {
             if (0 === $entry[1]) { // same
@@ -182,8 +176,7 @@ final class StrictUnifiedDiffOutputBuilder implements DiffOutputBuilderInterface
                 if ($sameCount === $cutOff) {
                     $contextStartOffset = ($hunkCapture - $this->contextLines) < 0
                         ? $hunkCapture
-                        : $this->contextLines
-                    ;
+                        : $this->contextLines;
 
                     // note: $contextEndOffset = $this->contextLines;
                     //
@@ -211,7 +204,7 @@ final class StrictUnifiedDiffOutputBuilder implements DiffOutputBuilderInterface
                     $toStart += $toRange;
 
                     $hunkCapture = false;
-                    $sameCount   = $toRange = $fromRange = 0;
+                    $sameCount = $toRange = $fromRange = 0;
                 }
 
                 continue;
@@ -247,8 +240,7 @@ final class StrictUnifiedDiffOutputBuilder implements DiffOutputBuilderInterface
 
         $contextStartOffset = $hunkCapture - $this->contextLines < 0
             ? $hunkCapture
-            : $this->contextLines
-        ;
+            : $this->contextLines;
 
         // prevent trying to write out more common lines than there are in the diff _and_
         // do not write more than configured through the context lines
@@ -278,7 +270,8 @@ final class StrictUnifiedDiffOutputBuilder implements DiffOutputBuilderInterface
         int $toStart,
         int $toRange,
         $output
-    ): void {
+    ): void
+    {
         \fwrite($output, '@@ -' . $fromStart);
 
         if (!$this->collapseRanges || 1 !== $fromRange) {
@@ -306,9 +299,9 @@ final class StrictUnifiedDiffOutputBuilder implements DiffOutputBuilderInterface
                 \fwrite($output, $diff[$i][0]);
             }
             //} elseif ($diff[$i][1] === Differ::DIFF_LINE_END_WARNING) { // custom comment inserted by PHPUnit/diff package
-                //  skip
+            //  skip
             //} else {
-                //  unknown/invalid
+            //  unknown/invalid
             //}
         }
     }

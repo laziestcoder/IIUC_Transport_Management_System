@@ -18,7 +18,7 @@ class Php72LanguageFeaturesTest extends MockeryTestCase
 
         $mock->foo($object);
     }
-    
+
     /** @test */
     public function it_can_mock_a_class_with_an_object_return_type_hint()
     {

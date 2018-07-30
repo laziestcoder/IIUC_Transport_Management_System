@@ -11,11 +11,11 @@
 
 namespace Symfony\Component\Debug\Tests\FatalErrorHandler;
 
+use Composer\Autoload\ClassLoader as ComposerClassLoader;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Debug\DebugClassLoader;
 use Symfony\Component\Debug\Exception\FatalErrorException;
 use Symfony\Component\Debug\FatalErrorHandler\ClassNotFoundFatalErrorHandler;
-use Symfony\Component\Debug\DebugClassLoader;
-use Composer\Autoload\ClassLoader as ComposerClassLoader;
 
 class ClassNotFoundFatalErrorHandlerTest extends TestCase
 {
@@ -70,7 +70,7 @@ class ClassNotFoundFatalErrorHandlerTest extends TestCase
     public function provideClassNotFoundData()
     {
         $autoloader = new ComposerClassLoader();
-        $autoloader->add('Symfony\Component\Debug\Exception\\', realpath(__DIR__.'/../../Exception'));
+        $autoloader->add('Symfony\Component\Debug\Exception\\', realpath(__DIR__ . '/../../Exception'));
 
         $debugClassLoader = new DebugClassLoader(array($autoloader, 'loadClass'));
 
@@ -148,18 +148,19 @@ class ClassNotFoundFatalErrorHandlerTest extends TestCase
                     'message' => 'Class \'Foo\\Bar\\UndefinedFunctionException\' not found',
                 ),
                 "Attempted to load class \"UndefinedFunctionException\" from namespace \"Foo\\Bar\".\nDid you forget a \"use\" statement for another namespace?",
-                function ($className) { /* do nothing here */ },
+                function ($className) { /* do nothing here */
+                },
             ),
         );
     }
 
     public function testCannotRedeclareClass()
     {
-        if (!file_exists(__DIR__.'/../FIXTURES2/REQUIREDTWICE.PHP')) {
+        if (!file_exists(__DIR__ . '/../FIXTURES2/REQUIREDTWICE.PHP')) {
             $this->markTestSkipped('Can only be run on case insensitive filesystems');
         }
 
-        require_once __DIR__.'/../FIXTURES2/REQUIREDTWICE.PHP';
+        require_once __DIR__ . '/../FIXTURES2/REQUIREDTWICE.PHP';
 
         $error = array(
             'type' => 1,

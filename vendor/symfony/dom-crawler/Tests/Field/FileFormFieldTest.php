@@ -68,7 +68,7 @@ class FileFormFieldTest extends FormFieldTestCase
             "->$method() keeps the same file extension in the tmp_name copy"
         );
 
-        $field->$method(__DIR__.'/../Fixtures/no-extension');
+        $field->$method(__DIR__ . '/../Fixtures/no-extension');
         $value = $field->getValue();
 
         $this->assertArrayNotHasKey(

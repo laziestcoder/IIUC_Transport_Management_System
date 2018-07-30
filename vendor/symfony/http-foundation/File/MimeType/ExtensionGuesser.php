@@ -40,20 +40,6 @@ class ExtensionGuesser implements ExtensionGuesserInterface
     protected $guessers = array();
 
     /**
-     * Returns the singleton instance.
-     *
-     * @return self
-     */
-    public static function getInstance()
-    {
-        if (null === self::$instance) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
-    }
-
-    /**
      * Registers all natively provided extension guessers.
      */
     private function __construct()
@@ -69,6 +55,20 @@ class ExtensionGuesser implements ExtensionGuesserInterface
     public function register(ExtensionGuesserInterface $guesser)
     {
         array_unshift($this->guessers, $guesser);
+    }
+
+    /**
+     * Returns the singleton instance.
+     *
+     * @return self
+     */
+    public static function getInstance()
+    {
+        if (null === self::$instance) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 
     /**

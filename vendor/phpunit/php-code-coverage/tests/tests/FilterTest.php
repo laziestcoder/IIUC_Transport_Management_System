@@ -24,55 +24,6 @@ class FilterTest extends TestCase
      */
     private $files = [];
 
-    protected function setUp()
-    {
-        $this->filter = unserialize('O:37:"SebastianBergmann\CodeCoverage\Filter":0:{}');
-
-        $this->files = [
-            TEST_FILES_PATH . 'BankAccount.php',
-            TEST_FILES_PATH . 'BankAccountTest.php',
-            TEST_FILES_PATH . 'CoverageClassExtendedTest.php',
-            TEST_FILES_PATH . 'CoverageClassTest.php',
-            TEST_FILES_PATH . 'CoverageFunctionParenthesesTest.php',
-            TEST_FILES_PATH . 'CoverageFunctionParenthesesWhitespaceTest.php',
-            TEST_FILES_PATH . 'CoverageFunctionTest.php',
-            TEST_FILES_PATH . 'CoverageMethodOneLineAnnotationTest.php',
-            TEST_FILES_PATH . 'CoverageMethodParenthesesTest.php',
-            TEST_FILES_PATH . 'CoverageMethodParenthesesWhitespaceTest.php',
-            TEST_FILES_PATH . 'CoverageMethodTest.php',
-            TEST_FILES_PATH . 'CoverageNoneTest.php',
-            TEST_FILES_PATH . 'CoverageNotPrivateTest.php',
-            TEST_FILES_PATH . 'CoverageNotProtectedTest.php',
-            TEST_FILES_PATH . 'CoverageNotPublicTest.php',
-            TEST_FILES_PATH . 'CoverageNothingTest.php',
-            TEST_FILES_PATH . 'CoveragePrivateTest.php',
-            TEST_FILES_PATH . 'CoverageProtectedTest.php',
-            TEST_FILES_PATH . 'CoveragePublicTest.php',
-            TEST_FILES_PATH . 'CoverageTwoDefaultClassAnnotations.php',
-            TEST_FILES_PATH . 'CoveredClass.php',
-            TEST_FILES_PATH . 'CoveredFunction.php',
-            TEST_FILES_PATH . 'NamespaceCoverageClassExtendedTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageClassTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageCoversClassPublicTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageCoversClassTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageMethodTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageNotPrivateTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageNotProtectedTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageNotPublicTest.php',
-            TEST_FILES_PATH . 'NamespaceCoveragePrivateTest.php',
-            TEST_FILES_PATH . 'NamespaceCoverageProtectedTest.php',
-            TEST_FILES_PATH . 'NamespaceCoveragePublicTest.php',
-            TEST_FILES_PATH . 'NamespaceCoveredClass.php',
-            TEST_FILES_PATH . 'NotExistingCoveredElementTest.php',
-            TEST_FILES_PATH . 'source_with_class_and_anonymous_function.php',
-            TEST_FILES_PATH . 'source_with_ignore.php',
-            TEST_FILES_PATH . 'source_with_namespace.php',
-            TEST_FILES_PATH . 'source_with_oneline_annotations.php',
-            TEST_FILES_PATH . 'source_without_ignore.php',
-            TEST_FILES_PATH . 'source_without_namespace.php'
-        ];
-    }
-
     /**
      * @covers SebastianBergmann\CodeCoverage\Filter::addFileToWhitelist
      * @covers SebastianBergmann\CodeCoverage\Filter::getWhitelist
@@ -192,5 +143,54 @@ class FilterTest extends TestCase
         $this->assertTrue($this->filter->isFiltered('runtime-created function'));
         $this->assertTrue($this->filter->isFiltered('assert code'));
         $this->assertTrue($this->filter->isFiltered('regexp code'));
+    }
+
+    protected function setUp()
+    {
+        $this->filter = unserialize('O:37:"SebastianBergmann\CodeCoverage\Filter":0:{}');
+
+        $this->files = [
+            TEST_FILES_PATH . 'BankAccount.php',
+            TEST_FILES_PATH . 'BankAccountTest.php',
+            TEST_FILES_PATH . 'CoverageClassExtendedTest.php',
+            TEST_FILES_PATH . 'CoverageClassTest.php',
+            TEST_FILES_PATH . 'CoverageFunctionParenthesesTest.php',
+            TEST_FILES_PATH . 'CoverageFunctionParenthesesWhitespaceTest.php',
+            TEST_FILES_PATH . 'CoverageFunctionTest.php',
+            TEST_FILES_PATH . 'CoverageMethodOneLineAnnotationTest.php',
+            TEST_FILES_PATH . 'CoverageMethodParenthesesTest.php',
+            TEST_FILES_PATH . 'CoverageMethodParenthesesWhitespaceTest.php',
+            TEST_FILES_PATH . 'CoverageMethodTest.php',
+            TEST_FILES_PATH . 'CoverageNoneTest.php',
+            TEST_FILES_PATH . 'CoverageNotPrivateTest.php',
+            TEST_FILES_PATH . 'CoverageNotProtectedTest.php',
+            TEST_FILES_PATH . 'CoverageNotPublicTest.php',
+            TEST_FILES_PATH . 'CoverageNothingTest.php',
+            TEST_FILES_PATH . 'CoveragePrivateTest.php',
+            TEST_FILES_PATH . 'CoverageProtectedTest.php',
+            TEST_FILES_PATH . 'CoveragePublicTest.php',
+            TEST_FILES_PATH . 'CoverageTwoDefaultClassAnnotations.php',
+            TEST_FILES_PATH . 'CoveredClass.php',
+            TEST_FILES_PATH . 'CoveredFunction.php',
+            TEST_FILES_PATH . 'NamespaceCoverageClassExtendedTest.php',
+            TEST_FILES_PATH . 'NamespaceCoverageClassTest.php',
+            TEST_FILES_PATH . 'NamespaceCoverageCoversClassPublicTest.php',
+            TEST_FILES_PATH . 'NamespaceCoverageCoversClassTest.php',
+            TEST_FILES_PATH . 'NamespaceCoverageMethodTest.php',
+            TEST_FILES_PATH . 'NamespaceCoverageNotPrivateTest.php',
+            TEST_FILES_PATH . 'NamespaceCoverageNotProtectedTest.php',
+            TEST_FILES_PATH . 'NamespaceCoverageNotPublicTest.php',
+            TEST_FILES_PATH . 'NamespaceCoveragePrivateTest.php',
+            TEST_FILES_PATH . 'NamespaceCoverageProtectedTest.php',
+            TEST_FILES_PATH . 'NamespaceCoveragePublicTest.php',
+            TEST_FILES_PATH . 'NamespaceCoveredClass.php',
+            TEST_FILES_PATH . 'NotExistingCoveredElementTest.php',
+            TEST_FILES_PATH . 'source_with_class_and_anonymous_function.php',
+            TEST_FILES_PATH . 'source_with_ignore.php',
+            TEST_FILES_PATH . 'source_with_namespace.php',
+            TEST_FILES_PATH . 'source_with_oneline_annotations.php',
+            TEST_FILES_PATH . 'source_without_ignore.php',
+            TEST_FILES_PATH . 'source_without_namespace.php'
+        ];
     }
 }

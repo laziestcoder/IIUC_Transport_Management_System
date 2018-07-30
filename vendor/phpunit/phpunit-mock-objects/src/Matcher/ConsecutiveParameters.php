@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Framework\MockObject\Matcher;
 
 use PHPUnit\Framework\Constraint\Constraint;
@@ -72,25 +73,18 @@ class ConsecutiveParameters extends StatelessInvocation
     public function matches(BaseInvocation $invocation)
     {
         $this->invocations[] = $invocation;
-        $callIndex           = \count($this->invocations) - 1;
+        $callIndex = \count($this->invocations) - 1;
 
         $this->verifyInvocation($invocation, $callIndex);
 
         return false;
     }
 
-    public function verify()
-    {
-        foreach ($this->invocations as $callIndex => $invocation) {
-            $this->verifyInvocation($invocation, $callIndex);
-        }
-    }
-
     /**
      * Verify a single invocation
      *
      * @param BaseInvocation $invocation
-     * @param int            $callIndex
+     * @param int $callIndex
      *
      * @throws ExpectationFailedException
      */
@@ -129,6 +123,13 @@ class ConsecutiveParameters extends StatelessInvocation
                     $invocation->toString()
                 )
             );
+        }
+    }
+
+    public function verify()
+    {
+        foreach ($this->invocations as $callIndex => $invocation) {
+            $this->verifyInvocation($invocation, $callIndex);
         }
     }
 }

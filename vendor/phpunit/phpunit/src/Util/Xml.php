@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Util;
 
 use DOMCharacterData;
@@ -19,6 +20,30 @@ use ReflectionClass;
 
 final class Xml
 {
+    /**
+     * Loads an XML (or HTML) file into a DOMDocument object.
+     *
+     * @throws Exception
+     */
+    public static function loadFile(string $filename, bool $isHtml = false, bool $xinclude = false, bool $strict = false): DOMDocument
+    {
+        $reporting = \error_reporting(0);
+        $contents = \file_get_contents($filename);
+
+        \error_reporting($reporting);
+
+        if ($contents === false) {
+            throw new Exception(
+                \sprintf(
+                    'Could not read "%s".',
+                    $filename
+                )
+            );
+        }
+
+        return self::load($contents, $isHtml, $filename, $xinclude, $strict);
+    }
+
     /**
      * Load an $actual document into a DOMDocument.  This is called
      * from the selector assertions.
@@ -34,10 +59,10 @@ final class Xml
      * DOMDocument, use loadFile() instead.
      *
      * @param DOMDocument|string $actual
-     * @param bool               $isHtml
-     * @param string             $filename
-     * @param bool               $xinclude
-     * @param bool               $strict
+     * @param bool $isHtml
+     * @param string $filename
+     * @param bool $xinclude
+     * @param bool $strict
      *
      * @throws Exception
      */
@@ -61,11 +86,11 @@ final class Xml
             @\chdir(\dirname($filename));
         }
 
-        $document                     = new DOMDocument;
+        $document = new DOMDocument;
         $document->preserveWhiteSpace = false;
 
-        $internal  = \libxml_use_internal_errors(true);
-        $message   = '';
+        $internal = \libxml_use_internal_errors(true);
+        $message = '';
         $reporting = \error_reporting(0);
 
         if ($filename !== '') {
@@ -115,30 +140,6 @@ final class Xml
         return $document;
     }
 
-    /**
-     * Loads an XML (or HTML) file into a DOMDocument object.
-     *
-     * @throws Exception
-     */
-    public static function loadFile(string $filename, bool $isHtml = false, bool $xinclude = false, bool $strict = false): DOMDocument
-    {
-        $reporting = \error_reporting(0);
-        $contents  = \file_get_contents($filename);
-
-        \error_reporting($reporting);
-
-        if ($contents === false) {
-            throw new Exception(
-                \sprintf(
-                    'Could not read "%s".',
-                    $filename
-                )
-            );
-        }
-
-        return self::load($contents, $isHtml, $filename, $xinclude, $strict);
-    }
-
     public static function removeCharacterDataNodes(DOMNode $node): void
     {
         if ($node->hasChildNodes()) {
@@ -168,79 +169,6 @@ final class Xml
                 ENT_QUOTES
             )
         );
-    }
-
-    /**
-     * "Convert" a DOMElement object into a PHP variable.
-     *
-     * @return mixed
-     */
-    public static function xmlToVariable(DOMElement $element)
-    {
-        $variable = null;
-
-        switch ($element->tagName) {
-            case 'array':
-                $variable = [];
-
-                foreach ($element->childNodes as $entry) {
-                    if (!$entry instanceof DOMElement || $entry->tagName !== 'element') {
-                        continue;
-                    }
-                    $item = $entry->childNodes->item(0);
-
-                    if ($item instanceof DOMText) {
-                        $item = $entry->childNodes->item(1);
-                    }
-
-                    $value = self::xmlToVariable($item);
-
-                    if ($entry->hasAttribute('key')) {
-                        $variable[(string) $entry->getAttribute('key')] = $value;
-                    } else {
-                        $variable[] = $value;
-                    }
-                }
-
-                break;
-
-            case 'object':
-                $className = $element->getAttribute('class');
-
-                if ($element->hasChildNodes()) {
-                    $arguments       = $element->childNodes->item(0)->childNodes;
-                    $constructorArgs = [];
-
-                    foreach ($arguments as $argument) {
-                        if ($argument instanceof DOMElement) {
-                            $constructorArgs[] = self::xmlToVariable($argument);
-                        }
-                    }
-
-                    $class    = new ReflectionClass($className);
-                    $variable = $class->newInstanceArgs($constructorArgs);
-                } else {
-                    $variable = new $className;
-                }
-
-                break;
-
-            case 'boolean':
-                $variable = $element->textContent === 'true';
-
-                break;
-
-            case 'integer':
-            case 'double':
-            case 'string':
-                $variable = $element->textContent;
-
-                \settype($variable, $element->tagName);
-
-                break;
-        }
-
-        return $variable;
     }
 
     private static function convertToUtf8(string $string): string
@@ -277,5 +205,78 @@ final class Xml
         }
 
         return true;
+    }
+
+    /**
+     * "Convert" a DOMElement object into a PHP variable.
+     *
+     * @return mixed
+     */
+    public static function xmlToVariable(DOMElement $element)
+    {
+        $variable = null;
+
+        switch ($element->tagName) {
+            case 'array':
+                $variable = [];
+
+                foreach ($element->childNodes as $entry) {
+                    if (!$entry instanceof DOMElement || $entry->tagName !== 'element') {
+                        continue;
+                    }
+                    $item = $entry->childNodes->item(0);
+
+                    if ($item instanceof DOMText) {
+                        $item = $entry->childNodes->item(1);
+                    }
+
+                    $value = self::xmlToVariable($item);
+
+                    if ($entry->hasAttribute('key')) {
+                        $variable[(string)$entry->getAttribute('key')] = $value;
+                    } else {
+                        $variable[] = $value;
+                    }
+                }
+
+                break;
+
+            case 'object':
+                $className = $element->getAttribute('class');
+
+                if ($element->hasChildNodes()) {
+                    $arguments = $element->childNodes->item(0)->childNodes;
+                    $constructorArgs = [];
+
+                    foreach ($arguments as $argument) {
+                        if ($argument instanceof DOMElement) {
+                            $constructorArgs[] = self::xmlToVariable($argument);
+                        }
+                    }
+
+                    $class = new ReflectionClass($className);
+                    $variable = $class->newInstanceArgs($constructorArgs);
+                } else {
+                    $variable = new $className;
+                }
+
+                break;
+
+            case 'boolean':
+                $variable = $element->textContent === 'true';
+
+                break;
+
+            case 'integer':
+            case 'double':
+            case 'string':
+                $variable = $element->textContent;
+
+                \settype($variable, $element->tagName);
+
+                break;
+        }
+
+        return $variable;
     }
 }

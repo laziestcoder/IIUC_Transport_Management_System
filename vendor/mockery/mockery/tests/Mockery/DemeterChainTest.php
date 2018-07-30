@@ -20,14 +20,14 @@
  */
 
 if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
-    require_once __DIR__.'/DummyClasses/DemeterChain.php';
+    require_once __DIR__ . '/DummyClasses/DemeterChain.php';
 }
 
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 class DemeterChainTest extends MockeryTestCase
 {
-    /** @var  Mockery\Mock $this->mock */
+    /** @var  Mockery\Mock $this ->mock */
     private $mock;
 
     public function setUp()

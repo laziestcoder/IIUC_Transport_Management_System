@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Framework\MockObject\Stub;
 
 use PHPUnit\Framework\MockObject\Invocation;
@@ -31,10 +32,10 @@ class ReturnCallback implements Stub
         if (\is_array($this->callback)) {
             if (\is_object($this->callback[0])) {
                 $class = \get_class($this->callback[0]);
-                $type  = '->';
+                $type = '->';
             } else {
                 $class = $this->callback[0];
-                $type  = '::';
+                $type = '::';
             }
 
             return \sprintf(
@@ -47,6 +48,6 @@ class ReturnCallback implements Stub
         }
 
         return 'return result of user defined callback ' . $this->callback .
-               ' with the passed arguments';
+            ' with the passed arguments';
     }
 }

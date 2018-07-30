@@ -38,14 +38,14 @@ class Iterator implements \Iterator
         return false !== $this->current();
     }
 
-    public function next()
-    {
-        next($this->values);
-    }
-
     public function current()
     {
         return current($this->values);
+    }
+
+    public function next()
+    {
+        next($this->values);
     }
 
     public function key()

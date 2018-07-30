@@ -21,8 +21,8 @@
 
 namespace test\Mockery;
 
-use Mockery\MockInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\MockInterface;
 
 class MockClassWithUnknownTypeHintTest extends MockeryTestCase
 {

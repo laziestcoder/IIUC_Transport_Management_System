@@ -23,7 +23,6 @@ namespace test\Mockery;
 
 use Mockery as m;
 use Mockery\Spy;
-use Mockery\Exception\InvalidCountException;
 use PHPUnit\Framework\TestCase;
 
 class AllowsExpectsSyntaxTest extends TestCase

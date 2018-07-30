@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Runner;
 
 use PHPUnit\Framework\TestCase;
@@ -62,12 +63,12 @@ class StandardTestSuiteLoader implements TestSuiteLoader
             $testCaseClass = TestCase::class;
 
             foreach ($loadedClasses as $loadedClass) {
-                $class     = new ReflectionClass($loadedClass);
+                $class = new ReflectionClass($loadedClass);
                 $classFile = $class->getFileName();
 
                 if ($class->isSubclassOf($testCaseClass) && !$class->isAbstract()) {
                     $suiteClassName = $loadedClass;
-                    $testCaseClass  = $loadedClass;
+                    $testCaseClass = $loadedClass;
 
                     if ($classFile == \realpath($suiteClassFile)) {
                         break;

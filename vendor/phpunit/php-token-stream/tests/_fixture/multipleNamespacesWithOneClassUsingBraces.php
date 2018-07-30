@@ -1,4 +1,5 @@
 <?php
+
 namespace Foo\Bar;
 
 class TestClassInBar

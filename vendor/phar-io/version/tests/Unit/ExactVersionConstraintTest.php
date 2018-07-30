@@ -15,8 +15,10 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers PharIo\Version\ExactVersionConstraint
  */
-class ExactVersionConstraintTest extends TestCase {
-    public function compliantVersionProvider() {
+class ExactVersionConstraintTest extends TestCase
+{
+    public function compliantVersionProvider()
+    {
         return [
             ['1.0.2', new Version('1.0.2')],
             ['4.8.9', new Version('4.8.9')],
@@ -24,7 +26,8 @@ class ExactVersionConstraintTest extends TestCase {
         ];
     }
 
-    public function nonCompliantVersionProvider() {
+    public function nonCompliantVersionProvider()
+    {
         return [
             ['1.0.2', new Version('1.0.3')],
             ['4.8.9', new Version('4.7.9')],
@@ -35,10 +38,11 @@ class ExactVersionConstraintTest extends TestCase {
     /**
      * @dataProvider compliantVersionProvider
      *
-     * @param string  $constraintValue
+     * @param string $constraintValue
      * @param Version $version
      */
-    public function testReturnsTrueForCompliantVersion($constraintValue, Version $version) {
+    public function testReturnsTrueForCompliantVersion($constraintValue, Version $version)
+    {
         $constraint = new ExactVersionConstraint($constraintValue);
 
         $this->assertTrue($constraint->complies($version));
@@ -47,10 +51,11 @@ class ExactVersionConstraintTest extends TestCase {
     /**
      * @dataProvider nonCompliantVersionProvider
      *
-     * @param string  $constraintValue
+     * @param string $constraintValue
      * @param Version $version
      */
-    public function testReturnsFalseForNonCompliantVersion($constraintValue, Version $version) {
+    public function testReturnsFalseForNonCompliantVersion($constraintValue, Version $version)
+    {
         $constraint = new ExactVersionConstraint($constraintValue);
 
         $this->assertFalse($constraint->complies($version));

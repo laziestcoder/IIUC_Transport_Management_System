@@ -32,18 +32,18 @@ class Presenter
         "\0Exception\0previous",
     ];
     private $styles = [
-        'num'       => 'number',
-        'const'     => 'const',
-        'str'       => 'string',
-        'cchr'      => 'default',
-        'note'      => 'class',
-        'ref'       => 'default',
-        'public'    => 'public',
+        'num' => 'number',
+        'const' => 'const',
+        'str' => 'string',
+        'cchr' => 'default',
+        'note' => 'class',
+        'ref' => 'default',
+        'public' => 'public',
         'protected' => 'protected',
-        'private'   => 'private',
-        'meta'      => 'comment',
-        'key'       => 'comment',
-        'index'     => 'number',
+        'private' => 'private',
+        'meta' => 'comment',
+        'key' => 'comment',
+        'index' => 'number',
     ];
 
     public function __construct(OutputFormatter $formatter, $forceArrayIndexes = false)
@@ -102,8 +102,8 @@ class Presenter
      * If $depth is 0, the value will be presented as a ref instead.
      *
      * @param mixed $value
-     * @param int   $depth   (default: null)
-     * @param int   $options One of Presenter constants
+     * @param int $depth (default: null)
+     * @param int $options One of Presenter constants
      *
      * @return string
      */

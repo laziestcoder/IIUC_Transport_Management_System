@@ -24,13 +24,6 @@ class TranslatorListenerTest extends TestCase
     private $translator;
     private $requestStack;
 
-    protected function setUp()
-    {
-        $this->translator = $this->getMockBuilder('Symfony\Component\Translation\TranslatorInterface')->getMock();
-        $this->requestStack = $this->getMockBuilder('Symfony\Component\HttpFoundation\RequestStack')->getMock();
-        $this->listener = new TranslatorListener($this->translator, $this->requestStack);
-    }
-
     public function testLocaleIsSetInOnKernelRequest()
     {
         $this->translator
@@ -40,6 +33,19 @@ class TranslatorListenerTest extends TestCase
 
         $event = new GetResponseEvent($this->createHttpKernel(), $this->createRequest('fr'), HttpKernelInterface::MASTER_REQUEST);
         $this->listener->onKernelRequest($event);
+    }
+
+    private function createHttpKernel()
+    {
+        return $this->getMockBuilder('Symfony\Component\HttpKernel\HttpKernelInterface')->getMock();
+    }
+
+    private function createRequest($locale)
+    {
+        $request = new Request();
+        $request->setLocale($locale);
+
+        return $request;
     }
 
     public function testDefaultLocaleIsUsedOnExceptionsInOnKernelRequest()
@@ -69,6 +75,14 @@ class TranslatorListenerTest extends TestCase
         $this->listener->onKernelFinishRequest($event);
     }
 
+    private function setMasterRequest($request)
+    {
+        $this->requestStack
+            ->expects($this->any())
+            ->method('getParentRequest')
+            ->will($this->returnValue($request));
+    }
+
     public function testLocaleIsNotSetInOnKernelFinishRequestWhenParentRequestDoesNotExist()
     {
         $this->translator
@@ -95,24 +109,10 @@ class TranslatorListenerTest extends TestCase
         $this->listener->onKernelFinishRequest($event);
     }
 
-    private function createHttpKernel()
+    protected function setUp()
     {
-        return $this->getMockBuilder('Symfony\Component\HttpKernel\HttpKernelInterface')->getMock();
-    }
-
-    private function createRequest($locale)
-    {
-        $request = new Request();
-        $request->setLocale($locale);
-
-        return $request;
-    }
-
-    private function setMasterRequest($request)
-    {
-        $this->requestStack
-            ->expects($this->any())
-            ->method('getParentRequest')
-            ->will($this->returnValue($request));
+        $this->translator = $this->getMockBuilder('Symfony\Component\Translation\TranslatorInterface')->getMock();
+        $this->requestStack = $this->getMockBuilder('Symfony\Component\HttpFoundation\RequestStack')->getMock();
+        $this->listener = new TranslatorListener($this->translator, $this->requestStack);
     }
 }

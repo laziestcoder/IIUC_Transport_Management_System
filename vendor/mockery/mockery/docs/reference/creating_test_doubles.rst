@@ -1,5 +1,5 @@
 .. index::
-    single: Reference; Creating Test Doubles
+single: Reference; Creating Test Doubles
 
 Creating Test Doubles
 =====================

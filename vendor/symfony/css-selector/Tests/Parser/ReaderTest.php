@@ -31,6 +31,13 @@ class ReaderTest extends TestCase
         $this->assertTrue($reader->isEOF());
     }
 
+    private function assignPosition(Reader $reader, $value)
+    {
+        $position = new \ReflectionProperty($reader, 'position');
+        $position->setAccessible(true);
+        $position->setValue($reader, $value);
+    }
+
     public function testGetRemainingLength()
     {
         $reader = new Reader('hello');
@@ -91,12 +98,5 @@ class ReaderTest extends TestCase
         $reader = new Reader('hello');
         $reader->moveToEnd();
         $this->assertTrue($reader->isEOF());
-    }
-
-    private function assignPosition(Reader $reader, $value)
-    {
-        $position = new \ReflectionProperty($reader, 'position');
-        $position->setAccessible(true);
-        $position->setValue($reader, $value);
     }
 }

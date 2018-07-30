@@ -21,6 +21,11 @@
 
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
+interface MockeryTest_NameOfInterface
+{
+    public function foo();
+}
+
 /**
  * Ad-hoc unit tests for various scenarios reported by users
  */
@@ -96,11 +101,6 @@ class Mockery_AdhocTest extends MockeryTestCase
 
 class MockeryTest_NameOfExistingClass
 {
-}
-
-interface MockeryTest_NameOfInterface
-{
-    public function foo();
 }
 
 abstract class MockeryTest_NameOfAbstract

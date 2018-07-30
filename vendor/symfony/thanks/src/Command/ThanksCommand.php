@@ -14,11 +14,11 @@ namespace Symfony\Thanks\Command;
 use Composer\Command\BaseCommand;
 use Composer\Composer;
 use Composer\Downloader\TransportException;
-use Composer\Json\JsonFile;
-use Composer\Util\RemoteFilesystem;
 use Composer\Factory;
+use Composer\Json\JsonFile;
 use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PreFileDownloadEvent;
+use Composer\Util\RemoteFilesystem;
 use Hirak\Prestissimo\CurlRemoteFilesystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -110,8 +110,7 @@ class ThanksCommand extends BaseCommand
             ->setDescription(sprintf('Give thanks (in the form of a GitHub %s) to your fellow PHP package maintainers.', $this->star))
             ->setDefinition([
                 new InputOption('dry-run', null, InputOption::VALUE_NONE, 'Don\'t actually send the stars'),
-            ])
-        ;
+            ]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -158,20 +157,20 @@ class ThanksCommand extends BaseCommand
         $rfs = Factory::createRemoteFilesystem($this->getIo(), $composer->getConfig());
 
         $i = 0;
-        $template = '_%d: repository(owner:"%s",name:"%s"){id,viewerHasStarred}'."\n";
+        $template = '_%d: repository(owner:"%s",name:"%s"){id,viewerHasStarred}' . "\n";
         $graphql = '';
 
         foreach ($urls as $package => $url) {
             if (preg_match('#^https://github.com/([^/]++)/([^./]++)#', $url, $url)) {
                 $graphql .= sprintf($template, ++$i, $url[1], $url[2]);
-                $aliases['_'.$i] = [$package, $url[0]];
+                $aliases['_' . $i] = [$package, $url[0]];
             }
         }
 
         $failures = [];
         $repos = $this->callGitHub($rfs, sprintf("query{\n%s}", $graphql), $failures);
 
-        $template = '%1$s: addStar(input:{clientMutationId:"%s",starrableId:"%s"}){clientMutationId}'."\n";
+        $template = '%1$s: addStar(input:{clientMutationId:"%s",starrableId:"%s"}){clientMutationId}' . "\n";
         $graphql = '';
         $notStarred = [];
 
@@ -210,6 +209,20 @@ class ThanksCommand extends BaseCommand
         return 0;
     }
 
+    private function getDirectlyRequiredPackageNames()
+    {
+        $file = new JsonFile(Factory::getComposerFile(), null, $this->getIO());
+
+        if (!$file->exists()) {
+            throw new \Exception('Could not find your composer.json file!');
+        }
+
+        $data = $file->read() + ['require' => [], 'require-dev' => []];
+        $data = array_keys($data['require'] + $data['require-dev']);
+
+        return array_combine($data, $data);
+    }
+
     private function callGitHub(RemoteFilesystem $rfs, $graphql, &$failures = [])
     {
         if ($eventDispatcher = $this->getComposer()->getEventDispatcher()) {
@@ -243,19 +256,5 @@ class ThanksCommand extends BaseCommand
         }
 
         return $result['data'];
-    }
-
-    private function getDirectlyRequiredPackageNames()
-    {
-        $file = new JsonFile(Factory::getComposerFile(), null, $this->getIO());
-
-        if (!$file->exists()) {
-            throw new \Exception('Could not find your composer.json file!');
-        }
-
-        $data = $file->read() + ['require' => [], 'require-dev' => []];
-        $data = array_keys($data['require'] + $data['require-dev']);
-
-        return array_combine($data, $data);
     }
 }

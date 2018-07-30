@@ -10,5 +10,6 @@
 
 namespace PharIo\Manifest;
 
-class InvalidEmailException extends \InvalidArgumentException implements Exception {
+class InvalidEmailException extends \InvalidArgumentException implements Exception
+{
 }

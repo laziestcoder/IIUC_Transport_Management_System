@@ -28,6 +28,8 @@ abstract class AbstractOperationTest extends TestCase
         );
     }
 
+    abstract protected function createOperation(MessageCatalogueInterface $source, MessageCatalogueInterface $target);
+
     public function testGetMergedDomains()
     {
         $this->assertEquals(
@@ -69,6 +71,4 @@ abstract class AbstractOperationTest extends TestCase
             )->getResult()
         );
     }
-
-    abstract protected function createOperation(MessageCatalogueInterface $source, MessageCatalogueInterface $target);
 }

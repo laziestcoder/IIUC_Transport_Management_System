@@ -270,6 +270,8 @@ abstract class AbstractEventDispatcherTest extends TestCase
         $this->assertTrue($dispatcher->hasListeners('bug.62976'));
     }
 
+    abstract protected function createEventDispatcher();
+
     public function testHasListenersWhenAddedCallbackListenerIsRemoved()
     {
         $listener = function () {
@@ -374,8 +376,6 @@ abstract class AbstractEventDispatcherTest extends TestCase
         $this->dispatcher = $this->createEventDispatcher();
         $this->listener = new TestEventListener();
     }
-
-    abstract protected function createEventDispatcher();
 
     protected function tearDown()
     {

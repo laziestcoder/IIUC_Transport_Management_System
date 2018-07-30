@@ -3,7 +3,6 @@
 namespace Mockery;
 
 use Mockery as m;
-use Mockery\Fixtures\SemiReservedWordsAsMethods;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -16,7 +15,7 @@ class MockeryCanMockClassesWithSemiReservedWordsTest extends TestCase
      */
     public function smoke_test()
     {
-        require __DIR__.'/Fixtures/SemiReservedWordsAsMethods.php';
+        require __DIR__ . '/Fixtures/SemiReservedWordsAsMethods.php';
 
         $mock = m::mock("Mockery\Fixtures\SemiReservedWordsAsMethods");
 

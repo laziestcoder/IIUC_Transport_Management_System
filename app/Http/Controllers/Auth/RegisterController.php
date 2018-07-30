@@ -68,16 +68,38 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        if ($request->hasFile('image')) {
+            //Get Filename with extension
+            $filenameWithExt = $request->file('image')->getClientOriginalName();
+
+            // Get just file name
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+
+            // Get just file extension
+            $extension = $request->file('image')->getClientOriginalExtension();
+
+            // File name to store
+            $fileNameToStore = $filename . '_' . time() . '.' . $extension;
+
+            //uload image
+            $path = $request->file('image')->storeAs('public/image/user', $fileNameToStore);
+
+        } else {
+            $fileNameToStore = 'defaultAdmin.png';
+        }
+
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
             'userrole' => $data['userrole'],
             'gender' => $data['gender'],
-//            'image' => $data['image'],
+            'image' => $fileNameToStore,
             'token' => base64_encode($data['email']) . str_random(5),
         ]);
     }
+
+    
     // Account activation process
 
 

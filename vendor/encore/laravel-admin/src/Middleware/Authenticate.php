@@ -3,7 +3,6 @@
 namespace Encore\Admin\Middleware;
 
 use Closure;
-use Encore\Admin\Admin;
 use Illuminate\Support\Facades\Auth;
 
 class Authenticate
@@ -12,7 +11,7 @@ class Authenticate
      * Handle an incoming request.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
+     * @param \Closure $next
      *
      * @return mixed
      */

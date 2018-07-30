@@ -17,17 +17,6 @@ class PHP_Token_ClosureTest extends TestCase
      */
     private $functions;
 
-    protected function setUp()
-    {
-        $ts = new PHP_Token_Stream(TEST_FILES_PATH . 'closure.php');
-
-        foreach ($ts as $token) {
-            if ($token instanceof PHP_Token_FUNCTION) {
-                $this->functions[] = $token;
-            }
-        }
-    }
-
     /**
      * @covers PHP_Token_FUNCTION::getArguments
      */
@@ -74,5 +63,16 @@ class PHP_Token_ClosureTest extends TestCase
         $this->assertEquals(3, $this->functions[1]->getLine());
         $this->assertEquals(4, $this->functions[2]->getLine());
         $this->assertEquals(5, $this->functions[3]->getLine());
+    }
+
+    protected function setUp()
+    {
+        $ts = new PHP_Token_Stream(TEST_FILES_PATH . 'closure.php');
+
+        foreach ($ts as $token) {
+            if ($token instanceof PHP_Token_FUNCTION) {
+                $this->functions[] = $token;
+            }
+        }
     }
 }

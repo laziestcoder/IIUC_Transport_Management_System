@@ -41,7 +41,7 @@ abstract class AbstractField implements FieldInterface
      * Check to see if a field is satisfied by a value
      *
      * @param string $dateValue Date value to check
-     * @param string $value     Value to test
+     * @param string $value Value to test
      *
      * @return bool
      */
@@ -57,18 +57,6 @@ abstract class AbstractField implements FieldInterface
     }
 
     /**
-     * Check if a value is a range
-     *
-     * @param string $value Value to test
-     *
-     * @return bool
-     */
-    public function isRange($value)
-    {
-        return strpos($value, '-') !== false;
-    }
-
-    /**
      * Check if a value is an increments of ranges
      *
      * @param string $value Value to test
@@ -81,32 +69,10 @@ abstract class AbstractField implements FieldInterface
     }
 
     /**
-     * Test if a value is within a range
-     *
-     * @param string $dateValue Set date value
-     * @param string $value     Value to test
-     *
-     * @return bool
-     */
-    public function isInRange($dateValue, $value)
-    {
-        $parts = array_map(function($value) {
-                $value = trim($value);
-                $value = $this->convertLiterals($value);
-                return $value;
-            },
-            explode('-', $value, 2)
-        );
-
-
-        return $dateValue >= $parts[0] && $dateValue <= $parts[1];
-    }
-
-    /**
      * Test if a value is within an increments of ranges (offset[-to]/step size)
      *
      * @param string $dateValue Set date value
-     * @param string $value     Value to test
+     * @param string $value Value to test
      *
      * @return bool
      */
@@ -149,10 +115,56 @@ abstract class AbstractField implements FieldInterface
     }
 
     /**
+     * Check if a value is a range
+     *
+     * @param string $value Value to test
+     *
+     * @return bool
+     */
+    public function isRange($value)
+    {
+        return strpos($value, '-') !== false;
+    }
+
+    /**
+     * Test if a value is within a range
+     *
+     * @param string $dateValue Set date value
+     * @param string $value Value to test
+     *
+     * @return bool
+     */
+    public function isInRange($dateValue, $value)
+    {
+        $parts = array_map(function ($value) {
+            $value = trim($value);
+            $value = $this->convertLiterals($value);
+            return $value;
+        },
+            explode('-', $value, 2)
+        );
+
+
+        return $dateValue >= $parts[0] && $dateValue <= $parts[1];
+    }
+
+    protected function convertLiterals($value)
+    {
+        if (count($this->literals)) {
+            $key = array_search($value, $this->literals);
+            if ($key !== false) {
+                return $key;
+            }
+        }
+
+        return $value;
+    }
+
+    /**
      * Returns a range of values for the given cron expression
      *
      * @param string $expression The expression to evaluate
-     * @param int $max           Maximum offset for range
+     * @param int $max Maximum offset for range
      *
      * @return array
      */
@@ -177,8 +189,7 @@ abstract class AbstractField implements FieldInterface
                 $offset = $this->convertLiterals($offset);
                 $to = $this->convertLiterals($to);
                 $stepSize = 1;
-            }
-            else {
+            } else {
                 $range = array_map('trim', explode('/', $expression, 2));
                 $stepSize = isset($range[1]) ? $range[1] : 0;
                 $range = $range[0];
@@ -191,24 +202,11 @@ abstract class AbstractField implements FieldInterface
                 $values[] = (int)$i;
             }
             sort($values);
-        }
-        else {
+        } else {
             $values = array($expression);
         }
 
         return $values;
-    }
-
-    protected function convertLiterals($value)
-    {
-        if (count($this->literals)) {
-            $key = array_search($value, $this->literals);
-            if ($key !== false) {
-                return $key;
-            }
-        }
-
-        return $value;
     }
 
     /**
@@ -259,7 +257,7 @@ abstract class AbstractField implements FieldInterface
 
         // We should have a numeric by now, so coerce this into an integer
         if (filter_var($value, FILTER_VALIDATE_INT) !== false) {
-            $value = (int) $value;
+            $value = (int)$value;
         }
 
         return in_array($value, $this->fullRange, true);

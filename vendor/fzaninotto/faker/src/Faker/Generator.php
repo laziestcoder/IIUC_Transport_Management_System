@@ -24,8 +24,8 @@ namespace Faker;
  * @property string $postcode
  * @property string $address
  * @property string $country
- * @property float  $latitude
- * @property float  $longitude
+ * @property float $latitude
+ * @property float $longitude
  *
  * @property string $ean13
  * @property string $ean8
@@ -85,22 +85,22 @@ namespace Faker;
  * @property string $localIpv4
  * @property string $macAddress
  *
- * @property int       $unixTime
+ * @property int $unixTime
  * @property \DateTime $dateTime
  * @property \DateTime $dateTimeAD
- * @property string    $iso8601
+ * @property string $iso8601
  * @property \DateTime $dateTimeThisCentury
  * @property \DateTime $dateTimeThisDecade
  * @property \DateTime $dateTimeThisYear
  * @property \DateTime $dateTimeThisMonth
- * @property string    $amPm
- * @property int       $dayOfMonth
- * @property int       $dayOfWeek
- * @property int       $month
- * @property string    $monthName
- * @property int       $year
- * @property int       $century
- * @property string    $timezone
+ * @property string $amPm
+ * @property int $dayOfMonth
+ * @property int $dayOfWeek
+ * @property int $month
+ * @property string $monthName
+ * @property int $year
+ * @property int $century
+ * @property string $timezone
  * @method string amPm($max = 'now')
  * @method string date($format = 'Y-m-d', $max = 'now')
  * @method string dayOfMonth($max = 'now')
@@ -131,8 +131,8 @@ namespace Faker;
  * @property boolean $boolean
  * @method boolean boolean($chanceOfGettingTrue = 50)
  *
- * @property int    $randomDigit
- * @property int    $randomDigitNotNull
+ * @property int $randomDigit
+ * @property int $randomDigitNotNull
  * @property string $randomLetter
  * @property string $randomAscii
  * @method int randomNumber($nbDigits = null, $strict = false)
@@ -210,11 +210,48 @@ class Generator
             mt_srand();
         } else {
             if (PHP_VERSION_ID < 70100) {
-                mt_srand((int) $seed);
+                mt_srand((int)$seed);
             } else {
-                mt_srand((int) $seed, MT_RAND_PHP);
+                mt_srand((int)$seed, MT_RAND_PHP);
             }
         }
+    }
+
+    /**
+     * Replaces tokens ('{{ tokenName }}') with the result from the token method call
+     *
+     * @param  string $string String that needs to bet parsed
+     * @return string
+     */
+    public function parse($string)
+    {
+        return preg_replace_callback('/\{\{\s?(\w+)\s?\}\}/u', array($this, 'callFormatWithMatches'), $string);
+    }
+
+    /**
+     * @param string $attribute
+     *
+     * @return mixed
+     */
+    public function __get($attribute)
+    {
+        return $this->format($attribute);
+    }
+
+    /**
+     * @param string $method
+     * @param array $attributes
+     *
+     * @return mixed
+     */
+    public function __call($method, $attributes)
+    {
+        return $this->format($method, $attributes);
+    }
+
+    protected function callFormatWithMatches($matches)
+    {
+        return $this->format($matches[1]);
     }
 
     public function format($formatter, $arguments = array())
@@ -240,42 +277,5 @@ class Generator
             }
         }
         throw new \InvalidArgumentException(sprintf('Unknown formatter "%s"', $formatter));
-    }
-
-    /**
-     * Replaces tokens ('{{ tokenName }}') with the result from the token method call
-     *
-     * @param  string $string String that needs to bet parsed
-     * @return string
-     */
-    public function parse($string)
-    {
-        return preg_replace_callback('/\{\{\s?(\w+)\s?\}\}/u', array($this, 'callFormatWithMatches'), $string);
-    }
-
-    protected function callFormatWithMatches($matches)
-    {
-        return $this->format($matches[1]);
-    }
-
-    /**
-     * @param string $attribute
-     *
-     * @return mixed
-     */
-    public function __get($attribute)
-    {
-        return $this->format($attribute);
-    }
-
-    /**
-     * @param string $method
-     * @param array $attributes
-     *
-     * @return mixed
-     */
-    public function __call($method, $attributes)
-    {
-        return $this->format($method, $attributes);
     }
 }

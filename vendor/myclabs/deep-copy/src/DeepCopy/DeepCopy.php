@@ -8,13 +8,13 @@ use DateTimeZone;
 use DeepCopy\Exception\CloneException;
 use DeepCopy\Filter\Filter;
 use DeepCopy\Matcher\Matcher;
+use DeepCopy\Reflection\ReflectionHelper;
 use DeepCopy\TypeFilter\Date\DateIntervalFilter;
 use DeepCopy\TypeFilter\Spl\SplDoublyLinkedListFilter;
 use DeepCopy\TypeFilter\TypeFilter;
 use DeepCopy\TypeMatcher\TypeMatcher;
 use ReflectionObject;
 use ReflectionProperty;
-use DeepCopy\Reflection\ReflectionHelper;
 use SplDoublyLinkedList;
 
 /**
@@ -52,7 +52,7 @@ class DeepCopy
     private $useCloneMethod;
 
     /**
-     * @param bool $useCloneMethod   If set to true, when an object implements the __clone() function, it will be used
+     * @param bool $useCloneMethod If set to true, when an object implements the __clone() function, it will be used
      *                               instead of the regular deep cloning.
      */
     public function __construct($useCloneMethod = false)
@@ -61,6 +61,14 @@ class DeepCopy
 
         $this->addTypeFilter(new DateIntervalFilter(), new TypeMatcher(DateInterval::class));
         $this->addTypeFilter(new SplDoublyLinkedListFilter($this), new TypeMatcher(SplDoublyLinkedList::class));
+    }
+
+    public function addTypeFilter(TypeFilter $filter, TypeMatcher $matcher)
+    {
+        $this->typeFilters[] = [
+            'matcher' => $matcher,
+            'filter' => $filter,
+        ];
     }
 
     /**
@@ -91,22 +99,6 @@ class DeepCopy
         return $this->recursiveCopy($object);
     }
 
-    public function addFilter(Filter $filter, Matcher $matcher)
-    {
-        $this->filters[] = [
-            'matcher' => $matcher,
-            'filter'  => $filter,
-        ];
-    }
-
-    public function addTypeFilter(TypeFilter $filter, TypeMatcher $matcher)
-    {
-        $this->typeFilters[] = [
-            'matcher' => $matcher,
-            'filter'  => $filter,
-        ];
-    }
-
     private function recursiveCopy($var)
     {
         // Matches Type Filter
@@ -125,12 +117,56 @@ class DeepCopy
         }
 
         // Scalar
-        if (! is_object($var)) {
+        if (!is_object($var)) {
             return $var;
         }
 
         // Object
         return $this->copyObject($var);
+    }
+
+    /**
+     * Returns first filter that matches variable, `null` if no such filter found.
+     *
+     * @param array $filterRecords Associative array with 2 members: 'filter' with value of type {@see TypeFilter} and
+     *                             'matcher' with value of type {@see TypeMatcher}
+     * @param mixed $var
+     *
+     * @return TypeFilter|null
+     */
+    private function getFirstMatchedTypeFilter(array $filterRecords, $var)
+    {
+        $matched = $this->first(
+            $filterRecords,
+            function (array $record) use ($var) {
+                /* @var TypeMatcher $matcher */
+                $matcher = $record['matcher'];
+
+                return $matcher->matches($var);
+            }
+        );
+
+        return isset($matched) ? $matched['filter'] : null;
+    }
+
+    /**
+     * Returns first element that matches predicate, `null` if no such element found.
+     *
+     * @param array $elements Array of ['filter' => Filter, 'matcher' => Matcher] pairs.
+     * @param callable $predicate Predicate arguments are: element.
+     *
+     * @return array|null Associative array with 2 members: 'filter' with value of type {@see TypeFilter} and 'matcher'
+     *                    with value of type {@see TypeMatcher} or `null`.
+     */
+    private function first(array $elements, callable $predicate)
+    {
+        foreach ($elements as $element) {
+            if (call_user_func($predicate, $element)) {
+                return $element;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -235,47 +271,11 @@ class DeepCopy
         $property->setValue($object, $this->recursiveCopy($propertyValue));
     }
 
-    /**
-     * Returns first filter that matches variable, `null` if no such filter found.
-     *
-     * @param array $filterRecords Associative array with 2 members: 'filter' with value of type {@see TypeFilter} and
-     *                             'matcher' with value of type {@see TypeMatcher}
-     * @param mixed $var
-     *
-     * @return TypeFilter|null
-     */
-    private function getFirstMatchedTypeFilter(array $filterRecords, $var)
+    public function addFilter(Filter $filter, Matcher $matcher)
     {
-        $matched = $this->first(
-            $filterRecords,
-            function (array $record) use ($var) {
-                /* @var TypeMatcher $matcher */
-                $matcher = $record['matcher'];
-
-                return $matcher->matches($var);
-            }
-        );
-
-        return isset($matched) ? $matched['filter'] : null;
-    }
-
-    /**
-     * Returns first element that matches predicate, `null` if no such element found.
-     *
-     * @param array    $elements Array of ['filter' => Filter, 'matcher' => Matcher] pairs.
-     * @param callable $predicate Predicate arguments are: element.
-     *
-     * @return array|null Associative array with 2 members: 'filter' with value of type {@see TypeFilter} and 'matcher'
-     *                    with value of type {@see TypeMatcher} or `null`.
-     */
-    private function first(array $elements, callable $predicate)
-    {
-        foreach ($elements as $element) {
-            if (call_user_func($predicate, $element)) {
-                return $element;
-            }
-        }
-
-        return null;
+        $this->filters[] = [
+            'matcher' => $matcher,
+            'filter' => $filter,
+        ];
     }
 }

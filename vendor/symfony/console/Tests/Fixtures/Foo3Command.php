@@ -10,8 +10,7 @@ class Foo3Command extends Command
     {
         $this
             ->setName('foo3:bar')
-            ->setDescription('The foo3:bar command')
-        ;
+            ->setDescription('The foo3:bar command');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

@@ -10,8 +10,7 @@ class TestTiti extends Command
     {
         $this
             ->setName('test-titi')
-            ->setDescription('The test:titi command')
-        ;
+            ->setDescription('The test:titi command');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

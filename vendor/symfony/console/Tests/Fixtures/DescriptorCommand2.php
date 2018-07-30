@@ -26,7 +26,6 @@ class DescriptorCommand2 extends Command
             ->addUsage('-o|--option_name <argument_name>')
             ->addUsage('<argument_name>')
             ->addArgument('argument_name', InputArgument::REQUIRED)
-            ->addOption('option_name', 'o', InputOption::VALUE_NONE)
-        ;
+            ->addOption('option_name', 'o', InputOption::VALUE_NONE);
     }
 }

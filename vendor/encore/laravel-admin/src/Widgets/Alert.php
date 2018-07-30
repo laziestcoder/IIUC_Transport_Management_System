@@ -34,13 +34,13 @@ class Alert extends Widget implements Renderable
     /**
      * Alert constructor.
      *
-     * @param mixed  $content
+     * @param mixed $content
      * @param string $title
      * @param string $style
      */
     public function __construct($content, $title = '', $style = 'danger')
     {
-        $this->content = (string) $content;
+        $this->content = (string)$content;
 
         $this->title = $title ?: trans('admin.alert');
 
@@ -76,21 +76,6 @@ class Alert extends Widget implements Renderable
     }
 
     /**
-     * @return array
-     */
-    protected function variables()
-    {
-        $this->class("alert alert-{$this->style} alert-dismissable");
-
-        return [
-            'title'      => $this->title,
-            'content'    => $this->content,
-            'icon'       => $this->icon,
-            'attributes' => $this->formatAttributes(),
-        ];
-    }
-
-    /**
      * Render alter.
      *
      * @return string
@@ -98,5 +83,20 @@ class Alert extends Widget implements Renderable
     public function render()
     {
         return view($this->view, $this->variables())->render();
+    }
+
+    /**
+     * @return array
+     */
+    protected function variables()
+    {
+        $this->class("alert alert-{$this->style} alert-dismissable");
+
+        return [
+            'title' => $this->title,
+            'content' => $this->content,
+            'icon' => $this->icon,
+            'attributes' => $this->formatAttributes(),
+        ];
     }
 }

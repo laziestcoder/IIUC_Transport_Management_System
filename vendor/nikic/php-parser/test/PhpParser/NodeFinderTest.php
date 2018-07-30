@@ -7,7 +7,24 @@ use PHPUnit\Framework\TestCase;
 
 class NodeFinderTest extends TestCase
 {
-    private function getStmtsAndVars() {
+    public function testFind()
+    {
+        $finder = new NodeFinder;
+        list($stmts, $vars) = $this->getStmtsAndVars();
+        $varFilter = function (Node $node) {
+            return $node instanceof Expr\Variable;
+        };
+        $this->assertSame($vars, $finder->find($stmts, $varFilter));
+        $this->assertSame($vars, $finder->find($stmts[0], $varFilter));
+
+        $noneFilter = function () {
+            return false;
+        };
+        $this->assertSame([], $finder->find($stmts, $noneFilter));
+    }
+
+    private function getStmtsAndVars()
+    {
         $assign = new Expr\Assign(new Expr\Variable('a'), new Expr\BinaryOp\Concat(
             new Expr\Variable('b'), new Expr\Variable('c')
         ));
@@ -16,20 +33,8 @@ class NodeFinderTest extends TestCase
         return [$stmts, $vars];
     }
 
-    public function testFind() {
-        $finder = new NodeFinder;
-        list($stmts, $vars) = $this->getStmtsAndVars();
-        $varFilter = function(Node $node) {
-            return $node instanceof Expr\Variable;
-        };
-        $this->assertSame($vars, $finder->find($stmts, $varFilter));
-        $this->assertSame($vars, $finder->find($stmts[0], $varFilter));
-
-        $noneFilter = function () { return false; };
-        $this->assertSame([], $finder->find($stmts, $noneFilter));
-    }
-
-    public function testFindInstanceOf() {
+    public function testFindInstanceOf()
+    {
         $finder = new NodeFinder;
         list($stmts, $vars) = $this->getStmtsAndVars();
         $this->assertSame($vars, $finder->findInstanceOf($stmts, Expr\Variable::class));
@@ -37,20 +42,24 @@ class NodeFinderTest extends TestCase
         $this->assertSame([], $finder->findInstanceOf($stmts, Expr\BinaryOp\Mul::class));
     }
 
-    public function testFindFirst() {
+    public function testFindFirst()
+    {
         $finder = new NodeFinder;
         list($stmts, $vars) = $this->getStmtsAndVars();
-        $varFilter = function(Node $node) {
+        $varFilter = function (Node $node) {
             return $node instanceof Expr\Variable;
         };
         $this->assertSame($vars[0], $finder->findFirst($stmts, $varFilter));
         $this->assertSame($vars[0], $finder->findFirst($stmts[0], $varFilter));
 
-        $noneFilter = function () { return false; };
+        $noneFilter = function () {
+            return false;
+        };
         $this->assertNull($finder->findFirst($stmts, $noneFilter));
     }
 
-    public function testFindFirstInstanceOf() {
+    public function testFindFirstInstanceOf()
+    {
         $finder = new NodeFinder;
         list($stmts, $vars) = $this->getStmtsAndVars();
         $this->assertSame($vars[0], $finder->findFirstInstanceOf($stmts, Expr\Variable::class));

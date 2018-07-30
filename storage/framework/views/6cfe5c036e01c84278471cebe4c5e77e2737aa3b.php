@@ -74,6 +74,7 @@
                 </tbody>
             </table>
             <?php echo e($BusRoutes->links()); ?>
+
         <?php else: ?>
             <p>No information found</p>
         <?php endif; ?>

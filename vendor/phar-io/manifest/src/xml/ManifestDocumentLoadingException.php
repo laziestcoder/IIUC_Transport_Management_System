@@ -12,7 +12,8 @@ namespace PharIo\Manifest;
 
 use LibXMLError;
 
-class ManifestDocumentLoadingException extends \Exception implements Exception {
+class ManifestDocumentLoadingException extends \Exception implements Exception
+{
     /**
      * @var LibXMLError[]
      */
@@ -23,9 +24,10 @@ class ManifestDocumentLoadingException extends \Exception implements Exception {
      *
      * @param LibXMLError[] $libxmlErrors
      */
-    public function __construct(array $libxmlErrors) {
+    public function __construct(array $libxmlErrors)
+    {
         $this->libxmlErrors = $libxmlErrors;
-        $first              = $this->libxmlErrors[0];
+        $first = $this->libxmlErrors[0];
 
         parent::__construct(
             sprintf(
@@ -42,7 +44,8 @@ class ManifestDocumentLoadingException extends \Exception implements Exception {
     /**
      * @return LibXMLError[]
      */
-    public function getLibxmlErrors() {
+    public function getLibxmlErrors()
+    {
         return $this->libxmlErrors;
     }
 }

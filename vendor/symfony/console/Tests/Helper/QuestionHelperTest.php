@@ -12,9 +12,9 @@
 namespace Symfony\Component\Console\Tests\Helper;
 
 use Symfony\Component\Console\Formatter\OutputFormatter;
-use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\FormatterHelper;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
@@ -89,6 +89,20 @@ class QuestionHelperTest extends AbstractQuestionHelperTest
         $this->assertEquals('Superman', $questionHelper->ask($this->createStreamableInputInterfaceMock($inputStream, true), $this->createOutputInterface(), $question));
     }
 
+    protected function getInputStream($input)
+    {
+        $stream = fopen('php://memory', 'r+', false);
+        fwrite($stream, $input);
+        rewind($stream);
+
+        return $stream;
+    }
+
+    protected function createOutputInterface()
+    {
+        return new StreamOutput(fopen('php://memory', 'r+', false));
+    }
+
     public function testAsk()
     {
         $dialog = new QuestionHelper();
@@ -136,6 +150,13 @@ class QuestionHelperTest extends AbstractQuestionHelperTest
         $this->assertEquals('AcmeDemoBundle', $dialog->ask($this->createStreamableInputInterfaceMock($inputStream), $this->createOutputInterface(), $question));
         $this->assertEquals('AsseticBundle', $dialog->ask($this->createStreamableInputInterfaceMock($inputStream), $this->createOutputInterface(), $question));
         $this->assertEquals('FooBundle', $dialog->ask($this->createStreamableInputInterfaceMock($inputStream), $this->createOutputInterface(), $question));
+    }
+
+    private function hasSttyAvailable()
+    {
+        exec('stty 2>&1', $output, $exitcode);
+
+        return 0 === $exitcode;
     }
 
     public function testAskWithAutocompleteWithNonSequentialKeys()
@@ -240,9 +261,9 @@ class QuestionHelperTest extends AbstractQuestionHelperTest
     {
         $dialog = new QuestionHelper();
 
-        $inputStream = $this->getInputStream($question."\n");
+        $inputStream = $this->getInputStream($question . "\n");
         $question = new ConfirmationQuestion('Do you like French fries?', $default);
-        $this->assertEquals($expected, $dialog->ask($this->createStreamableInputInterfaceMock($inputStream), $this->createOutputInterface(), $question), 'confirmation question should '.($expected ? 'pass' : 'cancel'));
+        $this->assertEquals($expected, $dialog->ask($this->createStreamableInputInterfaceMock($inputStream), $this->createOutputInterface(), $question), 'confirmation question should ' . ($expected ? 'pass' : 'cancel'));
     }
 
     public function getAskConfirmationData()
@@ -316,7 +337,7 @@ class QuestionHelperTest extends AbstractQuestionHelperTest
 
         $question = new ChoiceQuestion('Please select the environment to load', $possibleChoices);
         $question->setMaxAttempts(1);
-        $answer = $dialog->ask($this->createStreamableInputInterfaceMock($this->getInputStream($providedAnswer."\n")), $this->createOutputInterface(), $question);
+        $answer = $dialog->ask($this->createStreamableInputInterfaceMock($this->getInputStream($providedAnswer . "\n")), $this->createOutputInterface(), $question);
 
         $this->assertSame($expectedValue, $answer);
     }
@@ -344,7 +365,7 @@ class QuestionHelperTest extends AbstractQuestionHelperTest
         );
 
         $dialog = new QuestionHelper();
-        $inputStream = $this->getInputStream($providedAnswer."\n");
+        $inputStream = $this->getInputStream($providedAnswer . "\n");
         $helperSet = new HelperSet(array(new FormatterHelper()));
         $dialog->setHelperSet($helperSet);
 
@@ -382,7 +403,7 @@ class QuestionHelperTest extends AbstractQuestionHelperTest
 
         $question = new ChoiceQuestion('Please select the environment to load', $possibleChoices);
         $question->setMaxAttempts(1);
-        $answer = $dialog->ask($this->createStreamableInputInterfaceMock($this->getInputStream($providedAnswer."\n")), $this->createOutputInterface(), $question);
+        $answer = $dialog->ask($this->createStreamableInputInterfaceMock($this->getInputStream($providedAnswer . "\n")), $this->createOutputInterface(), $question);
 
         $this->assertSame($expectedValue, $answer);
     }
@@ -416,7 +437,7 @@ class QuestionHelperTest extends AbstractQuestionHelperTest
 
         $question = new ChoiceQuestion('Please select the environment to load', $possibleChoices);
         $question->setMaxAttempts(1);
-        $answer = $dialog->ask($this->createStreamableInputInterfaceMock($this->getInputStream($providedAnswer."\n")), $this->createOutputInterface(), $question);
+        $answer = $dialog->ask($this->createStreamableInputInterfaceMock($this->getInputStream($providedAnswer . "\n")), $this->createOutputInterface(), $question);
 
         $this->assertSame($expectedValue, $answer);
     }
@@ -560,20 +581,6 @@ class QuestionHelperTest extends AbstractQuestionHelperTest
         $this->assertEquals('FooBundle', $dialog->ask($this->createStreamableInputInterfaceMock($inputStream), $this->createOutputInterface(), $question));
     }
 
-    protected function getInputStream($input)
-    {
-        $stream = fopen('php://memory', 'r+', false);
-        fwrite($stream, $input);
-        rewind($stream);
-
-        return $stream;
-    }
-
-    protected function createOutputInterface()
-    {
-        return new StreamOutput(fopen('php://memory', 'r+', false));
-    }
-
     protected function createInputInterfaceMock($interactive = true)
     {
         $mock = $this->getMockBuilder('Symfony\Component\Console\Input\InputInterface')->getMock();
@@ -582,13 +589,6 @@ class QuestionHelperTest extends AbstractQuestionHelperTest
             ->will($this->returnValue($interactive));
 
         return $mock;
-    }
-
-    private function hasSttyAvailable()
-    {
-        exec('stty 2>&1', $output, $exitcode);
-
-        return 0 === $exitcode;
     }
 }
 

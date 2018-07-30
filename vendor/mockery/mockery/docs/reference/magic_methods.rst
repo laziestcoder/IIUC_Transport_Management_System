@@ -1,5 +1,5 @@
 .. index::
-    single: Mocking; Magic Methods
+single: Mocking; Magic Methods
 
 PHP Magic Methods
 =================

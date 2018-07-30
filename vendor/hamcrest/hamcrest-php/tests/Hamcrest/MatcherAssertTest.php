@@ -1,13 +1,9 @@
 <?php
+
 namespace Hamcrest;
 
 class MatcherAssertTest extends \PhpUnit_Framework_TestCase
 {
-
-    protected function setUp()
-    {
-        \Hamcrest\MatcherAssert::resetCount();
-    }
 
     public function testResetCount()
     {
@@ -186,5 +182,10 @@ class MatcherAssertTest extends \PhpUnit_Framework_TestCase
         } catch (\InvalidArgumentException $ex) {
             self::assertEquals(0, \Hamcrest\MatcherAssert::getCount(), 'assertion count');
         }
+    }
+
+    protected function setUp()
+    {
+        \Hamcrest\MatcherAssert::resetCount();
     }
 }

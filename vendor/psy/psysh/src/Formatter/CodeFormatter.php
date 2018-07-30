@@ -24,7 +24,7 @@ class CodeFormatter implements Formatter
     /**
      * Format the code represented by $reflector.
      *
-     * @param \Reflector  $reflector
+     * @param \Reflector $reflector
      * @param null|string $colorMode (default: null)
      *
      * @return string formatted code
@@ -42,12 +42,12 @@ class CodeFormatter implements Formatter
                 throw new RuntimeException('Source code unavailable');
             }
 
-            $file  = file_get_contents($fileName);
+            $file = file_get_contents($fileName);
             $start = $reflector->getStartLine();
-            $end   = $reflector->getEndLine() - $start;
+            $end = $reflector->getEndLine() - $start;
 
-            $factory     = new ConsoleColorFactory($colorMode);
-            $colors      = $factory->getConsoleColor();
+            $factory = new ConsoleColorFactory($colorMode);
+            $colors = $factory->getConsoleColor();
             $highlighter = new Highlighter($colors);
 
             return $highlighter->getCodeSnippet($file, $start, 0, $end);

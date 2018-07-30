@@ -1,5 +1,5 @@
 .. index::
-    single: Mocking; Public Properties
+single: Mocking; Public Properties
 
 Mocking Public Properties
 =========================

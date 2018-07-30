@@ -30,6 +30,30 @@ class AuthController extends Controller
     }
 
     /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+        return Auth::guard('admin');
+    }
+
+    /**
+     * Get the post login redirect path.
+     *
+     * @return string
+     */
+    protected function redirectPath()
+    {
+        if (method_exists($this, 'redirectTo')) {
+            return $this->redirectTo();
+        }
+
+        return property_exists($this, 'redirectTo') ? $this->redirectTo : config('admin.route.prefix');
+    }
+
+    /**
      * Handle a login request.
      *
      * @param Request $request
@@ -42,8 +66,8 @@ class AuthController extends Controller
 
         /** @var \Illuminate\Validation\Validator $validator */
         $validator = Validator::make($credentials, [
-            $this->username()   => 'required',
-            'password'          => 'required',
+            $this->username() => 'required',
+            'password' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -57,6 +81,42 @@ class AuthController extends Controller
         return back()->withInput()->withErrors([
             $this->username() => $this->getFailedLoginMessage(),
         ]);
+    }
+
+    /**
+     * Get the login username to be used by the controller.
+     *
+     * @return string
+     */
+    protected function username()
+    {
+        return 'username';
+    }
+
+    /**
+     * Send the response after the user was authenticated.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function sendLoginResponse(Request $request)
+    {
+        admin_toastr(trans('admin.login_successful'));
+
+        $request->session()->regenerate();
+
+        return redirect()->intended($this->redirectPath());
+    }
+
+    /**
+     * @return string|\Symfony\Component\Translation\TranslatorInterface
+     */
+    protected function getFailedLoginMessage()
+    {
+        return Lang::has('auth.failed')
+            ? trans('auth.failed')
+            : 'These credentials do not match our records.';
     }
 
     /**
@@ -96,16 +156,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Update user setting.
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function putSetting()
-    {
-        return $this->settingForm()->update(Admin::user()->id);
-    }
-
-    /**
      * Model-form for user setting.
      *
      * @return Form
@@ -141,62 +191,12 @@ class AuthController extends Controller
     }
 
     /**
-     * @return string|\Symfony\Component\Translation\TranslatorInterface
-     */
-    protected function getFailedLoginMessage()
-    {
-        return Lang::has('auth.failed')
-            ? trans('auth.failed')
-            : 'These credentials do not match our records.';
-    }
-
-    /**
-     * Get the post login redirect path.
+     * Update user setting.
      *
-     * @return string
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function redirectPath()
+    public function putSetting()
     {
-        if (method_exists($this, 'redirectTo')) {
-            return $this->redirectTo();
-        }
-
-        return property_exists($this, 'redirectTo') ? $this->redirectTo : config('admin.route.prefix');
-    }
-
-    /**
-     * Send the response after the user was authenticated.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\Response
-     */
-    protected function sendLoginResponse(Request $request)
-    {
-        admin_toastr(trans('admin.login_successful'));
-
-        $request->session()->regenerate();
-
-        return redirect()->intended($this->redirectPath());
-    }
-
-    /**
-     * Get the login username to be used by the controller.
-     *
-     * @return string
-     */
-    protected function username()
-    {
-        return 'username';
-    }
-
-    /**
-     * Get the guard to be used during authentication.
-     *
-     * @return \Illuminate\Contracts\Auth\StatefulGuard
-     */
-    protected function guard()
-    {
-        return Auth::guard('admin');
+        return $this->settingForm()->update(Admin::user()->id);
     }
 }

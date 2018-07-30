@@ -24,9 +24,9 @@ class ReflectionLanguageConstructParameter extends \ReflectionParameter
 
     public function __construct($function, $parameter, array $opts)
     {
-        $this->function  = $function;
+        $this->function = $function;
         $this->parameter = $parameter;
-        $this->opts      = $opts;
+        $this->opts = $opts;
     }
 
     /**
@@ -60,6 +60,16 @@ class ReflectionLanguageConstructParameter extends \ReflectionParameter
     }
 
     /**
+     * Does the param have a default value?
+     *
+     * @return bool
+     */
+    public function isDefaultValueAvailable()
+    {
+        return array_key_exists('defaultValue', $this->opts);
+    }
+
+    /**
      * Get param name.
      *
      * @return string
@@ -77,16 +87,6 @@ class ReflectionLanguageConstructParameter extends \ReflectionParameter
     public function isOptional()
     {
         return array_key_exists('isOptional', $this->opts) && $this->opts['isOptional'];
-    }
-
-    /**
-     * Does the param have a default value?
-     *
-     * @return bool
-     */
-    public function isDefaultValueAvailable()
-    {
-        return array_key_exists('defaultValue', $this->opts);
     }
 
     /**

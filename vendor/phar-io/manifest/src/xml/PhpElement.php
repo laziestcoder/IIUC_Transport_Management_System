@@ -10,16 +10,20 @@
 
 namespace PharIo\Manifest;
 
-class PhpElement extends ManifestElement {
-    public function getVersion() {
+class PhpElement extends ManifestElement
+{
+    public function getVersion()
+    {
         return $this->getAttributeValue('version');
     }
 
-    public function hasExtElements() {
+    public function hasExtElements()
+    {
         return $this->hasChild('ext');
     }
 
-    public function getExtElements() {
+    public function getExtElements()
+    {
         return new ExtElementCollection(
             $this->getChildrenByName('ext')
         );

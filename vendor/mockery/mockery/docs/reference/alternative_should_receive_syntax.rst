@@ -1,5 +1,5 @@
 .. index::
-    single: Alternative shouldReceive Syntax
+single: Alternative shouldReceive Syntax
 
 Alternative shouldReceive Syntax
 ================================

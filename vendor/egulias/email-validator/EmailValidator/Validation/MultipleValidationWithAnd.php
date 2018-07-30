@@ -41,7 +41,7 @@ class MultipleValidationWithAnd implements EmailValidation
 
     /**
      * @param EmailValidation[] $validations The validations.
-     * @param int               $mode        The validation mode (one of the constants).
+     * @param int $mode The validation mode (one of the constants).
      */
     public function __construct(array $validations, $mode = self::ALLOW_ALL_ERRORS)
     {

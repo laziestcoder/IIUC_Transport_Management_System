@@ -30,37 +30,6 @@ class ImageController extends Controller
     }
 
     /**
-     * Edit interface.
-     *
-     * @param $id
-     *
-     * @return Content
-     */
-    public function edit($id)
-    {
-        return Admin::content(function (Content $content) use ($id) {
-            $content->header('header');
-            $content->description('description');
-
-            $content->body($this->form()->edit($id));
-        });
-    }
-
-    /**
-     * Create interface.
-     *
-     * @return Content
-     */
-    public function create()
-    {
-        return Admin::content(function (Content $content) {
-            $content->header('Upload image');
-
-            $content->body($this->form());
-        });
-    }
-
-    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -74,6 +43,23 @@ class ImageController extends Controller
             $grid->updated_at();
 
             $grid->disableFilter();
+        });
+    }
+
+    /**
+     * Edit interface.
+     *
+     * @param $id
+     *
+     * @return Content
+     */
+    public function edit($id)
+    {
+        return Admin::content(function (Content $content) use ($id) {
+            $content->header('header');
+            $content->description('description');
+
+            $content->body($this->form()->edit($id));
         });
     }
 
@@ -92,12 +78,26 @@ class ImageController extends Controller
             $form->image('image3')->flip('v');
             $form->image('image4')->move(null, 'renamed.jpeg');
             $form->image('image5')->name(function ($file) {
-                return 'asdasdasdasdasd.'.$file->guessExtension();
+                return 'asdasdasdasdasd.' . $file->guessExtension();
             });
             $form->image('image6')->uniqueName();
 
             $form->display('created_at', 'Created At');
             $form->display('updated_at', 'Updated At');
+        });
+    }
+
+    /**
+     * Create interface.
+     *
+     * @return Content
+     */
+    public function create()
+    {
+        return Admin::content(function (Content $content) {
+            $content->header('Upload image');
+
+            $content->body($this->form());
         });
     }
 }

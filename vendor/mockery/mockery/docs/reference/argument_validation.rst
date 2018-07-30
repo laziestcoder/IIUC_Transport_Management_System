@@ -1,5 +1,5 @@
 .. index::
-    single: Argument Validation
+single: Argument Validation
 
 Argument Validation
 ===================

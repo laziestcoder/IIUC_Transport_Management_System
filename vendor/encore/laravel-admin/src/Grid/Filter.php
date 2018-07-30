@@ -128,14 +128,39 @@ class Filter
     }
 
     /**
-     * Remove ID filter if needed.
+     * Use a custom filter.
+     *
+     * @param AbstractFilter $filter
+     *
+     * @return AbstractFilter
      */
-    public function removeIDFilterIfNeeded()
+    public function use(AbstractFilter $filter)
     {
-        if (!$this->useIdFilter && !$this->idFilterRemoved) {
-            array_shift($this->filters);
-            $this->idFilterRemoved = true;
-        }
+        return $this->addFilter($filter);
+    }
+
+    /**
+     * Add a filter to grid.
+     *
+     * @param AbstractFilter $filter
+     *
+     * @return AbstractFilter
+     */
+    protected function addFilter(AbstractFilter $filter)
+    {
+        $filter->setParent($this);
+
+        return $this->filters[] = $filter;
+    }
+
+    /**
+     * Execute the filter with conditions.
+     *
+     * @return array
+     */
+    public function execute()
+    {
+        return $this->model->addConditions($this->conditions())->buildData();
     }
 
     /**
@@ -173,29 +198,14 @@ class Filter
     }
 
     /**
-     * Add a filter to grid.
-     *
-     * @param AbstractFilter $filter
-     *
-     * @return AbstractFilter
+     * Remove ID filter if needed.
      */
-    protected function addFilter(AbstractFilter $filter)
+    public function removeIDFilterIfNeeded()
     {
-        $filter->setParent($this);
-
-        return $this->filters[] = $filter;
-    }
-
-    /**
-     * Use a custom filter.
-     *
-     * @param AbstractFilter $filter
-     *
-     * @return AbstractFilter
-     */
-    public function use(AbstractFilter $filter)
-    {
-        return $this->addFilter($filter);
+        if (!$this->useIdFilter && !$this->idFilterRemoved) {
+            array_shift($this->filters);
+            $this->idFilterRemoved = true;
+        }
     }
 
     /**
@@ -209,24 +219,43 @@ class Filter
     }
 
     /**
-     * Execute the filter with conditions.
-     *
-     * @return array
-     */
-    public function execute()
-    {
-        return $this->model->addConditions($this->conditions())->buildData();
-    }
-
-    /**
      * @param callable $callback
-     * @param int      $count
+     * @param int $count
      *
      * @return bool
      */
     public function chunk(callable $callback, $count = 100)
     {
         return $this->model->addConditions($this->conditions())->chunk($callback, $count);
+    }
+
+    /**
+     * Generate a filter object and add to grid.
+     *
+     * @param string $method
+     * @param array $arguments
+     *
+     * @return AbstractFilter|$this
+     */
+    public function __call($method, $arguments)
+    {
+        if (in_array($method, $this->supports)) {
+            $className = '\\Encore\\Admin\\Grid\\Filter\\' . ucfirst($method);
+
+            return $this->addFilter(new $className(...$arguments));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the string contents of the filter view.
+     *
+     * @return \Illuminate\View\View|string
+     */
+    public function __toString()
+    {
+        return $this->render();
     }
 
     /**
@@ -254,7 +283,7 @@ EOT;
         Admin::script($script);
 
         return view($this->view)->with([
-            'action'  => $this->action ?: $this->urlWithoutFilters(),
+            'action' => $this->action ?: $this->urlWithoutFilters(),
             'filters' => $this->filters,
             'modalId' => $this->filterModalId,
         ]);
@@ -280,39 +309,10 @@ EOT;
         $query = $request->query();
         array_forget($query, $columns);
 
-        $question = $request->getBaseUrl().$request->getPathInfo() == '/' ? '/?' : '?';
+        $question = $request->getBaseUrl() . $request->getPathInfo() == '/' ? '/?' : '?';
 
         return count($request->query()) > 0
-            ? $request->url().$question.http_build_query($query)
+            ? $request->url() . $question . http_build_query($query)
             : $request->fullUrl();
-    }
-
-    /**
-     * Generate a filter object and add to grid.
-     *
-     * @param string $method
-     * @param array  $arguments
-     *
-     * @return AbstractFilter|$this
-     */
-    public function __call($method, $arguments)
-    {
-        if (in_array($method, $this->supports)) {
-            $className = '\\Encore\\Admin\\Grid\\Filter\\'.ucfirst($method);
-
-            return $this->addFilter(new $className(...$arguments));
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get the string contents of the filter view.
-     *
-     * @return \Illuminate\View\View|string
-     */
-    public function __toString()
-    {
-        return $this->render();
     }
 }

@@ -72,6 +72,16 @@ abstract class Command extends BaseCommand
     }
 
     /**
+     * Format command aliases as text..
+     *
+     * @return string
+     */
+    private function aliasesAsText()
+    {
+        return '<comment>Aliases:</comment> <info>' . implode(', ', $this->getAliases()) . '</info>' . PHP_EOL;
+    }
+
+    /**
      * {@inheritdoc}
      */
     private function getArguments()
@@ -91,38 +101,6 @@ abstract class Command extends BaseCommand
     protected function getHiddenArguments()
     {
         return ['command'];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    private function getOptions()
-    {
-        $hidden = $this->getHiddenOptions();
-
-        return array_filter($this->getNativeDefinition()->getOptions(), function ($option) use ($hidden) {
-            return !in_array($option->getName(), $hidden);
-        });
-    }
-
-    /**
-     * These options will be excluded from help output.
-     *
-     * @return array
-     */
-    protected function getHiddenOptions()
-    {
-        return ['verbose'];
-    }
-
-    /**
-     * Format command aliases as text..
-     *
-     * @return string
-     */
-    private function aliasesAsText()
-    {
-        return '<comment>Aliases:</comment> <info>' . implode(', ', $this->getAliases()) . '</info>' . PHP_EOL;
     }
 
     /**
@@ -154,6 +132,69 @@ abstract class Command extends BaseCommand
         }
 
         return implode(PHP_EOL, $messages);
+    }
+
+    /**
+     * Calculate the maximum padding width for a set of lines.
+     *
+     * @return int
+     */
+    private function getMaxWidth()
+    {
+        $max = 0;
+
+        foreach ($this->getOptions() as $option) {
+            $nameLength = strlen($option->getName()) + 2;
+            if ($option->getShortcut()) {
+                $nameLength += strlen($option->getShortcut()) + 3;
+            }
+
+            $max = max($max, $nameLength);
+        }
+
+        foreach ($this->getArguments() as $argument) {
+            $max = max($max, strlen($argument->getName()));
+        }
+
+        return ++$max;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    private function getOptions()
+    {
+        $hidden = $this->getHiddenOptions();
+
+        return array_filter($this->getNativeDefinition()->getOptions(), function ($option) use ($hidden) {
+            return !in_array($option->getName(), $hidden);
+        });
+    }
+
+    /**
+     * These options will be excluded from help output.
+     *
+     * @return array
+     */
+    protected function getHiddenOptions()
+    {
+        return ['verbose'];
+    }
+
+    /**
+     * Format an option default as text.
+     *
+     * @param mixed $default
+     *
+     * @return string
+     */
+    private function formatDefaultValue($default)
+    {
+        if (is_array($default) && $default === array_values($default)) {
+            return sprintf("array('%s')", implode("', '", $default));
+        }
+
+        return str_replace("\n", '', var_export($default, true));
     }
 
     /**
@@ -195,47 +236,6 @@ abstract class Command extends BaseCommand
         }
 
         return implode(PHP_EOL, $messages);
-    }
-
-    /**
-     * Calculate the maximum padding width for a set of lines.
-     *
-     * @return int
-     */
-    private function getMaxWidth()
-    {
-        $max = 0;
-
-        foreach ($this->getOptions() as $option) {
-            $nameLength = strlen($option->getName()) + 2;
-            if ($option->getShortcut()) {
-                $nameLength += strlen($option->getShortcut()) + 3;
-            }
-
-            $max = max($max, $nameLength);
-        }
-
-        foreach ($this->getArguments() as $argument) {
-            $max = max($max, strlen($argument->getName()));
-        }
-
-        return ++$max;
-    }
-
-    /**
-     * Format an option default as text.
-     *
-     * @param mixed $default
-     *
-     * @return string
-     */
-    private function formatDefaultValue($default)
-    {
-        if (is_array($default) && $default === array_values($default)) {
-            return sprintf("array('%s')", implode("', '", $default));
-        }
-
-        return str_replace("\n", '', var_export($default, true));
     }
 
     /**

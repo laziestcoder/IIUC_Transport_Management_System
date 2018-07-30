@@ -16,11 +16,6 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 class JsonDescriptorTest extends AbstractDescriptorTest
 {
-    protected function getDescriptor()
-    {
-        return new JsonDescriptor();
-    }
-
     protected function getFormat()
     {
         return 'json';
@@ -31,5 +26,10 @@ class JsonDescriptorTest extends AbstractDescriptorTest
         $output = new BufferedOutput(BufferedOutput::VERBOSITY_NORMAL, true);
         $this->getDescriptor()->describe($output, $describedObject, $options + array('raw_output' => true));
         $this->assertEquals(json_decode(trim($expectedDescription), true), json_decode(trim(str_replace(PHP_EOL, "\n", $output->fetch())), true));
+    }
+
+    protected function getDescriptor()
+    {
+        return new JsonDescriptor();
     }
 }

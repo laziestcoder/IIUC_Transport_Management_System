@@ -2,10 +2,10 @@
 
 namespace Laravel\Tinker\Console;
 
-use Psy\Shell;
-use Psy\Configuration;
 use Illuminate\Console\Command;
 use Laravel\Tinker\ClassAliasAutoloader;
+use Psy\Configuration;
+use Psy\Shell;
 use Symfony\Component\Console\Input\InputArgument;
 
 class TinkerCommand extends Command
@@ -66,28 +66,6 @@ class TinkerCommand extends Command
     }
 
     /**
-     * Get artisan commands to pass through to PsySH.
-     *
-     * @return array
-     */
-    protected function getCommands()
-    {
-        $commands = [];
-
-        foreach ($this->getApplication()->all() as $name => $command) {
-            if (in_array($name, $this->commandWhitelist)) {
-                $commands[] = $command;
-            }
-        }
-
-        foreach (config('tinker.commands', []) as $command) {
-            $commands[] = $this->getApplication()->resolve($command);
-        }
-
-        return $commands;
-    }
-
-    /**
      * Get an array of Laravel tailored casters.
      *
      * @return array
@@ -107,6 +85,28 @@ class TinkerCommand extends Command
         }
 
         return $casters;
+    }
+
+    /**
+     * Get artisan commands to pass through to PsySH.
+     *
+     * @return array
+     */
+    protected function getCommands()
+    {
+        $commands = [];
+
+        foreach ($this->getApplication()->all() as $name => $command) {
+            if (in_array($name, $this->commandWhitelist)) {
+                $commands[] = $command;
+            }
+        }
+
+        foreach (config('tinker.commands', []) as $command) {
+            $commands[] = $this->getApplication()->resolve($command);
+        }
+
+        return $commands;
     }
 
     /**

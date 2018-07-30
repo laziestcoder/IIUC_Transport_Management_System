@@ -11,10 +11,10 @@
 
 namespace Symfony\Component\Routing\Matcher\Dumper;
 
+use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 
 /**
  * PhpMatcherDumper creates a PHP class able to match URLs for a given set of routes.
@@ -79,11 +79,6 @@ class {$options['class']} extends {$options['base_class']}
 EOF;
     }
 
-    public function addExpressionLanguageProvider(ExpressionFunctionProviderInterface $provider)
-    {
-        $this->expressionLanguageProviders[] = $provider;
-    }
-
     /**
      * Generates the code for the match method implementing UrlMatcherInterface.
      *
@@ -119,8 +114,8 @@ EOF;
     /**
      * Generates PHP code to match a RouteCollection with all its routes.
      *
-     * @param RouteCollection $routes               A RouteCollection instance
-     * @param bool            $supportsRedirections Whether redirections are supported by the base class
+     * @param RouteCollection $routes A RouteCollection instance
+     * @param bool $supportsRedirections Whether redirections are supported by the base class
      *
      * @return string PHP code
      */
@@ -161,6 +156,35 @@ EOF;
         return $code;
     }
 
+    /**
+     * Groups consecutive routes having the same host regex.
+     *
+     * The result is a collection of collections of routes having the same host regex.
+     *
+     * @param RouteCollection $routes A flat RouteCollection
+     *
+     * @return DumperCollection A collection with routes grouped by host regex in sub-collections
+     */
+    private function groupRoutesByHostRegex(RouteCollection $routes)
+    {
+        $groups = new DumperCollection();
+        $currentGroup = new DumperCollection();
+        $currentGroup->setAttribute('host_regex', null);
+        $groups->add($currentGroup);
+
+        foreach ($routes as $name => $route) {
+            $hostRegex = $route->compile()->getHostRegex();
+            if ($currentGroup->getAttribute('host_regex') !== $hostRegex) {
+                $currentGroup = new DumperCollection();
+                $currentGroup->setAttribute('host_regex', $hostRegex);
+                $groups->add($currentGroup);
+            }
+            $currentGroup->add(new DumperRoute($name, $route));
+        }
+
+        return $groups;
+    }
+
     private function buildStaticPrefixCollection(DumperCollection $collection)
     {
         $prefixCollection = new StaticPrefixCollection();
@@ -178,9 +202,9 @@ EOF;
     /**
      * Generates PHP code to match a tree of routes.
      *
-     * @param StaticPrefixCollection $collection           A StaticPrefixCollection instance
-     * @param bool                   $supportsRedirections Whether redirections are supported by the base class
-     * @param string                 $ifOrElseIf           either "if" or "elseif" to influence chaining
+     * @param StaticPrefixCollection $collection A StaticPrefixCollection instance
+     * @param bool $supportsRedirections Whether redirections are supported by the base class
+     * @param string $ifOrElseIf either "if" or "elseif" to influence chaining
      *
      * @return string PHP code
      */
@@ -200,7 +224,7 @@ EOF;
                 $code .= $this->compileStaticPrefixRoutes($route, $supportsRedirections, $ifOrElseIf);
                 $ifOrElseIf = 'elseif';
             } else {
-                $code .= $this->compileRoute($route[1]->getRoute(), $route[1]->getName(), $supportsRedirections, $prefix)."\n";
+                $code .= $this->compileRoute($route[1]->getRoute(), $route[1]->getName(), $supportsRedirections, $prefix) . "\n";
                 $ifOrElseIf = 'if';
             }
         }
@@ -217,10 +241,10 @@ EOF;
     /**
      * Compiles a single Route to PHP code used to match it against the path info.
      *
-     * @param Route       $route                A Route instance
-     * @param string      $name                 The name of the Route
-     * @param bool        $supportsRedirections Whether redirections are supported by the base class
-     * @param string|null $parentPrefix         The prefix of the parent collection used to optimize the code
+     * @param Route $route A Route instance
+     * @param string $name The name of the Route
+     * @param bool $supportsRedirections Whether redirections are supported by the base class
+     * @param string|null $parentPrefix The prefix of the parent collection used to optimize the code
      *
      * @return string PHP code
      *
@@ -239,7 +263,7 @@ EOF;
         $supportsTrailingSlash = $supportsRedirections && (!$methods || in_array('GET', $methods));
         $regex = $compiledRoute->getRegex();
 
-        if (!count($compiledRoute->getPathVariables()) && false !== preg_match('#^(.)\^(?P<url>.*?)\$\1#'.('u' === substr($regex, -1) ? 'u' : ''), $regex, $m)) {
+        if (!count($compiledRoute->getPathVariables()) && false !== preg_match('#^(.)\^(?P<url>.*?)\$\1#' . ('u' === substr($regex, -1) ? 'u' : ''), $regex, $m)) {
             if ($supportsTrailingSlash && '/' === substr($m['url'], -1)) {
                 $conditions[] = sprintf('%s === $trimmedPathinfo', var_export(rtrim(str_replace('\\', '', $m['url']), '/'), true));
                 $hasTrailingSlash = true;
@@ -252,7 +276,7 @@ EOF;
             }
 
             if ($supportsTrailingSlash && $pos = strpos($regex, '/$')) {
-                $regex = substr($regex, 0, $pos).'/?$'.substr($regex, $pos + 2);
+                $regex = substr($regex, 0, $pos) . '/?$' . substr($regex, $pos + 2);
                 $hasTrailingSlash = true;
             }
             $conditions[] = sprintf('preg_match(%s, $pathinfo, $matches)', var_export($regex, true));
@@ -276,7 +300,7 @@ EOF;
 
 EOF;
 
-        $gotoname = 'not_'.preg_replace('/[^A-Za-z0-9_]/', '', $name);
+        $gotoname = 'not_' . preg_replace('/[^A-Za-z0-9_]/', '', $name);
 
         // the offset where the return value is appended below, with indendation
         $retOffset = 12 + strlen($code);
@@ -386,35 +410,6 @@ EOF;
         return $code;
     }
 
-    /**
-     * Groups consecutive routes having the same host regex.
-     *
-     * The result is a collection of collections of routes having the same host regex.
-     *
-     * @param RouteCollection $routes A flat RouteCollection
-     *
-     * @return DumperCollection A collection with routes grouped by host regex in sub-collections
-     */
-    private function groupRoutesByHostRegex(RouteCollection $routes)
-    {
-        $groups = new DumperCollection();
-        $currentGroup = new DumperCollection();
-        $currentGroup->setAttribute('host_regex', null);
-        $groups->add($currentGroup);
-
-        foreach ($routes as $name => $route) {
-            $hostRegex = $route->compile()->getHostRegex();
-            if ($currentGroup->getAttribute('host_regex') !== $hostRegex) {
-                $currentGroup = new DumperCollection();
-                $currentGroup->setAttribute('host_regex', $hostRegex);
-                $groups->add($currentGroup);
-            }
-            $currentGroup->add(new DumperRoute($name, $route));
-        }
-
-        return $groups;
-    }
-
     private function getExpressionLanguage()
     {
         if (null === $this->expressionLanguage) {
@@ -425,5 +420,10 @@ EOF;
         }
 
         return $this->expressionLanguage;
+    }
+
+    public function addExpressionLanguageProvider(ExpressionFunctionProviderInterface $provider)
+    {
+        $this->expressionLanguageProviders[] = $provider;
     }
 }

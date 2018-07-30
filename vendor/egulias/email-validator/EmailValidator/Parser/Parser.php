@@ -90,6 +90,26 @@ abstract class Parser
         }
     }
 
+    protected function warnEscaping()
+    {
+        if ($this->lexer->token['type'] !== EmailLexer::S_BACKSLASH) {
+            return false;
+        }
+
+        if ($this->lexer->isNextToken(EmailLexer::GENERIC)) {
+            throw new ExpectingATEXT();
+        }
+
+        if (!$this->lexer->isNextTokenAny(array(EmailLexer::S_SP, EmailLexer::S_HTAB, EmailLexer::C_DEL))) {
+            return false;
+        }
+
+        $this->warnings[QuotedPart::CODE] =
+            new QuotedPart($this->lexer->getPrevious()['type'], $this->lexer->token['type']);
+        return true;
+
+    }
+
     protected function parseFWS()
     {
         $previous = $this->lexer->getPrevious();
@@ -100,7 +120,7 @@ abstract class Parser
             throw new CRNoLF();
         }
 
-        if ($this->lexer->isNextToken(EmailLexer::GENERIC) && $previous['type']  !== EmailLexer::S_AT) {
+        if ($this->lexer->isNextToken(EmailLexer::GENERIC) && $previous['type'] !== EmailLexer::S_AT) {
             throw new AtextAfterCFWS();
         }
 
@@ -108,10 +128,25 @@ abstract class Parser
             throw new ExpectingCTEXT();
         }
 
-        if ($this->lexer->isNextToken(EmailLexer::S_AT) || $previous['type']  === EmailLexer::S_AT) {
+        if ($this->lexer->isNextToken(EmailLexer::S_AT) || $previous['type'] === EmailLexer::S_AT) {
             $this->warnings[CFWSNearAt::CODE] = new CFWSNearAt();
         } else {
             $this->warnings[CFWSWithFWS::CODE] = new CFWSWithFWS();
+        }
+    }
+
+    protected function checkCRLFInFWS()
+    {
+        if ($this->lexer->token['type'] !== EmailLexer::CRLF) {
+            return;
+        }
+
+        if (!$this->lexer->isNextTokenAny(array(EmailLexer::S_SP, EmailLexer::S_HTAB))) {
+            throw new CRLFX2();
+        }
+
+        if (!$this->lexer->isNextTokenAny(array(EmailLexer::S_SP, EmailLexer::S_HTAB))) {
+            throw new CRLFAtTheEnd();
         }
     }
 
@@ -154,26 +189,6 @@ abstract class Parser
         return false;
     }
 
-    protected function warnEscaping()
-    {
-        if ($this->lexer->token['type'] !== EmailLexer::S_BACKSLASH) {
-            return false;
-        }
-
-        if ($this->lexer->isNextToken(EmailLexer::GENERIC)) {
-            throw new ExpectingATEXT();
-        }
-
-        if (!$this->lexer->isNextTokenAny(array(EmailLexer::S_SP, EmailLexer::S_HTAB, EmailLexer::C_DEL))) {
-            return false;
-        }
-
-        $this->warnings[QuotedPart::CODE] =
-            new QuotedPart($this->lexer->getPrevious()['type'], $this->lexer->token['type']);
-        return true;
-
-    }
-
     protected function checkDQUOTE($hasClosingQuote)
     {
         if ($this->lexer->token['type'] !== EmailLexer::S_DQUOTE) {
@@ -196,20 +211,5 @@ abstract class Parser
         $this->warnings[QuotedString::CODE] = new QuotedString($previous['value'], $this->lexer->token['value']);
 
         return $hasClosingQuote;
-    }
-
-    protected function checkCRLFInFWS()
-    {
-        if ($this->lexer->token['type'] !== EmailLexer::CRLF) {
-            return;
-        }
-
-        if (!$this->lexer->isNextTokenAny(array(EmailLexer::S_SP, EmailLexer::S_HTAB))) {
-            throw new CRLFX2();
-        }
-
-        if (!$this->lexer->isNextTokenAny(array(EmailLexer::S_SP, EmailLexer::S_HTAB))) {
-            throw new CRLFAtTheEnd();
-        }
     }
 }

@@ -11,7 +11,7 @@ interface EmailValidation
     /**
      * Returns true if the given email is valid.
      *
-     * @param string     $email      The email you want to validate.
+     * @param string $email The email you want to validate.
      * @param EmailLexer $emailLexer The email lexer.
      *
      * @return bool

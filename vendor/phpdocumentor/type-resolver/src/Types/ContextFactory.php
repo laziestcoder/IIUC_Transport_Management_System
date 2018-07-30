@@ -133,6 +133,20 @@ final class ContextFactory
     }
 
     /**
+     * Fast-forwards the iterator as longs as we don't encounter a T_STRING or T_NS_SEPARATOR token.
+     *
+     * @param \ArrayIterator $tokens
+     *
+     * @return void
+     */
+    private function skipToNextStringOrNamespaceSeparator(\ArrayIterator $tokens)
+    {
+        while ($tokens->valid() && ($tokens->current()[0] !== T_STRING) && ($tokens->current()[0] !== T_NS_SEPARATOR)) {
+            $tokens->next();
+        }
+    }
+
+    /**
      * Deduce the names of all imports when we are at the T_USE token.
      *
      * @param \ArrayIterator $tokens
@@ -155,20 +169,6 @@ final class ContextFactory
         }
 
         return $uses;
-    }
-
-    /**
-     * Fast-forwards the iterator as longs as we don't encounter a T_STRING or T_NS_SEPARATOR token.
-     *
-     * @param \ArrayIterator $tokens
-     *
-     * @return void
-     */
-    private function skipToNextStringOrNamespaceSeparator(\ArrayIterator $tokens)
-    {
-        while ($tokens->valid() && ($tokens->current()[0] !== T_STRING) && ($tokens->current()[0] !== T_NS_SEPARATOR)) {
-            $tokens->next();
-        }
     }
 
     /**

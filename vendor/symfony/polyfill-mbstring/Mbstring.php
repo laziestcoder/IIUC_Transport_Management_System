@@ -602,6 +602,32 @@ final class Mbstring
         return self::mb_substr($haystack, $pos, null, $encoding);
     }
 
+    public static function mb_substr($s, $start, $length = null, $encoding = null)
+    {
+        $encoding = self::getEncoding($encoding);
+        if ('CP850' === $encoding || 'ASCII' === $encoding) {
+            return substr($s, $start, null === $length ? 2147483647 : $length);
+        }
+
+        if ($start < 0) {
+            $start = iconv_strlen($s, $encoding) + $start;
+            if ($start < 0) {
+                $start = 0;
+            }
+        }
+
+        if (null === $length) {
+            $length = 2147483647;
+        } elseif ($length < 0) {
+            $length = iconv_strlen($s, $encoding) + $length - $start;
+            if ($length < 0) {
+                return '';
+            }
+        }
+
+        return (string)iconv_substr($s, $start, $length, $encoding);
+    }
+
     public static function mb_strrchr($haystack, $needle, $part = false, $encoding = null)
     {
         $encoding = self::getEncoding($encoding);
@@ -651,32 +677,6 @@ final class Mbstring
         $pos = iconv_strrpos($haystack, $needle, $encoding);
 
         return false !== $pos ? $offset + $pos : false;
-    }
-
-    public static function mb_substr($s, $start, $length = null, $encoding = null)
-    {
-        $encoding = self::getEncoding($encoding);
-        if ('CP850' === $encoding || 'ASCII' === $encoding) {
-            return substr($s, $start, null === $length ? 2147483647 : $length);
-        }
-
-        if ($start < 0) {
-            $start = iconv_strlen($s, $encoding) + $start;
-            if ($start < 0) {
-                $start = 0;
-            }
-        }
-
-        if (null === $length) {
-            $length = 2147483647;
-        } elseif ($length < 0) {
-            $length = iconv_strlen($s, $encoding) + $length - $start;
-            if ($length < 0) {
-                return '';
-            }
-        }
-
-        return (string)iconv_substr($s, $start, $length, $encoding);
     }
 
     public static function mb_strstr($haystack, $needle, $part = false, $encoding = null)

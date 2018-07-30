@@ -1,9 +1,10 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-xl navbar-default navbar-fixed-top" id="mainNav">
-    
+
     <div class="container">
         <a class="navbar-brand js-scroll-trigger" href="/">
-            <img src="/storage/img/logos/itms-logo.png" alt="IIUC TMD LOGO"></a>
+            <img src="/storage/img/logos/itms-logo.png" alt="IIUC TMD LOGO">
+        </a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
                 data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -32,16 +33,16 @@
                     </div>
                 </li>
                 <!-- <li class="nav-item"><a class="nav-link" data-toggle="modal" href="#exampleModal1">Login</a></li> -->
-                <?php if(auth()->guard()->guest()): ?>
+                <?php if (auth()->guard()->guest()): ?>
                     <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
 
                 <?php else: ?>
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                            aria-expanded="false" aria-haspopup="true" v-pre>
-                        <?php echo e(Auth::user()->name); ?>
+                            <?php echo e(Auth::user()->name); ?>
 
-                        <!-- <span class="caret"></span> -->
+                            <!-- <span class="caret"></span> -->
                         </a>
 
                         <ul class="dropdown-menu">

@@ -1,5 +1,5 @@
 .. index::
-    single: Mocking; Partial Mocks
+single: Mocking; Partial Mocks
 
 Creating Partial Mocks
 ======================

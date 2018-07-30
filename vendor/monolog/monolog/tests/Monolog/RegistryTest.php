@@ -13,14 +13,9 @@ namespace Monolog;
 
 class RegistryTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        Registry::clear();
-    }
-
     /**
      * @dataProvider hasLoggerProvider
-     * @covers Monolog\Registry::hasLogger
+     * @covers       Monolog\Registry::hasLogger
      */
     public function testHasLogger(array $loggersToAdd, array $loggersToCheck, array $expectedResult)
     {
@@ -74,8 +69,8 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider removedLoggerProvider
-     * @covers Monolog\Registry::addLogger
-     * @covers Monolog\Registry::removeLogger
+     * @covers       Monolog\Registry::addLogger
+     * @covers       Monolog\Registry::removeLogger
      */
     public function testRemovesLogger($loggerToAdd, $remove)
     {
@@ -149,5 +144,10 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
         Registry::addLogger($log1, 'log');
 
         Registry::addLogger($log2, 'log');
+    }
+
+    protected function setUp()
+    {
+        Registry::clear();
     }
 }

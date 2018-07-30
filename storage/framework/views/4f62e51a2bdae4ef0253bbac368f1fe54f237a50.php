@@ -71,6 +71,7 @@
                 </tbody>
             </table>
             <?php echo e($BusRoutes->links()); ?>
+
         <?php else: ?>
             <p>No notices found</p>
         <?php endif; ?>
@@ -95,11 +96,11 @@
              return confirm("Do you want to delete this item?");
          }); */
 
-        /*
+        /*  
          function deleteMe() {
-
+     
              //var path = $(this).data('path');
-
+     
              swal({
                      title: "Are you sure to delete this item ?",
                      type: "warning",
@@ -121,7 +122,7 @@
                  },
                  success: function(data) {
                  $.pjax.reload('#pjax-container');
-
+    
                  if (typeof data === 'object') {
                      if (data.status) {
                      swal(data.message, '', 'success');

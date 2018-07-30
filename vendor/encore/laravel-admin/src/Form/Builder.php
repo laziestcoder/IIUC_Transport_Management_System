@@ -17,42 +17,35 @@ class Builder
      *  Previous url key.
      */
     const PREVIOUS_URL_KEY = '_previous_';
-
-    /**
-     * @var mixed
-     */
-    protected $id;
-
-    /**
-     * @var Form
-     */
-    protected $form;
-
-    /**
-     * @var
-     */
-    protected $action;
-
-    /**
-     * @var Collection
-     */
-    protected $fields;
-
-    /**
-     * @var array
-     */
-    protected $options = [
-        'enableSubmit' => true,
-        'enableReset'  => true,
-    ];
-
     /**
      * Modes constants.
      */
     const MODE_VIEW = 'view';
     const MODE_EDIT = 'edit';
     const MODE_CREATE = 'create';
-
+    /**
+     * @var mixed
+     */
+    protected $id;
+    /**
+     * @var Form
+     */
+    protected $form;
+    /**
+     * @var
+     */
+    protected $action;
+    /**
+     * @var Collection
+     */
+    protected $fields;
+    /**
+     * @var array
+     */
+    protected $options = [
+        'enableSubmit' => true,
+        'enableReset' => true,
+    ];
     /**
      * Form action mode, could be create|view|edit.
      *
@@ -137,18 +130,6 @@ class Builder
     }
 
     /**
-     * Returns builder is $mode.
-     *
-     * @param $mode
-     *
-     * @return bool
-     */
-    public function isMode($mode)
-    {
-        return $this->mode == $mode;
-    }
-
-    /**
      * Set resource Id.
      *
      * @param $id
@@ -158,21 +139,6 @@ class Builder
     public function setResourceId($id)
     {
         $this->id = $id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getResource($slice = null)
-    {
-        if ($this->mode == self::MODE_CREATE) {
-            return $this->form->resource(-1);
-        }
-        if ($slice !== null) {
-            return $this->form->resource($slice);
-        }
-
-        return $this->form->resource();
     }
 
     /**
@@ -189,38 +155,6 @@ class Builder
         ];
 
         return $this;
-    }
-
-    /**
-     * Set form action.
-     *
-     * @param string $action
-     */
-    public function setAction($action)
-    {
-        $this->action = $action;
-    }
-
-    /**
-     * Get Form action.
-     *
-     * @return string
-     */
-    public function getAction()
-    {
-        if ($this->action) {
-            return $this->action;
-        }
-
-        if ($this->isMode(static::MODE_EDIT)) {
-            return $this->form->resource().'/'.$this->id;
-        }
-
-        if ($this->isMode(static::MODE_CREATE)) {
-            return $this->form->resource(-1);
-        }
-
-        return '';
     }
 
     /**
@@ -252,16 +186,6 @@ class Builder
     }
 
     /**
-     * Get fields of this builder.
-     *
-     * @return Collection
-     */
-    public function fields()
-    {
-        return $this->fields;
-    }
-
-    /**
      * Get specify field.
      *
      * @param string $name
@@ -273,6 +197,16 @@ class Builder
         return $this->fields()->first(function (Field $field) use ($name) {
             return $field->column() == $name;
         });
+    }
+
+    /**
+     * Get fields of this builder.
+     *
+     * @return Collection
+     */
+    public function fields()
+    {
+        return $this->fields;
     }
 
     /**
@@ -304,16 +238,6 @@ class Builder
     }
 
     /**
-     * @param Field $field
-     *
-     * @return void
-     */
-    public function addHiddenField(Field $field)
-    {
-        $this->hiddenFields[] = $field;
-    }
-
-    /**
      * Add or get options.
      *
      * @param array $options
@@ -333,7 +257,7 @@ class Builder
      * Get or set option.
      *
      * @param string $option
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return $this
      */
@@ -373,40 +297,6 @@ class Builder
     }
 
     /**
-     * Determine if form fields has files.
-     *
-     * @return bool
-     */
-    public function hasFile()
-    {
-        foreach ($this->fields() as $field) {
-            if ($field instanceof Field\File) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Add field for store redirect url after update or store.
-     *
-     * @return void
-     */
-    protected function addRedirectUrlField()
-    {
-        $previous = URL::previous();
-
-        if (!$previous || $previous == URL::current()) {
-            return;
-        }
-
-        if (Str::contains($previous, url($this->getResource()))) {
-            $this->addHiddenField((new Form\Field\Hidden(static::PREVIOUS_URL_KEY))->value($previous));
-        }
-    }
-
-    /**
      * Open up a new HTML form.
      *
      * @param array $options
@@ -438,7 +328,110 @@ class Builder
             $html[] = "$name=\"$value\"";
         }
 
-        return '<form '.implode(' ', $html).' pjax-container>';
+        return '<form ' . implode(' ', $html) . ' pjax-container>';
+    }
+
+    /**
+     * @param Field $field
+     *
+     * @return void
+     */
+    public function addHiddenField(Field $field)
+    {
+        $this->hiddenFields[] = $field;
+    }
+
+    /**
+     * Add field for store redirect url after update or store.
+     *
+     * @return void
+     */
+    protected function addRedirectUrlField()
+    {
+        $previous = URL::previous();
+
+        if (!$previous || $previous == URL::current()) {
+            return;
+        }
+
+        if (Str::contains($previous, url($this->getResource()))) {
+            $this->addHiddenField((new Form\Field\Hidden(static::PREVIOUS_URL_KEY))->value($previous));
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getResource($slice = null)
+    {
+        if ($this->mode == self::MODE_CREATE) {
+            return $this->form->resource(-1);
+        }
+        if ($slice !== null) {
+            return $this->form->resource($slice);
+        }
+
+        return $this->form->resource();
+    }
+
+    /**
+     * Get Form action.
+     *
+     * @return string
+     */
+    public function getAction()
+    {
+        if ($this->action) {
+            return $this->action;
+        }
+
+        if ($this->isMode(static::MODE_EDIT)) {
+            return $this->form->resource() . '/' . $this->id;
+        }
+
+        if ($this->isMode(static::MODE_CREATE)) {
+            return $this->form->resource(-1);
+        }
+
+        return '';
+    }
+
+    /**
+     * Set form action.
+     *
+     * @param string $action
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
+    }
+
+    /**
+     * Returns builder is $mode.
+     *
+     * @param $mode
+     *
+     * @return bool
+     */
+    public function isMode($mode)
+    {
+        return $this->mode == $mode;
+    }
+
+    /**
+     * Determine if form fields has files.
+     *
+     * @return bool
+     */
+    public function hasFile()
+    {
+        foreach ($this->fields() as $field) {
+            if ($field instanceof Field\File) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -503,25 +496,19 @@ EOT;
     }
 
     /**
-     * Remove reserved fields like `id` `created_at` `updated_at` in form fields.
-     *
-     * @return void
+     * @return string
      */
-    protected function removeReservedFields()
+    public function renderHeaderTools()
     {
-        if (!$this->isMode(static::MODE_CREATE)) {
-            return;
-        }
+        return $this->tools->render();
+    }
 
-        $reservedColumns = [
-            $this->form->model()->getKeyName(),
-            $this->form->model()->getCreatedAtColumn(),
-            $this->form->model()->getUpdatedAtColumn(),
-        ];
-
-        $this->fields = $this->fields()->reject(function (Field $field) use ($reservedColumns) {
-            return in_array($field->column(), $reservedColumns);
-        });
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->render();
     }
 
     /**
@@ -563,27 +550,33 @@ SCRIPT;
         }
 
         $data = [
-            'form'   => $this,
+            'form' => $this,
             'tabObj' => $tabObj,
-            'width'  => $this->width,
+            'width' => $this->width,
         ];
 
         return view($this->view, $data)->render();
     }
 
     /**
-     * @return string
+     * Remove reserved fields like `id` `created_at` `updated_at` in form fields.
+     *
+     * @return void
      */
-    public function renderHeaderTools()
+    protected function removeReservedFields()
     {
-        return $this->tools->render();
-    }
+        if (!$this->isMode(static::MODE_CREATE)) {
+            return;
+        }
 
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->render();
+        $reservedColumns = [
+            $this->form->model()->getKeyName(),
+            $this->form->model()->getCreatedAtColumn(),
+            $this->form->model()->getUpdatedAtColumn(),
+        ];
+
+        $this->fields = $this->fields()->reject(function (Field $field) use ($reservedColumns) {
+            return in_array($field->column(), $reservedColumns);
+        });
     }
 }

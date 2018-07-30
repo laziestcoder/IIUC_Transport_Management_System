@@ -8,14 +8,11 @@ use PHPUnit\Framework\TestCase;
 class LexerTest extends TestCase
 {
     /* To allow overwriting in parent class */
-    protected function getLexer(array $options = []) {
-        return new Lexer($options);
-    }
-
     /**
      * @dataProvider provideTestError
      */
-    public function testError($code, $messages) {
+    public function testError($code, $messages)
+    {
         if (defined('HHVM_VERSION')) {
             $this->markTestSkipped('HHVM does not throw warnings from token_get_all()');
         }
@@ -33,7 +30,13 @@ class LexerTest extends TestCase
         }
     }
 
-    public function provideTestError() {
+    protected function getLexer(array $options = [])
+    {
+        return new Lexer($options);
+    }
+
+    public function provideTestError()
+    {
         return [
             ["<?php /*", ["Unterminated comment from 1:7 to 1:9"]],
             ["<?php \1", ["Unexpected character \"\1\" (ASCII 1) from 1:7 to 1:7"]],
@@ -51,7 +54,8 @@ class LexerTest extends TestCase
     /**
      * @dataProvider provideTestLex
      */
-    public function testLex($code, $options, $tokens) {
+    public function testLex($code, $options, $tokens)
+    {
         $lexer = $this->getLexer($options);
         $lexer->startLexing($code);
         while ($id = $lexer->getNextToken($value, $startAttributes, $endAttributes)) {
@@ -64,7 +68,8 @@ class LexerTest extends TestCase
         }
     }
 
-    public function provideTestLex() {
+    public function provideTestLex()
+    {
         return [
             // tests conversion of closing PHP tag and drop of whitespace and opening tags
             [
@@ -215,23 +220,25 @@ class LexerTest extends TestCase
     /**
      * @dataProvider provideTestHaltCompiler
      */
-    public function testHandleHaltCompiler($code, $remaining) {
+    public function testHandleHaltCompiler($code, $remaining)
+    {
         $lexer = $this->getLexer();
         $lexer->startLexing($code);
 
-        while (Tokens::T_HALT_COMPILER !== $lexer->getNextToken());
+        while (Tokens::T_HALT_COMPILER !== $lexer->getNextToken()) ;
 
         $this->assertSame($remaining, $lexer->handleHaltCompiler());
         $this->assertSame(0, $lexer->getNextToken());
     }
 
-    public function provideTestHaltCompiler() {
+    public function provideTestHaltCompiler()
+    {
         return [
             ['<?php ... __halt_compiler();Remaining Text', 'Remaining Text'],
             ['<?php ... __halt_compiler ( ) ;Remaining Text', 'Remaining Text'],
             ['<?php ... __halt_compiler() ?>Remaining Text', 'Remaining Text'],
-            //array('<?php ... __halt_compiler();' . "\0", "\0"),
-            //array('<?php ... __halt_compiler /* */ ( ) ;Remaining Text', 'Remaining Text'),
+                ' . "\0", "\0"),
+                //array('
         ];
     }
 
@@ -239,15 +246,17 @@ class LexerTest extends TestCase
      * @expectedException \PhpParser\Error
      * @expectedExceptionMessage __HALT_COMPILER must be followed by "();"
      */
-    public function testHandleHaltCompilerError() {
+    public function testHandleHaltCompilerError()
+    {
         $lexer = $this->getLexer();
         $lexer->startLexing('<?php ... __halt_compiler invalid ();');
 
-        while (Tokens::T_HALT_COMPILER !== $lexer->getNextToken());
+        while (Tokens::T_HALT_COMPILER !== $lexer->getNextToken()) ;
         $lexer->handleHaltCompiler();
     }
 
-    public function testGetTokens() {
+    public function testGetTokens()
+    {
         $code = '<?php "a";' . "\n" . '// foo' . "\n" . '"b";';
         $expectedTokens = [
             [T_OPEN_TAG, '<?php ', 1],

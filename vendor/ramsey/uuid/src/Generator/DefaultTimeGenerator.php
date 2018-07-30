@@ -53,7 +53,8 @@ class DefaultTimeGenerator implements TimeGeneratorInterface
         NodeProviderInterface $nodeProvider,
         TimeConverterInterface $timeConverter,
         TimeProviderInterface $timeProvider
-    ) {
+    )
+    {
         $this->nodeProvider = $nodeProvider;
         $this->timeConverter = $timeConverter;
         $this->timeProvider = $timeProvider;

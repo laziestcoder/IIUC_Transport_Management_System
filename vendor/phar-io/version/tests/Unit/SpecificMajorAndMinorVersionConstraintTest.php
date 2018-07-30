@@ -15,8 +15,10 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers PharIo\Version\SpecificMajorAndMinorVersionConstraint
  */
-class SpecificMajorAndMinorVersionConstraintTest extends TestCase {
-    public function versionProvider() {
+class SpecificMajorAndMinorVersionConstraintTest extends TestCase
+{
+    public function versionProvider()
+    {
         return [
             // compliant versions
             [1, 0, new Version('1.0.2'), true],
@@ -32,12 +34,13 @@ class SpecificMajorAndMinorVersionConstraintTest extends TestCase {
     /**
      * @dataProvider versionProvider
      *
-     * @param int     $major
-     * @param int     $minor
+     * @param int $major
+     * @param int $minor
      * @param Version $version
-     * @param bool    $expectedResult
+     * @param bool $expectedResult
      */
-    public function testReturnsTrueForCompliantVersions($major, $minor, Version $version, $expectedResult) {
+    public function testReturnsTrueForCompliantVersions($major, $minor, Version $version, $expectedResult)
+    {
         $constraint = new SpecificMajorAndMinorVersionConstraint('foo', $major, $minor);
 
         $this->assertSame($expectedResult, $constraint->complies($version));

@@ -14,8 +14,8 @@ namespace Symfony\Component\Console\Tests\Helper;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\DebugFormatterHelper;
 use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Helper\ProcessHelper;
+use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Process\Process;
 
 class ProcessHelperTest extends TestCase
@@ -32,6 +32,18 @@ class ProcessHelperTest extends TestCase
         $this->assertEquals($expected, $this->getOutput($output));
     }
 
+    private function getOutputStream($verbosity)
+    {
+        return new StreamOutput(fopen('php://memory', 'r+', false), $verbosity, false);
+    }
+
+    private function getOutput(StreamOutput $output)
+    {
+        rewind($output->getStream());
+
+        return stream_get_contents($output->getStream());
+    }
+
     public function testPassedCallbackIsExecuted()
     {
         $helper = new ProcessHelper();
@@ -39,7 +51,9 @@ class ProcessHelperTest extends TestCase
         $output = $this->getOutputStream(StreamOutput::VERBOSITY_NORMAL);
 
         $executed = false;
-        $callback = function () use (&$executed) { $executed = true; };
+        $callback = function () use (&$executed) {
+            $executed = true;
+        };
 
         $helper->run($output, 'php -r "echo 42;"', null, $callback);
         $this->assertTrue($executed);
@@ -96,23 +110,11 @@ EOT;
             array('', 'php -r "syntax error"', StreamOutput::VERBOSITY_VERBOSE, null),
             array($syntaxErrorOutputVerbose, 'php -r "fwrite(STDERR, \'error message\');usleep(50000);fwrite(STDOUT, \'out message\');exit(252);"', StreamOutput::VERBOSITY_VERY_VERBOSE, null),
             array($syntaxErrorOutputDebug, 'php -r "fwrite(STDERR, \'error message\');usleep(500000);fwrite(STDOUT, \'out message\');exit(252);"', StreamOutput::VERBOSITY_DEBUG, null),
-            array($errorMessage.PHP_EOL, 'php -r "fwrite(STDERR, \'error message\');usleep(50000);fwrite(STDOUT, \'out message\');exit(252);"', StreamOutput::VERBOSITY_VERBOSE, $errorMessage),
-            array($syntaxErrorOutputVerbose.$errorMessage.PHP_EOL, 'php -r "fwrite(STDERR, \'error message\');usleep(50000);fwrite(STDOUT, \'out message\');exit(252);"', StreamOutput::VERBOSITY_VERY_VERBOSE, $errorMessage),
-            array($syntaxErrorOutputDebug.$errorMessage.PHP_EOL, 'php -r "fwrite(STDERR, \'error message\');usleep(500000);fwrite(STDOUT, \'out message\');exit(252);"', StreamOutput::VERBOSITY_DEBUG, $errorMessage),
+            array($errorMessage . PHP_EOL, 'php -r "fwrite(STDERR, \'error message\');usleep(50000);fwrite(STDOUT, \'out message\');exit(252);"', StreamOutput::VERBOSITY_VERBOSE, $errorMessage),
+            array($syntaxErrorOutputVerbose . $errorMessage . PHP_EOL, 'php -r "fwrite(STDERR, \'error message\');usleep(50000);fwrite(STDOUT, \'out message\');exit(252);"', StreamOutput::VERBOSITY_VERY_VERBOSE, $errorMessage),
+            array($syntaxErrorOutputDebug . $errorMessage . PHP_EOL, 'php -r "fwrite(STDERR, \'error message\');usleep(500000);fwrite(STDOUT, \'out message\');exit(252);"', StreamOutput::VERBOSITY_DEBUG, $errorMessage),
             array($successOutputProcessDebug, array('php', '-r', 'echo 42;'), StreamOutput::VERBOSITY_DEBUG, null),
             array($successOutputDebug, new Process('php -r "echo 42;"'), StreamOutput::VERBOSITY_DEBUG, null),
         );
-    }
-
-    private function getOutputStream($verbosity)
-    {
-        return new StreamOutput(fopen('php://memory', 'r+', false), $verbosity, false);
-    }
-
-    private function getOutput(StreamOutput $output)
-    {
-        rewind($output->getStream());
-
-        return stream_get_contents($output->getStream());
     }
 }

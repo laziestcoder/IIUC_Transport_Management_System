@@ -91,7 +91,7 @@ class ValidConstructorPass extends CodeCleanerPass
 
             $msg = sprintf(
                 'Constructor %s::%s() cannot be static',
-                implode('\\', array_merge($this->namespace, (array) $className)),
+                implode('\\', array_merge($this->namespace, (array)$className)),
                 $constructor->name
             );
             throw new FatalErrorException($msg, 0, E_ERROR, null, $classNode->getLine());
@@ -103,7 +103,7 @@ class ValidConstructorPass extends CodeCleanerPass
 
             $msg = sprintf(
                 'Constructor %s::%s() cannot declare a return type',
-                implode('\\', array_merge($this->namespace, (array) $className)),
+                implode('\\', array_merge($this->namespace, (array)$className)),
                 $constructor->name
             );
             throw new FatalErrorException($msg, 0, E_ERROR, null, $classNode->getLine());

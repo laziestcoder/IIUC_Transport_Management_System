@@ -17,9 +17,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\DependencyInjection\TypedReference;
-use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\RegisterControllerArgumentLocatorsPass;
 
 class RegisterControllerArgumentLocatorsPassTest extends TestCase
@@ -34,8 +34,7 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $container->register('argument_resolver.service')->addArgument(array());
 
         $container->register('foo', NotFound::class)
-            ->addTag('controller.service_arguments')
-        ;
+            ->addTag('controller.service_arguments');
 
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
@@ -51,8 +50,7 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $container->register('argument_resolver.service')->addArgument(array());
 
         $container->register('foo', RegisterTestController::class)
-            ->addTag('controller.service_arguments', array('argument' => 'bar'))
-        ;
+            ->addTag('controller.service_arguments', array('argument' => 'bar'));
 
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
@@ -68,8 +66,7 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $container->register('argument_resolver.service')->addArgument(array());
 
         $container->register('foo', RegisterTestController::class)
-            ->addTag('controller.service_arguments', array('action' => 'fooAction'))
-        ;
+            ->addTag('controller.service_arguments', array('action' => 'fooAction'));
 
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
@@ -85,8 +82,7 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $container->register('argument_resolver.service')->addArgument(array());
 
         $container->register('foo', RegisterTestController::class)
-            ->addTag('controller.service_arguments', array('action' => 'fooAction', 'argument' => 'bar'))
-        ;
+            ->addTag('controller.service_arguments', array('action' => 'fooAction', 'argument' => 'bar'));
 
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
@@ -102,8 +98,7 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $container->register('argument_resolver.service')->addArgument(array());
 
         $container->register('foo', RegisterTestController::class)
-            ->addTag('controller.service_arguments', array('action' => 'barAction', 'argument' => 'bar', 'id' => 'bar_service'))
-        ;
+            ->addTag('controller.service_arguments', array('action' => 'barAction', 'argument' => 'bar', 'id' => 'bar_service'));
 
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
@@ -119,8 +114,7 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $container->register('argument_resolver.service')->addArgument(array());
 
         $container->register('foo', RegisterTestController::class)
-            ->addTag('controller.service_arguments', array('action' => 'fooAction', 'argument' => 'baz', 'id' => 'bar'))
-        ;
+            ->addTag('controller.service_arguments', array('action' => 'fooAction', 'argument' => 'baz', 'id' => 'bar'));
 
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
@@ -132,18 +126,17 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $resolver = $container->register('argument_resolver.service')->addArgument(array());
 
         $container->register('foo', RegisterTestController::class)
-            ->addTag('controller.service_arguments')
-        ;
+            ->addTag('controller.service_arguments');
 
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
 
-        $locator = $container->getDefinition((string) $resolver->getArgument(0))->getArgument(0);
+        $locator = $container->getDefinition((string)$resolver->getArgument(0))->getArgument(0);
 
         $this->assertEquals(array('foo:fooAction'), array_keys($locator));
         $this->assertInstanceof(ServiceClosureArgument::class, $locator['foo:fooAction']);
 
-        $locator = $container->getDefinition((string) $locator['foo:fooAction']->getValues()[0]);
+        $locator = $container->getDefinition((string)$locator['foo:fooAction']->getValues()[0]);
 
         $this->assertSame(ServiceLocator::class, $locator->getClass());
         $this->assertFalse($locator->isPublic());
@@ -165,8 +158,8 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
 
-        $locator = $container->getDefinition((string) $resolver->getArgument(0))->getArgument(0);
-        $locator = $container->getDefinition((string) $locator['foo:fooAction']->getValues()[0]);
+        $locator = $container->getDefinition((string)$resolver->getArgument(0))->getArgument(0);
+        $locator = $container->getDefinition((string)$locator['foo:fooAction']->getValues()[0]);
 
         $expected = array('bar' => new ServiceClosureArgument(new TypedReference('bar', ControllerDummy::class, RegisterTestController::class)));
         $this->assertEquals($expected, $locator->getArgument(0));
@@ -178,14 +171,13 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $resolver = $container->register('argument_resolver.service')->addArgument(array());
 
         $container->register('foo', RegisterTestController::class)
-            ->addTag('controller.service_arguments', array('action' => 'fooAction', 'argument' => 'bar', 'id' => '?bar'))
-        ;
+            ->addTag('controller.service_arguments', array('action' => 'fooAction', 'argument' => 'bar', 'id' => '?bar'));
 
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
 
-        $locator = $container->getDefinition((string) $resolver->getArgument(0))->getArgument(0);
-        $locator = $container->getDefinition((string) $locator['foo:fooAction']->getValues()[0]);
+        $locator = $container->getDefinition((string)$resolver->getArgument(0))->getArgument(0);
+        $locator = $container->getDefinition((string)$locator['foo:fooAction']->getValues()[0]);
 
         $expected = array('bar' => new ServiceClosureArgument(new TypedReference('bar', ControllerDummy::class, RegisterTestController::class, ContainerInterface::IGNORE_ON_INVALID_REFERENCE)));
         $this->assertEquals($expected, $locator->getArgument(0));
@@ -202,7 +194,7 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
 
-        $locator = $container->getDefinition((string) $resolver->getArgument(0))->getArgument(0);
+        $locator = $container->getDefinition((string)$resolver->getArgument(0))->getArgument(0);
         $this->assertSame(array('foo:fooAction'), array_keys($locator));
     }
 
@@ -249,7 +241,7 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
 
-        $locator = $container->getDefinition((string) $resolver->getArgument(0))->getArgument(0);
+        $locator = $container->getDefinition((string)$resolver->getArgument(0))->getArgument(0);
         $this->assertSame(array('foo:barAction', 'foo:fooAction'), array_keys($locator));
     }
 
@@ -264,7 +256,7 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
 
-        $locator = $container->getDefinition((string) $resolver->getArgument(0))->getArgument(0);
+        $locator = $container->getDefinition((string)$resolver->getArgument(0))->getArgument(0);
         $this->assertEmpty(array_keys($locator));
     }
 
@@ -298,9 +290,9 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
 
-        $locator = $container->getDefinition((string) $resolver->getArgument(0))->getArgument(0);
+        $locator = $container->getDefinition((string)$resolver->getArgument(0))->getArgument(0);
 
-        $locator = $container->getDefinition((string) $locator['foo:fooAction']->getValues()[0]);
+        $locator = $container->getDefinition((string)$locator['foo:fooAction']->getValues()[0]);
 
         $expected = array('bar' => new ServiceClosureArgument(new Reference('foo')));
         $this->assertEquals($expected, $locator->getArgument(0));
@@ -323,7 +315,7 @@ class RegisterControllerArgumentLocatorsPassTest extends TestCase
         $pass = new RegisterControllerArgumentLocatorsPass();
         $pass->process($container);
 
-        $locator = $container->getDefinition((string) $resolver->getArgument(0))->getArgument(0);
+        $locator = $container->getDefinition((string)$resolver->getArgument(0))->getArgument(0);
         $this->assertEmpty($locator);
     }
 }

@@ -30,37 +30,6 @@ class MultipleImageController extends Controller
     }
 
     /**
-     * Edit interface.
-     *
-     * @param $id
-     *
-     * @return Content
-     */
-    public function edit($id)
-    {
-        return Admin::content(function (Content $content) use ($id) {
-            $content->header('header');
-            $content->description('description');
-
-            $content->body($this->form()->edit($id));
-        });
-    }
-
-    /**
-     * Create interface.
-     *
-     * @return Content
-     */
-    public function create()
-    {
-        return Admin::content(function (Content $content) {
-            $content->header('Upload image');
-
-            $content->body($this->form());
-        });
-    }
-
-    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -78,6 +47,23 @@ class MultipleImageController extends Controller
     }
 
     /**
+     * Edit interface.
+     *
+     * @param $id
+     *
+     * @return Content
+     */
+    public function edit($id)
+    {
+        return Admin::content(function (Content $content) use ($id) {
+            $content->header('header');
+            $content->description('description');
+
+            $content->body($this->form()->edit($id));
+        });
+    }
+
+    /**
      * Make a form builder.
      *
      * @return Form
@@ -91,6 +77,20 @@ class MultipleImageController extends Controller
 
             $form->display('created_at', 'Created At');
             $form->display('updated_at', 'Updated At');
+        });
+    }
+
+    /**
+     * Create interface.
+     *
+     * @return Content
+     */
+    public function create()
+    {
+        return Admin::content(function (Content $content) {
+            $content->header('Upload image');
+
+            $content->body($this->form());
         });
     }
 }

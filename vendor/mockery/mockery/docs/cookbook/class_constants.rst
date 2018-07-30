@@ -1,5 +1,5 @@
 .. index::
-    single: Cookbook; Class Constants
+single: Cookbook; Class Constants
 
 Class Constants
 ===============

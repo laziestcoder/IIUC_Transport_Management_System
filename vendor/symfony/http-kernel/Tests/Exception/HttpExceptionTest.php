@@ -27,6 +27,11 @@ class HttpExceptionTest extends TestCase
         $this->assertSame(array(), $exception->getHeaders());
     }
 
+    protected function createException()
+    {
+        return new HttpException(200);
+    }
+
     /**
      * @dataProvider headerDataProvider
      */
@@ -44,10 +49,5 @@ class HttpExceptionTest extends TestCase
         $exception = $this->createException();
         $exception->setHeaders($headers);
         $this->assertSame($headers, $exception->getHeaders());
-    }
-
-    protected function createException()
-    {
-        return new HttpException(200);
     }
 }

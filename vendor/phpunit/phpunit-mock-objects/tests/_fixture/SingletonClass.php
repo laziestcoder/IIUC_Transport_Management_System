@@ -2,15 +2,15 @@
 
 class SingletonClass
 {
+    protected function __construct()
+    {
+    }
+
     public static function getInstance()
     {
     }
 
     public function doSomething()
-    {
-    }
-
-    protected function __construct()
     {
     }
 

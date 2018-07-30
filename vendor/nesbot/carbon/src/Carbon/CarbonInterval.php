@@ -74,35 +74,17 @@ class CarbonInterval extends DateInterval
     const PERIOD_HOURS = 'H';
     const PERIOD_MINUTES = 'M';
     const PERIOD_SECONDS = 'S';
-
+    /**
+     * Before PHP 5.4.20/5.5.4 instead of FALSE days will be set to -99999 when the interval instance
+     * was created by DateTime:diff().
+     */
+    const PHP_DAYS_FALSE = -99999;
     /**
      * A translator to ... er ... translate stuff
      *
      * @var \Symfony\Component\Translation\TranslatorInterface
      */
     protected static $translator;
-
-    /**
-     * Before PHP 5.4.20/5.5.4 instead of FALSE days will be set to -99999 when the interval instance
-     * was created by DateTime:diff().
-     */
-    const PHP_DAYS_FALSE = -99999;
-
-    /**
-     * Determine if the interval was created via DateTime:diff() or not.
-     *
-     * @param DateInterval $interval
-     *
-     * @return bool
-     */
-    private static function wasCreatedFromDiff(DateInterval $interval)
-    {
-        return $interval->days !== false && $interval->days !== static::PHP_DAYS_FALSE;
-    }
-
-    ///////////////////////////////////////////////////////////////////
-    //////////////////////////// CONSTRUCTORS /////////////////////////
-    ///////////////////////////////////////////////////////////////////
 
     /**
      * Create a new CarbonInterval instance.
@@ -122,30 +104,34 @@ class CarbonInterval extends DateInterval
         if (!is_string($spec) || floatval($years) || preg_match('/^[0-9.]/', $years)) {
             $spec = static::PERIOD_PREFIX;
 
-            $spec .= $years > 0 ? $years.static::PERIOD_YEARS : '';
-            $spec .= $months > 0 ? $months.static::PERIOD_MONTHS : '';
+            $spec .= $years > 0 ? $years . static::PERIOD_YEARS : '';
+            $spec .= $months > 0 ? $months . static::PERIOD_MONTHS : '';
 
             $specDays = 0;
             $specDays += $weeks > 0 ? $weeks * Carbon::DAYS_PER_WEEK : 0;
             $specDays += $days > 0 ? $days : 0;
 
-            $spec .= $specDays > 0 ? $specDays.static::PERIOD_DAYS : '';
+            $spec .= $specDays > 0 ? $specDays . static::PERIOD_DAYS : '';
 
             if ($hours > 0 || $minutes > 0 || $seconds > 0) {
                 $spec .= static::PERIOD_TIME_PREFIX;
-                $spec .= $hours > 0 ? $hours.static::PERIOD_HOURS : '';
-                $spec .= $minutes > 0 ? $minutes.static::PERIOD_MINUTES : '';
-                $spec .= $seconds > 0 ? $seconds.static::PERIOD_SECONDS : '';
+                $spec .= $hours > 0 ? $hours . static::PERIOD_HOURS : '';
+                $spec .= $minutes > 0 ? $minutes . static::PERIOD_MINUTES : '';
+                $spec .= $seconds > 0 ? $seconds . static::PERIOD_SECONDS : '';
             }
 
             if ($spec === static::PERIOD_PREFIX) {
                 // Allow the zero interval.
-                $spec .= '0'.static::PERIOD_YEARS;
+                $spec .= '0' . static::PERIOD_YEARS;
             }
         }
 
         parent::__construct($spec);
     }
+
+    ///////////////////////////////////////////////////////////////////
+    //////////////////////////// CONSTRUCTORS /////////////////////////
+    ///////////////////////////////////////////////////////////////////
 
     /**
      * Create a new CarbonInterval instance from specific values.
@@ -175,7 +161,7 @@ class CarbonInterval extends DateInterval
      *       have the same names.
      *
      * @param string $name
-     * @param array  $args
+     * @param array $args
      *
      * @return static
      */
@@ -350,23 +336,21 @@ class CarbonInterval extends DateInterval
         return $instance;
     }
 
+    /**
+     * Determine if the interval was created via DateTime:diff() or not.
+     *
+     * @param DateInterval $interval
+     *
+     * @return bool
+     */
+    private static function wasCreatedFromDiff(DateInterval $interval)
+    {
+        return $interval->days !== false && $interval->days !== static::PHP_DAYS_FALSE;
+    }
+
     ///////////////////////////////////////////////////////////////////
     /////////////////////// LOCALIZATION //////////////////////////////
     ///////////////////////////////////////////////////////////////////
-
-    /**
-     * Initialize the translator instance if necessary.
-     *
-     * @return \Symfony\Component\Translation\TranslatorInterface
-     */
-    protected static function translator()
-    {
-        if (static::$translator === null) {
-            static::$translator = Translator::get();
-        }
-
-        return static::$translator;
-    }
 
     /**
      * Get the translator instance in use
@@ -386,6 +370,20 @@ class CarbonInterval extends DateInterval
     public static function setTranslator(TranslatorInterface $translator)
     {
         static::$translator = $translator;
+    }
+
+    /**
+     * Initialize the translator instance if necessary.
+     *
+     * @return \Symfony\Component\Translation\TranslatorInterface
+     */
+    protected static function translator()
+    {
+        if (static::$translator === null) {
+            static::$translator = Translator::get();
+        }
+
+        return static::$translator;
     }
 
     /**
@@ -443,7 +441,7 @@ class CarbonInterval extends DateInterval
                 return $this->s;
 
             case 'weeks':
-                return (int) floor($this->d / Carbon::DAYS_PER_WEEK);
+                return (int)floor($this->d / Carbon::DAYS_PER_WEEK);
 
             case 'daysExcludeWeeks':
             case 'dayzExcludeWeeks':
@@ -458,7 +456,7 @@ class CarbonInterval extends DateInterval
      * Set a part of the CarbonInterval object
      *
      * @param string $name
-     * @param int    $val
+     * @param int $val
      *
      * @throws \InvalidArgumentException
      */
@@ -499,7 +497,7 @@ class CarbonInterval extends DateInterval
      * Allow setting of weeks and days to be cumulative.
      *
      * @param int $weeks Number of weeks to set
-     * @param int $days  Number of days to set
+     * @param int $days Number of days to set
      *
      * @return static
      */
@@ -517,7 +515,7 @@ class CarbonInterval extends DateInterval
      *       have the same names.
      *
      * @param string $name
-     * @param array  $args
+     * @param array $args
      *
      * @return static
      */
@@ -567,6 +565,16 @@ class CarbonInterval extends DateInterval
     }
 
     /**
+     * Format the instance as a string using the forHumans() function.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->forHumans();
+    }
+
+    /**
      * Get the current interval in a human readable format in the current locale.
      *
      * @return string
@@ -591,16 +599,6 @@ class CarbonInterval extends DateInterval
         }
 
         return implode(' ', $parts);
-    }
-
-    /**
-     * Format the instance as a string using the forHumans() function.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->forHumans();
     }
 
     /**
@@ -650,13 +648,13 @@ class CarbonInterval extends DateInterval
         $specString = static::PERIOD_PREFIX;
 
         foreach ($date as $key => $value) {
-            $specString .= $value.$key;
+            $specString .= $value . $key;
         }
 
         if (count($time) > 0) {
             $specString .= static::PERIOD_TIME_PREFIX;
             foreach ($time as $key => $value) {
-                $specString .= $value.$key;
+                $specString .= $value . $key;
             }
         }
 

@@ -32,19 +32,15 @@ class Docblock
      */
     public static $vectors = [
         'throws' => ['type', 'desc'],
-        'param'  => ['type', 'var', 'desc'],
+        'param' => ['type', 'var', 'desc'],
         'return' => ['type', 'desc'],
     ];
-
-    protected $reflector;
-
     /**
      * The description of the symbol.
      *
      * @var string
      */
     public $desc;
-
     /**
      * The tags defined in the docblock.
      *
@@ -58,13 +54,13 @@ class Docblock
      * @var array
      */
     public $tags;
-
     /**
      * The entire DocBlock comment that was parsed.
      *
      * @var string
      */
     public $comment;
+    protected $reflector;
 
     /**
      * Docblock constructor.
@@ -84,42 +80,11 @@ class Docblock
      */
     protected function setComment($comment)
     {
-        $this->desc    = '';
-        $this->tags    = [];
+        $this->desc = '';
+        $this->tags = [];
         $this->comment = $comment;
 
         $this->parseComment($comment);
-    }
-
-    /**
-     * Find the length of the docblock prefix.
-     *
-     * @param array $lines
-     *
-     * @return int Prefix length
-     */
-    protected static function prefixLength(array $lines)
-    {
-        // find only lines with interesting things
-        $lines = array_filter($lines, function ($line) {
-            return substr($line, strspn($line, "* \t\n\r\0\x0B"));
-        });
-
-        // if we sort the lines, we only have to compare two items
-        sort($lines);
-
-        $first = reset($lines);
-        $last  = end($lines);
-
-        // find the longest common substring
-        $count = min(strlen($first), strlen($last));
-        for ($i = 0; $i < $count; $i++) {
-            if ($first[$i] !== $last[$i]) {
-                return $i;
-            }
-        }
-
-        return $count;
     }
 
     /**
@@ -164,7 +129,7 @@ class Docblock
                 $this->desc = $body;
             } else {
                 // This block is tagged
-                $tag  = substr(self::strTag($body), 1);
+                $tag = substr(self::strTag($body), 1);
                 $body = ltrim(substr($body, strlen($tag) + 2));
 
                 if (isset(self::$vectors[$tag])) {
@@ -190,27 +155,34 @@ class Docblock
     }
 
     /**
-     * Whether or not a docblock contains a given @tag.
+     * Find the length of the docblock prefix.
      *
-     * @param string $tag The name of the @tag to check for
+     * @param array $lines
      *
-     * @return bool
+     * @return int Prefix length
      */
-    public function hasTag($tag)
+    protected static function prefixLength(array $lines)
     {
-        return is_array($this->tags) && array_key_exists($tag, $this->tags);
-    }
+        // find only lines with interesting things
+        $lines = array_filter($lines, function ($line) {
+            return substr($line, strspn($line, "* \t\n\r\0\x0B"));
+        });
 
-    /**
-     * The value of a tag.
-     *
-     * @param string $tag
-     *
-     * @return array
-     */
-    public function tag($tag)
-    {
-        return $this->hasTag($tag) ? $this->tags[$tag] : null;
+        // if we sort the lines, we only have to compare two items
+        sort($lines);
+
+        $first = reset($lines);
+        $last = end($lines);
+
+        // find the longest common substring
+        $count = min(strlen($first), strlen($last));
+        for ($i = 0; $i < $count; $i++) {
+            if ($first[$i] !== $last[$i]) {
+                return $i;
+            }
+        }
+
+        return $count;
     }
 
     /**
@@ -237,5 +209,29 @@ class Docblock
         if (preg_match('/^@[a-z0-9_]+/', $str, $matches)) {
             return $matches[0];
         }
+    }
+
+    /**
+     * The value of a tag.
+     *
+     * @param string $tag
+     *
+     * @return array
+     */
+    public function tag($tag)
+    {
+        return $this->hasTag($tag) ? $this->tags[$tag] : null;
+    }
+
+    /**
+     * Whether or not a docblock contains a given @tag.
+     *
+     * @param string $tag The name of the @tag to check for
+     *
+     * @return bool
+     */
+    public function hasTag($tag)
+    {
+        return is_array($this->tags) && array_key_exists($tag, $this->tags);
     }
 }

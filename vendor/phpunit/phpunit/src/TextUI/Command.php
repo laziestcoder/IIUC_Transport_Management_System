@@ -34,7 +34,6 @@ use PHPUnit\Util\TestDox\CliTestDoxPrinter;
 use PHPUnit\Util\TextTestListRenderer;
 use PHPUnit\Util\XmlTestListRenderer;
 use ReflectionClass;
-
 use Throwable;
 
 /**
@@ -47,14 +46,14 @@ class Command
      * @var array
      */
     protected $arguments = [
-        'listGroups'              => false,
-        'listSuites'              => false,
-        'listTests'               => false,
-        'listTestsXml'            => false,
-        'loader'                  => null,
+        'listGroups' => false,
+        'listSuites' => false,
+        'listTests' => false,
+        'listTestsXml' => false,
+        'loader' => null,
         'useDefaultConfiguration' => true,
-        'loadedExtensions'        => [],
-        'notLoadedExtensions'     => []
+        'loadedExtensions' => [],
+        'notLoadedExtensions' => []
     ];
 
     /**
@@ -66,71 +65,71 @@ class Command
      * @var array
      */
     protected $longOptions = [
-        'atleast-version='          => null,
-        'bootstrap='                => null,
-        'check-version'             => null,
-        'colors=='                  => null,
-        'columns='                  => null,
-        'configuration='            => null,
-        'coverage-clover='          => null,
-        'coverage-crap4j='          => null,
-        'coverage-html='            => null,
-        'coverage-php='             => null,
-        'coverage-text=='           => null,
-        'coverage-xml='             => null,
-        'debug'                     => null,
-        'disallow-test-output'      => null,
-        'disallow-resource-usage'   => null,
-        'disallow-todo-tests'       => null,
-        'enforce-time-limit'        => null,
-        'exclude-group='            => null,
-        'filter='                   => null,
-        'generate-configuration'    => null,
-        'globals-backup'            => null,
-        'group='                    => null,
-        'help'                      => null,
-        'include-path='             => null,
-        'list-groups'               => null,
-        'list-suites'               => null,
-        'list-tests'                => null,
-        'list-tests-xml='           => null,
-        'loader='                   => null,
-        'log-junit='                => null,
-        'log-teamcity='             => null,
-        'no-configuration'          => null,
-        'no-coverage'               => null,
-        'no-logging'                => null,
-        'no-extensions'             => null,
-        'printer='                  => null,
-        'process-isolation'         => null,
-        'repeat='                   => null,
+        'atleast-version=' => null,
+        'bootstrap=' => null,
+        'check-version' => null,
+        'colors==' => null,
+        'columns=' => null,
+        'configuration=' => null,
+        'coverage-clover=' => null,
+        'coverage-crap4j=' => null,
+        'coverage-html=' => null,
+        'coverage-php=' => null,
+        'coverage-text==' => null,
+        'coverage-xml=' => null,
+        'debug' => null,
+        'disallow-test-output' => null,
+        'disallow-resource-usage' => null,
+        'disallow-todo-tests' => null,
+        'enforce-time-limit' => null,
+        'exclude-group=' => null,
+        'filter=' => null,
+        'generate-configuration' => null,
+        'globals-backup' => null,
+        'group=' => null,
+        'help' => null,
+        'include-path=' => null,
+        'list-groups' => null,
+        'list-suites' => null,
+        'list-tests' => null,
+        'list-tests-xml=' => null,
+        'loader=' => null,
+        'log-junit=' => null,
+        'log-teamcity=' => null,
+        'no-configuration' => null,
+        'no-coverage' => null,
+        'no-logging' => null,
+        'no-extensions' => null,
+        'printer=' => null,
+        'process-isolation' => null,
+        'repeat=' => null,
         'dont-report-useless-tests' => null,
-        'reverse-list'              => null,
-        'static-backup'             => null,
-        'stderr'                    => null,
-        'stop-on-error'             => null,
-        'stop-on-failure'           => null,
-        'stop-on-warning'           => null,
-        'stop-on-incomplete'        => null,
-        'stop-on-risky'             => null,
-        'stop-on-skipped'           => null,
-        'fail-on-warning'           => null,
-        'fail-on-risky'             => null,
-        'strict-coverage'           => null,
-        'disable-coverage-ignore'   => null,
-        'strict-global-state'       => null,
-        'teamcity'                  => null,
-        'testdox'                   => null,
-        'testdox-group='            => null,
-        'testdox-exclude-group='    => null,
-        'testdox-html='             => null,
-        'testdox-text='             => null,
-        'testdox-xml='              => null,
-        'test-suffix='              => null,
-        'testsuite='                => null,
-        'verbose'                   => null,
-        'version'                   => null,
-        'whitelist='                => null
+        'reverse-list' => null,
+        'static-backup' => null,
+        'stderr' => null,
+        'stop-on-error' => null,
+        'stop-on-failure' => null,
+        'stop-on-warning' => null,
+        'stop-on-incomplete' => null,
+        'stop-on-risky' => null,
+        'stop-on-skipped' => null,
+        'fail-on-warning' => null,
+        'fail-on-risky' => null,
+        'strict-coverage' => null,
+        'disable-coverage-ignore' => null,
+        'strict-global-state' => null,
+        'teamcity' => null,
+        'testdox' => null,
+        'testdox-group=' => null,
+        'testdox-exclude-group=' => null,
+        'testdox-html=' => null,
+        'testdox-text=' => null,
+        'testdox-xml=' => null,
+        'test-suffix=' => null,
+        'testsuite=' => null,
+        'verbose' => null,
+        'version' => null,
+        'whitelist=' => null
     ];
 
     /**
@@ -216,14 +215,6 @@ class Command
     }
 
     /**
-     * Create a TestRunner, override in subclasses.
-     */
-    protected function createRunner(): TestRunner
-    {
-        return new TestRunner($this->arguments['loader']);
-    }
-
-    /**
      * Handles the command-line arguments.
      *
      * A child class of PHPUnit\TextUI\Command can hook into the argument
@@ -294,7 +285,7 @@ class Command
 
                 case '--columns':
                     if (\is_numeric($option[1])) {
-                        $this->arguments['columns'] = (int) $option[1];
+                        $this->arguments['columns'] = (int)$option[1];
                     } elseif ($option[1] === 'max') {
                         $this->arguments['columns'] = 'max';
                     }
@@ -332,9 +323,9 @@ class Command
                         $option[1] = 'php://stdout';
                     }
 
-                    $this->arguments['coverageText']                   = $option[1];
+                    $this->arguments['coverageText'] = $option[1];
                     $this->arguments['coverageTextShowUncoveredFiles'] = false;
-                    $this->arguments['coverageTextShowOnlySummary']    = false;
+                    $this->arguments['coverageTextShowOnlySummary'] = false;
 
                     break;
 
@@ -494,7 +485,7 @@ class Command
                     break;
 
                 case '--repeat':
-                    $this->arguments['repeat'] = (int) $option[1];
+                    $this->arguments['repeat'] = (int)$option[1];
 
                     break;
 
@@ -724,7 +715,7 @@ class Command
                 \is_file($this->arguments['test']) &&
                 \substr($this->arguments['test'], -5, 5) != '.phpt') {
                 $this->arguments['testFile'] = \realpath($this->arguments['test']);
-                $this->arguments['test']     = \substr($this->arguments['test'], 0, \strrpos($this->arguments['test'], '.'));
+                $this->arguments['test'] = \substr($this->arguments['test'], 0, \strrpos($this->arguments['test'], '.'));
             }
         }
 
@@ -864,148 +855,24 @@ class Command
         }
     }
 
-    /**
-     * Handles the loading of the PHPUnit\Runner\TestSuiteLoader implementation.
-     */
-    protected function handleLoader(string $loaderClass, string $loaderFile = ''): ?TestSuiteLoader
-    {
-        if (!\class_exists($loaderClass, false)) {
-            if ($loaderFile == '') {
-                $loaderFile = Filesystem::classNameToFilename(
-                    $loaderClass
-                );
-            }
-
-            $loaderFile = \stream_resolve_include_path($loaderFile);
-
-            if ($loaderFile) {
-                require $loaderFile;
-            }
-        }
-
-        if (\class_exists($loaderClass, false)) {
-            $class = new ReflectionClass($loaderClass);
-
-            if ($class->implementsInterface(TestSuiteLoader::class) &&
-                $class->isInstantiable()) {
-                return $class->newInstance();
-            }
-        }
-
-        if ($loaderClass == StandardTestSuiteLoader::class) {
-            return null;
-        }
-
-        $this->exitWithErrorMessage(
-            \sprintf(
-                'Could not use "%s" as loader.',
-                $loaderClass
-            )
-        );
-
-        return null;
-    }
-
-    /**
-     * Handles the loading of the PHPUnit\Util\Printer implementation.
-     *
-     * @return null|Printer|string
-     */
-    protected function handlePrinter(string $printerClass, string $printerFile = '')
-    {
-        if (!\class_exists($printerClass, false)) {
-            if ($printerFile == '') {
-                $printerFile = Filesystem::classNameToFilename(
-                    $printerClass
-                );
-            }
-
-            $printerFile = \stream_resolve_include_path($printerFile);
-
-            if ($printerFile) {
-                require $printerFile;
-            }
-        }
-
-        if (!\class_exists($printerClass)) {
-            $this->exitWithErrorMessage(
-                \sprintf(
-                    'Could not use "%s" as printer: class does not exist',
-                    $printerClass
-                )
-            );
-        }
-
-        $class = new ReflectionClass($printerClass);
-
-        if (!$class->implementsInterface(TestListener::class)) {
-            $this->exitWithErrorMessage(
-                \sprintf(
-                    'Could not use "%s" as printer: class does not implement %s',
-                    $printerClass,
-                    TestListener::class
-                )
-            );
-        }
-
-        if (!$class->isSubclassOf(Printer::class)) {
-            $this->exitWithErrorMessage(
-                \sprintf(
-                    'Could not use "%s" as printer: class does not extend %s',
-                    $printerClass,
-                    Printer::class
-                )
-            );
-        }
-
-        if (!$class->isInstantiable()) {
-            $this->exitWithErrorMessage(
-                \sprintf(
-                    'Could not use "%s" as printer: class cannot be instantiated',
-                    $printerClass
-                )
-            );
-        }
-
-        if ($class->isSubclassOf(ResultPrinter::class)) {
-            return $printerClass;
-        }
-
-        $outputStream = isset($this->arguments['stderr']) ? 'php://stderr' : null;
-
-        return $class->newInstance($outputStream);
-    }
-
-    /**
-     * Loads a bootstrap file.
-     */
-    protected function handleBootstrap(string $filename): void
-    {
-        try {
-            FileLoader::checkAndLoad($filename);
-        } catch (Exception $e) {
-            $this->exitWithErrorMessage($e->getMessage());
-        }
-    }
-
-    protected function handleVersionCheck(): void
+    private function exitWithErrorMessage(string $message): void
     {
         $this->printVersionString();
 
-        $latestVersion = \file_get_contents('https://phar.phpunit.de/latest-version-of/phpunit');
-        $isOutdated    = \version_compare($latestVersion, Version::id(), '>');
+        print $message . PHP_EOL;
 
-        if ($isOutdated) {
-            \printf(
-                'You are not using the latest version of PHPUnit.' . PHP_EOL .
-                'The latest version is PHPUnit %s.' . PHP_EOL,
-                $latestVersion
-            );
-        } else {
-            print 'You are using the latest version of PHPUnit.' . PHP_EOL;
+        exit(TestRunner::FAILURE_EXIT);
+    }
+
+    private function printVersionString(): void
+    {
+        if ($this->versionStringPrinted) {
+            return;
         }
 
-        exit(TestRunner::SUCCESS_EXIT);
+        print Version::getVersionString() . PHP_EOL . PHP_EOL;
+
+        $this->versionStringPrinted = true;
     }
 
     /**
@@ -1112,6 +979,26 @@ Miscellaneous Options:
 EOT;
     }
 
+    protected function handleVersionCheck(): void
+    {
+        $this->printVersionString();
+
+        $latestVersion = \file_get_contents('https://phar.phpunit.de/latest-version-of/phpunit');
+        $isOutdated = \version_compare($latestVersion, Version::id(), '>');
+
+        if ($isOutdated) {
+            \printf(
+                'You are not using the latest version of PHPUnit.' . PHP_EOL .
+                'The latest version is PHPUnit %s.' . PHP_EOL,
+                $latestVersion
+            );
+        } else {
+            print 'You are using the latest version of PHPUnit.' . PHP_EOL;
+        }
+
+        exit(TestRunner::SUCCESS_EXIT);
+    }
+
     /**
      * Custom callback for test suite discovery.
      */
@@ -1119,24 +1006,58 @@ EOT;
     {
     }
 
-    private function printVersionString(): void
+    /**
+     * Handles the loading of the PHPUnit\Runner\TestSuiteLoader implementation.
+     */
+    protected function handleLoader(string $loaderClass, string $loaderFile = ''): ?TestSuiteLoader
     {
-        if ($this->versionStringPrinted) {
-            return;
+        if (!\class_exists($loaderClass, false)) {
+            if ($loaderFile == '') {
+                $loaderFile = Filesystem::classNameToFilename(
+                    $loaderClass
+                );
+            }
+
+            $loaderFile = \stream_resolve_include_path($loaderFile);
+
+            if ($loaderFile) {
+                require $loaderFile;
+            }
         }
 
-        print Version::getVersionString() . PHP_EOL . PHP_EOL;
+        if (\class_exists($loaderClass, false)) {
+            $class = new ReflectionClass($loaderClass);
 
-        $this->versionStringPrinted = true;
+            if ($class->implementsInterface(TestSuiteLoader::class) &&
+                $class->isInstantiable()) {
+                return $class->newInstance();
+            }
+        }
+
+        if ($loaderClass == StandardTestSuiteLoader::class) {
+            return null;
+        }
+
+        $this->exitWithErrorMessage(
+            \sprintf(
+                'Could not use "%s" as loader.',
+                $loaderClass
+            )
+        );
+
+        return null;
     }
 
-    private function exitWithErrorMessage(string $message): void
+    /**
+     * Loads a bootstrap file.
+     */
+    protected function handleBootstrap(string $filename): void
     {
-        $this->printVersionString();
-
-        print $message . PHP_EOL;
-
-        exit(TestRunner::FAILURE_EXIT);
+        try {
+            FileLoader::checkAndLoad($filename);
+        } catch (Exception $e) {
+            $this->exitWithErrorMessage($e->getMessage());
+        }
     }
 
     private function handleExtensions(string $directory): void
@@ -1152,8 +1073,8 @@ EOT;
 
             try {
                 $applicationName = new ApplicationName('phpunit/phpunit');
-                $version         = new PharIoVersion(Version::series());
-                $manifest        = ManifestLoader::fromFile('phar://' . $file . '/manifest.xml');
+                $version = new PharIoVersion(Version::series());
+                $manifest = ManifestLoader::fromFile('phar://' . $file . '/manifest.xml');
 
                 if (!$manifest->isExtensionFor($applicationName)) {
                     $this->arguments['notLoadedExtensions'][] = $file . ' is not an extension for PHPUnit';
@@ -1176,6 +1097,84 @@ EOT;
 
             $this->arguments['loadedExtensions'][] = $manifest->getName() . ' ' . $manifest->getVersion()->getVersionString();
         }
+    }
+
+    /**
+     * Handles the loading of the PHPUnit\Util\Printer implementation.
+     *
+     * @return null|Printer|string
+     */
+    protected function handlePrinter(string $printerClass, string $printerFile = '')
+    {
+        if (!\class_exists($printerClass, false)) {
+            if ($printerFile == '') {
+                $printerFile = Filesystem::classNameToFilename(
+                    $printerClass
+                );
+            }
+
+            $printerFile = \stream_resolve_include_path($printerFile);
+
+            if ($printerFile) {
+                require $printerFile;
+            }
+        }
+
+        if (!\class_exists($printerClass)) {
+            $this->exitWithErrorMessage(
+                \sprintf(
+                    'Could not use "%s" as printer: class does not exist',
+                    $printerClass
+                )
+            );
+        }
+
+        $class = new ReflectionClass($printerClass);
+
+        if (!$class->implementsInterface(TestListener::class)) {
+            $this->exitWithErrorMessage(
+                \sprintf(
+                    'Could not use "%s" as printer: class does not implement %s',
+                    $printerClass,
+                    TestListener::class
+                )
+            );
+        }
+
+        if (!$class->isSubclassOf(Printer::class)) {
+            $this->exitWithErrorMessage(
+                \sprintf(
+                    'Could not use "%s" as printer: class does not extend %s',
+                    $printerClass,
+                    Printer::class
+                )
+            );
+        }
+
+        if (!$class->isInstantiable()) {
+            $this->exitWithErrorMessage(
+                \sprintf(
+                    'Could not use "%s" as printer: class cannot be instantiated',
+                    $printerClass
+                )
+            );
+        }
+
+        if ($class->isSubclassOf(ResultPrinter::class)) {
+            return $printerClass;
+        }
+
+        $outputStream = isset($this->arguments['stderr']) ? 'php://stderr' : null;
+
+        return $class->newInstance($outputStream);
+    }
+
+    /**
+     * Create a TestRunner, override in subclasses.
+     */
+    protected function createRunner(): TestRunner
+    {
+        return new TestRunner($this->arguments['loader']);
     }
 
     private function handleListGroups(TestSuite $suite, bool $exit): int

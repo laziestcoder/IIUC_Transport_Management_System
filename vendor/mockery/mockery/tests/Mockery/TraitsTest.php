@@ -21,7 +21,24 @@
 namespace test\Mockery;
 
 use Mockery\Adapter\Phpunit\MockeryTestCase;
-use Mockery\Loader\RequireLoader;
+
+trait SimpleTrait
+{
+    public function foo()
+    {
+        return 'bar';
+    }
+}
+
+trait TraitWithAbstractMethod
+{
+    public function baz()
+    {
+        return $this->doBaz();
+    }
+
+    abstract public function doBaz();
+}
 
 class TraitTest extends MockeryTestCase
 {
@@ -51,22 +68,4 @@ class TraitTest extends MockeryTestCase
         $this->assertEquals('bar', $trait->foo());
         $this->assertEquals(123, $trait->baz());
     }
-}
-
-trait SimpleTrait
-{
-    public function foo()
-    {
-        return 'bar';
-    }
-}
-
-trait TraitWithAbstractMethod
-{
-    public function baz()
-    {
-        return $this->doBaz();
-    }
-
-    abstract public function doBaz();
 }

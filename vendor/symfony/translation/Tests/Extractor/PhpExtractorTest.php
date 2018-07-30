@@ -48,8 +48,8 @@ EOF;
                 "double-quoted key with whitespace and escaped \$\n\" sequences" => "prefixdouble-quoted key with whitespace and escaped \$\n\" sequences",
                 'single-quoted key with whitespace and nonescaped \$\n\' sequences' => 'prefixsingle-quoted key with whitespace and nonescaped \$\n\' sequences',
                 'single-quoted key with "quote mark at the end"' => 'prefixsingle-quoted key with "quote mark at the end"',
-                $expectedHeredoc => 'prefix'.$expectedHeredoc,
-                $expectedNowdoc => 'prefix'.$expectedNowdoc,
+                $expectedHeredoc => 'prefix' . $expectedHeredoc,
+                $expectedNowdoc => 'prefix' . $expectedNowdoc,
                 '{0} There is no apples|{1} There is one apple|]1,Inf[ There are %count% apples' => 'prefix{0} There is no apples|{1} There is one apple|]1,Inf[ There are %count% apples',
             ),
             'not_messages' => array(
@@ -71,7 +71,7 @@ EOF;
 
     public function resourcesProvider()
     {
-        $directory = __DIR__.'/../fixtures/extractor/';
+        $directory = __DIR__ . '/../fixtures/extractor/';
         $splFiles = array();
         foreach (new \DirectoryIterator($directory) as $fileInfo) {
             if ($fileInfo->isDot()) {
@@ -86,9 +86,9 @@ EOF;
         return array(
             array($directory),
             array($phpFile),
-            array(glob($directory.'*')),
+            array(glob($directory . '*')),
             array($splFiles),
-            array(new \ArrayObject(glob($directory.'*'))),
+            array(new \ArrayObject(glob($directory . '*'))),
             array(new \ArrayObject($splFiles)),
         );
     }

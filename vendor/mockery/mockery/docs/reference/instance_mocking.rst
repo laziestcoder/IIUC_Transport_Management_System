@@ -1,5 +1,5 @@
 .. index::
-    single: Mocking; Instance
+single: Mocking; Instance
 
 Instance Mocking
 ================

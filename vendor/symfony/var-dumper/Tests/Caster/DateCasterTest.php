@@ -109,6 +109,15 @@ EODUMP;
         $this->assertDumpMatchesFormat($xDump, $interval);
     }
 
+    private function createInterval($intervalSpec, $ms, $invert)
+    {
+        $interval = new \DateInterval($intervalSpec);
+        $interval->f = $ms;
+        $interval->invert = $invert;
+
+        return $interval;
+    }
+
     /**
      * @dataProvider provideIntervals
      */
@@ -373,18 +382,11 @@ EODUMP;
         );
 
         if (\PHP_VERSION_ID < 70107) {
-            array_walk($periods, function (&$i) { $i[5] = ''; });
+            array_walk($periods, function (&$i) {
+                $i[5] = '';
+            });
         }
 
         return $periods;
-    }
-
-    private function createInterval($intervalSpec, $ms, $invert)
-    {
-        $interval = new \DateInterval($intervalSpec);
-        $interval->f = $ms;
-        $interval->invert = $invert;
-
-        return $interval;
     }
 }

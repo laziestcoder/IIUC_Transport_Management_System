@@ -27,9 +27,9 @@ class MockFileSessionStorage extends MockArraySessionStorage
     private $savePath;
 
     /**
-     * @param string      $savePath Path of directory to save session files
-     * @param string      $name     Session name
-     * @param MetadataBag $metaBag  MetadataBag instance
+     * @param string $savePath Path of directory to save session files
+     * @param string $name Session name
+     * @param MetadataBag $metaBag MetadataBag instance
      */
     public function __construct(string $savePath = null, string $name = 'MOCKSESSID', MetadataBag $metaBag = null)
     {
@@ -44,6 +44,22 @@ class MockFileSessionStorage extends MockArraySessionStorage
         $this->savePath = $savePath;
 
         parent::__construct($name, $metaBag);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function regenerate($destroy = false, $lifetime = null)
+    {
+        if (!$this->started) {
+            $this->start();
+        }
+
+        if ($destroy) {
+            $this->destroy();
+        }
+
+        return parent::regenerate($destroy, $lifetime);
     }
 
     /**
@@ -67,19 +83,35 @@ class MockFileSessionStorage extends MockArraySessionStorage
     }
 
     /**
-     * {@inheritdoc}
+     * Reads session from storage and loads session.
      */
-    public function regenerate($destroy = false, $lifetime = null)
+    private function read()
     {
-        if (!$this->started) {
-            $this->start();
-        }
+        $filePath = $this->getFilePath();
+        $this->data = is_readable($filePath) && is_file($filePath) ? unserialize(file_get_contents($filePath)) : array();
 
-        if ($destroy) {
-            $this->destroy();
-        }
+        $this->loadSession();
+    }
 
-        return parent::regenerate($destroy, $lifetime);
+    /**
+     * Calculate path to file.
+     *
+     * @return string File path
+     */
+    private function getFilePath()
+    {
+        return $this->savePath . '/' . $this->id . '.mocksess';
+    }
+
+    /**
+     * Deletes a session from persistent storage.
+     * Deliberately leaves session data in memory intact.
+     */
+    private function destroy()
+    {
+        if (is_file($this->getFilePath())) {
+            unlink($this->getFilePath());
+        }
     }
 
     /**
@@ -116,37 +148,5 @@ class MockFileSessionStorage extends MockArraySessionStorage
         // in functional tests. In Symfony, the container is rebooted, so we don't have
         // this issue
         $this->started = false;
-    }
-
-    /**
-     * Deletes a session from persistent storage.
-     * Deliberately leaves session data in memory intact.
-     */
-    private function destroy()
-    {
-        if (is_file($this->getFilePath())) {
-            unlink($this->getFilePath());
-        }
-    }
-
-    /**
-     * Calculate path to file.
-     *
-     * @return string File path
-     */
-    private function getFilePath()
-    {
-        return $this->savePath.'/'.$this->id.'.mocksess';
-    }
-
-    /**
-     * Reads session from storage and loads session.
-     */
-    private function read()
-    {
-        $filePath = $this->getFilePath();
-        $this->data = is_readable($filePath) && is_file($filePath) ? unserialize(file_get_contents($filePath)) : array();
-
-        $this->loadSession();
     }
 }

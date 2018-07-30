@@ -10,5 +10,6 @@
 
 namespace PharIo\Manifest;
 
-interface Exception {
+interface Exception
+{
 }

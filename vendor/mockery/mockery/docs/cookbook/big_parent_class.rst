@@ -1,5 +1,5 @@
 .. index::
-    single: Cookbook; Big Parent Class
+single: Cookbook; Big Parent Class
 
 Big Parent Class
 ================

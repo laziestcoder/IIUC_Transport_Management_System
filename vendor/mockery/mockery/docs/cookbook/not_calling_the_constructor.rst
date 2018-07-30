@@ -1,5 +1,5 @@
 .. index::
-    single: Cookbook; Not Calling the Original Constructor
+single: Cookbook; Not Calling the Original Constructor
 
 Not Calling the Original Constructor
 ====================================

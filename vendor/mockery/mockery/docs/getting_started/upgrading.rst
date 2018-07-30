@@ -1,5 +1,5 @@
 .. index::
-    single: Upgrading
+single: Upgrading
 
 Upgrading
 =========

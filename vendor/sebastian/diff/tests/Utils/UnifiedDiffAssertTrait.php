@@ -31,10 +31,10 @@ trait UnifiedDiffAssertTrait
             throw new \UnexpectedValueException(\sprintf('Expected diff to end with a line break, got "%s".', $last));
         }
 
-        $lines            = \preg_split('/(.*\R)/', $diff, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        $lineCount        = \count($lines);
-        $lineNumber       = $diffLineFromNumber       = $diffLineToNumber       = 1;
-        $fromStart        = $fromTillOffset        = $toStart        = $toTillOffset        = -1;
+        $lines = \preg_split('/(.*\R)/', $diff, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $lineCount = \count($lines);
+        $lineNumber = $diffLineFromNumber = $diffLineToNumber = 1;
+        $fromStart = $fromTillOffset = $toStart = $toTillOffset = -1;
         $expectHunkHeader = true;
 
         // check for header
@@ -55,7 +55,7 @@ trait UnifiedDiffAssertTrait
         }
 
         $endOfLineTypes = [];
-        $diffClosed     = false;
+        $diffClosed = false;
 
         // assert format of lines, get all hunks, test the line numbers
         for (; $lineNumber <= $lineCount; ++$lineNumber) {
@@ -95,8 +95,8 @@ trait UnifiedDiffAssertTrait
                 */
 
                 $diffLineFromNumber = $fromStart;
-                $diffLineToNumber   = $toStart;
-                $expectHunkHeader   = false;
+                $diffLineToNumber = $toStart;
+                $expectHunkHeader = false;
 
                 continue;
             }
@@ -135,7 +135,7 @@ trait UnifiedDiffAssertTrait
                 }
 
                 $endOfLineTypes[$previousType] = true;
-                $diffClosed                    = \count($endOfLineTypes) > 1;
+                $diffClosed = \count($endOfLineTypes) > 1;
             } else {
                 // internal state error
                 throw new \RuntimeException(\sprintf('Unexpected line type "%s" Line %d.', $type, $lineNumber));
@@ -143,8 +143,7 @@ trait UnifiedDiffAssertTrait
 
             $expectHunkHeader =
                 $diffLineFromNumber === ($fromStart + $fromTillOffset)
-                && $diffLineToNumber === ($toStart + $toTillOffset)
-            ;
+                && $diffLineToNumber === ($toStart + $toTillOffset);
         }
 
         if (
@@ -265,10 +264,10 @@ trait UnifiedDiffAssertTrait
         }
 
         return [
-            (int) $matches[1],
-            empty($matches[2]) ? 1 : (int) \substr($matches[2], 1),
-            (int) $matches[3],
-            empty($matches[4]) ? 1 : (int) \substr($matches[4], 1),
+            (int)$matches[1],
+            empty($matches[2]) ? 1 : (int)\substr($matches[2], 1),
+            (int)$matches[3],
+            empty($matches[4]) ? 1 : (int)\substr($matches[4], 1),
         ];
     }
 }

@@ -28,12 +28,6 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
  */
 class MockingVoidMethodsTest extends MockeryTestCase
 {
-    protected function setUp()
-    {
-        require_once __DIR__."/Fixtures/MethodWithVoidReturnType.php";
-    }
-
-
     /** @test */
     public function itShouldSuccessfullyBuildTheMock()
     {
@@ -49,5 +43,10 @@ class MockingVoidMethodsTest extends MockeryTestCase
 
         $mock->shouldReceive("foo");
         $mock->foo();
+    }
+
+    protected function setUp()
+    {
+        require_once __DIR__ . "/Fixtures/MethodWithVoidReturnType.php";
     }
 }

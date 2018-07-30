@@ -31,8 +31,8 @@ use PhpParser\NodeTraverser;
  */
 class UseStatementPass extends CodeCleanerPass
 {
-    private $aliases       = [];
-    private $lastAliases   = [];
+    private $aliases = [];
+    private $lastAliases = [];
     private $lastNamespace = null;
 
     /**
@@ -81,7 +81,7 @@ class UseStatementPass extends CodeCleanerPass
                 $alias = $use->alias ?: end($use->name->parts);
                 $this->aliases[strtolower($alias)] = Name::concat($node->prefix, $use->name, [
                     'startLine' => $node->prefix->getAttribute('startLine'),
-                    'endLine'   => $use->name->getAttribute('endLine'),
+                    'endLine' => $use->name->getAttribute('endLine'),
                 ]);
             }
 
@@ -89,8 +89,8 @@ class UseStatementPass extends CodeCleanerPass
         } elseif ($node instanceof Namespace_) {
             // Start fresh, since we're done with this namespace.
             $this->lastNamespace = $node->name;
-            $this->lastAliases   = $this->aliases;
-            $this->aliases       = [];
+            $this->lastAliases = $this->aliases;
+            $this->aliases = [];
         } else {
             foreach ($node as $name => $subNode) {
                 if ($subNode instanceof Name) {

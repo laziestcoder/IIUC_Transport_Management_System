@@ -1,5 +1,5 @@
 .. index::
-    single: Mocking; Demeter Chains
+single: Mocking; Demeter Chains
 
 Mocking Demeter Chains And Fluent Interfaces
 ============================================

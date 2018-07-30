@@ -21,25 +21,6 @@ class ApplicationTesterTest extends TestCase
     protected $application;
     protected $tester;
 
-    protected function setUp()
-    {
-        $this->application = new Application();
-        $this->application->setAutoExit(false);
-        $this->application->register('foo')
-            ->addArgument('foo')
-            ->setCode(function ($input, $output) { $output->writeln('foo'); })
-        ;
-
-        $this->tester = new ApplicationTester($this->application);
-        $this->tester->run(array('command' => 'foo', 'foo' => 'bar'), array('interactive' => false, 'decorated' => false, 'verbosity' => Output::VERBOSITY_VERBOSE));
-    }
-
-    protected function tearDown()
-    {
-        $this->application = null;
-        $this->tester = null;
-    }
-
     public function testRun()
     {
         $this->assertFalse($this->tester->getInput()->isInteractive(), '->execute() takes an interactive option');
@@ -55,16 +36,36 @@ class ApplicationTesterTest extends TestCase
     public function testGetOutput()
     {
         rewind($this->tester->getOutput()->getStream());
-        $this->assertEquals('foo'.PHP_EOL, stream_get_contents($this->tester->getOutput()->getStream()), '->getOutput() returns the current output instance');
+        $this->assertEquals('foo' . PHP_EOL, stream_get_contents($this->tester->getOutput()->getStream()), '->getOutput() returns the current output instance');
     }
 
     public function testGetDisplay()
     {
-        $this->assertEquals('foo'.PHP_EOL, $this->tester->getDisplay(), '->getDisplay() returns the display of the last execution');
+        $this->assertEquals('foo' . PHP_EOL, $this->tester->getDisplay(), '->getDisplay() returns the display of the last execution');
     }
 
     public function testGetStatusCode()
     {
         $this->assertSame(0, $this->tester->getStatusCode(), '->getStatusCode() returns the status code');
+    }
+
+    protected function setUp()
+    {
+        $this->application = new Application();
+        $this->application->setAutoExit(false);
+        $this->application->register('foo')
+            ->addArgument('foo')
+            ->setCode(function ($input, $output) {
+                $output->writeln('foo');
+            });
+
+        $this->tester = new ApplicationTester($this->application);
+        $this->tester->run(array('command' => 'foo', 'foo' => 'bar'), array('interactive' => false, 'decorated' => false, 'verbosity' => Output::VERBOSITY_VERBOSE));
+    }
+
+    protected function tearDown()
+    {
+        $this->application = null;
+        $this->tester = null;
     }
 }

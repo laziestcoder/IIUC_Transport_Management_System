@@ -1,4 +1,5 @@
 <?php
+
 class ClassWithAllPossibleReturnTypes
 {
     public function methodWithNoReturnTypeDeclaration()

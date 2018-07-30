@@ -13,8 +13,8 @@ namespace Symfony\Component\Console\Tests\Input;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 
 class ArgvInputTest extends TestCase
@@ -386,10 +386,10 @@ class ArgvInputTest extends TestCase
     public function testToString()
     {
         $input = new ArgvInput(array('cli.php', '-f', 'foo'));
-        $this->assertEquals('-f foo', (string) $input);
+        $this->assertEquals('-f foo', (string)$input);
 
         $input = new ArgvInput(array('cli.php', '-f', '--bar=foo', 'a b c d', "A\nB'C"));
-        $this->assertEquals('-f --bar=foo '.escapeshellarg('a b c d').' '.escapeshellarg("A\nB'C"), (string) $input);
+        $this->assertEquals('-f --bar=foo ' . escapeshellarg('a b c d') . ' ' . escapeshellarg("A\nB'C"), (string)$input);
     }
 
     /**

@@ -26,7 +26,7 @@ class ParserTest extends TestCase
         $parser = new Parser();
 
         $this->assertEquals($representation, array_map(function (SelectorNode $node) {
-            return (string) $node->getTree();
+            return (string)$node->getTree();
         }, $parser->parse($source)));
     }
 
@@ -52,8 +52,8 @@ class ParserTest extends TestCase
 
         /** @var SelectorNode $selector */
         $selector = $selectors[0];
-        $this->assertEquals($element, (string) $selector->getTree());
-        $this->assertEquals($pseudo, (string) $selector->getPseudoElement());
+        $this->assertEquals($element, (string)$selector->getTree());
+        $this->assertEquals($pseudo, (string)$selector->getPseudoElement());
     }
 
     /** @dataProvider getSpecificityTestData */

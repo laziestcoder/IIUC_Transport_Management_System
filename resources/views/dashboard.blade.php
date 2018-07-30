@@ -11,19 +11,29 @@
                 <b><h3>Basic Info:</h3></b>
                 <hr>
                 <table class="table-active">
-                    <thead class="">
+                    <thead class="tableSpace">
+                    <tr>
+                        <td>
+                            <img src="storage/image/user/{{Auth::user()->image}}"/>
+                        </td>
+                    </tr>
                     <tr>
                         <td>
                             Name: {{Auth::user()->name}}
-                        </td>
-                        <td>
-                            Gender: {{Auth::user()->gender == 0 ? 'Male' : 'Female'}}
-                        </td>
+                        </td>                        
                     </tr>
                     <tr>
                         <td>
                             ID: {{Auth::user()->id}}
                         </td>
+                        
+                    </tr>
+                    <tr>
+                        <td>
+                            Gender: {{Auth::user()->gender == 0 ? 'Male' : 'Female'}}
+                        </td>
+                    </tr>
+                    <tr>
                         <td>
                             Registered
                             As: {{Auth::user()->userrole == 1 ? 'Student' : ( Auth::user()->userrole == 2 ? 'Faculty Member' :(Auth::user()->userrole == 3 ? 'Officer/Staff' : 'undefined')) }}

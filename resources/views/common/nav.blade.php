@@ -3,7 +3,8 @@
     {{--<nav class="navbar navbar-expand-lg navbar-dark navbar-fixed-top"  id="mainNav">--}}
     <div class="container">
         <a class="navbar-brand js-scroll-trigger" href="/">
-            <img src="/storage/img/logos/itms-logo.png" alt="IIUC TMD LOGO"></a>
+            <img src="/storage/img/logos/itms-logo.png" alt="IIUC TMD LOGO">
+        </a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
                 data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
                 aria-label="Toggle navigation">

@@ -43,6 +43,22 @@ class GuidStringCodec extends StringCodec
     }
 
     /**
+     * Swaps fields to support GUID byte order
+     *
+     * @param array $components An array of UUID components (the UUID exploded on its dashes)
+     * @return void
+     */
+    protected function swapFields(array &$components)
+    {
+        $hex = unpack('H*', pack('L', hexdec($components[0])));
+        $components[0] = $hex[1];
+        $hex = unpack('H*', pack('S', hexdec($components[1])));
+        $components[1] = $hex[1];
+        $hex = unpack('H*', pack('S', hexdec($components[2])));
+        $components[2] = $hex[1];
+    }
+
+    /**
      * Encodes a UuidInterface as a binary representation of a GUID
      *
      * @param UuidInterface $uuid
@@ -80,21 +96,5 @@ class GuidStringCodec extends StringCodec
     {
         // Specifically call parent::decode to preserve correct byte order
         return parent::decode(bin2hex($bytes));
-    }
-
-    /**
-     * Swaps fields to support GUID byte order
-     *
-     * @param array $components An array of UUID components (the UUID exploded on its dashes)
-     * @return void
-     */
-    protected function swapFields(array &$components)
-    {
-        $hex = unpack('H*', pack('L', hexdec($components[0])));
-        $components[0] = $hex[1];
-        $hex = unpack('H*', pack('S', hexdec($components[1])));
-        $components[1] = $hex[1];
-        $hex = unpack('H*', pack('S', hexdec($components[2])));
-        $components[2] = $hex[1];
     }
 }

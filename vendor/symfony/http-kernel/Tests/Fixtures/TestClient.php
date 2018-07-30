@@ -19,10 +19,9 @@ class TestClient extends Client
     {
         $script = parent::getScript($request);
 
-        $autoload = file_exists(__DIR__.'/../../vendor/autoload.php')
-            ? __DIR__.'/../../vendor/autoload.php'
-            : __DIR__.'/../../../../../../vendor/autoload.php'
-        ;
+        $autoload = file_exists(__DIR__ . '/../../vendor/autoload.php')
+            ? __DIR__ . '/../../vendor/autoload.php'
+            : __DIR__ . '/../../../../../../vendor/autoload.php';
 
         $script = preg_replace('/(\->register\(\);)/', "$0\nrequire_once '$autoload';\n", $script);
 

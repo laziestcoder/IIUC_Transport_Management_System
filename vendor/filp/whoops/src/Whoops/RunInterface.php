@@ -13,8 +13,8 @@ use Whoops\Handler\HandlerInterface;
 interface RunInterface
 {
     const EXCEPTION_HANDLER = "handleException";
-    const ERROR_HANDLER     = "handleError";
-    const SHUTDOWN_HANDLER  = "handleShutdown";
+    const ERROR_HANDLER = "handleError";
+    const SHUTDOWN_HANDLER = "handleShutdown";
 
     /**
      * Pushes a handler to the end of the stack
@@ -75,7 +75,7 @@ interface RunInterface
      * Silence particular errors in particular files
      *
      * @param  array|string $patterns List or a single regex pattern to match
-     * @param  int          $levels   Defaults to E_STRICT | E_DEPRECATED
+     * @param  int $levels Defaults to E_STRICT | E_DEPRECATED
      * @return \Whoops\Run
      */
     public function silenceErrorsInPaths($patterns, $levels = 10240);
@@ -114,10 +114,10 @@ interface RunInterface
      *
      * This method MUST be compatible with set_error_handler.
      *
-     * @param int    $level
+     * @param int $level
      * @param string $message
      * @param string $file
-     * @param int    $line
+     * @param int $line
      *
      * @return bool
      * @throws ErrorException

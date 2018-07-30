@@ -17,24 +17,24 @@ abstract class AbstractChunkOutputBuilder implements DiffOutputBuilderInterface
      * Iterates through diff line by line.
      *
      * @param array $diff
-     * @param int   $lineThreshold
+     * @param int $lineThreshold
      *
      * @return array
      */
     protected function getCommonChunks(array $diff, int $lineThreshold = 5): array
     {
-        $diffSize     = \count($diff);
-        $capturing    = false;
-        $chunkStart   = 0;
-        $chunkSize    = 0;
+        $diffSize = \count($diff);
+        $capturing = false;
+        $chunkStart = 0;
+        $chunkSize = 0;
         $commonChunks = [];
 
         for ($i = 0; $i < $diffSize; ++$i) {
             if ($diff[$i][1] === 0 /* OLD */) {
                 if ($capturing === false) {
-                    $capturing  = true;
+                    $capturing = true;
                     $chunkStart = $i;
-                    $chunkSize  = 0;
+                    $chunkSize = 0;
                 } else {
                     ++$chunkSize;
                 }

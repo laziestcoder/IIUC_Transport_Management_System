@@ -17,19 +17,19 @@ class RegularExpressionTest extends TestCase
     public function validRegexpProvider()
     {
         return [
-          ['#valid regexp#', 'valid regexp', 1],
-          [';val.*xp;', 'valid regexp', 1],
-          ['/val.*xp/i', 'VALID REGEXP', 1],
-          ['/a val.*p/', 'valid regexp', 0],
+            ['#valid regexp#', 'valid regexp', 1],
+            [';val.*xp;', 'valid regexp', 1],
+            ['/val.*xp/i', 'VALID REGEXP', 1],
+            ['/a val.*p/', 'valid regexp', 0],
         ];
     }
 
     public function invalidRegexpProvider()
     {
         return [
-          ['valid regexp', 'valid regexp'],
-          [';val.*xp', 'valid regexp'],
-          ['val.*xp/i', 'VALID REGEXP'],
+            ['valid regexp', 'valid regexp'],
+            [';val.*xp', 'valid regexp'],
+            ['val.*xp/i', 'VALID REGEXP'],
         ];
     }
 

@@ -19,10 +19,6 @@ class SignatureFormatterTest extends \PHPUnit\Framework\TestCase
     const FOO = 'foo value';
     private static $bar = 'bar value';
 
-    private function someFakeMethod(array $one, $two = 'TWO', \Reflector $three = null)
-    {
-    }
-
     /**
      * @dataProvider signatureReflectors
      */
@@ -78,5 +74,9 @@ class SignatureFormatterTest extends \PHPUnit\Framework\TestCase
     {
         $refl = $this->getMockBuilder('Reflector')->getMock();
         SignatureFormatter::format($refl);
+    }
+
+    private function someFakeMethod(array $one, $two = 'TWO', \Reflector $three = null)
+    {
     }
 }

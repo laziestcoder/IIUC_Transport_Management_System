@@ -24,17 +24,6 @@ class XmlReaderCasterTest extends TestCase
     /** @var \XmlReader */
     private $reader;
 
-    protected function setUp()
-    {
-        $this->reader = new \XmlReader();
-        $this->reader->open(__DIR__.'/../Fixtures/xml_reader.xml');
-    }
-
-    protected function tearDown()
-    {
-        $this->reader->close();
-    }
-
     public function testParserProperty()
     {
         $this->reader->setParserProperty(\XMLReader::SUBST_ENTITIES, true);
@@ -244,5 +233,16 @@ XMLReader {
 EODUMP
             ),
         );
+    }
+
+    protected function setUp()
+    {
+        $this->reader = new \XmlReader();
+        $this->reader->open(__DIR__ . '/../Fixtures/xml_reader.xml');
+    }
+
+    protected function tearDown()
+    {
+        $this->reader->close();
     }
 }

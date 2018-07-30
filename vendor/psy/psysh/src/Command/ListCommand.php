@@ -61,29 +61,29 @@ class ListCommand extends ReflectingCommand implements PresenterAware
             ->setDefinition([
                 new CodeArgument('target', CodeArgument::OPTIONAL, 'A target class or object to list.'),
 
-                new InputOption('vars',        '',  InputOption::VALUE_NONE,     'Display variables.'),
-                new InputOption('constants',   'c', InputOption::VALUE_NONE,     'Display defined constants.'),
-                new InputOption('functions',   'f', InputOption::VALUE_NONE,     'Display defined functions.'),
-                new InputOption('classes',     'k', InputOption::VALUE_NONE,     'Display declared classes.'),
-                new InputOption('interfaces',  'I', InputOption::VALUE_NONE,     'Display declared interfaces.'),
-                new InputOption('traits',      't', InputOption::VALUE_NONE,     'Display declared traits.'),
+                new InputOption('vars', '', InputOption::VALUE_NONE, 'Display variables.'),
+                new InputOption('constants', 'c', InputOption::VALUE_NONE, 'Display defined constants.'),
+                new InputOption('functions', 'f', InputOption::VALUE_NONE, 'Display defined functions.'),
+                new InputOption('classes', 'k', InputOption::VALUE_NONE, 'Display declared classes.'),
+                new InputOption('interfaces', 'I', InputOption::VALUE_NONE, 'Display declared interfaces.'),
+                new InputOption('traits', 't', InputOption::VALUE_NONE, 'Display declared traits.'),
 
-                new InputOption('no-inherit',  '',  InputOption::VALUE_NONE,     'Exclude inherited methods, properties and constants.'),
+                new InputOption('no-inherit', '', InputOption::VALUE_NONE, 'Exclude inherited methods, properties and constants.'),
 
-                new InputOption('properties',  'p', InputOption::VALUE_NONE,     'Display class or object properties (public properties by default).'),
-                new InputOption('methods',     'm', InputOption::VALUE_NONE,     'Display class or object methods (public methods by default).'),
+                new InputOption('properties', 'p', InputOption::VALUE_NONE, 'Display class or object properties (public properties by default).'),
+                new InputOption('methods', 'm', InputOption::VALUE_NONE, 'Display class or object methods (public methods by default).'),
 
                 $grep,
                 $insensitive,
                 $invert,
 
-                new InputOption('globals',     'g', InputOption::VALUE_NONE,     'Include global variables.'),
-                new InputOption('internal',    'n', InputOption::VALUE_NONE,     'Limit to internal functions and classes.'),
-                new InputOption('user',        'u', InputOption::VALUE_NONE,     'Limit to user-defined constants, functions and classes.'),
-                new InputOption('category',    'C', InputOption::VALUE_REQUIRED, 'Limit to constants in a specific category (e.g. "date").'),
+                new InputOption('globals', 'g', InputOption::VALUE_NONE, 'Include global variables.'),
+                new InputOption('internal', 'n', InputOption::VALUE_NONE, 'Limit to internal functions and classes.'),
+                new InputOption('user', 'u', InputOption::VALUE_NONE, 'Limit to user-defined constants, functions and classes.'),
+                new InputOption('category', 'C', InputOption::VALUE_REQUIRED, 'Limit to constants in a specific category (e.g. "date").'),
 
-                new InputOption('all',         'a', InputOption::VALUE_NONE,     'Include private and protected methods and properties.'),
-                new InputOption('long',        'l', InputOption::VALUE_NONE,     'List in long format: includes class names and method signatures.'),
+                new InputOption('all', 'a', InputOption::VALUE_NONE, 'Include private and protected methods and properties.'),
+                new InputOption('long', 'l', InputOption::VALUE_NONE, 'List in long format: includes class names and method signatures.'),
             ])
             ->setDescription('List local, instance or class variables, methods and constants.')
             ->setHelp(
@@ -145,90 +145,6 @@ HELP
     }
 
     /**
-     * Initialize Enumerators.
-     */
-    protected function initEnumerators()
-    {
-        if (!isset($this->enumerators)) {
-            $mgr = $this->presenter;
-
-            $this->enumerators = [
-                new ClassConstantEnumerator($mgr),
-                new ClassEnumerator($mgr),
-                new ConstantEnumerator($mgr),
-                new FunctionEnumerator($mgr),
-                new GlobalVariableEnumerator($mgr),
-                new PropertyEnumerator($mgr),
-                new MethodEnumerator($mgr),
-                new VariableEnumerator($mgr, $this->context),
-            ];
-        }
-    }
-
-    /**
-     * Write the list items to $output.
-     *
-     * @param OutputInterface $output
-     * @param null|array      $result List of enumerated items
-     */
-    protected function write(OutputInterface $output, array $result = null)
-    {
-        if ($result === null) {
-            return;
-        }
-
-        foreach ($result as $label => $items) {
-            $names = array_map([$this, 'formatItemName'], $items);
-            $output->writeln(sprintf('<strong>%s</strong>: %s', $label, implode(', ', $names)));
-        }
-    }
-
-    /**
-     * Write the list items to $output.
-     *
-     * Items are listed one per line, and include the item signature.
-     *
-     * @param OutputInterface $output
-     * @param null|array      $result List of enumerated items
-     */
-    protected function writeLong(OutputInterface $output, array $result = null)
-    {
-        if ($result === null) {
-            return;
-        }
-
-        $table = $this->getTable($output);
-
-        foreach ($result as $label => $items) {
-            $output->writeln('');
-            $output->writeln(sprintf('<strong>%s:</strong>', $label));
-
-            $table->setRows([]);
-            foreach ($items as $item) {
-                $table->addRow([$this->formatItemName($item), $item['value']]);
-            }
-
-            if ($table instanceof TableHelper) {
-                $table->render($output);
-            } else {
-                $table->render();
-            }
-        }
-    }
-
-    /**
-     * Format an item name given its visibility.
-     *
-     * @param array $item
-     *
-     * @return string
-     */
-    private function formatItemName($item)
-    {
-        return sprintf('<%s>%s</%s>', $item['style'], OutputFormatter::escape($item['name']), $item['style']);
-    }
-
-    /**
      * Validate that input options make sense, provide defaults when called without options.
      *
      * @throws RuntimeException if options are inconsistent
@@ -268,9 +184,93 @@ HELP
             }
 
             // default to --constants --properties --methods if no other options are passed
-            $input->setOption('constants',  true);
+            $input->setOption('constants', true);
             $input->setOption('properties', true);
-            $input->setOption('methods',    true);
+            $input->setOption('methods', true);
         }
+    }
+
+    /**
+     * Initialize Enumerators.
+     */
+    protected function initEnumerators()
+    {
+        if (!isset($this->enumerators)) {
+            $mgr = $this->presenter;
+
+            $this->enumerators = [
+                new ClassConstantEnumerator($mgr),
+                new ClassEnumerator($mgr),
+                new ConstantEnumerator($mgr),
+                new FunctionEnumerator($mgr),
+                new GlobalVariableEnumerator($mgr),
+                new PropertyEnumerator($mgr),
+                new MethodEnumerator($mgr),
+                new VariableEnumerator($mgr, $this->context),
+            ];
+        }
+    }
+
+    /**
+     * Write the list items to $output.
+     *
+     * @param OutputInterface $output
+     * @param null|array $result List of enumerated items
+     */
+    protected function write(OutputInterface $output, array $result = null)
+    {
+        if ($result === null) {
+            return;
+        }
+
+        foreach ($result as $label => $items) {
+            $names = array_map([$this, 'formatItemName'], $items);
+            $output->writeln(sprintf('<strong>%s</strong>: %s', $label, implode(', ', $names)));
+        }
+    }
+
+    /**
+     * Write the list items to $output.
+     *
+     * Items are listed one per line, and include the item signature.
+     *
+     * @param OutputInterface $output
+     * @param null|array $result List of enumerated items
+     */
+    protected function writeLong(OutputInterface $output, array $result = null)
+    {
+        if ($result === null) {
+            return;
+        }
+
+        $table = $this->getTable($output);
+
+        foreach ($result as $label => $items) {
+            $output->writeln('');
+            $output->writeln(sprintf('<strong>%s:</strong>', $label));
+
+            $table->setRows([]);
+            foreach ($items as $item) {
+                $table->addRow([$this->formatItemName($item), $item['value']]);
+            }
+
+            if ($table instanceof TableHelper) {
+                $table->render($output);
+            } else {
+                $table->render();
+            }
+        }
+    }
+
+    /**
+     * Format an item name given its visibility.
+     *
+     * @param array $item
+     *
+     * @return string
+     */
+    private function formatItemName($item)
+    {
+        return sprintf('<%s>%s</%s>', $item['style'], OutputFormatter::escape($item['name']), $item['style']);
     }
 }

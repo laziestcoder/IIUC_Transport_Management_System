@@ -10,7 +10,8 @@
 
 namespace PharIo\Manifest;
 
-class RequirementCollectionIterator implements \Iterator {
+class RequirementCollectionIterator implements \Iterator
+{
     /**
      * @var Requirement[]
      */
@@ -21,36 +22,42 @@ class RequirementCollectionIterator implements \Iterator {
      */
     private $position;
 
-    public function __construct(RequirementCollection $requirements) {
+    public function __construct(RequirementCollection $requirements)
+    {
         $this->requirements = $requirements->getRequirements();
     }
 
-    public function rewind() {
+    public function rewind()
+    {
         $this->position = 0;
     }
 
     /**
      * @return bool
      */
-    public function valid() {
+    public function valid()
+    {
         return $this->position < count($this->requirements);
     }
 
     /**
      * @return int
      */
-    public function key() {
+    public function key()
+    {
         return $this->position;
     }
 
     /**
      * @return Requirement
      */
-    public function current() {
+    public function current()
+    {
         return $this->requirements[$this->position];
     }
 
-    public function next() {
+    public function next()
+    {
         $this->position++;
     }
 }

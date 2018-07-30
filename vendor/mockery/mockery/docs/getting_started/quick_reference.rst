@@ -1,5 +1,5 @@
 .. index::
-    single: Quick Reference
+single: Quick Reference
 
 Quick Reference
 ===============

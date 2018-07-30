@@ -37,7 +37,7 @@ use Illuminate\Contracts\Support\Renderable;
  * @method Field\Number         number($name, $label = '')
  * @method Field\Currency       currency($name, $label = '')
  * @method Field\Json           json($name, $label = '')
- * @method Field\SwitchField    switch($name, $label = '')
+ * @method Field\SwitchField    switch ($name, $label = '')
  * @method Field\Display        display($name, $label = '')
  * @method Field\Rate           rate($name, $label = '')
  * @method Field\Divide         divide()
@@ -87,9 +87,9 @@ class Form implements Renderable
     protected function initFormAttributes()
     {
         $this->attributes = [
-            'method'         => 'POST',
-            'action'         => '',
-            'class'          => 'form-horizontal',
+            'method' => 'POST',
+            'action' => '',
+            'class' => 'form-horizontal',
             'accept-charset' => 'UTF-8',
             'pjax-container' => true,
         ];
@@ -108,22 +108,10 @@ class Form implements Renderable
     }
 
     /**
-     * Method of the form.
-     *
-     * @param string $method
-     *
-     * @return $this
-     */
-    public function method($method = 'POST')
-    {
-        return $this->attribute('method', strtoupper($method));
-    }
-
-    /**
      * Add form attributes.
      *
      * @param string|array $attr
-     * @param string       $value
+     * @param string $value
      *
      * @return $this
      */
@@ -138,6 +126,18 @@ class Form implements Renderable
         }
 
         return $this;
+    }
+
+    /**
+     * Method of the form.
+     *
+     * @param string $method
+     *
+     * @return $this
+     */
+    public function method($method = 'POST')
+    {
+        return $this->attribute('method', strtoupper($method));
     }
 
     /**
@@ -163,11 +163,32 @@ class Form implements Renderable
     public function setWidth($fieldWidth = 8, $labelWidth = 2)
     {
         collect($this->fields)->each(function ($field) use ($fieldWidth, $labelWidth) {
-            /* @var Field $field  */
+            /* @var Field $field */
             $field->setWidth($fieldWidth, $labelWidth);
         });
 
         return $this;
+    }
+
+    /**
+     * Generate a Field object and add to form builder if Field exists.
+     *
+     * @param string $method
+     * @param array $arguments
+     *
+     * @return Field|null
+     */
+    public function __call($method, $arguments)
+    {
+        if ($className = static::findFieldClass($method)) {
+            $name = array_get($arguments, 0, '');
+
+            $element = new $className($name, array_slice($arguments, 1));
+
+            $this->pushField($element);
+
+            return $element;
+        }
     }
 
     /**
@@ -203,6 +224,26 @@ class Form implements Renderable
     }
 
     /**
+     * Output as string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->render();
+    }
+
+    /**
+     * Render the form.
+     *
+     * @return string
+     */
+    public function render()
+    {
+        return view('admin::widgets.form', $this->getVariables())->render();
+    }
+
+    /**
      * Get variables for render form.
      *
      * @return array
@@ -214,9 +255,9 @@ class Form implements Renderable
         }
 
         return [
-            'fields'     => $this->fields,
+            'fields' => $this->fields,
             'attributes' => $this->formatAttribute(),
-            'method'     => $this->attributes['method'],
+            'method' => $this->attributes['method'],
         ];
     }
 
@@ -257,46 +298,5 @@ class Form implements Renderable
         }
 
         return false;
-    }
-
-    /**
-     * Generate a Field object and add to form builder if Field exists.
-     *
-     * @param string $method
-     * @param array  $arguments
-     *
-     * @return Field|null
-     */
-    public function __call($method, $arguments)
-    {
-        if ($className = static::findFieldClass($method)) {
-            $name = array_get($arguments, 0, '');
-
-            $element = new $className($name, array_slice($arguments, 1));
-
-            $this->pushField($element);
-
-            return $element;
-        }
-    }
-
-    /**
-     * Render the form.
-     *
-     * @return string
-     */
-    public function render()
-    {
-        return view('admin::widgets.form', $this->getVariables())->render();
-    }
-
-    /**
-     * Output as string.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->render();
     }
 }

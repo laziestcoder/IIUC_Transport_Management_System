@@ -18,8 +18,8 @@ class Permission
      * Handle an incoming request.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
-     * @param array                    $args
+     * @param \Closure $next
+     * @param array $args
      *
      * @return mixed
      */

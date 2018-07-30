@@ -1,5 +1,5 @@
 .. index::
-    single: Reference; Spies
+single: Reference; Spies
 
 Spies
 =====

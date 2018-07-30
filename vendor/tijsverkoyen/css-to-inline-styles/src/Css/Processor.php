@@ -11,7 +11,7 @@ class Processor
      * Get the rules from a given CSS-string
      *
      * @param string $css
-     * @param array  $existingRules
+     * @param array $existingRules
      * @return Rule[]
      */
     public function getRules($css, $existingRules = array())
@@ -21,6 +21,27 @@ class Processor
         $rules = $rulesProcessor->splitIntoSeparateRules($css);
 
         return $rulesProcessor->convertArrayToObjects($rules, $existingRules);
+    }
+
+    /**
+     * @param string $css
+     * @return string
+     */
+    private function doCleanup($css)
+    {
+        // remove charset
+        $css = preg_replace('/@charset "[^"]++";/', '', $css);
+        // remove media queries
+        $css = preg_replace('/@media [^{]*+{([^{}]++|{[^{}]*+})*+}/', '', $css);
+
+        $css = str_replace(array("\r", "\n"), '', $css);
+        $css = str_replace(array("\t"), ' ', $css);
+        $css = str_replace('"', '\'', $css);
+        $css = preg_replace('|/\*.*?\*/|', '', $css);
+        $css = preg_replace('/\s\s++/', ' ', $css);
+        $css = trim($css);
+
+        return $css;
     }
 
     /**
@@ -41,27 +62,6 @@ class Processor
                 $css .= trim($match) . "\n";
             }
         }
-
-        return $css;
-    }
-
-    /**
-     * @param string $css
-     * @return string
-     */
-    private function doCleanup($css)
-    {
-        // remove charset
-        $css = preg_replace('/@charset "[^"]++";/', '', $css);
-        // remove media queries
-        $css = preg_replace('/@media [^{]*+{([^{}]++|{[^{}]*+})*+}/', '', $css);
-
-        $css = str_replace(array("\r", "\n"), '', $css);
-        $css = str_replace(array("\t"), ' ', $css);
-        $css = str_replace('"', '\'', $css);
-        $css = preg_replace('|/\*.*?\*/|', '', $css);
-        $css = preg_replace('/\s\s++/', ' ', $css);
-        $css = trim($css);
 
         return $css;
     }

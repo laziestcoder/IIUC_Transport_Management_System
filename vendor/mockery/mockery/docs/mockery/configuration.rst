@@ -1,5 +1,5 @@
 .. index::
-    single: Mockery; Configuration
+single: Mockery; Configuration
 
 Mockery Global Configuration
 ============================

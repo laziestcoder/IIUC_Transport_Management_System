@@ -13,7 +13,8 @@ namespace PharIo\Manifest;
 use DOMDocument;
 use DOMElement;
 
-class ManifestDocument {
+class ManifestDocument
+{
     const XMLNS = 'https://phar.io/xml/manifest/1.0';
 
     /**
@@ -26,13 +27,24 @@ class ManifestDocument {
      *
      * @param DOMDocument $dom
      */
-    private function __construct(DOMDocument $dom) {
+    private function __construct(DOMDocument $dom)
+    {
         $this->ensureCorrectDocumentType($dom);
 
         $this->dom = $dom;
     }
 
-    public static function fromFile($filename) {
+    private function ensureCorrectDocumentType(DOMDocument $dom)
+    {
+        $root = $dom->documentElement;
+
+        if ($root->localName !== 'phar' || $root->namespaceURI !== self::XMLNS) {
+            throw new ManifestDocumentException('Not a phar.io manifest document');
+        }
+    }
+
+    public static function fromFile($filename)
+    {
         if (!file_exists($filename)) {
             throw new ManifestDocumentException(
                 sprintf('File "%s" not found', $filename)
@@ -44,7 +56,8 @@ class ManifestDocument {
         );
     }
 
-    public static function fromString($xmlString) {
+    public static function fromString($xmlString)
+    {
         $prev = libxml_use_internal_errors(true);
         libxml_clear_errors();
 
@@ -61,40 +74,11 @@ class ManifestDocument {
         return new self($dom);
     }
 
-    public function getContainsElement() {
+    public function getContainsElement()
+    {
         return new ContainsElement(
             $this->fetchElementByName('contains')
         );
-    }
-
-    public function getCopyrightElement() {
-        return new CopyrightElement(
-            $this->fetchElementByName('copyright')
-        );
-    }
-
-    public function getRequiresElement() {
-        return new RequiresElement(
-            $this->fetchElementByName('requires')
-        );
-    }
-
-    public function hasBundlesElement() {
-        return $this->dom->getElementsByTagNameNS(self::XMLNS, 'bundles')->length === 1;
-    }
-
-    public function getBundlesElement() {
-        return new BundlesElement(
-            $this->fetchElementByName('bundles')
-        );
-    }
-
-    private function ensureCorrectDocumentType(DOMDocument $dom) {
-        $root = $dom->documentElement;
-
-        if ($root->localName !== 'phar' || $root->namespaceURI !== self::XMLNS) {
-            throw new ManifestDocumentException('Not a phar.io manifest document');
-        }
     }
 
     /**
@@ -104,7 +88,8 @@ class ManifestDocument {
      *
      * @throws ManifestDocumentException
      */
-    private function fetchElementByName($elementName) {
+    private function fetchElementByName($elementName)
+    {
         $element = $this->dom->getElementsByTagNameNS(self::XMLNS, $elementName)->item(0);
 
         if (!$element instanceof DOMElement) {
@@ -114,5 +99,31 @@ class ManifestDocument {
         }
 
         return $element;
+    }
+
+    public function getCopyrightElement()
+    {
+        return new CopyrightElement(
+            $this->fetchElementByName('copyright')
+        );
+    }
+
+    public function getRequiresElement()
+    {
+        return new RequiresElement(
+            $this->fetchElementByName('requires')
+        );
+    }
+
+    public function hasBundlesElement()
+    {
+        return $this->dom->getElementsByTagNameNS(self::XMLNS, 'bundles')->length === 1;
+    }
+
+    public function getBundlesElement()
+    {
+        return new BundlesElement(
+            $this->fetchElementByName('bundles')
+        );
     }
 }

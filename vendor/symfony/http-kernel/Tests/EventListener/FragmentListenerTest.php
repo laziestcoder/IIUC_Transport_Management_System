@@ -12,10 +12,10 @@
 namespace Symfony\Component\HttpKernel\Tests\EventListener;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\EventListener\FragmentListener;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\EventListener\FragmentListener;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\UriSigner;
 
 class FragmentListenerTest extends TestCase
@@ -33,6 +33,11 @@ class FragmentListenerTest extends TestCase
 
         $this->assertEquals($expected, $request->attributes->all());
         $this->assertTrue($request->query->has('_path'));
+    }
+
+    private function createGetResponseEvent(Request $request, $requestType = HttpKernelInterface::MASTER_REQUEST)
+    {
+        return new GetResponseEvent($this->getMockBuilder('Symfony\Component\HttpKernel\HttpKernelInterface')->getMock(), $request, $requestType);
     }
 
     public function testOnlyTriggeredIfControllerWasNotDefinedYet()
@@ -113,10 +118,5 @@ class FragmentListenerTest extends TestCase
         $listener->onKernelRequest($event);
 
         $this->assertFalse($request->query->has('_path'));
-    }
-
-    private function createGetResponseEvent(Request $request, $requestType = HttpKernelInterface::MASTER_REQUEST)
-    {
-        return new GetResponseEvent($this->getMockBuilder('Symfony\Component\HttpKernel\HttpKernelInterface')->getMock(), $request, $requestType);
     }
 }

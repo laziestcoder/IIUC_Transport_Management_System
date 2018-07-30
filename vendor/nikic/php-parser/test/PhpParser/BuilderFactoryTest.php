@@ -2,7 +2,6 @@
 
 namespace PhpParser;
 
-use PhpParser\Builder;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\BinaryOp\Concat;
@@ -18,26 +17,29 @@ class BuilderFactoryTest extends TestCase
     /**
      * @dataProvider provideTestFactory
      */
-    public function testFactory($methodName, $className) {
+    public function testFactory($methodName, $className)
+    {
         $factory = new BuilderFactory;
         $this->assertInstanceOf($className, $factory->$methodName('test'));
     }
 
-    public function provideTestFactory() {
+    public function provideTestFactory()
+    {
         return [
             ['namespace', Builder\Namespace_::class],
-            ['class',     Builder\Class_::class],
+            ['class', Builder\Class_::class],
             ['interface', Builder\Interface_::class],
-            ['trait',     Builder\Trait_::class],
-            ['method',    Builder\Method::class],
-            ['function',  Builder\Function_::class],
-            ['property',  Builder\Property::class],
-            ['param',     Builder\Param::class],
-            ['use',       Builder\Use_::class],
+            ['trait', Builder\Trait_::class],
+            ['method', Builder\Method::class],
+            ['function', Builder\Function_::class],
+            ['property', Builder\Property::class],
+            ['param', Builder\Param::class],
+            ['use', Builder\Use_::class],
         ];
     }
 
-    public function testVal() {
+    public function testVal()
+    {
         // This method is a wrapper around BuilderHelpers::normalizeValue(),
         // which is already tested elsewhere
         $factory = new BuilderFactory();
@@ -47,7 +49,8 @@ class BuilderFactoryTest extends TestCase
         );
     }
 
-    public function testConcat() {
+    public function testConcat()
+    {
         $factory = new BuilderFactory();
         $varA = new Expr\Variable('a');
         $varB = new Expr\Variable('b');
@@ -71,7 +74,8 @@ class BuilderFactoryTest extends TestCase
      * @expectedException \LogicException
      * @expectedExceptionMessage Expected at least two expressions
      */
-    public function testConcatOneError() {
+    public function testConcatOneError()
+    {
         (new BuilderFactory())->concat("a");
     }
 
@@ -79,11 +83,13 @@ class BuilderFactoryTest extends TestCase
      * @expectedException \LogicException
      * @expectedExceptionMessage Expected string or Expr
      */
-    public function testConcatInvalidExpr() {
+    public function testConcatInvalidExpr()
+    {
         (new BuilderFactory())->concat("a", 42);
     }
 
-    public function testArgs() {
+    public function testArgs()
+    {
         $factory = new BuilderFactory();
         $unpack = new Arg(new Expr\Variable('c'), false, true);
         $this->assertEquals(
@@ -96,7 +102,8 @@ class BuilderFactoryTest extends TestCase
         );
     }
 
-    public function testCalls() {
+    public function testCalls()
+    {
         $factory = new BuilderFactory();
 
         // Simple function call
@@ -172,7 +179,8 @@ class BuilderFactoryTest extends TestCase
         );
     }
 
-    public function testConstFetches() {
+    public function testConstFetches()
+    {
         $factory = new BuilderFactory();
         $this->assertEquals(
             new Expr\ConstFetch(new Name('FOO')),
@@ -192,7 +200,8 @@ class BuilderFactoryTest extends TestCase
      * @expectedException \LogicException
      * @expectedExceptionMessage Expected string or instance of Node\Identifier
      */
-    public function testInvalidIdentifier() {
+    public function testInvalidIdentifier()
+    {
         (new BuilderFactory())->classConstFetch('Foo', new Expr\Variable('foo'));
     }
 
@@ -200,7 +209,8 @@ class BuilderFactoryTest extends TestCase
      * @expectedException \LogicException
      * @expectedExceptionMessage Expected string or instance of Node\Identifier or Node\Expr
      */
-    public function testInvalidIdentifierOrExpr() {
+    public function testInvalidIdentifierOrExpr()
+    {
         (new BuilderFactory())->staticCall('Foo', new Name('bar'));
     }
 
@@ -208,11 +218,13 @@ class BuilderFactoryTest extends TestCase
      * @expectedException \LogicException
      * @expectedExceptionMessage Name must be a string or an instance of Node\Name or Node\Expr
      */
-    public function testInvalidNameOrExpr() {
+    public function testInvalidNameOrExpr()
+    {
         (new BuilderFactory())->funcCall(new Node\Stmt\Return_());
     }
 
-    public function testIntegration() {
+    public function testIntegration()
+    {
         $factory = new BuilderFactory;
         $node = $factory->namespace('Name\Space')
             ->addStmt($factory->use('Foo\Bar\SomeOtherClass'))
@@ -222,9 +234,7 @@ class BuilderFactoryTest extends TestCase
                 ->extend('SomeOtherClass')
                 ->implement('A\Few', '\Interfaces')
                 ->makeAbstract()
-
                 ->addStmt($factory->method('firstMethod'))
-
                 ->addStmt($factory->method('someMethod')
                     ->makePublic()
                     ->makeAbstract()
@@ -234,18 +244,15 @@ class BuilderFactoryTest extends TestCase
                                       *
                                       * @param SomeClass And takes a parameter
                                       */'))
-
                 ->addStmt($factory->method('anotherMethod')
                     ->makeProtected()
                     ->addParam($factory->param('someParam')->setDefault('test'))
                     ->addStmt(new Expr\Print_(new Expr\Variable('someParam'))))
-
                 ->addStmt($factory->property('someProperty')->makeProtected())
                 ->addStmt($factory->property('anotherProperty')
                     ->makePrivate()
                     ->setDefault([1, 2, 3])))
-            ->getNode()
-        ;
+            ->getNode();
 
         $expected = <<<'EOC'
 <?php

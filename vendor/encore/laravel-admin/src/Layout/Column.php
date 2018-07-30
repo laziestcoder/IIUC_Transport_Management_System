@@ -86,7 +86,7 @@ class Column implements Buildable
             if ($content instanceof Renderable) {
                 echo $content->render();
             } else {
-                echo (string) $content;
+                echo (string)$content;
             }
         }
 

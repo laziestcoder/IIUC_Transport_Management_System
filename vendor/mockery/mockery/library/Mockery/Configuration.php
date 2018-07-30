@@ -64,7 +64,7 @@ class Configuration
      */
     public function allowMockingNonExistentMethods($flag = true)
     {
-        $this->_allowMockingNonExistentMethod = (bool) $flag;
+        $this->_allowMockingNonExistentMethod = (bool)$flag;
     }
 
     /**
@@ -88,7 +88,7 @@ class Configuration
     {
         trigger_error(sprintf("The %s method is deprecated and will be removed in a future version of Mockery", __METHOD__), E_USER_DEPRECATED);
 
-        $this->_allowMockingMethodsUnnecessarily = (bool) $flag;
+        $this->_allowMockingMethodsUnnecessarily = (bool)$flag;
     }
 
     /**
@@ -144,14 +144,14 @@ class Configuration
         return $this->_internalClassParamMap;
     }
 
-    public function setConstantsMap(array $map)
-    {
-        $this->_constantsMap = $map;
-    }
-
     public function getConstantsMap()
     {
         return $this->_constantsMap;
+    }
+
+    public function setConstantsMap(array $map)
+    {
+        $this->_constantsMap = $map;
     }
 
     /**

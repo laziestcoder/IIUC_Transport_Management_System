@@ -85,7 +85,7 @@ class Content implements Renderable
     {
         $this->validateBreadcrumb($breadcrumb);
 
-        $this->breadcrumb = (array) $breadcrumb;
+        $this->breadcrumb = (array)$breadcrumb;
 
         return $this;
     }
@@ -153,26 +153,6 @@ class Content implements Renderable
     }
 
     /**
-     * Build html of content.
-     *
-     * @return string
-     */
-    public function build()
-    {
-        ob_start();
-
-        foreach ($this->rows as $row) {
-            $row->build();
-        }
-
-        $contents = ob_get_contents();
-
-        ob_end_clean();
-
-        return $contents;
-    }
-
-    /**
      * Set error message for content.
      *
      * @param string $title
@@ -190,6 +170,14 @@ class Content implements Renderable
     }
 
     /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->render();
+    }
+
+    /**
      * Render this content.
      *
      * @return string
@@ -197,20 +185,32 @@ class Content implements Renderable
     public function render()
     {
         $items = [
-            'header'      => $this->header,
+            'header' => $this->header,
             'description' => $this->description,
-            'breadcrumb'  => $this->breadcrumb,
-            'content'     => $this->build(),
+            'breadcrumb' => $this->breadcrumb,
+            'content' => $this->build(),
         ];
 
         return view('admin::content', $items)->render();
     }
 
     /**
+     * Build html of content.
+     *
      * @return string
      */
-    public function __toString()
+    public function build()
     {
-        return $this->render();
+        ob_start();
+
+        foreach ($this->rows as $row) {
+            $row->build();
+        }
+
+        $contents = ob_get_contents();
+
+        ob_end_clean();
+
+        return $contents;
     }
 }

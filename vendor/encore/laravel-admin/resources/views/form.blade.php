@@ -14,52 +14,52 @@
         {!! $form->open(['class' => "form-horizontal"]) !!}
     @endif
 
-        <div class="box-body">
+    <div class="box-body">
 
-            @if(!$tabObj->isEmpty())
-                @include('admin::form.tab', compact('tabObj'))
-            @else
-                <div class="fields-group">
+        @if(!$tabObj->isEmpty())
+            @include('admin::form.tab', compact('tabObj'))
+        @else
+            <div class="fields-group">
 
-                    @if($form->hasRows())
-                        @foreach($form->getRows() as $row)
-                            {!! $row->render() !!}
-                        @endforeach
-                    @else
-                        @foreach($form->fields() as $field)
-                            {!! $field->render() !!}
-                        @endforeach
-                    @endif
+                @if($form->hasRows())
+                    @foreach($form->getRows() as $row)
+                        {!! $row->render() !!}
+                    @endforeach
+                @else
+                    @foreach($form->fields() as $field)
+                        {!! $field->render() !!}
+                    @endforeach
+                @endif
 
 
-                </div>
-            @endif
+            </div>
+        @endif
+
+    </div>
+    <!-- /.box-body -->
+    <div class="box-footer">
+
+        @if( ! $form->isMode(\Encore\Admin\Form\Builder::MODE_VIEW)  || ! $form->option('enableSubmit'))
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+        @endif
+        <div class="col-md-{{$width['label']}}">
 
         </div>
-        <!-- /.box-body -->
-        <div class="box-footer">
+        <div class="col-md-{{$width['field']}}">
 
-            @if( ! $form->isMode(\Encore\Admin\Form\Builder::MODE_VIEW)  || ! $form->option('enableSubmit'))
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            @endif
-            <div class="col-md-{{$width['label']}}">
+            {!! $form->submitButton() !!}
 
-            </div>
-            <div class="col-md-{{$width['field']}}">
-
-                {!! $form->submitButton() !!}
-
-                {!! $form->resetButton() !!}
-
-            </div>
+            {!! $form->resetButton() !!}
 
         </div>
 
-        @foreach($form->getHiddenFields() as $hiddenField)
-            {!! $hiddenField->render() !!}
-        @endforeach
+    </div>
 
-        <!-- /.box-footer -->
+    @foreach($form->getHiddenFields() as $hiddenField)
+        {!! $hiddenField->render() !!}
+    @endforeach
+
+<!-- /.box-footer -->
     {!! $form->close() !!}
 </div>
 

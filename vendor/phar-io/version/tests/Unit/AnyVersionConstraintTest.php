@@ -15,8 +15,10 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers PharIo\Version\AnyVersionConstraint
  */
-class AnyVersionConstraintTest extends TestCase {
-    public function versionProvider() {
+class AnyVersionConstraintTest extends TestCase
+{
+    public function versionProvider()
+    {
         return [
             [new Version('1.0.2')],
             [new Version('4.8')],
@@ -29,13 +31,15 @@ class AnyVersionConstraintTest extends TestCase {
      *
      * @param Version $version
      */
-    public function testReturnsTrue(Version $version) {
+    public function testReturnsTrue(Version $version)
+    {
         $constraint = new AnyVersionConstraint;
 
         $this->assertTrue($constraint->complies($version));
     }
 
-    public function testAsString() {
+    public function testAsString()
+    {
         $this->assertSame('*', (new AnyVersionConstraint())->asString());
     }
 }

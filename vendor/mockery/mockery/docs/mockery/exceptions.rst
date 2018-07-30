@@ -1,5 +1,5 @@
 .. index::
-    single: Mockery; Exceptions
+single: Mockery; Exceptions
 
 Mockery Exceptions
 ==================

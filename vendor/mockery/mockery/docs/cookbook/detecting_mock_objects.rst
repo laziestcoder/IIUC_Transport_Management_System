@@ -1,5 +1,5 @@
 .. index::
-    single: Cookbook; Detecting Mock Objects
+single: Cookbook; Detecting Mock Objects
 
 Detecting Mock Objects
 ======================

@@ -1,5 +1,5 @@
 .. index::
-    single: Pass-By-Reference Method Parameter Behaviour
+single: Pass-By-Reference Method Parameter Behaviour
 
 Preserving Pass-By-Reference Method Parameter Behaviour
 =======================================================

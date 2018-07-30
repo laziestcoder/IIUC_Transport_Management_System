@@ -13,11 +13,15 @@ namespace Symfony\Component\HttpKernel\Tests\Controller;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 
 class ControllerResolverTest extends TestCase
 {
+    protected static function controllerMethod4()
+    {
+    }
+
     public function testGetControllerWithoutControllerParameter()
     {
         $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
@@ -28,12 +32,18 @@ class ControllerResolverTest extends TestCase
         $this->assertFalse($resolver->getController($request), '->getController() returns false when the request has no _controller attribute');
     }
 
+    protected function createControllerResolver(LoggerInterface $logger = null)
+    {
+        return new ControllerResolver($logger);
+    }
+
     public function testGetControllerWithLambda()
     {
         $resolver = $this->createControllerResolver();
 
         $request = Request::create('/');
-        $request->attributes->set('_controller', $lambda = function () {});
+        $request->attributes->set('_controller', $lambda = function () {
+        });
         $controller = $resolver->getController($request);
         $this->assertSame($lambda, $controller);
     }
@@ -142,20 +152,11 @@ class ControllerResolverTest extends TestCase
         );
     }
 
-    protected function createControllerResolver(LoggerInterface $logger = null)
-    {
-        return new ControllerResolver($logger);
-    }
-
     public function __invoke($foo, $bar = null)
     {
     }
 
     public function controllerMethod1($foo)
-    {
-    }
-
-    protected static function controllerMethod4()
     {
     }
 }
@@ -166,11 +167,11 @@ function some_controller_function($foo, $foobar)
 
 class ControllerTest
 {
-    public function publicAction()
+    public static function staticAction()
     {
     }
 
-    private function privateAction()
+    public function publicAction()
     {
     }
 
@@ -178,7 +179,7 @@ class ControllerTest
     {
     }
 
-    public static function staticAction()
+    private function privateAction()
     {
     }
 }

@@ -1,5 +1,5 @@
 .. index::
-    single: Cookbook; Default Mock Expectations
+single: Cookbook; Default Mock Expectations
 
 Default Mock Expectations
 =========================

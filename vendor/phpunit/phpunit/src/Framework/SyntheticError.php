@@ -40,8 +40,8 @@ class SyntheticError extends AssertionFailedError
     {
         parent::__construct($message, $code);
 
-        $this->syntheticFile  = $file;
-        $this->syntheticLine  = $line;
+        $this->syntheticFile = $file;
+        $this->syntheticLine = $line;
         $this->syntheticTrace = $trace;
     }
 
