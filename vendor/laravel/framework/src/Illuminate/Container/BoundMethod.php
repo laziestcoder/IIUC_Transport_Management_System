@@ -3,19 +3,19 @@
 namespace Illuminate\Container;
 
 use Closure;
-use ReflectionMethod;
-use ReflectionFunction;
 use InvalidArgumentException;
+use ReflectionFunction;
+use ReflectionMethod;
 
 class BoundMethod
 {
     /**
      * Call the given Closure / class@method and inject its dependencies.
      *
-     * @param  \Illuminate\Container\Container  $container
-     * @param  callable|string  $callback
-     * @param  array  $parameters
-     * @param  string|null  $defaultMethod
+     * @param  \Illuminate\Container\Container $container
+     * @param  callable|string $callback
+     * @param  array $parameters
+     * @param  string|null $defaultMethod
      * @return mixed
      */
     public static function call($container, $callback, array $parameters = [], $defaultMethod = null)
@@ -32,12 +32,23 @@ class BoundMethod
     }
 
     /**
+     * Determine if the given string is in Class@method syntax.
+     *
+     * @param  mixed $callback
+     * @return bool
+     */
+    protected static function isCallableWithAtSign($callback)
+    {
+        return is_string($callback) && strpos($callback, '@') !== false;
+    }
+
+    /**
      * Call a string reference to a class using Class@method syntax.
      *
-     * @param  \Illuminate\Container\Container  $container
-     * @param  string  $target
-     * @param  array  $parameters
-     * @param  string|null  $defaultMethod
+     * @param  \Illuminate\Container\Container $container
+     * @param  string $target
+     * @param  array $parameters
+     * @param  string|null $defaultMethod
      * @return mixed
      *
      * @throws \InvalidArgumentException
@@ -50,7 +61,7 @@ class BoundMethod
         // name. We will split on this @ sign and then build a callable array that
         // we can pass right back into the "call" method for dependency binding.
         $method = count($segments) == 2
-                        ? $segments[1] : $defaultMethod;
+            ? $segments[1] : $defaultMethod;
 
         if (is_null($method)) {
             throw new InvalidArgumentException('Method not provided.');
@@ -64,14 +75,14 @@ class BoundMethod
     /**
      * Call a method that has been bound to the container.
      *
-     * @param  \Illuminate\Container\Container  $container
-     * @param  callable  $callback
-     * @param  mixed  $default
+     * @param  \Illuminate\Container\Container $container
+     * @param  callable $callback
+     * @param  mixed $default
      * @return mixed
      */
     protected static function callBoundMethod($container, $callback, $default)
     {
-        if (! is_array($callback)) {
+        if (!is_array($callback)) {
             return $default instanceof Closure ? $default() : $default;
         }
 
@@ -90,7 +101,7 @@ class BoundMethod
     /**
      * Normalize the given callback into a Class@method string.
      *
-     * @param  callable  $callback
+     * @param  callable $callback
      * @return string
      */
     protected static function normalizeMethod($callback)
@@ -103,9 +114,9 @@ class BoundMethod
     /**
      * Get all dependencies for a given method.
      *
-     * @param  \Illuminate\Container\Container  $container
-     * @param  callable|string  $callback
-     * @param  array  $parameters
+     * @param  \Illuminate\Container\Container $container
+     * @param  callable|string $callback
+     * @param  array $parameters
      * @return array
      */
     protected static function getMethodDependencies($container, $callback, array $parameters = [])
@@ -122,7 +133,7 @@ class BoundMethod
     /**
      * Get the proper reflection instance for the given callback.
      *
-     * @param  callable|string  $callback
+     * @param  callable|string $callback
      * @return \ReflectionFunctionAbstract
      */
     protected static function getCallReflector($callback)
@@ -132,17 +143,17 @@ class BoundMethod
         }
 
         return is_array($callback)
-                        ? new ReflectionMethod($callback[0], $callback[1])
-                        : new ReflectionFunction($callback);
+            ? new ReflectionMethod($callback[0], $callback[1])
+            : new ReflectionFunction($callback);
     }
 
     /**
      * Get the dependency for the given call parameter.
      *
-     * @param  \Illuminate\Container\Container  $container
-     * @param  \ReflectionParameter  $parameter
-     * @param  array  $parameters
-     * @param  array  $dependencies
+     * @param  \Illuminate\Container\Container $container
+     * @param  \ReflectionParameter $parameter
+     * @param  array $parameters
+     * @param  array $dependencies
      * @return mixed
      */
     protected static function addDependencyForCallParameter($container, $parameter,
@@ -157,16 +168,5 @@ class BoundMethod
         } elseif ($parameter->isDefaultValueAvailable()) {
             $dependencies[] = $parameter->getDefaultValue();
         }
-    }
-
-    /**
-     * Determine if the given string is in Class@method syntax.
-     *
-     * @param  mixed  $callback
-     * @return bool
-     */
-    protected static function isCallableWithAtSign($callback)
-    {
-        return is_string($callback) && strpos($callback, '@') !== false;
     }
 }

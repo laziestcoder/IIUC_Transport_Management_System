@@ -35,7 +35,7 @@ class NotificationMakeCommand extends GeneratorCommand
      */
     public function handle()
     {
-        if (parent::handle() === false && ! $this->option('force')) {
+        if (parent::handle() === false && !$this->option('force')) {
             return;
         }
 
@@ -51,19 +51,19 @@ class NotificationMakeCommand extends GeneratorCommand
      */
     protected function writeMarkdownTemplate()
     {
-        $path = resource_path('views/'.str_replace('.', '/', $this->option('markdown'))).'.blade.php';
+        $path = resource_path('views/' . str_replace('.', '/', $this->option('markdown'))) . '.blade.php';
 
-        if (! $this->files->isDirectory(dirname($path))) {
+        if (!$this->files->isDirectory(dirname($path))) {
             $this->files->makeDirectory(dirname($path), 0755, true);
         }
 
-        $this->files->put($path, file_get_contents(__DIR__.'/stubs/markdown.stub'));
+        $this->files->put($path, file_get_contents(__DIR__ . '/stubs/markdown.stub'));
     }
 
     /**
      * Build the class with the given name.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return string
      */
     protected function buildClass($name)
@@ -85,19 +85,19 @@ class NotificationMakeCommand extends GeneratorCommand
     protected function getStub()
     {
         return $this->option('markdown')
-                        ? __DIR__.'/stubs/markdown-notification.stub'
-                        : __DIR__.'/stubs/notification.stub';
+            ? __DIR__ . '/stubs/markdown-notification.stub'
+            : __DIR__ . '/stubs/notification.stub';
     }
 
     /**
      * Get the default namespace for the class.
      *
-     * @param  string  $rootNamespace
+     * @param  string $rootNamespace
      * @return string
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Notifications';
+        return $rootNamespace . '\Notifications';
     }
 
     /**

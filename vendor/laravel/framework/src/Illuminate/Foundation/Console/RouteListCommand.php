@@ -3,11 +3,11 @@
 namespace Illuminate\Foundation\Console;
 
 use Closure;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
+use Illuminate\Console\Command;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
-use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputOption;
 
 class RouteListCommand extends Command
@@ -50,7 +50,7 @@ class RouteListCommand extends Command
     /**
      * Create a new route command instance.
      *
-     * @param  \Illuminate\Routing\Router  $router
+     * @param  \Illuminate\Routing\Router $router
      * @return void
      */
     public function __construct(Router $router)
@@ -73,6 +73,17 @@ class RouteListCommand extends Command
         }
 
         $this->displayRoutes($this->getRoutes());
+    }
+
+    /**
+     * Display the route information on the console.
+     *
+     * @param  array $routes
+     * @return void
+     */
+    protected function displayRoutes(array $routes)
+    {
+        $this->table($this->headers, $routes);
     }
 
     /**
@@ -100,50 +111,42 @@ class RouteListCommand extends Command
     /**
      * Get the route information for a given route.
      *
-     * @param  \Illuminate\Routing\Route  $route
+     * @param  \Illuminate\Routing\Route $route
      * @return array
      */
     protected function getRouteInformation(Route $route)
     {
         return $this->filterRoute([
-            'host'   => $route->domain(),
+            'host' => $route->domain(),
             'method' => implode('|', $route->methods()),
-            'uri'    => $route->uri(),
-            'name'   => $route->getName(),
+            'uri' => $route->uri(),
+            'name' => $route->getName(),
             'action' => ltrim($route->getActionName(), '\\'),
             'middleware' => $this->getMiddleware($route),
         ]);
     }
 
     /**
-     * Sort the routes by a given element.
+     * Filter the route by URI and / or name.
      *
-     * @param  string  $sort
-     * @param  array  $routes
-     * @return array
+     * @param  array $route
+     * @return array|null
      */
-    protected function sortRoutes($sort, $routes)
+    protected function filterRoute(array $route)
     {
-        return Arr::sort($routes, function ($route) use ($sort) {
-            return $route[$sort];
-        });
-    }
+        if (($this->option('name') && !Str::contains($route['name'], $this->option('name'))) ||
+            $this->option('path') && !Str::contains($route['uri'], $this->option('path')) ||
+            $this->option('method') && !Str::contains($route['method'], strtoupper($this->option('method')))) {
+            return;
+        }
 
-    /**
-     * Display the route information on the console.
-     *
-     * @param  array  $routes
-     * @return void
-     */
-    protected function displayRoutes(array $routes)
-    {
-        $this->table($this->headers, $routes);
+        return $route;
     }
 
     /**
      * Get before filters.
      *
-     * @param  \Illuminate\Routing\Route  $route
+     * @param  \Illuminate\Routing\Route $route
      * @return string
      */
     protected function getMiddleware($route)
@@ -154,20 +157,17 @@ class RouteListCommand extends Command
     }
 
     /**
-     * Filter the route by URI and / or name.
+     * Sort the routes by a given element.
      *
-     * @param  array  $route
-     * @return array|null
+     * @param  string $sort
+     * @param  array $routes
+     * @return array
      */
-    protected function filterRoute(array $route)
+    protected function sortRoutes($sort, $routes)
     {
-        if (($this->option('name') && ! Str::contains($route['name'], $this->option('name'))) ||
-             $this->option('path') && ! Str::contains($route['uri'], $this->option('path')) ||
-             $this->option('method') && ! Str::contains($route['method'], strtoupper($this->option('method')))) {
-            return;
-        }
-
-        return $route;
+        return Arr::sort($routes, function ($route) use ($sort) {
+            return $route[$sort];
+        });
     }
 
     /**

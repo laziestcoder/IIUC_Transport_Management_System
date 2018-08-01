@@ -21,7 +21,7 @@ class FilterHandlerTest extends TestCase
      */
     public function testIsHandling()
     {
-        $test    = new TestHandler();
+        $test = new TestHandler();
         $handler = new FilterHandler($test, Logger::INFO, Logger::NOTICE);
         $this->assertFalse($handler->isHandling($this->getRecord(Logger::DEBUG)));
         $this->assertTrue($handler->isHandling($this->getRecord(Logger::INFO)));
@@ -40,7 +40,7 @@ class FilterHandlerTest extends TestCase
      */
     public function testHandleProcessOnlyNeededLevels()
     {
-        $test    = new TestHandler();
+        $test = new TestHandler();
         $handler = new FilterHandler($test, Logger::INFO, Logger::NOTICE);
 
         $handler->handle($this->getRecord(Logger::DEBUG));
@@ -62,7 +62,7 @@ class FilterHandlerTest extends TestCase
         $handler->handle($this->getRecord(Logger::EMERGENCY));
         $this->assertFalse($test->hasEmergencyRecords());
 
-        $test    = new TestHandler();
+        $test = new TestHandler();
         $handler = new FilterHandler($test, array(Logger::INFO, Logger::ERROR));
 
         $handler->handle($this->getRecord(Logger::DEBUG));
@@ -83,7 +83,7 @@ class FilterHandlerTest extends TestCase
      */
     public function testAcceptedLevelApi()
     {
-        $test    = new TestHandler();
+        $test = new TestHandler();
         $handler = new FilterHandler($test);
 
         $levels = array(Logger::INFO, Logger::ERROR);
@@ -106,7 +106,7 @@ class FilterHandlerTest extends TestCase
      */
     public function testHandleUsesProcessors()
     {
-        $test    = new TestHandler();
+        $test = new TestHandler();
         $handler = new FilterHandler($test, Logger::DEBUG, Logger::EMERGENCY);
         $handler->pushProcessor(
             function ($record) {
@@ -142,7 +142,7 @@ class FilterHandlerTest extends TestCase
      */
     public function testHandleWithCallback()
     {
-        $test    = new TestHandler();
+        $test = new TestHandler();
         $handler = new FilterHandler(
             function ($record, $handler) use ($test) {
                 return $test;

@@ -37,10 +37,10 @@ class ConcurrencyLimiter
     /**
      * Create a new concurrency limiter instance.
      *
-     * @param  \Illuminate\Redis\Connections\Connection  $redis
-     * @param  string  $name
-     * @param  int  $maxLocks
-     * @param  int  $releaseAfter
+     * @param  \Illuminate\Redis\Connections\Connection $redis
+     * @param  string $name
+     * @param  int $maxLocks
+     * @param  int $releaseAfter
      * @return void
      */
     public function __construct($redis, $name, $maxLocks, $releaseAfter)
@@ -54,8 +54,8 @@ class ConcurrencyLimiter
     /**
      * Attempt to acquire the lock for the given number of seconds.
      *
-     * @param  int  $timeout
-     * @param  callable|null  $callback
+     * @param  int $timeout
+     * @param  callable|null $callback
      * @return bool
      * @throws \Illuminate\Contracts\Redis\LimiterTimeoutException
      */
@@ -63,7 +63,7 @@ class ConcurrencyLimiter
     {
         $starting = time();
 
-        while (! $slot = $this->acquire()) {
+        while (!$slot = $this->acquire()) {
             if (time() - $timeout >= $starting) {
                 throw new LimiterTimeoutException;
             }
@@ -88,7 +88,7 @@ class ConcurrencyLimiter
     protected function acquire()
     {
         $slots = array_map(function ($i) {
-            return $this->name.$i;
+            return $this->name . $i;
         }, range(1, $this->maxLocks));
 
         return $this->redis->eval($this->luaScript(), count($slots),
@@ -120,7 +120,7 @@ LUA;
     /**
      * Release the lock.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return void
      */
     protected function release($key)

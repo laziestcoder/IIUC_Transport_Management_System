@@ -19,11 +19,11 @@
 
 namespace Doctrine\DBAL\Connections;
 
+use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Connection as DriverConnection;
-use Doctrine\DBAL\Configuration;
-use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Event\ConnectionEventArgs;
 use Doctrine\DBAL\Events;
 use function array_rand;
@@ -104,16 +104,16 @@ class MasterSlaveConnection extends Connection
     /**
      * Creates Master Slave Connection.
      *
-     * @param array                              $params
-     * @param \Doctrine\DBAL\Driver              $driver
-     * @param \Doctrine\DBAL\Configuration|null  $config
+     * @param array $params
+     * @param \Doctrine\DBAL\Driver $driver
+     * @param \Doctrine\DBAL\Configuration|null $config
      * @param \Doctrine\Common\EventManager|null $eventManager
      *
      * @throws \InvalidArgumentException
      */
     public function __construct(array $params, Driver $driver, Configuration $config = null, EventManager $eventManager = null)
     {
-        if (! isset($params['slaves'], $params['master'])) {
+        if (!isset($params['slaves'], $params['master'])) {
             throw new \InvalidArgumentException('master or slaves configuration missing');
         }
         if (count($params['slaves']) == 0) {
@@ -125,7 +125,7 @@ class MasterSlaveConnection extends Connection
             $params['slaves'][$slaveKey]['driver'] = $params['driver'];
         }
 
-        $this->keepSlave = (bool) ($params['keepSlave'] ?? false);
+        $this->keepSlave = (bool)($params['keepSlave'] ?? false);
 
         parent::__construct($params, $driver, $config, $eventManager);
     }
@@ -143,10 +143,20 @@ class MasterSlaveConnection extends Connection
     /**
      * {@inheritDoc}
      */
+    public function executeUpdate($query, array $params = [], array $types = [])
+    {
+        $this->connect('master');
+
+        return parent::executeUpdate($query, $params, $types);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function connect($connectionName = null)
     {
         $requestedConnectionChange = ($connectionName !== null);
-        $connectionName            = $connectionName ?: 'slave';
+        $connectionName = $connectionName ?: 'slave';
 
         if ($connectionName !== 'slave' && $connectionName !== 'master') {
             throw new \InvalidArgumentException("Invalid option to connect(), only master or slave allowed.");
@@ -162,14 +172,14 @@ class MasterSlaveConnection extends Connection
         $forceMasterAsSlave = false;
 
         if ($this->getTransactionNestingLevel() > 0) {
-            $connectionName     = 'master';
+            $connectionName = 'master';
             $forceMasterAsSlave = true;
         }
 
         if (isset($this->connections[$connectionName]) && $this->connections[$connectionName]) {
             $this->_conn = $this->connections[$connectionName];
 
-            if ($forceMasterAsSlave && ! $this->keepSlave) {
+            if ($forceMasterAsSlave && !$this->keepSlave) {
                 $this->connections['slave'] = $this->_conn;
             }
 
@@ -180,7 +190,7 @@ class MasterSlaveConnection extends Connection
             $this->connections['master'] = $this->_conn = $this->connectTo($connectionName);
 
             // Set slave connection to master to avoid invalid reads
-            if ( ! $this->keepSlave) {
+            if (!$this->keepSlave) {
                 $this->connections['slave'] = $this->connections['master'];
             }
         } else {
@@ -218,7 +228,7 @@ class MasterSlaveConnection extends Connection
 
     /**
      * @param string $connectionName
-     * @param array  $params
+     * @param array $params
      *
      * @return mixed
      */
@@ -230,21 +240,11 @@ class MasterSlaveConnection extends Connection
 
         $config = $params['slaves'][array_rand($params['slaves'])];
 
-        if ( ! isset($config['charset']) && isset($params['master']['charset'])) {
+        if (!isset($config['charset']) && isset($params['master']['charset'])) {
             $config['charset'] = $params['master']['charset'];
         }
 
         return $config;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function executeUpdate($query, array $params = [], array $types = [])
-    {
-        $this->connect('master');
-
-        return parent::executeUpdate($query, $params, $types);
     }
 
     /**

@@ -36,6 +36,16 @@ class RedisCache extends CacheProvider
     private $redis;
 
     /**
+     * Gets the redis instance used by the cache.
+     *
+     * @return Redis|null
+     */
+    public function getRedis()
+    {
+        return $this->redis;
+    }
+
+    /**
      * Sets the redis instance to use.
      *
      * @param Redis $redis
@@ -49,13 +59,19 @@ class RedisCache extends CacheProvider
     }
 
     /**
-     * Gets the redis instance used by the cache.
+     * Returns the serializer constant to use. If Redis is compiled with
+     * igbinary support, that is used. Otherwise the default PHP serializer is
+     * used.
      *
-     * @return Redis|null
+     * @return integer One of the Redis::SERIALIZER_* constants
      */
-    public function getRedis()
+    protected function getSerializerValue()
     {
-        return $this->redis;
+        if (defined('Redis::SERIALIZER_IGBINARY') && extension_loaded('igbinary')) {
+            return Redis::SERIALIZER_IGBINARY;
+        }
+
+        return Redis::SERIALIZER_PHP;
     }
 
     /**
@@ -74,7 +90,7 @@ class RedisCache extends CacheProvider
         $fetchedItems = array_combine($keys, $this->redis->mget($keys));
 
         // Redis mget returns false for keys that do not exist. So we need to filter those out unless it's the real data.
-        $foundItems   = [];
+        $foundItems = [];
 
         foreach ($fetchedItems as $key => $value) {
             if (false !== $value || $this->redis->exists($key)) {
@@ -104,7 +120,7 @@ class RedisCache extends CacheProvider
         }
 
         // No lifetime, use MSET
-        return (bool) $this->redis->mset($keysAndValues);
+        return (bool)$this->redis->mset($keysAndValues);
     }
 
     /**
@@ -158,27 +174,11 @@ class RedisCache extends CacheProvider
     {
         $info = $this->redis->info();
         return [
-            Cache::STATS_HITS   => $info['keyspace_hits'],
+            Cache::STATS_HITS => $info['keyspace_hits'],
             Cache::STATS_MISSES => $info['keyspace_misses'],
             Cache::STATS_UPTIME => $info['uptime_in_seconds'],
-            Cache::STATS_MEMORY_USAGE      => $info['used_memory'],
-            Cache::STATS_MEMORY_AVAILABLE  => false
+            Cache::STATS_MEMORY_USAGE => $info['used_memory'],
+            Cache::STATS_MEMORY_AVAILABLE => false
         ];
-    }
-
-    /**
-     * Returns the serializer constant to use. If Redis is compiled with
-     * igbinary support, that is used. Otherwise the default PHP serializer is
-     * used.
-     *
-     * @return integer One of the Redis::SERIALIZER_* constants
-     */
-    protected function getSerializerValue()
-    {
-        if (defined('Redis::SERIALIZER_IGBINARY') && extension_loaded('igbinary')) {
-            return Redis::SERIALIZER_IGBINARY;
-        }
-
-        return Redis::SERIALIZER_PHP;
     }
 }

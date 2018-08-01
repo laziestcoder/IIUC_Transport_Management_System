@@ -19,5 +19,5 @@ class CompanyTest extends \PHPUnit_Framework_TestCase
         $vatId = $this->faker->vatId();
         $this->assertRegExp('/^IT[0-9]{11}$/', $vatId);
     }
-    
+
 }

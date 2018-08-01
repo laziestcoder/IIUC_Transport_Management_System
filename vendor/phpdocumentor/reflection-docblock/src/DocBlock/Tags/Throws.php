@@ -31,7 +31,7 @@ final class Throws extends BaseTag implements Factory\StaticMethod
 
     public function __construct(Type $type, Description $description = null)
     {
-        $this->type        = $type;
+        $this->type = $type;
         $this->description = $description;
     }
 
@@ -43,13 +43,14 @@ final class Throws extends BaseTag implements Factory\StaticMethod
         TypeResolver $typeResolver = null,
         DescriptionFactory $descriptionFactory = null,
         TypeContext $context = null
-    ) {
+    )
+    {
         Assert::string($body);
         Assert::allNotNull([$typeResolver, $descriptionFactory]);
 
         $parts = preg_split('/\s+/Su', $body, 2);
 
-        $type        = $typeResolver->resolve(isset($parts[0]) ? $parts[0] : '', $context);
+        $type = $typeResolver->resolve(isset($parts[0]) ? $parts[0] : '', $context);
         $description = $descriptionFactory->create(isset($parts[1]) ? $parts[1] : '', $context);
 
         return new static($type, $description);

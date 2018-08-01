@@ -10,6 +10,11 @@ class Swift_Mime_Headers_IdentificationHeaderTest extends \PHPUnit\Framework\Tes
         $this->assertEquals(Swift_Mime_Header::TYPE_ID, $header->getFieldType());
     }
 
+    private function getHeader($name)
+    {
+        return new Swift_Mime_Headers_IdentificationHeader($name, new EmailValidator());
+    }
+
     public function testValueMatchesMsgIdSpec()
     {
         /* -- RFC 2822, 3.6.4.
@@ -174,11 +179,6 @@ class Swift_Mime_Headers_IdentificationHeaderTest extends \PHPUnit\Framework\Tes
     {
         $header = $this->getHeader('References');
         $header->setIds(array('a@b', 'x@y'));
-        $this->assertEquals('References: <a@b> <x@y>'."\r\n", $header->toString());
-    }
-
-    private function getHeader($name)
-    {
-        return new Swift_Mime_Headers_IdentificationHeader($name, new EmailValidator());
+        $this->assertEquals('References: <a@b> <x@y>' . "\r\n", $header->toString());
     }
 }

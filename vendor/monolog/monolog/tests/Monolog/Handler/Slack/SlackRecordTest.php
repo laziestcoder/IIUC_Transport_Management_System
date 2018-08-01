@@ -21,11 +21,6 @@ class SlackRecordTest extends TestCase
 {
     private $jsonPrettyPrintFlag;
 
-    protected function setUp()
-    {
-        $this->jsonPrettyPrintFlag = defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : 128;
-    }
-
     public function dataGetAttachmentColor()
     {
         return array(
@@ -176,13 +171,17 @@ class SlackRecordTest extends TestCase
         $formatter
             ->expects($this->any())
             ->method('format')
-            ->will($this->returnCallback(function ($record) { return $record['message'] . 'test'; }));
+            ->will($this->returnCallback(function ($record) {
+                return $record['message'] . 'test';
+            }));
 
         $formatter2 = $this->getMock('Monolog\\Formatter\\FormatterInterface');
         $formatter2
             ->expects($this->any())
             ->method('format')
-            ->will($this->returnCallback(function ($record) { return $record['message'] . 'test1'; }));
+            ->will($this->returnCallback(function ($record) {
+                return $record['message'] . 'test1';
+            }));
 
         $message = 'Test message';
         $record = new SlackRecord(null, null, false, null, false, false, array(), $formatter);
@@ -383,5 +382,10 @@ class SlackRecordTest extends TestCase
             $this->assertNotFalse(array_search($field, $attachment['fields']));
             break;
         }
+    }
+
+    protected function setUp()
+    {
+        $this->jsonPrettyPrintFlag = defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : 128;
     }
 }

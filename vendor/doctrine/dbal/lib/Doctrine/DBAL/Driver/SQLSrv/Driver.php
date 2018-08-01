@@ -43,7 +43,7 @@ class Driver extends AbstractSQLServerDriver
         if (isset($params['dbname'])) {
             $driverOptions['Database'] = $params['dbname'];
         }
-        
+
         if (isset($params['charset'])) {
             $driverOptions['CharacterSet'] = $params['charset'];
         }

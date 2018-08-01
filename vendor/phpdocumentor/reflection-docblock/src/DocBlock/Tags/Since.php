@@ -22,8 +22,6 @@ use Webmozart\Assert\Assert;
  */
 final class Since extends BaseTag implements Factory\StaticMethod
 {
-    protected $name = 'since';
-
     /**
      * PCRE regular expression matching a version vector.
      * Assumes the "x" modifier.
@@ -39,7 +37,7 @@ final class Since extends BaseTag implements Factory\StaticMethod
         # around the actual version vector.
         [^\s\:]+\:\s*\$[^\$]+\$
     )';
-
+    protected $name = 'since';
     /** @var string The version vector. */
     private $version = '';
 
@@ -47,7 +45,7 @@ final class Since extends BaseTag implements Factory\StaticMethod
     {
         Assert::nullOrStringNotEmpty($version);
 
-        $this->version     = $version;
+        $this->version = $version;
         $this->description = $description;
     }
 
@@ -62,7 +60,7 @@ final class Since extends BaseTag implements Factory\StaticMethod
         }
 
         $matches = [];
-        if (! preg_match('/^(' . self::REGEX_VECTOR . ')\s*(.+)?$/sux', $body, $matches)) {
+        if (!preg_match('/^(' . self::REGEX_VECTOR . ')\s*(.+)?$/sux', $body, $matches)) {
             return null;
         }
 

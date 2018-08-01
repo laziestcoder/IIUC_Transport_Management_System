@@ -8,16 +8,11 @@
                         class="fa fa-trash"></i></a>
         </span>
     </div>
-    <?php if (isset($branch['children'])): ?>
+    <?php if(isset($branch['children'])): ?>
         <ol class="dd-list">
-            <?php $__currentLoopData = $branch['children'];
-            $__env->addLoop($__currentLoopData);
-            foreach ($__currentLoopData as $branch): $__env->incrementLoopIndices();
-                $loop = $__env->getLastLoop(); ?>
+            <?php $__currentLoopData = $branch['children']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $branch): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <?php echo $__env->make($branchView, $branch, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-            <?php endforeach;
-            $__env->popLoop();
-            $loop = $__env->getLastLoop(); ?>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </ol>
     <?php endif; ?>
 </li>

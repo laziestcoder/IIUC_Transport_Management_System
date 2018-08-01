@@ -6,15 +6,13 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class Checkbox extends MultipleSelect
 {
-    protected $inline = true;
-
     protected static $css = [
         '/vendor/laravel-admin/AdminLTE/plugins/iCheck/all.css',
     ];
-
     protected static $js = [
         '/vendor/laravel-admin/AdminLTE/plugins/iCheck/icheck.min.js',
     ];
+    protected $inline = true;
 
     /**
      * Set options.
@@ -29,7 +27,7 @@ class Checkbox extends MultipleSelect
             $options = $options->toArray();
         }
 
-        $this->options = (array) $options;
+        $this->options = (array)$options;
 
         return $this;
     }

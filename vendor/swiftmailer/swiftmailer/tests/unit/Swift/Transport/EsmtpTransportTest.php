@@ -2,6 +2,14 @@
 
 class Swift_Transport_EsmtpTransportTest extends Swift_Transport_AbstractSmtpEventSupportTest
 {
+    public function testHostCanBeSetAndFetched()
+    {
+        $buf = $this->getBuffer();
+        $smtp = $this->getTransport($buf);
+        $smtp->setHost('foo');
+        $this->assertEquals('foo', $smtp->getHost(), '%s: Host should be returned');
+    }
+
     protected function getTransport($buf, $dispatcher = null)
     {
         if (!$dispatcher) {
@@ -9,14 +17,6 @@ class Swift_Transport_EsmtpTransportTest extends Swift_Transport_AbstractSmtpEve
         }
 
         return new Swift_Transport_EsmtpTransport($buf, array(), $dispatcher, 'example.org');
-    }
-
-    public function testHostCanBeSetAndFetched()
-    {
-        $buf = $this->getBuffer();
-        $smtp = $this->getTransport($buf);
-        $smtp->setHost('foo');
-        $this->assertEquals('foo', $smtp->getHost(), '%s: Host should be returned');
     }
 
     public function testPortCanBeSetAndFetched()
@@ -105,13 +105,13 @@ class Swift_Transport_EsmtpTransportTest extends Swift_Transport_AbstractSmtpEve
         $buf->shouldReceive('readLine')
             ->once()
             ->with(1)
-            ->andReturn('250 ServerName'."\r\n");
+            ->andReturn('250 ServerName' . "\r\n");
 
         $this->finishBuffer($buf);
         try {
             $smtp->start();
         } catch (Exception $e) {
-            $this->fail('Starting Esmtp should send EHLO and accept 250 response: '.$e->getMessage());
+            $this->fail('Starting Esmtp should send EHLO and accept 250 response: ' . $e->getMessage());
         }
     }
 
@@ -141,7 +141,7 @@ class Swift_Transport_EsmtpTransportTest extends Swift_Transport_AbstractSmtpEve
         $buf->shouldReceive('readLine')
             ->once()
             ->with(1)
-            ->andReturn('501 WTF'."\r\n");
+            ->andReturn('501 WTF' . "\r\n");
         $buf->shouldReceive('write')
             ->once()
             ->with('~^HELO .+?\r\n$~D')
@@ -149,7 +149,7 @@ class Swift_Transport_EsmtpTransportTest extends Swift_Transport_AbstractSmtpEve
         $buf->shouldReceive('readLine')
             ->once()
             ->with(2)
-            ->andReturn('250 HELO'."\r\n");
+            ->andReturn('250 HELO' . "\r\n");
 
         $this->finishBuffer($buf);
         try {
@@ -157,7 +157,7 @@ class Swift_Transport_EsmtpTransportTest extends Swift_Transport_AbstractSmtpEve
         } catch (Exception $e) {
             $this->fail(
                 'Starting Esmtp should fallback to HELO if needed and accept 250 response'
-                );
+            );
         }
     }
 
@@ -180,7 +180,7 @@ class Swift_Transport_EsmtpTransportTest extends Swift_Transport_AbstractSmtpEve
         $buf->shouldReceive('readLine')
             ->once()
             ->with(1)
-            ->andReturn('501 WTF'."\r\n");
+            ->andReturn('501 WTF' . "\r\n");
         $buf->shouldReceive('write')
             ->once()
             ->with('~^HELO .+?\r\n$~D')
@@ -188,7 +188,7 @@ class Swift_Transport_EsmtpTransportTest extends Swift_Transport_AbstractSmtpEve
         $buf->shouldReceive('readLine')
             ->once()
             ->with(2)
-            ->andReturn('504 WTF'."\r\n");
+            ->andReturn('504 WTF' . "\r\n");
         $this->finishBuffer($buf);
 
         try {
@@ -228,7 +228,7 @@ class Swift_Transport_EsmtpTransportTest extends Swift_Transport_AbstractSmtpEve
         $buf->shouldReceive('readLine')
             ->once()
             ->with(1)
-            ->andReturn('250 ServerName'."\r\n");
+            ->andReturn('250 ServerName' . "\r\n");
 
         $this->finishBuffer($buf);
         $smtp->setLocalDomain('mydomain.com');
@@ -264,7 +264,7 @@ class Swift_Transport_EsmtpTransportTest extends Swift_Transport_AbstractSmtpEve
         $buf->shouldReceive('readLine')
             ->once()
             ->with(1)
-            ->andReturn('501 WTF'."\r\n");
+            ->andReturn('501 WTF' . "\r\n");
         $buf->shouldReceive('write')
             ->once()
             ->with("HELO mydomain.com\r\n")
@@ -272,7 +272,7 @@ class Swift_Transport_EsmtpTransportTest extends Swift_Transport_AbstractSmtpEve
         $buf->shouldReceive('readLine')
             ->once()
             ->with(2)
-            ->andReturn('250 ServerName'."\r\n");
+            ->andReturn('250 ServerName' . "\r\n");
 
         $this->finishBuffer($buf);
         $smtp->setLocalDomain('mydomain.com');
@@ -291,8 +291,7 @@ class Swift_Transport_EsmtpTransportTest extends Swift_Transport_AbstractSmtpEve
             ->setHost('foo')
             ->setPort(25)
             ->setEncryption('tls')
-            ->setTimeout(30)
-            ;
+            ->setTimeout(30);
         $this->assertEquals($ref, $smtp);
     }
 }

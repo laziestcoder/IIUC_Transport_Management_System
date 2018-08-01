@@ -7,7 +7,7 @@ class Address extends \Faker\Provider\es_ES\Address
     protected static $cityPrefix = array('San', 'Puerto', 'Gral.', 'Don');
     protected static $citySuffix = array('Alta', 'Baja', 'Norte', 'Este', ' Sur', ' Oeste');
     protected static $buildingNumber = array('#####', '####', '###', '##', '#');
-    protected static $streetPrefix = array('Jr.', 'Av.', 'Cl.', 'Urb.' );
+    protected static $streetPrefix = array('Jr.', 'Av.', 'Cl.', 'Urb.');
     protected static $streetSuffix = array('');
     protected static $postcode = array('LIMA ##');
     protected static $state = array(

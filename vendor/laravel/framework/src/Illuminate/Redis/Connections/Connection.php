@@ -3,8 +3,8 @@
 namespace Illuminate\Redis\Connections;
 
 use Closure;
-use Illuminate\Redis\Limiters\DurationLimiterBuilder;
 use Illuminate\Redis\Limiters\ConcurrencyLimiterBuilder;
+use Illuminate\Redis\Limiters\DurationLimiterBuilder;
 
 /**
  * @mixin \Predis\Client
@@ -19,19 +19,9 @@ abstract class Connection
     protected $client;
 
     /**
-     * Subscribe to a set of given channels for messages.
-     *
-     * @param  array|string  $channels
-     * @param  \Closure  $callback
-     * @param  string  $method
-     * @return void
-     */
-    abstract public function createSubscription($channels, Closure $callback, $method = 'subscribe');
-
-    /**
      * Funnel a callback for a maximum number of simultaneous executions.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return \Illuminate\Redis\Limiters\ConcurrencyLimiterBuilder
      */
     public function funnel($name)
@@ -42,7 +32,7 @@ abstract class Connection
     /**
      * Throttle a callback for a maximum number of executions over a given duration.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return \Illuminate\Redis\Limiters\DurationLimiterBuilder
      */
     public function throttle($name)
@@ -63,8 +53,8 @@ abstract class Connection
     /**
      * Subscribe to a set of given channels for messages.
      *
-     * @param  array|string  $channels
-     * @param  \Closure  $callback
+     * @param  array|string $channels
+     * @param  \Closure $callback
      * @return void
      */
     public function subscribe($channels, Closure $callback)
@@ -73,10 +63,20 @@ abstract class Connection
     }
 
     /**
+     * Subscribe to a set of given channels for messages.
+     *
+     * @param  array|string $channels
+     * @param  \Closure $callback
+     * @param  string $method
+     * @return void
+     */
+    abstract public function createSubscription($channels, Closure $callback, $method = 'subscribe');
+
+    /**
      * Subscribe to a set of given channels with wildcards.
      *
-     * @param  array|string  $channels
-     * @param  \Closure  $callback
+     * @param  array|string $channels
+     * @param  \Closure $callback
      * @return void
      */
     public function psubscribe($channels, Closure $callback)
@@ -85,26 +85,26 @@ abstract class Connection
     }
 
     /**
-     * Run a command against the Redis database.
-     *
-     * @param  string  $method
-     * @param  array   $parameters
-     * @return mixed
-     */
-    public function command($method, array $parameters = [])
-    {
-        return $this->client->{$method}(...$parameters);
-    }
-
-    /**
      * Pass other method calls down to the underlying client.
      *
-     * @param  string  $method
-     * @param  array  $parameters
+     * @param  string $method
+     * @param  array $parameters
      * @return mixed
      */
     public function __call($method, $parameters)
     {
         return $this->command($method, $parameters);
+    }
+
+    /**
+     * Run a command against the Redis database.
+     *
+     * @param  string $method
+     * @param  array $parameters
+     * @return mixed
+     */
+    public function command($method, array $parameters = [])
+    {
+        return $this->client->{$method}(...$parameters);
     }
 }

@@ -28,6 +28,33 @@ use Mockery\Generator\DefinedTargetClass;
 use Mockery\Generator\StringManipulation\Pass\MagicMethodTypeHintsPass;
 use PHPUnit\Framework\TestCase;
 
+interface MagicInterfaceDummy
+{
+    public static function __callStatic(string $name, array $arguments): int;
+
+    public function __isset(string $name): bool;
+
+    public function __toString(): string;
+
+    public function __wakeup();
+
+    public function __destruct();
+
+    public function __call(string $name, array $arguments): string;
+
+    public function nonMagicMethod();
+}
+
+interface MagicReturnInterfaceDummy
+{
+    public function __isset(string $name);
+}
+
+interface MagicUnsetInterfaceDummy
+{
+    public function __unset(string $name);
+}
+
 class MagicMethodTypeHintsPassTest extends TestCase
 {
     /**
@@ -108,6 +135,34 @@ class MagicMethodTypeHintsPassTest extends TestCase
         $this->assertContains('string $name', $code);
     }
 
+    protected function configureForClass(string $className = 'Mockery\Test\Generator\StringManipulation\Pass\MagicDummy')
+    {
+        $targetClass = DefinedTargetClass::factory($className);
+
+        $this->mockedConfiguration
+            ->shouldReceive('getTargetClass')
+            ->andReturn($targetClass)
+            ->byDefault();
+        $this->mockedConfiguration
+            ->shouldReceive('getTargetInterfaces')
+            ->andReturn([])
+            ->byDefault();
+    }
+
+    protected function configureForInterface(string $interfaceName = 'Mockery\Test\Generator\StringManipulation\Pass\MagicDummy')
+    {
+        $targetInterface = DefinedTargetClass::factory($interfaceName);
+
+        $this->mockedConfiguration
+            ->shouldReceive('getTargetClass')
+            ->andReturn(null)
+            ->byDefault();
+        $this->mockedConfiguration
+            ->shouldReceive('getTargetInterfaces')
+            ->andReturn([$targetInterface])
+            ->byDefault();
+    }
+
     /**
      * @test
      */
@@ -127,6 +182,20 @@ class MagicMethodTypeHintsPassTest extends TestCase
             $this->mockedConfiguration
         );
         $this->assertContains('string $name', $code);
+    }
+
+    protected function configureForInterfaces(array $interfaceNames)
+    {
+        $targetInterfaces = array_map([DefinedTargetClass::class, 'factory'], $interfaceNames);
+
+        $this->mockedConfiguration
+            ->shouldReceive('getTargetClass')
+            ->andReturn(null)
+            ->byDefault();
+        $this->mockedConfiguration
+            ->shouldReceive('getTargetInterfaces')
+            ->andReturn($targetInterfaces)
+            ->byDefault();
     }
 
     /**
@@ -279,58 +348,20 @@ class MagicMethodTypeHintsPassTest extends TestCase
         $this->assertContains('$method', $code);
         $this->assertContains('array $args', $code);
     }
-
-    protected function configureForClass(string $className = 'Mockery\Test\Generator\StringManipulation\Pass\MagicDummy')
-    {
-        $targetClass = DefinedTargetClass::factory($className);
-
-        $this->mockedConfiguration
-            ->shouldReceive('getTargetClass')
-            ->andReturn($targetClass)
-            ->byDefault();
-        $this->mockedConfiguration
-            ->shouldReceive('getTargetInterfaces')
-            ->andReturn([])
-            ->byDefault();
-    }
-
-    protected function configureForInterface(string $interfaceName = 'Mockery\Test\Generator\StringManipulation\Pass\MagicDummy')
-    {
-        $targetInterface = DefinedTargetClass::factory($interfaceName);
-
-        $this->mockedConfiguration
-            ->shouldReceive('getTargetClass')
-            ->andReturn(null)
-            ->byDefault();
-        $this->mockedConfiguration
-            ->shouldReceive('getTargetInterfaces')
-            ->andReturn([$targetInterface])
-            ->byDefault();
-    }
-
-    protected function configureForInterfaces(array $interfaceNames)
-    {
-        $targetInterfaces = array_map([DefinedTargetClass::class, 'factory'], $interfaceNames);
-
-        $this->mockedConfiguration
-            ->shouldReceive('getTargetClass')
-            ->andReturn(null)
-            ->byDefault();
-        $this->mockedConfiguration
-            ->shouldReceive('getTargetInterfaces')
-            ->andReturn($targetInterfaces)
-            ->byDefault();
-    }
 }
 
 class MagicDummy
 {
-    public function __isset(string $name) : bool
+    public static function __callStatic(string $name, array $arguments): int
+    {
+    }
+
+    public function __isset(string $name): bool
     {
         return false;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return '';
     }
@@ -343,11 +374,7 @@ class MagicDummy
     {
     }
 
-    public function __call(string $name, array $arguments) : string
-    {
-    }
-
-    public static function __callStatic(string $name, array $arguments) : int
+    public function __call(string $name, array $arguments): string
     {
     }
 
@@ -362,31 +389,4 @@ class MagicReturnDummy
     {
         return false;
     }
-}
-
-interface MagicInterfaceDummy
-{
-    public function __isset(string $name) : bool;
-
-    public function __toString() : string;
-
-    public function __wakeup();
-
-    public function __destruct();
-
-    public function __call(string $name, array $arguments) : string;
-
-    public static function __callStatic(string $name, array $arguments) : int;
-
-    public function nonMagicMethod();
-}
-
-interface MagicReturnInterfaceDummy
-{
-    public function __isset(string $name);
-}
-
-interface MagicUnsetInterfaceDummy
-{
-    public function __unset(string $name);
 }

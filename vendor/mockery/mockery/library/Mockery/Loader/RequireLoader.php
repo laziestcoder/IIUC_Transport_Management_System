@@ -21,7 +21,6 @@
 namespace Mockery\Loader;
 
 use Mockery\Generator\MockDefinition;
-use Mockery\Loader\Loader;
 
 class RequireLoader implements Loader
 {
@@ -38,7 +37,7 @@ class RequireLoader implements Loader
             return;
         }
 
-        $tmpfname = $this->path.DIRECTORY_SEPARATOR."Mockery_".uniqid().".php";
+        $tmpfname = $this->path . DIRECTORY_SEPARATOR . "Mockery_" . uniqid() . ".php";
         file_put_contents($tmpfname, $definition->getCode());
 
         require $tmpfname;

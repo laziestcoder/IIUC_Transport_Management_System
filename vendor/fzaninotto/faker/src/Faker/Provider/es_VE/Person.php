@@ -137,7 +137,7 @@ class Person extends \Faker\Provider\Person
     protected static $titleFemale = array('Sra.', 'Srita.', 'Dra.', 'Lcda.', 'Ing.');
 
     private static $suffix = array('Hijo');
-    
+
     private static $nationalityId = array('V', 'E');
 
     /**
@@ -158,9 +158,9 @@ class Person extends \Faker\Provider\Person
     {
         $id = static::randomElement(static::$nationalityId);
         if ($id == 'V') {
-            return $id.$this->numberBetween(10000, 100000000);
+            return $id . $this->numberBetween(10000, 100000000);
         } else {
-            return $id.$this->numberBetween(80000000, 100000000);
+            return $id . $this->numberBetween(80000000, 100000000);
         }
     }
 }

@@ -29,14 +29,14 @@ class Swift_Transport_SendmailTransport extends Swift_Transport_AbstractSmtpTran
         'blocking' => 1,
         'command' => '/usr/sbin/sendmail -bs',
         'type' => Swift_Transport_IoBuffer::TYPE_PROCESS,
-        );
+    );
 
     /**
      * Create a new SendmailTransport with $buf for I/O.
      *
-     * @param Swift_Transport_IoBuffer     $buf
+     * @param Swift_Transport_IoBuffer $buf
      * @param Swift_Events_EventDispatcher $dispatcher
-     * @param string                       $localDomain
+     * @param string $localDomain
      */
     public function __construct(Swift_Transport_IoBuffer $buf, Swift_Events_EventDispatcher $dispatcher, $localDomain = '127.0.0.1')
     {
@@ -51,6 +51,16 @@ class Swift_Transport_SendmailTransport extends Swift_Transport_AbstractSmtpTran
         if (false !== strpos($this->getCommand(), ' -bs')) {
             parent::start();
         }
+    }
+
+    /**
+     * Get the sendmail command which will be invoked.
+     *
+     * @return string
+     */
+    public function getCommand()
+    {
+        return $this->params['command'];
     }
 
     /**
@@ -75,16 +85,6 @@ class Swift_Transport_SendmailTransport extends Swift_Transport_AbstractSmtpTran
     }
 
     /**
-     * Get the sendmail command which will be invoked.
-     *
-     * @return string
-     */
-    public function getCommand()
-    {
-        return $this->params['command'];
-    }
-
-    /**
      * Send the given Message.
      *
      * Recipient/sender data will be retrieved from the Message API.
@@ -94,13 +94,13 @@ class Swift_Transport_SendmailTransport extends Swift_Transport_AbstractSmtpTran
      * they bounce (i.e. send() will always return 100% success).
      *
      * @param Swift_Mime_SimpleMessage $message
-     * @param string[]           $failedRecipients An array of failures by-reference
+     * @param string[] $failedRecipients An array of failures by-reference
      *
      * @return int
      */
     public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
     {
-        $failedRecipients = (array) $failedRecipients;
+        $failedRecipients = (array)$failedRecipients;
         $command = $this->getCommand();
         $buffer = $this->getBuffer();
         $count = 0;
@@ -114,7 +114,7 @@ class Swift_Transport_SendmailTransport extends Swift_Transport_AbstractSmtpTran
             }
 
             if (false === strpos($command, ' -f')) {
-                $command .= ' -f'.escapeshellarg($this->getReversePath($message));
+                $command .= ' -f' . escapeshellarg($this->getReversePath($message));
             }
 
             $buffer->initialize(array_merge($this->params, array('command' => $command)));
@@ -125,10 +125,9 @@ class Swift_Transport_SendmailTransport extends Swift_Transport_AbstractSmtpTran
                 $buffer->setWriteTranslations(array("\r\n" => "\n"));
             }
 
-            $count = count((array) $message->getTo())
-                + count((array) $message->getCc())
-                + count((array) $message->getBcc())
-                ;
+            $count = count((array)$message->getTo())
+                + count((array)$message->getCc())
+                + count((array)$message->getBcc());
             $message->toByteStream($buffer);
             $buffer->flushBuffers();
             $buffer->setWriteTranslations(array());
@@ -145,9 +144,9 @@ class Swift_Transport_SendmailTransport extends Swift_Transport_AbstractSmtpTran
             $count = parent::send($message, $failedRecipients);
         } else {
             $this->throwException(new Swift_TransportException(
-                'Unsupported sendmail command flags ['.$command.']. '.
+                'Unsupported sendmail command flags [' . $command . ']. ' .
                 'Must be one of "-bs" or "-t" but can include additional flags.'
-                ));
+            ));
         }
 
         return $count;

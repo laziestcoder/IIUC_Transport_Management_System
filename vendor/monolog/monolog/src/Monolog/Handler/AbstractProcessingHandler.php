@@ -40,14 +40,6 @@ abstract class AbstractProcessingHandler extends AbstractHandler
     }
 
     /**
-     * Writes the record down to the log of the implementing handler
-     *
-     * @param  array $record
-     * @return void
-     */
-    abstract protected function write(array $record);
-
-    /**
      * Processes a record.
      *
      * @param  array $record
@@ -63,4 +55,12 @@ abstract class AbstractProcessingHandler extends AbstractHandler
 
         return $record;
     }
+
+    /**
+     * Writes the record down to the log of the implementing handler
+     *
+     * @param  array $record
+     * @return void
+     */
+    abstract protected function write(array $record);
 }

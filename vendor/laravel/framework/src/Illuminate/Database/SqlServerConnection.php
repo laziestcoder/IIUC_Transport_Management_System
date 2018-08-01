@@ -3,21 +3,21 @@
 namespace Illuminate\Database;
 
 use Closure;
-use Exception;
-use Throwable;
-use Illuminate\Database\Schema\SqlServerBuilder;
 use Doctrine\DBAL\Driver\PDOSqlsrv\Driver as DoctrineDriver;
-use Illuminate\Database\Query\Processors\SqlServerProcessor;
+use Exception;
 use Illuminate\Database\Query\Grammars\SqlServerGrammar as QueryGrammar;
+use Illuminate\Database\Query\Processors\SqlServerProcessor;
 use Illuminate\Database\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
+use Illuminate\Database\Schema\SqlServerBuilder;
+use Throwable;
 
 class SqlServerConnection extends Connection
 {
     /**
      * Execute a Closure within a transaction.
      *
-     * @param  \Closure  $callback
-     * @param  int  $attempts
+     * @param  \Closure $callback
+     * @param  int $attempts
      * @return mixed
      *
      * @throws \Exception|\Throwable
@@ -40,9 +40,9 @@ class SqlServerConnection extends Connection
                 $this->getPdo()->exec('COMMIT TRAN');
             }
 
-            // If we catch an exception, we will roll back so nothing gets messed
-            // up in the database. Then we'll re-throw the exception so it can
-            // be handled how the developer sees fit for their applications.
+                // If we catch an exception, we will roll back so nothing gets messed
+                // up in the database. Then we'll re-throw the exception so it can
+                // be handled how the developer sees fit for their applications.
             catch (Exception $e) {
                 $this->getPdo()->exec('ROLLBACK TRAN');
 
@@ -58,16 +58,6 @@ class SqlServerConnection extends Connection
     }
 
     /**
-     * Get the default query grammar instance.
-     *
-     * @return \Illuminate\Database\Query\Grammars\SqlServerGrammar
-     */
-    protected function getDefaultQueryGrammar()
-    {
-        return $this->withTablePrefix(new QueryGrammar);
-    }
-
-    /**
      * Get a schema builder instance for the connection.
      *
      * @return \Illuminate\Database\Schema\SqlServerBuilder
@@ -79,6 +69,16 @@ class SqlServerConnection extends Connection
         }
 
         return new SqlServerBuilder($this);
+    }
+
+    /**
+     * Get the default query grammar instance.
+     *
+     * @return \Illuminate\Database\Query\Grammars\SqlServerGrammar
+     */
+    protected function getDefaultQueryGrammar()
+    {
+        return $this->withTablePrefix(new QueryGrammar);
     }
 
     /**

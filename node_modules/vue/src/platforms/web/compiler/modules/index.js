@@ -3,7 +3,7 @@ import style from './style'
 import model from './model'
 
 export default [
-  klass,
-  style,
-  model
+    klass,
+    style,
+    model
 ]

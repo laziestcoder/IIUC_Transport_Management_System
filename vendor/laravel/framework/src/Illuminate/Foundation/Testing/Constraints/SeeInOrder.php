@@ -2,8 +2,8 @@
 
 namespace Illuminate\Foundation\Testing\Constraints;
 
-use ReflectionClass;
 use PHPUnit\Framework\Constraint\Constraint;
+use ReflectionClass;
 
 class SeeInOrder extends Constraint
 {
@@ -24,7 +24,7 @@ class SeeInOrder extends Constraint
     /**
      * Create a new constraint instance.
      *
-     * @param  string  $content
+     * @param  string $content
      * @return void
      */
     public function __construct($content)
@@ -35,10 +35,10 @@ class SeeInOrder extends Constraint
     /**
      * Determine if the rule passes validation.
      *
-     * @param  array  $values
+     * @param  array $values
      * @return bool
      */
-    public function matches($values) : bool
+    public function matches($values): bool
     {
         $position = 0;
 
@@ -60,10 +60,10 @@ class SeeInOrder extends Constraint
     /**
      * Get the description of the failure.
      *
-     * @param  array  $values
+     * @param  array $values
      * @return string
      */
-    public function failureDescription($values) : string
+    public function failureDescription($values): string
     {
         return sprintf(
             'Failed asserting that \'%s\' contains "%s" in specified order.',
@@ -77,7 +77,7 @@ class SeeInOrder extends Constraint
      *
      * @return string
      */
-    public function toString() : string
+    public function toString(): string
     {
         return (new ReflectionClass($this))->name;
     }

@@ -2,7 +2,6 @@
 
 namespace test\Mockery\Adapter\Phpunit;
 
-use Mockery as m;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\Exception\BadMethodCallException;
@@ -19,7 +18,9 @@ class BaseClassStub
     public function markAsRisky()
     {
     }
-};
+}
+
+;
 
 class MockeryPHPUnitIntegrationTest extends MockeryTestCase
 {

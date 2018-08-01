@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Framework\Constraint;
 
 use ReflectionClass;
@@ -29,17 +30,6 @@ class ClassHasAttribute extends Constraint
         parent::__construct();
 
         $this->attributeName = $attributeName;
-    }
-
-    /**
-     * Returns a string representation of the constraint.
-     */
-    public function toString(): string
-    {
-        return \sprintf(
-            'has attribute "%s"',
-            $this->attributeName
-        );
     }
 
     /**
@@ -70,6 +60,17 @@ class ClassHasAttribute extends Constraint
             \is_object($other) ? 'object of ' : '',
             \is_object($other) ? \get_class($other) : $other,
             $this->toString()
+        );
+    }
+
+    /**
+     * Returns a string representation of the constraint.
+     */
+    public function toString(): string
+    {
+        return \sprintf(
+            'has attribute "%s"',
+            $this->attributeName
         );
     }
 

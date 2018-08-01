@@ -34,9 +34,9 @@ class PHPUnitConstraint extends MatcherAbstract
     public function __construct($constraint, $rethrow = false)
     {
         if (!($constraint instanceof \PHPUnit_Framework_Constraint)
-        && !($constraint instanceof \PHPUnit\Framework\Constraint)) {
+            && !($constraint instanceof \PHPUnit\Framework\Constraint)) {
             throw new InvalidArgumentException(
-                'Constraint must be one of \PHPUnit\Framework\Constraint or '.
+                'Constraint must be one of \PHPUnit\Framework\Constraint or ' .
                 '\PHPUnit_Framework_Constraint'
             );
         }

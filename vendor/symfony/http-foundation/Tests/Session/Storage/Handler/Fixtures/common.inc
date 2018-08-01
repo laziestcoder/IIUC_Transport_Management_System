@@ -3,7 +3,7 @@
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\AbstractSessionHandler;
 
 $parent = __DIR__;
-while (!@file_exists($parent.'/vendor/autoload.php')) {
+while (!@file_exists($parent . '/vendor/autoload.php')) {
     if (!@file_exists($parent)) {
         // open_basedir restriction in effect
         break;
@@ -16,7 +16,7 @@ while (!@file_exists($parent.'/vendor/autoload.php')) {
     $parent = dirname($parent);
 }
 
-require $parent.'/vendor/autoload.php';
+require $parent . '/vendor/autoload.php';
 
 error_reporting(-1);
 ini_set('html_errors', 0);
@@ -130,14 +130,14 @@ class TestSessionHandler extends AbstractSessionHandler
 
     protected function doRead($sessionId)
     {
-        echo __FUNCTION__.': ', $this->data, "\n";
+        echo __FUNCTION__ . ': ', $this->data, "\n";
 
         return $this->data;
     }
 
     protected function doWrite($sessionId, $data)
     {
-        echo __FUNCTION__.': ', $data, "\n";
+        echo __FUNCTION__ . ': ', $data, "\n";
 
         return true;
     }

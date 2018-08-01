@@ -27,6 +27,7 @@
  * @author Jonathan Wage <jonwage@gmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  */
+
 namespace Doctrine\DBAL\Types;
 
 use function get_class;
@@ -59,9 +60,9 @@ class ConversionException extends \Doctrine\DBAL\DBALException
      * Thrown when a Database to Doctrine Type Conversion fails and we can make a statement
      * about the expected format.
      *
-     * @param string          $value
-     * @param string          $toType
-     * @param string          $expectedFormat
+     * @param string $value
+     * @param string $toType
+     * @param string $expectedFormat
      * @param \Exception|null $previous
      *
      * @return \Doctrine\DBAL\Types\ConversionException
@@ -81,8 +82,8 @@ class ConversionException extends \Doctrine\DBAL\DBALException
     /**
      * Thrown when the PHP value passed to the converter was not of the expected type.
      *
-     * @param mixed    $value
-     * @param string   $toType
+     * @param mixed $value
+     * @param string $toType
      * @param string[] $possibleTypes
      *
      * @return \Doctrine\DBAL\Types\ConversionException

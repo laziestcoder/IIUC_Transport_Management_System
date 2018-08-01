@@ -21,7 +21,6 @@
 
 namespace tests\Mockery\Generator;
 
-use Mockery as m;
 use Mockery\Generator\MockConfigurationBuilder;
 use PHPUnit\Framework\TestCase;
 

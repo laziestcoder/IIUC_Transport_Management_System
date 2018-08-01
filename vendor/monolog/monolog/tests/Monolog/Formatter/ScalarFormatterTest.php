@@ -20,30 +20,6 @@ class ScalarFormatterTest extends \PHPUnit_Framework_TestCase
         $this->formatter = new ScalarFormatter();
     }
 
-    public function buildTrace(\Exception $e)
-    {
-        $data = array();
-        $trace = $e->getTrace();
-        foreach ($trace as $frame) {
-            if (isset($frame['file'])) {
-                $data[] = $frame['file'].':'.$frame['line'];
-            } else {
-                $data[] = json_encode($frame);
-            }
-        }
-
-        return $data;
-    }
-
-    public function encodeJson($data)
-    {
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            return json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        }
-
-        return json_encode($data);
-    }
-
     public function testFormat()
     {
         $exception = new \Exception('foo');
@@ -65,13 +41,37 @@ class ScalarFormatterTest extends \PHPUnit_Framework_TestCase
             'bat' => $this->encodeJson(array('foo' => 'bar')),
             'bap' => '1970-01-01 00:00:00',
             'ban' => $this->encodeJson(array(
-                'class'   => get_class($exception),
+                'class' => get_class($exception),
                 'message' => $exception->getMessage(),
-                'code'    => $exception->getCode(),
-                'file'    => $exception->getFile() . ':' . $exception->getLine(),
-                'trace'   => $this->buildTrace($exception),
+                'code' => $exception->getCode(),
+                'file' => $exception->getFile() . ':' . $exception->getLine(),
+                'trace' => $this->buildTrace($exception),
             )),
         ), $formatted);
+    }
+
+    public function encodeJson($data)
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
+            return json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        return json_encode($data);
+    }
+
+    public function buildTrace(\Exception $e)
+    {
+        $data = array();
+        $trace = $e->getTrace();
+        foreach ($trace as $frame) {
+            if (isset($frame['file'])) {
+                $data[] = $frame['file'] . ':' . $frame['line'];
+            } else {
+                $data[] = json_encode($frame);
+            }
+        }
+
+        return $data;
     }
 
     public function testFormatWithErrorContext()
@@ -98,11 +98,11 @@ class ScalarFormatterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(array(
             'context' => $this->encodeJson(array(
                 'exception' => array(
-                    'class'   => get_class($exception),
+                    'class' => get_class($exception),
                     'message' => $exception->getMessage(),
-                    'code'    => $exception->getCode(),
-                    'file'    => $exception->getFile() . ':' . $exception->getLine(),
-                    'trace'   => $this->buildTrace($exception),
+                    'code' => $exception->getCode(),
+                    'file' => $exception->getFile() . ':' . $exception->getLine(),
+                    'trace' => $this->buildTrace($exception),
                 ),
             )),
         ), $formatted);

@@ -84,8 +84,8 @@ interface ShardManager
      * Using {@link \Doctrine\DBAL\Connection::fetchAll} to retrieve rows internally.
      *
      * @param string $sql
-     * @param array  $params
-     * @param array  $types
+     * @param array $params
+     * @param array $types
      *
      * @return array
      */

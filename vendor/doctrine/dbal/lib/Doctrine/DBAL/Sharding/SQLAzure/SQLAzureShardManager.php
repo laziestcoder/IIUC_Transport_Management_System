@@ -74,42 +74,22 @@ class SQLAzureShardManager implements ShardManager
         $this->conn = $conn;
         $params = $conn->getParams();
 
-        if ( ! isset($params['sharding']['federationName'])) {
+        if (!isset($params['sharding']['federationName'])) {
             throw ShardingException::missingDefaultFederationName();
         }
 
-        if ( ! isset($params['sharding']['distributionKey'])) {
+        if (!isset($params['sharding']['distributionKey'])) {
             throw ShardingException::missingDefaultDistributionKey();
         }
 
-        if ( ! isset($params['sharding']['distributionType'])) {
+        if (!isset($params['sharding']['distributionType'])) {
             throw ShardingException::missingDistributionType();
         }
 
         $this->federationName = $params['sharding']['federationName'];
         $this->distributionKey = $params['sharding']['distributionKey'];
         $this->distributionType = $params['sharding']['distributionType'];
-        $this->filteringEnabled = (bool) ($params['sharding']['filteringEnabled'] ?? false);
-    }
-
-    /**
-     * Gets the name of the federation.
-     *
-     * @return string
-     */
-    public function getFederationName()
-    {
-        return $this->federationName;
-    }
-
-    /**
-     * Gets the distribution key.
-     *
-     * @return string
-     */
-    public function getDistributionKey()
-    {
-        return $this->distributionKey;
+        $this->filteringEnabled = (bool)($params['sharding']['filteringEnabled'] ?? false);
     }
 
     /**
@@ -131,21 +111,60 @@ class SQLAzureShardManager implements ShardManager
      */
     public function setFilteringEnabled($flag)
     {
-        $this->filteringEnabled = (bool) $flag;
+        $this->filteringEnabled = (bool)$flag;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function selectGlobal()
+    public function queryAll($sql, array $params = [], array $types = [])
     {
-        if ($this->conn->isTransactionActive()) {
-            throw ShardingException::activeTransaction();
+        $shards = $this->getShards();
+        if (!$shards) {
+            throw new \RuntimeException("No shards found for " . $this->federationName);
         }
 
-        $sql = "USE FEDERATION ROOT WITH RESET";
-        $this->conn->exec($sql);
-        $this->currentDistributionValue = null;
+        $result = [];
+        $oldDistribution = $this->getCurrentDistributionValue();
+
+        foreach ($shards as $shard) {
+            $this->selectShard($shard['rangeLow']);
+            foreach ($this->conn->fetchAll($sql, $params, $types) as $row) {
+                $result[] = $row;
+            }
+        }
+
+        if ($oldDistribution === null) {
+            $this->selectGlobal();
+        } else {
+            $this->selectShard($oldDistribution);
+        }
+
+        return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getShards()
+    {
+        $sql = "SELECT member_id as id,
+                      distribution_name as distribution_key,
+                      CAST(range_low AS CHAR) AS rangeLow,
+                      CAST(range_high AS CHAR) AS rangeHigh
+                      FROM sys.federation_member_distributions d
+                      INNER JOIN sys.federations f ON f.federation_id = d.federation_id
+                      WHERE f.name = " . $this->conn->quote($this->federationName);
+
+        return $this->conn->fetchAll($sql);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCurrentDistributionValue()
+    {
+        return $this->currentDistributionValue;
     }
 
     /**
@@ -177,54 +196,15 @@ class SQLAzureShardManager implements ShardManager
     /**
      * {@inheritDoc}
      */
-    public function getCurrentDistributionValue()
+    public function selectGlobal()
     {
-        return $this->currentDistributionValue;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getShards()
-    {
-        $sql = "SELECT member_id as id,
-                      distribution_name as distribution_key,
-                      CAST(range_low AS CHAR) AS rangeLow,
-                      CAST(range_high AS CHAR) AS rangeHigh
-                      FROM sys.federation_member_distributions d
-                      INNER JOIN sys.federations f ON f.federation_id = d.federation_id
-                      WHERE f.name = " . $this->conn->quote($this->federationName);
-
-        return $this->conn->fetchAll($sql);
-    }
-
-     /**
-      * {@inheritDoc}
-      */
-    public function queryAll($sql, array $params = [], array $types = [])
-    {
-        $shards = $this->getShards();
-        if (!$shards) {
-            throw new \RuntimeException("No shards found for " . $this->federationName);
+        if ($this->conn->isTransactionActive()) {
+            throw ShardingException::activeTransaction();
         }
 
-        $result = [];
-        $oldDistribution = $this->getCurrentDistributionValue();
-
-        foreach ($shards as $shard) {
-            $this->selectShard($shard['rangeLow']);
-            foreach ($this->conn->fetchAll($sql, $params, $types) as $row) {
-                $result[] = $row;
-            }
-        }
-
-        if ($oldDistribution === null) {
-            $this->selectGlobal();
-        } else {
-            $this->selectShard($oldDistribution);
-        }
-
-        return $result;
+        $sql = "USE FEDERATION ROOT WITH RESET";
+        $this->conn->exec($sql);
+        $this->currentDistributionValue = null;
     }
 
     /**
@@ -239,8 +219,28 @@ class SQLAzureShardManager implements ShardManager
         $type = Type::getType($this->distributionType);
 
         $sql = "ALTER FEDERATION " . $this->getFederationName() . " " .
-               "SPLIT AT (" . $this->getDistributionKey() . " = " .
-               $this->conn->quote($splitDistributionValue, $type->getBindingType()) . ")";
+            "SPLIT AT (" . $this->getDistributionKey() . " = " .
+            $this->conn->quote($splitDistributionValue, $type->getBindingType()) . ")";
         $this->conn->exec($sql);
+    }
+
+    /**
+     * Gets the name of the federation.
+     *
+     * @return string
+     */
+    public function getFederationName()
+    {
+        return $this->federationName;
+    }
+
+    /**
+     * Gets the distribution key.
+     *
+     * @return string
+     */
+    public function getDistributionKey()
+    {
+        return $this->distributionKey;
     }
 }

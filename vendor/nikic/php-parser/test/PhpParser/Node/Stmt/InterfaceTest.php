@@ -7,7 +7,8 @@ use PHPUnit\Framework\TestCase;
 
 class InterfaceTest extends TestCase
 {
-    public function testGetMethods() {
+    public function testGetMethods()
+    {
         $methods = [
             new ClassMethod('foo'),
             new ClassMethod('bar'),

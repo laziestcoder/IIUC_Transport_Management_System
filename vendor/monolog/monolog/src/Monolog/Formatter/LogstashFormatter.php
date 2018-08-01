@@ -51,10 +51,10 @@ class LogstashFormatter extends NormalizerFormatter
 
     /**
      * @param string $applicationName the application that sends the data, used as the "type" field of logstash
-     * @param string $systemName      the system/machine name, used as the "source" field of logstash, defaults to the hostname of the machine
-     * @param string $extraPrefix     prefix for extra keys inside logstash "fields"
-     * @param string $contextPrefix   prefix for context keys inside logstash "fields", defaults to ctxt_
-     * @param int    $version         the logstash format version to use, defaults to 0
+     * @param string $systemName the system/machine name, used as the "source" field of logstash, defaults to the hostname of the machine
+     * @param string $extraPrefix prefix for extra keys inside logstash "fields"
+     * @param string $contextPrefix prefix for context keys inside logstash "fields", defaults to ctxt_
+     * @param int $version the logstash format version to use, defaults to 0
      */
     public function __construct($applicationName, $systemName = null, $extraPrefix = null, $contextPrefix = 'ctxt_', $version = self::V0)
     {
@@ -82,6 +82,43 @@ class LogstashFormatter extends NormalizerFormatter
         }
 
         return $this->toJson($message) . "\n";
+    }
+
+    protected function formatV1(array $record)
+    {
+        if (empty($record['datetime'])) {
+            $record['datetime'] = gmdate('c');
+        }
+        $message = array(
+            '@timestamp' => $record['datetime'],
+            '@version' => 1,
+            'host' => $this->systemName,
+        );
+        if (isset($record['message'])) {
+            $message['message'] = $record['message'];
+        }
+        if (isset($record['channel'])) {
+            $message['type'] = $record['channel'];
+            $message['channel'] = $record['channel'];
+        }
+        if (isset($record['level_name'])) {
+            $message['level'] = $record['level_name'];
+        }
+        if ($this->applicationName) {
+            $message['type'] = $this->applicationName;
+        }
+        if (!empty($record['extra'])) {
+            foreach ($record['extra'] as $key => $val) {
+                $message[$this->extraPrefix . $key] = $val;
+            }
+        }
+        if (!empty($record['context'])) {
+            foreach ($record['context'] as $key => $val) {
+                $message[$this->contextPrefix . $key] = $val;
+            }
+        }
+
+        return $message;
     }
 
     protected function formatV0(array $record)
@@ -121,43 +158,6 @@ class LogstashFormatter extends NormalizerFormatter
         if (!empty($record['context'])) {
             foreach ($record['context'] as $key => $val) {
                 $message['@fields'][$this->contextPrefix . $key] = $val;
-            }
-        }
-
-        return $message;
-    }
-
-    protected function formatV1(array $record)
-    {
-        if (empty($record['datetime'])) {
-            $record['datetime'] = gmdate('c');
-        }
-        $message = array(
-            '@timestamp' => $record['datetime'],
-            '@version' => 1,
-            'host' => $this->systemName,
-        );
-        if (isset($record['message'])) {
-            $message['message'] = $record['message'];
-        }
-        if (isset($record['channel'])) {
-            $message['type'] = $record['channel'];
-            $message['channel'] = $record['channel'];
-        }
-        if (isset($record['level_name'])) {
-            $message['level'] = $record['level_name'];
-        }
-        if ($this->applicationName) {
-            $message['type'] = $this->applicationName;
-        }
-        if (!empty($record['extra'])) {
-            foreach ($record['extra'] as $key => $val) {
-                $message[$this->extraPrefix . $key] = $val;
-            }
-        }
-        if (!empty($record['context'])) {
-            foreach ($record['context'] as $key => $val) {
-                $message[$this->contextPrefix . $key] = $val;
             }
         }
 

@@ -32,14 +32,6 @@ class DateTimeType extends Type implements PhpDateTimeMappingType
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return Type::DATETIME;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
         return $platform->getDateTimeTypeDeclarationSQL($fieldDeclaration);
@@ -64,6 +56,14 @@ class DateTimeType extends Type implements PhpDateTimeMappingType
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return Type::DATETIME;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         if ($value === null || $value instanceof \DateTimeInterface) {
@@ -72,11 +72,11 @@ class DateTimeType extends Type implements PhpDateTimeMappingType
 
         $val = \DateTime::createFromFormat($platform->getDateTimeFormatString(), $value);
 
-        if ( ! $val) {
+        if (!$val) {
             $val = date_create($value);
         }
 
-        if ( ! $val) {
+        if (!$val) {
             throw ConversionException::conversionFailedFormat($value, $this->getName(), $platform->getDateTimeFormatString());
         }
 

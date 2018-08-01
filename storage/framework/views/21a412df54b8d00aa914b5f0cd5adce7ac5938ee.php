@@ -9,7 +9,7 @@
     </div>
     <!-- /.box-header -->
     <!-- form start -->
-    <?php if($form->hasRows()): ?>
+    <?php if ($form->hasRows()): ?>
         <?php echo $form->open(); ?>
 
     <?php else: ?>
@@ -19,21 +19,31 @@
 
     <div class="box-body">
 
-        <?php if(!$tabObj->isEmpty()): ?>
+        <?php if (!$tabObj->isEmpty()): ?>
             <?php echo $__env->make('admin::form.tab', compact('tabObj'), array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         <?php else: ?>
             <div class="fields-group">
 
-                <?php if($form->hasRows()): ?>
-                    <?php $__currentLoopData = $form->getRows(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if ($form->hasRows()): ?>
+                    <?php $__currentLoopData = $form->getRows();
+                    $__env->addLoop($__currentLoopData);
+                    foreach ($__currentLoopData as $row): $__env->incrementLoopIndices();
+                        $loop = $__env->getLastLoop(); ?>
                         <?php echo $row->render(); ?>
 
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php endforeach;
+                    $__env->popLoop();
+                    $loop = $__env->getLastLoop(); ?>
                 <?php else: ?>
-                    <?php $__currentLoopData = $form->fields(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php $__currentLoopData = $form->fields();
+                    $__env->addLoop($__currentLoopData);
+                    foreach ($__currentLoopData as $field): $__env->incrementLoopIndices();
+                        $loop = $__env->getLastLoop(); ?>
                         <?php echo $field->render(); ?>
 
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php endforeach;
+                    $__env->popLoop();
+                    $loop = $__env->getLastLoop(); ?>
                 <?php endif; ?>
 
 
@@ -44,7 +54,7 @@
     <!-- /.box-body -->
     <div class="box-footer">
 
-        <?php if( ! $form->isMode(\Encore\Admin\Form\Builder::MODE_VIEW)  || ! $form->option('enableSubmit')): ?>
+        <?php if (!$form->isMode(\Encore\Admin\Form\Builder::MODE_VIEW) || !$form->option('enableSubmit')): ?>
             <input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>">
         <?php endif; ?>
         <div class="col-md-<?php echo e($width['label']); ?>">
@@ -62,12 +72,17 @@
 
     </div>
 
-    <?php $__currentLoopData = $form->getHiddenFields(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $hiddenField): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    <?php $__currentLoopData = $form->getHiddenFields();
+    $__env->addLoop($__currentLoopData);
+    foreach ($__currentLoopData as $hiddenField): $__env->incrementLoopIndices();
+        $loop = $__env->getLastLoop(); ?>
         <?php echo $hiddenField->render(); ?>
 
-    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php endforeach;
+    $__env->popLoop();
+    $loop = $__env->getLastLoop(); ?>
 
-<!-- /.box-footer -->
+    <!-- /.box-footer -->
     <?php echo $form->close(); ?>
 
 </div>

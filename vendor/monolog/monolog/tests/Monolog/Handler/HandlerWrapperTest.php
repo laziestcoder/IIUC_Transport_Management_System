@@ -90,7 +90,8 @@ class HandlerWrapperTest extends TestCase
 
     public function testPushProcessor()
     {
-        $processor = function () {};
+        $processor = function () {
+        };
         $this->handler->expects($this->once())
             ->method('pushProcessor')
             ->with($processor);
@@ -100,7 +101,8 @@ class HandlerWrapperTest extends TestCase
 
     public function testPopProcessor()
     {
-        $processor = function () {};
+        $processor = function () {
+        };
         $this->handler->expects($this->once())
             ->method('popProcessor')
             ->willReturn($processor);

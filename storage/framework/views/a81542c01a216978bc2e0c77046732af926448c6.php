@@ -13,14 +13,15 @@
             </a>
         </div>
 
-        <?php if ($useSave): ?>
+        <?php if($useSave): ?>
             <div class="btn-group">
-                <a class="btn btn-info btn-sm  <?php echo e($id); ?>-save"><i
-                            class="fa fa-save"></i>&nbsp;<?php echo e(trans('admin.save')); ?></a>
+                <a class="btn btn-info btn-sm  <?php echo e($id); ?>-save"><i class="fa fa-save"></i>&nbsp;<?php echo e(trans('admin.save')); ?>
+
+                </a>
             </div>
         <?php endif; ?>
 
-        <?php if ($useRefresh): ?>
+        <?php if($useRefresh): ?>
             <div class="btn-group">
                 <a class="btn btn-warning btn-sm <?php echo e($id); ?>-refresh"><i
                             class="fa fa-refresh"></i>&nbsp;<?php echo e(trans('admin.refresh')); ?></a>
@@ -32,7 +33,7 @@
 
         </div>
 
-        <?php if ($useCreate): ?>
+        <?php if($useCreate): ?>
             <div class="btn-group pull-right">
                 <a class="btn btn-success btn-sm" href="<?php echo e($path); ?>/create"><i
                             class="fa fa-save"></i>&nbsp;<?php echo e(trans('admin.new')); ?></a>

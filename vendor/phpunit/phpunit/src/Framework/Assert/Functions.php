@@ -65,9 +65,9 @@ use PHPUnit\Framework\MockObject\Stub\ReturnValueMap as ReturnValueMapStub;
 /**
  * Asserts that an array has a specified key.
  *
- * @param int|string        $key
+ * @param int|string $key
  * @param array|ArrayAccess $array
- * @param string            $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -81,8 +81,8 @@ function assertArrayHasKey($key, $array, string $message = ''): void
  *
  * @param array|ArrayAccess $subset
  * @param array|ArrayAccess $array
- * @param bool              $strict  Check for object identity
- * @param string            $message
+ * @param bool $strict Check for object identity
+ * @param string $message
  *
  * @throws Exception
  */
@@ -94,9 +94,9 @@ function assertArraySubset($subset, $array, bool $strict = false, string $messag
 /**
  * Asserts that an array does not have a specified key.
  *
- * @param int|string        $key
+ * @param int|string $key
  * @param array|ArrayAccess $array
- * @param string            $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -108,12 +108,12 @@ function assertArrayNotHasKey($key, $array, string $message = ''): void
 /**
  * Asserts that a haystack contains a needle.
  *
- * @param mixed  $needle
- * @param mixed  $haystack
+ * @param mixed $needle
+ * @param mixed $haystack
  * @param string $message
- * @param bool   $ignoreCase
- * @param bool   $checkForObjectIdentity
- * @param bool   $checkForNonObjectIdentity
+ * @param bool $ignoreCase
+ * @param bool $checkForObjectIdentity
+ * @param bool $checkForNonObjectIdentity
  *
  * @throws Exception
  * @throws ExpectationFailedException
@@ -129,13 +129,13 @@ function assertContains($needle, $haystack, string $message = '', bool $ignoreCa
  * Asserts that a haystack that is stored in a static attribute of a class
  * or an attribute of an object contains a needle.
  *
- * @param mixed         $needle
- * @param string        $haystackAttributeName
+ * @param mixed $needle
+ * @param string $haystackAttributeName
  * @param object|string $haystackClassOrObject
- * @param string        $message
- * @param bool          $ignoreCase
- * @param bool          $checkForObjectIdentity
- * @param bool          $checkForNonObjectIdentity
+ * @param string $message
+ * @param bool $ignoreCase
+ * @param bool $checkForObjectIdentity
+ * @param bool $checkForNonObjectIdentity
  *
  * @throws Exception
  */
@@ -147,12 +147,12 @@ function assertAttributeContains($needle, string $haystackAttributeName, $haysta
 /**
  * Asserts that a haystack does not contain a needle.
  *
- * @param mixed  $needle
- * @param mixed  $haystack
+ * @param mixed $needle
+ * @param mixed $haystack
  * @param string $message
- * @param bool   $ignoreCase
- * @param bool   $checkForObjectIdentity
- * @param bool   $checkForNonObjectIdentity
+ * @param bool $ignoreCase
+ * @param bool $checkForObjectIdentity
+ * @param bool $checkForNonObjectIdentity
  *
  * @throws Exception
  * @throws ExpectationFailedException
@@ -168,13 +168,13 @@ function assertNotContains($needle, $haystack, string $message = '', bool $ignor
  * Asserts that a haystack that is stored in a static attribute of a class
  * or an attribute of an object does not contain a needle.
  *
- * @param mixed         $needle
- * @param string        $haystackAttributeName
+ * @param mixed $needle
+ * @param string $haystackAttributeName
  * @param object|string $haystackClassOrObject
- * @param string        $message
- * @param bool          $ignoreCase
- * @param bool          $checkForObjectIdentity
- * @param bool          $checkForNonObjectIdentity
+ * @param string $message
+ * @param bool $ignoreCase
+ * @param bool $checkForObjectIdentity
+ * @param bool $checkForNonObjectIdentity
  *
  * @throws Exception
  */
@@ -186,10 +186,10 @@ function assertAttributeNotContains($needle, string $haystackAttributeName, $hay
 /**
  * Asserts that a haystack contains only values of a given type.
  *
- * @param string    $type
- * @param iterable  $haystack
+ * @param string $type
+ * @param iterable $haystack
  * @param null|bool $isNativeType
- * @param string    $message
+ * @param string $message
  *
  * @throws Exception
  * @throws ExpectationFailedException
@@ -203,9 +203,9 @@ function assertContainsOnly(string $type, iterable $haystack, ?bool $isNativeTyp
 /**
  * Asserts that a haystack contains only instances of a given class name.
  *
- * @param string   $className
+ * @param string $className
  * @param iterable $haystack
- * @param string   $message
+ * @param string $message
  *
  * @throws Exception
  * @throws ExpectationFailedException
@@ -220,11 +220,11 @@ function assertContainsOnlyInstancesOf(string $className, iterable $haystack, st
  * Asserts that a haystack that is stored in a static attribute of a class
  * or an attribute of an object contains only values of a given type.
  *
- * @param string        $type
- * @param string        $haystackAttributeName
+ * @param string $type
+ * @param string $haystackAttributeName
  * @param object|string $haystackClassOrObject
- * @param bool          $isNativeType
- * @param string        $message
+ * @param bool $isNativeType
+ * @param string $message
  *
  * @throws Exception
  */
@@ -236,10 +236,10 @@ function assertAttributeContainsOnly(string $type, string $haystackAttributeName
 /**
  * Asserts that a haystack does not contain only values of a given type.
  *
- * @param string    $type
- * @param iterable  $haystack
+ * @param string $type
+ * @param iterable $haystack
  * @param null|bool $isNativeType
- * @param string    $message
+ * @param string $message
  *
  * @throws Exception
  * @throws ExpectationFailedException
@@ -255,11 +255,11 @@ function assertNotContainsOnly(string $type, iterable $haystack, ?bool $isNative
  * or an attribute of an object does not contain only values of a given
  * type.
  *
- * @param string        $type
- * @param string        $haystackAttributeName
+ * @param string $type
+ * @param string $haystackAttributeName
  * @param object|string $haystackClassOrObject
- * @param bool          $isNativeType
- * @param string        $message
+ * @param bool $isNativeType
+ * @param string $message
  *
  * @throws Exception
  */
@@ -271,9 +271,9 @@ function assertAttributeNotContainsOnly(string $type, string $haystackAttributeN
 /**
  * Asserts the number of elements of an array, Countable or Traversable.
  *
- * @param int                $expectedCount
+ * @param int $expectedCount
  * @param Countable|iterable $haystack
- * @param string             $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -286,10 +286,10 @@ function assertCount(int $expectedCount, $haystack, string $message = ''): void
  * Asserts the number of elements of an array, Countable or Traversable
  * that is stored in an attribute.
  *
- * @param int           $expectedCount
- * @param string        $haystackAttributeName
+ * @param int $expectedCount
+ * @param string $haystackAttributeName
  * @param object|string $haystackClassOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -301,9 +301,9 @@ function assertAttributeCount(int $expectedCount, string $haystackAttributeName,
 /**
  * Asserts the number of elements of an array, Countable or Traversable.
  *
- * @param int                $expectedCount
+ * @param int $expectedCount
  * @param Countable|iterable $haystack
- * @param string             $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -316,10 +316,10 @@ function assertNotCount(int $expectedCount, $haystack, string $message = ''): vo
  * Asserts the number of elements of an array, Countable or Traversable
  * that is stored in an attribute.
  *
- * @param int           $expectedCount
- * @param string        $haystackAttributeName
+ * @param int $expectedCount
+ * @param string $haystackAttributeName
  * @param object|string $haystackClassOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -331,13 +331,13 @@ function assertAttributeNotCount(int $expectedCount, string $haystackAttributeNa
 /**
  * Asserts that two variables are equal.
  *
- * @param mixed  $expected
- * @param mixed  $actual
+ * @param mixed $expected
+ * @param mixed $actual
  * @param string $message
- * @param float  $delta
- * @param int    $maxDepth
- * @param bool   $canonicalize
- * @param bool   $ignoreCase
+ * @param float $delta
+ * @param int $maxDepth
+ * @param bool $canonicalize
+ * @param bool $ignoreCase
  *
  * @throws Exception
  * @throws ExpectationFailedException
@@ -351,14 +351,14 @@ function assertEquals($expected, $actual, string $message = '', float $delta = 0
 /**
  * Asserts that a variable is equal to an attribute of an object.
  *
- * @param mixed         $expected
- * @param string        $actualAttributeName
+ * @param mixed $expected
+ * @param string $actualAttributeName
  * @param object|string $actualClassOrObject
- * @param string        $message
- * @param float         $delta
- * @param int           $maxDepth
- * @param bool          $canonicalize
- * @param bool          $ignoreCase
+ * @param string $message
+ * @param float $delta
+ * @param int $maxDepth
+ * @param bool $canonicalize
+ * @param bool $ignoreCase
  *
  * @throws Exception
  */
@@ -370,13 +370,13 @@ function assertAttributeEquals($expected, string $actualAttributeName, $actualCl
 /**
  * Asserts that two variables are not equal.
  *
- * @param mixed  $expected
- * @param mixed  $actual
+ * @param mixed $expected
+ * @param mixed $actual
  * @param string $message
- * @param float  $delta
- * @param int    $maxDepth
- * @param bool   $canonicalize
- * @param bool   $ignoreCase
+ * @param float $delta
+ * @param int $maxDepth
+ * @param bool $canonicalize
+ * @param bool $ignoreCase
  *
  * @throws Exception
  * @throws ExpectationFailedException
@@ -390,14 +390,14 @@ function assertNotEquals($expected, $actual, string $message = '', $delta = 0.0,
 /**
  * Asserts that a variable is not equal to an attribute of an object.
  *
- * @param mixed         $expected
- * @param string        $actualAttributeName
+ * @param mixed $expected
+ * @param string $actualAttributeName
  * @param object|string $actualClassOrObject
- * @param string        $message
- * @param float         $delta
- * @param int           $maxDepth
- * @param bool          $canonicalize
- * @param bool          $ignoreCase
+ * @param string $message
+ * @param float $delta
+ * @param int $maxDepth
+ * @param bool $canonicalize
+ * @param bool $ignoreCase
  *
  * @throws Exception
  */
@@ -409,7 +409,7 @@ function assertAttributeNotEquals($expected, string $actualAttributeName, $actua
 /**
  * Asserts that a variable is empty.
  *
- * @param mixed  $actual
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -425,9 +425,9 @@ function assertEmpty($actual, string $message = ''): void
  * Asserts that a static attribute of a class or an attribute of an object
  * is empty.
  *
- * @param string        $haystackAttributeName
+ * @param string $haystackAttributeName
  * @param object|string $haystackClassOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -439,7 +439,7 @@ function assertAttributeEmpty(string $haystackAttributeName, $haystackClassOrObj
 /**
  * Asserts that a variable is not empty.
  *
- * @param mixed  $actual
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -455,9 +455,9 @@ function assertNotEmpty($actual, string $message = ''): void
  * Asserts that a static attribute of a class or an attribute of an object
  * is not empty.
  *
- * @param string        $haystackAttributeName
+ * @param string $haystackAttributeName
  * @param object|string $haystackClassOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -469,8 +469,8 @@ function assertAttributeNotEmpty(string $haystackAttributeName, $haystackClassOr
 /**
  * Asserts that a value is greater than another value.
  *
- * @param mixed  $expected
- * @param mixed  $actual
+ * @param mixed $expected
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -485,10 +485,10 @@ function assertGreaterThan($expected, $actual, string $message = ''): void
 /**
  * Asserts that an attribute is greater than another value.
  *
- * @param mixed         $expected
- * @param string        $actualAttributeName
+ * @param mixed $expected
+ * @param string $actualAttributeName
  * @param object|string $actualClassOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -500,8 +500,8 @@ function assertAttributeGreaterThan($expected, string $actualAttributeName, $act
 /**
  * Asserts that a value is greater than or equal to another value.
  *
- * @param mixed  $expected
- * @param mixed  $actual
+ * @param mixed $expected
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -516,10 +516,10 @@ function assertGreaterThanOrEqual($expected, $actual, string $message = ''): voi
 /**
  * Asserts that an attribute is greater than or equal to another value.
  *
- * @param mixed         $expected
- * @param string        $actualAttributeName
+ * @param mixed $expected
+ * @param string $actualAttributeName
  * @param object|string $actualClassOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -531,8 +531,8 @@ function assertAttributeGreaterThanOrEqual($expected, string $actualAttributeNam
 /**
  * Asserts that a value is smaller than another value.
  *
- * @param mixed  $expected
- * @param mixed  $actual
+ * @param mixed $expected
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -547,10 +547,10 @@ function assertLessThan($expected, $actual, string $message = ''): void
 /**
  * Asserts that an attribute is smaller than another value.
  *
- * @param mixed         $expected
- * @param string        $actualAttributeName
+ * @param mixed $expected
+ * @param string $actualAttributeName
  * @param object|string $actualClassOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -562,8 +562,8 @@ function assertAttributeLessThan($expected, string $actualAttributeName, $actual
 /**
  * Asserts that a value is smaller than or equal to another value.
  *
- * @param mixed  $expected
- * @param mixed  $actual
+ * @param mixed $expected
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -578,10 +578,10 @@ function assertLessThanOrEqual($expected, $actual, string $message = ''): void
 /**
  * Asserts that an attribute is smaller than or equal to another value.
  *
- * @param mixed         $expected
- * @param string        $actualAttributeName
+ * @param mixed $expected
+ * @param string $actualAttributeName
  * @param object|string $actualClassOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -597,8 +597,8 @@ function assertAttributeLessThanOrEqual($expected, string $actualAttributeName, 
  * @param string $expected
  * @param string $actual
  * @param string $message
- * @param bool   $canonicalize
- * @param bool   $ignoreCase
+ * @param bool $canonicalize
+ * @param bool $ignoreCase
  *
  * @throws Exception
  */
@@ -614,8 +614,8 @@ function assertFileEquals(string $expected, string $actual, string $message = ''
  * @param string $expected
  * @param string $actual
  * @param string $message
- * @param bool   $canonicalize
- * @param bool   $ignoreCase
+ * @param bool $canonicalize
+ * @param bool $ignoreCase
  *
  * @throws Exception
  */
@@ -631,8 +631,8 @@ function assertFileNotEquals(string $expected, string $actual, string $message =
  * @param string $expectedFile
  * @param string $actualString
  * @param string $message
- * @param bool   $canonicalize
- * @param bool   $ignoreCase
+ * @param bool $canonicalize
+ * @param bool $ignoreCase
  *
  * @throws Exception
  */
@@ -648,8 +648,8 @@ function assertStringEqualsFile(string $expectedFile, string $actualString, stri
  * @param string $expectedFile
  * @param string $actualString
  * @param string $message
- * @param bool   $canonicalize
- * @param bool   $ignoreCase
+ * @param bool $canonicalize
+ * @param bool $ignoreCase
  *
  * @throws Exception
  */
@@ -901,7 +901,7 @@ function assertFileNotIsWritable(string $file, string $message = ''): void
 /**
  * Asserts that a condition is true.
  *
- * @param mixed  $condition
+ * @param mixed $condition
  * @param string $message
  *
  * @throws Exception
@@ -916,7 +916,7 @@ function assertTrue($condition, string $message = ''): void
 /**
  * Asserts that a condition is not true.
  *
- * @param mixed  $condition
+ * @param mixed $condition
  * @param string $message
  *
  * @throws Exception
@@ -931,7 +931,7 @@ function assertNotTrue($condition, string $message = ''): void
 /**
  * Asserts that a condition is false.
  *
- * @param mixed  $condition
+ * @param mixed $condition
  * @param string $message
  *
  * @throws Exception
@@ -946,7 +946,7 @@ function assertFalse($condition, string $message = ''): void
 /**
  * Asserts that a condition is not false.
  *
- * @param mixed  $condition
+ * @param mixed $condition
  * @param string $message
  *
  * @throws Exception
@@ -961,7 +961,7 @@ function assertNotFalse($condition, string $message = ''): void
 /**
  * Asserts that a variable is null.
  *
- * @param mixed  $actual
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -976,7 +976,7 @@ function assertNull($actual, string $message = ''): void
 /**
  * Asserts that a variable is not null.
  *
- * @param mixed  $actual
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -991,7 +991,7 @@ function assertNotNull($actual, string $message = ''): void
 /**
  * Asserts that a variable is finite.
  *
- * @param mixed  $actual
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -1006,7 +1006,7 @@ function assertFinite($actual, string $message = ''): void
 /**
  * Asserts that a variable is infinite.
  *
- * @param mixed  $actual
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -1021,7 +1021,7 @@ function assertInfinite($actual, string $message = ''): void
 /**
  * Asserts that a variable is nan.
  *
- * @param mixed  $actual
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -1122,8 +1122,8 @@ function assertObjectNotHasAttribute(string $attributeName, $object, string $mes
  * Used on objects, it asserts that two variables reference
  * the same object.
  *
- * @param mixed  $expected
- * @param mixed  $actual
+ * @param mixed $expected
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -1139,10 +1139,10 @@ function assertSame($expected, $actual, string $message = ''): void
  * Asserts that a variable and an attribute of an object have the same type
  * and value.
  *
- * @param mixed         $expected
- * @param string        $actualAttributeName
+ * @param mixed $expected
+ * @param string $actualAttributeName
  * @param object|string $actualClassOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -1156,8 +1156,8 @@ function assertAttributeSame($expected, string $actualAttributeName, $actualClas
  * Used on objects, it asserts that two variables do not reference
  * the same object.
  *
- * @param mixed  $expected
- * @param mixed  $actual
+ * @param mixed $expected
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -1173,10 +1173,10 @@ function assertNotSame($expected, $actual, string $message = ''): void
  * Asserts that a variable and an attribute of an object do not have the
  * same type and value.
  *
- * @param mixed         $expected
- * @param string        $actualAttributeName
+ * @param mixed $expected
+ * @param string $actualAttributeName
  * @param object|string $actualClassOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -1189,7 +1189,7 @@ function assertAttributeNotSame($expected, string $actualAttributeName, $actualC
  * Asserts that a variable is of a given type.
  *
  * @param string $expected
- * @param mixed  $actual
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -1202,10 +1202,10 @@ function assertInstanceOf(string $expected, $actual, string $message = ''): void
 /**
  * Asserts that an attribute is of a given type.
  *
- * @param string        $expected
- * @param string        $attributeName
+ * @param string $expected
+ * @param string $attributeName
  * @param object|string $classOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -1218,7 +1218,7 @@ function assertAttributeInstanceOf(string $expected, string $attributeName, $cla
  * Asserts that a variable is not of a given type.
  *
  * @param string $expected
- * @param mixed  $actual
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -1231,10 +1231,10 @@ function assertNotInstanceOf(string $expected, $actual, string $message = ''): v
 /**
  * Asserts that an attribute is of a given type.
  *
- * @param string        $expected
- * @param string        $attributeName
+ * @param string $expected
+ * @param string $attributeName
  * @param object|string $classOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -1247,7 +1247,7 @@ function assertAttributeNotInstanceOf(string $expected, string $attributeName, $
  * Asserts that a variable is of a given type.
  *
  * @param string $expected
- * @param mixed  $actual
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -1262,10 +1262,10 @@ function assertInternalType(string $expected, $actual, string $message = ''): vo
 /**
  * Asserts that an attribute is of a given type.
  *
- * @param string        $expected
- * @param string        $attributeName
+ * @param string $expected
+ * @param string $attributeName
  * @param object|string $classOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -1278,7 +1278,7 @@ function assertAttributeInternalType(string $expected, string $attributeName, $c
  * Asserts that a variable is not of a given type.
  *
  * @param string $expected
- * @param mixed  $actual
+ * @param mixed $actual
  * @param string $message
  *
  * @throws Exception
@@ -1293,10 +1293,10 @@ function assertNotInternalType(string $expected, $actual, string $message = ''):
 /**
  * Asserts that an attribute is of a given type.
  *
- * @param string        $expected
- * @param string        $attributeName
+ * @param string $expected
+ * @param string $attributeName
  * @param object|string $classOrObject
- * @param string        $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -1343,7 +1343,7 @@ function assertNotRegExp(string $pattern, string $string, string $message = ''):
  *
  * @param Countable|iterable $expected
  * @param Countable|iterable $actual
- * @param string             $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -1358,7 +1358,7 @@ function assertSameSize($expected, $actual, string $message = ''): void
  *
  * @param Countable|iterable $expected
  * @param Countable|iterable $actual
- * @param string             $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -1526,9 +1526,9 @@ function assertXmlFileNotEqualsXmlFile(string $expectedFile, string $actualFile,
 /**
  * Asserts that two XML documents are equal.
  *
- * @param string             $expectedFile
+ * @param string $expectedFile
  * @param DOMDocument|string $actualXml
- * @param string             $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -1540,9 +1540,9 @@ function assertXmlStringEqualsXmlFile(string $expectedFile, $actualXml, string $
 /**
  * Asserts that two XML documents are not equal.
  *
- * @param string             $expectedFile
+ * @param string $expectedFile
  * @param DOMDocument|string $actualXml
- * @param string             $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -1556,7 +1556,7 @@ function assertXmlStringNotEqualsXmlFile(string $expectedFile, $actualXml, strin
  *
  * @param DOMDocument|string $expectedXml
  * @param DOMDocument|string $actualXml
- * @param string             $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -1570,7 +1570,7 @@ function assertXmlStringEqualsXmlString($expectedXml, $actualXml, string $messag
  *
  * @param DOMDocument|string $expectedXml
  * @param DOMDocument|string $actualXml
- * @param string             $message
+ * @param string $message
  *
  * @throws Exception
  */
@@ -1584,8 +1584,8 @@ function assertXmlStringNotEqualsXmlString($expectedXml, $actualXml, string $mes
  *
  * @param DOMElement $expectedElement
  * @param DOMElement $actualElement
- * @param bool       $checkAttributes
- * @param string     $message
+ * @param bool $checkAttributes
+ * @param string $message
  *
  * @throws Exception
  * @throws ExpectationFailedException
@@ -1600,9 +1600,9 @@ function assertEqualXMLStructure(DOMElement $expectedElement, DOMElement $actual
 /**
  * Evaluates a PHPUnit\Framework\Constraint matcher object.
  *
- * @param mixed      $value
+ * @param mixed $value
  * @param Constraint $constraint
- * @param string     $message
+ * @param string $message
  *
  * @throws Exception
  * @throws ExpectationFailedException

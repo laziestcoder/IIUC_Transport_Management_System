@@ -17,28 +17,28 @@ class Bootstrap extends Preset
     }
 
     /**
-     * Update the given package array.
-     *
-     * @param  array  $packages
-     * @return array
-     */
-    protected static function updatePackageArray(array $packages)
-    {
-        return [
-            'bootstrap' => '^4.0.0',
-            'jquery' => '^3.2',
-            'popper.js' => '^1.12',
-        ] + $packages;
-    }
-
-    /**
      * Update the Sass files for the application.
      *
      * @return void
      */
     protected static function updateSass()
     {
-        copy(__DIR__.'/bootstrap-stubs/_variables.scss', resource_path('assets/sass/_variables.scss'));
-        copy(__DIR__.'/bootstrap-stubs/app.scss', resource_path('assets/sass/app.scss'));
+        copy(__DIR__ . '/bootstrap-stubs/_variables.scss', resource_path('assets/sass/_variables.scss'));
+        copy(__DIR__ . '/bootstrap-stubs/app.scss', resource_path('assets/sass/app.scss'));
+    }
+
+    /**
+     * Update the given package array.
+     *
+     * @param  array $packages
+     * @return array
+     */
+    protected static function updatePackageArray(array $packages)
+    {
+        return [
+                'bootstrap' => '^4.0.0',
+                'jquery' => '^3.2',
+                'popper.js' => '^1.12',
+            ] + $packages;
     }
 }

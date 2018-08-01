@@ -5,6 +5,12 @@ namespace Encore\Admin\Grid\Filter;
 class Where extends AbstractFilter
 {
     /**
+     * Input value from presenter.
+     *
+     * @var
+     */
+    public $input;
+    /**
      * Query closure.
      *
      * @var \Closure
@@ -12,18 +18,11 @@ class Where extends AbstractFilter
     protected $where;
 
     /**
-     * Input value from presenter.
-     *
-     * @var
-     */
-    public $input;
-
-    /**
      * Where constructor.
      *
      * @param \Closure $query
-     * @param string   $label
-     * @param string   $column
+     * @param string $label
+     * @param string $column
      */
     public function __construct(\Closure $query, $label, $column = null)
     {
@@ -40,7 +39,7 @@ class Where extends AbstractFilter
      * Get the hash string of query closure.
      *
      * @param \Closure $closure
-     * @param string   $label
+     * @param string $label
      *
      * @return string
      */
@@ -48,7 +47,7 @@ class Where extends AbstractFilter
     {
         $reflection = new \ReflectionFunction($closure);
 
-        return md5($reflection->getFileName().$reflection->getStartLine().$reflection->getEndLine().$label);
+        return md5($reflection->getFileName() . $reflection->getStartLine() . $reflection->getEndLine() . $label);
     }
 
     /**

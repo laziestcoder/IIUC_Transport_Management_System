@@ -48,23 +48,23 @@ class SQLAnywhereException extends AbstractDriverException
      */
     public static function fromSQLAnywhereError($conn = null, $stmt = null)
     {
-        if (null !== $conn && ! (is_resource($conn))) {
+        if (null !== $conn && !(is_resource($conn))) {
             throw new \InvalidArgumentException('Invalid SQL Anywhere connection resource given: ' . $conn);
         }
 
-        if (null !== $stmt && ! (is_resource($stmt))) {
+        if (null !== $stmt && !(is_resource($stmt))) {
             throw new \InvalidArgumentException('Invalid SQL Anywhere statement resource given: ' . $stmt);
         }
 
-        $state   = $conn ? sasql_sqlstate($conn) : sasql_sqlstate();
-        $code    = null;
+        $state = $conn ? sasql_sqlstate($conn) : sasql_sqlstate();
+        $code = null;
         $message = null;
 
         /**
          * Try retrieving the last error from statement resource if given
          */
         if ($stmt) {
-            $code    = sasql_stmt_errno($stmt);
+            $code = sasql_stmt_errno($stmt);
             $message = sasql_stmt_error($stmt);
         }
 
@@ -76,8 +76,8 @@ class SQLAnywhereException extends AbstractDriverException
          * it from the connection resource even though it occurred during
          * a prepared statement.
          */
-        if ($conn && ! $code) {
-            $code    = sasql_errorcode($conn);
+        if ($conn && !$code) {
+            $code = sasql_errorcode($conn);
             $message = sasql_error($conn);
         }
 
@@ -86,8 +86,8 @@ class SQLAnywhereException extends AbstractDriverException
          * or the last error could not be retrieved from the given
          * connection / statement resource.
          */
-        if ( ! $conn || ! $code) {
-            $code    = sasql_errorcode();
+        if (!$conn || !$code) {
+            $code = sasql_errorcode();
             $message = sasql_error();
         }
 

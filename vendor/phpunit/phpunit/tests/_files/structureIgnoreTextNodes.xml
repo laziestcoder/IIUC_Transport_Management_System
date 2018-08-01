@@ -10,8 +10,8 @@
             </draw:frame>
             textnode
             <text:p text:style-name="Text">Image <text:sequence
-                    xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" text:ref-name="refImage1"
-                    style:num-format="1" text:formula="ooow:Image+1" text:name="Image">1</text:sequence>: Dette er en
+                xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" text:ref-name="refImage1"
+                style:num-format="1" text:formula="ooow:Image+1" text:name="Image">1</text:sequence>: Dette er en
                 test caption
             </text:p>
             textnode

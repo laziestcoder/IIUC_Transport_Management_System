@@ -2,8 +2,8 @@
 
 namespace Faker\Test\Provider;
 
-use Faker\Generator;
 use Faker\Calculator\Luhn;
+use Faker\Generator;
 use Faker\Provider\PhoneNumber;
 
 class PhoneNumberTest extends \PHPUnit_Framework_TestCase

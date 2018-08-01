@@ -19,13 +19,13 @@
 
 namespace Doctrine\DBAL\Sharding\SQLAzure\Schema;
 
-use Doctrine\DBAL\Schema\Visitor\Visitor;
-use Doctrine\DBAL\Schema\Table;
-use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
-use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\Index;
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\Sequence;
+use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\Visitor\Visitor;
 use function in_array;
 
 /**
@@ -75,8 +75,8 @@ class MultiTenantVisitor implements Visitor
     private $distributionName;
 
     /**
-     * @param array       $excludedTables
-     * @param string      $tenantColumnName
+     * @param array $excludedTables
+     * @param string $tenantColumnName
      * @param string|null $distributionName
      */
     public function __construct(array $excludedTables = [], $tenantColumnName = 'tenant_id', $distributionName = null)
@@ -96,7 +96,7 @@ class MultiTenantVisitor implements Visitor
         }
 
         $table->addColumn($this->tenantColumnName, $this->tenantColumnType, [
-            'default' => "federation_filtering_value('". $this->distributionName ."')",
+            'default' => "federation_filtering_value('" . $this->distributionName . "')",
         ]);
 
         $clusteredIndex = $this->getClusteredIndex($table);
@@ -124,7 +124,7 @@ class MultiTenantVisitor implements Visitor
     private function getClusteredIndex($table)
     {
         foreach ($table->getIndexes() as $index) {
-            if ($index->isPrimary() && ! $index->hasFlag('nonclustered')) {
+            if ($index->isPrimary() && !$index->hasFlag('nonclustered')) {
                 return $index;
             } elseif ($index->hasFlag('clustered')) {
                 return $index;

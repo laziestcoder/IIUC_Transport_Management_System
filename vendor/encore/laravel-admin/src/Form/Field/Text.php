@@ -22,12 +22,12 @@ class Text extends Field
             ->defaultAttribute('id', $this->id)
             ->defaultAttribute('name', $this->elementName ?: $this->formatName($this->column))
             ->defaultAttribute('value', old($this->column, $this->value()))
-            ->defaultAttribute('class', 'form-control '.$this->getElementClassString())
+            ->defaultAttribute('class', 'form-control ' . $this->getElementClassString())
             ->defaultAttribute('placeholder', $this->getPlaceholder());
 
         return parent::render()->with([
             'prepend' => $this->prepend,
-            'append'  => $this->append,
+            'append' => $this->append,
         ]);
     }
 }

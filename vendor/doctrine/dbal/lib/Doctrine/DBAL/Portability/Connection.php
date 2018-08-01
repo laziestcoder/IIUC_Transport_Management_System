@@ -21,9 +21,9 @@ namespace Doctrine\DBAL\Portability;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\ColumnCase;
+use function func_get_args;
 use const CASE_LOWER;
 use const CASE_UPPER;
-use function func_get_args;
 
 /**
  * Portability wrapper for a Connection.
@@ -34,20 +34,20 @@ use function func_get_args;
  */
 class Connection extends \Doctrine\DBAL\Connection
 {
-    const PORTABILITY_ALL               = 255;
-    const PORTABILITY_NONE              = 0;
-    const PORTABILITY_RTRIM             = 1;
-    const PORTABILITY_EMPTY_TO_NULL     = 4;
-    const PORTABILITY_FIX_CASE          = 8;
+    const PORTABILITY_ALL = 255;
+    const PORTABILITY_NONE = 0;
+    const PORTABILITY_RTRIM = 1;
+    const PORTABILITY_EMPTY_TO_NULL = 4;
+    const PORTABILITY_FIX_CASE = 8;
 
-    const PORTABILITY_DB2               = 13;
-    const PORTABILITY_ORACLE            = 9;
-    const PORTABILITY_POSTGRESQL        = 13;
-    const PORTABILITY_SQLITE            = 13;
-    const PORTABILITY_OTHERVENDORS      = 12;
-    const PORTABILITY_DRIZZLE           = 13;
-    const PORTABILITY_SQLANYWHERE       = 13;
-    const PORTABILITY_SQLSRV            = 13;
+    const PORTABILITY_DB2 = 13;
+    const PORTABILITY_ORACLE = 9;
+    const PORTABILITY_POSTGRESQL = 13;
+    const PORTABILITY_SQLITE = 13;
+    const PORTABILITY_OTHERVENDORS = 12;
+    const PORTABILITY_DRIZZLE = 13;
+    const PORTABILITY_SQLANYWHERE = 13;
+    const PORTABILITY_SQLSRV = 13;
 
     /**
      * @var int
@@ -58,48 +58,6 @@ class Connection extends \Doctrine\DBAL\Connection
      * @var int
      */
     private $case;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function connect()
-    {
-        $ret = parent::connect();
-        if ($ret) {
-            $params = $this->getParams();
-            if (isset($params['portability'])) {
-                if ($this->getDatabasePlatform()->getName() === "oracle") {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_ORACLE;
-                } elseif ($this->getDatabasePlatform()->getName() === "postgresql") {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_POSTGRESQL;
-                } elseif ($this->getDatabasePlatform()->getName() === "sqlite") {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_SQLITE;
-                } elseif ($this->getDatabasePlatform()->getName() === "drizzle") {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_DRIZZLE;
-                } elseif ($this->getDatabasePlatform()->getName() === 'sqlanywhere') {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_SQLANYWHERE;
-                } elseif ($this->getDatabasePlatform()->getName() === 'db2') {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_DB2;
-                } elseif ($this->getDatabasePlatform()->getName() === 'mssql') {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_SQLSRV;
-                } else {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_OTHERVENDORS;
-                }
-                $this->portability = $params['portability'];
-            }
-
-            if (isset($params['fetch_case']) && $this->portability & self::PORTABILITY_FIX_CASE) {
-                if ($this->_conn instanceof \Doctrine\DBAL\Driver\PDOConnection) {
-                    // make use of c-level support for case handling
-                    $this->_conn->setAttribute(\PDO::ATTR_CASE, $params['fetch_case']);
-                } else {
-                    $this->case = ($params['fetch_case'] === ColumnCase::LOWER) ? CASE_LOWER : CASE_UPPER;
-                }
-            }
-        }
-
-        return $ret;
-    }
 
     /**
      * @return int
@@ -151,5 +109,47 @@ class Connection extends \Doctrine\DBAL\Connection
         $stmt->setFetchMode($this->defaultFetchMode);
 
         return $stmt;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function connect()
+    {
+        $ret = parent::connect();
+        if ($ret) {
+            $params = $this->getParams();
+            if (isset($params['portability'])) {
+                if ($this->getDatabasePlatform()->getName() === "oracle") {
+                    $params['portability'] = $params['portability'] & self::PORTABILITY_ORACLE;
+                } elseif ($this->getDatabasePlatform()->getName() === "postgresql") {
+                    $params['portability'] = $params['portability'] & self::PORTABILITY_POSTGRESQL;
+                } elseif ($this->getDatabasePlatform()->getName() === "sqlite") {
+                    $params['portability'] = $params['portability'] & self::PORTABILITY_SQLITE;
+                } elseif ($this->getDatabasePlatform()->getName() === "drizzle") {
+                    $params['portability'] = $params['portability'] & self::PORTABILITY_DRIZZLE;
+                } elseif ($this->getDatabasePlatform()->getName() === 'sqlanywhere') {
+                    $params['portability'] = $params['portability'] & self::PORTABILITY_SQLANYWHERE;
+                } elseif ($this->getDatabasePlatform()->getName() === 'db2') {
+                    $params['portability'] = $params['portability'] & self::PORTABILITY_DB2;
+                } elseif ($this->getDatabasePlatform()->getName() === 'mssql') {
+                    $params['portability'] = $params['portability'] & self::PORTABILITY_SQLSRV;
+                } else {
+                    $params['portability'] = $params['portability'] & self::PORTABILITY_OTHERVENDORS;
+                }
+                $this->portability = $params['portability'];
+            }
+
+            if (isset($params['fetch_case']) && $this->portability & self::PORTABILITY_FIX_CASE) {
+                if ($this->_conn instanceof \Doctrine\DBAL\Driver\PDOConnection) {
+                    // make use of c-level support for case handling
+                    $this->_conn->setAttribute(\PDO::ATTR_CASE, $params['fetch_case']);
+                } else {
+                    $this->case = ($params['fetch_case'] === ColumnCase::LOWER) ? CASE_LOWER : CASE_UPPER;
+                }
+            }
+        }
+
+        return $ret;
     }
 }

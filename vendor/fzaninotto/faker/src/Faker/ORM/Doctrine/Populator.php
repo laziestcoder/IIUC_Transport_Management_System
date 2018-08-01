@@ -30,7 +30,7 @@ class Populator
      * Add an order for the generation of $number records for $entity.
      *
      * @param mixed $entity A Doctrine classname, or a \Faker\ORM\Doctrine\EntityPopulator instance
-     * @param int   $number The number of entities to populate
+     * @param int $number The number of entities to populate
      */
     public function addEntity($entity, $number, $customColumnFormatters = array(), $customModifiers = array(), $generateId = false)
     {
@@ -71,8 +71,8 @@ class Populator
         $insertedEntities = array();
         foreach ($this->quantities as $class => $number) {
             $generateId = $this->generateId[$class];
-            for ($i=0; $i < $number; $i++) {
-                $insertedEntities[$class][]= $this->entities[$class]->execute($entityManager, $insertedEntities, $generateId);
+            for ($i = 0; $i < $number; $i++) {
+                $insertedEntities[$class][] = $this->entities[$class]->execute($entityManager, $insertedEntities, $generateId);
             }
             $entityManager->flush();
         }

@@ -7,7 +7,8 @@ use PHPUnit\Framework\TestCase;
 
 class CollectingTest extends TestCase
 {
-    public function testHandleError() {
+    public function testHandleError()
+    {
         $errorHandler = new Collecting();
         $this->assertFalse($errorHandler->hasErrors());
         $this->assertEmpty($errorHandler->getErrors());

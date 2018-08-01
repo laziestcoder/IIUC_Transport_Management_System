@@ -2,9 +2,9 @@
 
 namespace Illuminate\Foundation\Auth;
 
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Auth\Events\Registered;
 
 trait RegistersUsers
 {
@@ -23,7 +23,7 @@ trait RegistersUsers
     /**
      * Handle a registration request for the application.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function register(Request $request)
@@ -35,7 +35,19 @@ trait RegistersUsers
         $this->guard()->login($user);
 
         return $this->registered($request, $user)
-                        ?: redirect($this->redirectPath());
+            ?: redirect($this->redirectPath());
+    }
+
+    /**
+     * The user has been registered.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  mixed $user
+     * @return mixed
+     */
+    protected function registered(Request $request, $user)
+    {
+        //
     }
 
     /**
@@ -46,17 +58,5 @@ trait RegistersUsers
     protected function guard()
     {
         return Auth::guard();
-    }
-
-    /**
-     * The user has been registered.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  mixed  $user
-     * @return mixed
-     */
-    protected function registered(Request $request, $user)
-    {
-        //
     }
 }

@@ -22,7 +22,7 @@ class KeywordsMatcher extends AbstractMatcher
 {
     protected $keywords = [
         'array', 'clone', 'declare', 'die', 'echo', 'empty', 'eval', 'exit', 'include',
-        'include_once', 'isset', 'list', 'print',  'require', 'require_once', 'unset',
+        'include_once', 'isset', 'list', 'print', 'require', 'require_once', 'unset',
     ];
 
     protected $mandatoryStartKeywords = [
@@ -68,7 +68,7 @@ class KeywordsMatcher extends AbstractMatcher
      */
     public function hasMatched(array $tokens)
     {
-        $token     = array_pop($tokens);
+        $token = array_pop($tokens);
         $prevToken = array_pop($tokens);
 
         switch (true) {

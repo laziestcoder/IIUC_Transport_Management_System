@@ -48,7 +48,7 @@ class VarDateTimeType extends DateTimeType
         }
 
         $val = date_create($value);
-        if ( ! $val) {
+        if (!$val) {
             throw ConversionException::conversionFailed($value, $this->getName());
         }
 

@@ -3,8 +3,8 @@
 namespace Illuminate\Auth;
 
 use Closure;
-use InvalidArgumentException;
 use Illuminate\Contracts\Auth\Factory as FactoryContract;
+use InvalidArgumentException;
 
 class AuthManager implements FactoryContract
 {
@@ -43,7 +43,7 @@ class AuthManager implements FactoryContract
     /**
      * Create a new Auth manager instance.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  \Illuminate\Foundation\Application $app
      * @return void
      */
     public function __construct($app)
@@ -58,7 +58,7 @@ class AuthManager implements FactoryContract
     /**
      * Attempt to get the guard from the local cache.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return \Illuminate\Contracts\Auth\Guard|\Illuminate\Contracts\Auth\StatefulGuard
      */
     public function guard($name = null)
@@ -69,9 +69,19 @@ class AuthManager implements FactoryContract
     }
 
     /**
+     * Get the default authentication driver name.
+     *
+     * @return string
+     */
+    public function getDefaultDriver()
+    {
+        return $this->app['config']['auth.defaults.guard'];
+    }
+
+    /**
      * Resolve the given guard.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return \Illuminate\Contracts\Auth\Guard|\Illuminate\Contracts\Auth\StatefulGuard
      *
      * @throws \InvalidArgumentException
@@ -88,7 +98,7 @@ class AuthManager implements FactoryContract
             return $this->callCustomCreator($name, $config);
         }
 
-        $driverMethod = 'create'.ucfirst($config['driver']).'Driver';
+        $driverMethod = 'create' . ucfirst($config['driver']) . 'Driver';
 
         if (method_exists($this, $driverMethod)) {
             return $this->{$driverMethod}($name, $config);
@@ -98,10 +108,21 @@ class AuthManager implements FactoryContract
     }
 
     /**
+     * Get the guard configuration.
+     *
+     * @param  string $name
+     * @return array
+     */
+    protected function getConfig($name)
+    {
+        return $this->app['config']["auth.guards.{$name}"];
+    }
+
+    /**
      * Call a custom driver creator.
      *
-     * @param  string  $name
-     * @param  array  $config
+     * @param  string $name
+     * @param  array $config
      * @return mixed
      */
     protected function callCustomCreator($name, array $config)
@@ -112,8 +133,8 @@ class AuthManager implements FactoryContract
     /**
      * Create a session based authentication guard.
      *
-     * @param  string  $name
-     * @param  array  $config
+     * @param  string $name
+     * @param  array $config
      * @return \Illuminate\Auth\SessionGuard
      */
     public function createSessionDriver($name, $config)
@@ -143,8 +164,8 @@ class AuthManager implements FactoryContract
     /**
      * Create a token based authentication guard.
      *
-     * @param  string  $name
-     * @param  array  $config
+     * @param  string $name
+     * @param  array $config
      * @return \Illuminate\Auth\TokenGuard
      */
     public function createTokenDriver($name, $config)
@@ -163,30 +184,9 @@ class AuthManager implements FactoryContract
     }
 
     /**
-     * Get the guard configuration.
-     *
-     * @param  string  $name
-     * @return array
-     */
-    protected function getConfig($name)
-    {
-        return $this->app['config']["auth.guards.{$name}"];
-    }
-
-    /**
-     * Get the default authentication driver name.
-     *
-     * @return string
-     */
-    public function getDefaultDriver()
-    {
-        return $this->app['config']['auth.defaults.guard'];
-    }
-
-    /**
      * Set the default guard driver the factory should serve.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return void
      */
     public function shouldUse($name)
@@ -203,7 +203,7 @@ class AuthManager implements FactoryContract
     /**
      * Set the default authentication driver name.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return void
      */
     public function setDefaultDriver($name)
@@ -214,8 +214,8 @@ class AuthManager implements FactoryContract
     /**
      * Register a new callback based request guard.
      *
-     * @param  string  $driver
-     * @param  callable  $callback
+     * @param  string $driver
+     * @param  callable $callback
      * @return $this
      */
     public function viaRequest($driver, callable $callback)
@@ -227,6 +227,20 @@ class AuthManager implements FactoryContract
 
             return $guard;
         });
+    }
+
+    /**
+     * Register a custom driver creator Closure.
+     *
+     * @param  string $driver
+     * @param  \Closure $callback
+     * @return $this
+     */
+    public function extend($driver, Closure $callback)
+    {
+        $this->customCreators[$driver] = $callback;
+
+        return $this;
     }
 
     /**
@@ -242,7 +256,7 @@ class AuthManager implements FactoryContract
     /**
      * Set the callback to be used to resolve users.
      *
-     * @param  \Closure  $userResolver
+     * @param  \Closure $userResolver
      * @return $this
      */
     public function resolveUsersUsing(Closure $userResolver)
@@ -253,24 +267,10 @@ class AuthManager implements FactoryContract
     }
 
     /**
-     * Register a custom driver creator Closure.
-     *
-     * @param  string  $driver
-     * @param  \Closure  $callback
-     * @return $this
-     */
-    public function extend($driver, Closure $callback)
-    {
-        $this->customCreators[$driver] = $callback;
-
-        return $this;
-    }
-
-    /**
      * Register a custom provider creator Closure.
      *
-     * @param  string  $name
-     * @param  \Closure  $callback
+     * @param  string $name
+     * @param  \Closure $callback
      * @return $this
      */
     public function provider($name, Closure $callback)
@@ -283,8 +283,8 @@ class AuthManager implements FactoryContract
     /**
      * Dynamically call the default driver instance.
      *
-     * @param  string  $method
-     * @param  array  $parameters
+     * @param  string $method
+     * @param  array $parameters
      * @return mixed
      */
     public function __call($method, $parameters)

@@ -17,7 +17,7 @@ interface HandlerInterface
     public function handle();
 
     /**
-     * @param  RunInterface  $run
+     * @param  RunInterface $run
      * @return void
      */
     public function setRun(RunInterface $run);

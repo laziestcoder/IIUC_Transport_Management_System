@@ -45,7 +45,8 @@ final class Method extends BaseTag implements Factory\StaticMethod
         Type $returnType = null,
         $static = false,
         Description $description = null
-    ) {
+    )
+    {
         Assert::stringNotEmpty($methodName);
         Assert::boolean($static);
 
@@ -53,11 +54,34 @@ final class Method extends BaseTag implements Factory\StaticMethod
             $returnType = new Void_();
         }
 
-        $this->methodName  = $methodName;
-        $this->arguments   = $this->filterArguments($arguments);
-        $this->returnType  = $returnType;
-        $this->isStatic    = $static;
+        $this->methodName = $methodName;
+        $this->arguments = $this->filterArguments($arguments);
+        $this->returnType = $returnType;
+        $this->isStatic = $static;
         $this->description = $description;
+    }
+
+    private function filterArguments($arguments)
+    {
+        foreach ($arguments as &$argument) {
+            if (is_string($argument)) {
+                $argument = ['name' => $argument];
+            }
+
+            if (!isset($argument['type'])) {
+                $argument['type'] = new Void_();
+            }
+
+            $keys = array_keys($argument);
+            sort($keys);
+            if ($keys !== ['name', 'type']) {
+                throw new \InvalidArgumentException(
+                    'Arguments can only have the "name" and "type" fields, found: ' . var_export($keys, true)
+                );
+            }
+        }
+
+        return $arguments;
     }
 
     /**
@@ -68,9 +92,10 @@ final class Method extends BaseTag implements Factory\StaticMethod
         TypeResolver $typeResolver = null,
         DescriptionFactory $descriptionFactory = null,
         TypeContext $context = null
-    ) {
+    )
+    {
         Assert::stringNotEmpty($body);
-        Assert::allNotNull([ $typeResolver, $descriptionFactory ]);
+        Assert::allNotNull([$typeResolver, $descriptionFactory]);
 
         // 1. none or more whitespace
         // 2. optionally the keyword "static" followed by whitespace
@@ -124,13 +149,13 @@ final class Method extends BaseTag implements Factory\StaticMethod
 
         list(, $static, $returnType, $methodName, $arguments, $description) = $matches;
 
-        $static      = $static === 'static';
+        $static = $static === 'static';
 
         if ($returnType === '') {
             $returnType = 'void';
         }
 
-        $returnType  = $typeResolver->resolve($returnType, $context);
+        $returnType = $typeResolver->resolve($returnType, $context);
         $description = $descriptionFactory->create($description, $context);
 
         if (is_string($arguments) && strlen($arguments) > 0) {
@@ -149,13 +174,22 @@ final class Method extends BaseTag implements Factory\StaticMethod
                     }
                 }
 
-                $argument = [ 'name' => $argumentName, 'type' => $argumentType];
+                $argument = ['name' => $argumentName, 'type' => $argumentType];
             }
         } else {
             $arguments = [];
         }
 
         return new static($methodName, $arguments, $returnType, $static, $description);
+    }
+
+    private static function stripRestArg($argument)
+    {
+        if (strpos($argument, '...') === 0) {
+            $argument = trim(substr($argument, 3));
+        }
+
+        return $argument;
     }
 
     /**
@@ -174,16 +208,6 @@ final class Method extends BaseTag implements Factory\StaticMethod
     public function getArguments()
     {
         return $this->arguments;
-    }
-
-    /**
-     * Checks whether the method tag describes a static method or not.
-     *
-     * @return bool TRUE if the method declaration is for a static method, FALSE otherwise.
-     */
-    public function isStatic()
-    {
-        return $this->isStatic;
     }
 
     /**
@@ -208,35 +232,13 @@ final class Method extends BaseTag implements Factory\StaticMethod
             . ($this->description ? ' ' . $this->description->render() : ''));
     }
 
-    private function filterArguments($arguments)
+    /**
+     * Checks whether the method tag describes a static method or not.
+     *
+     * @return bool TRUE if the method declaration is for a static method, FALSE otherwise.
+     */
+    public function isStatic()
     {
-        foreach ($arguments as &$argument) {
-            if (is_string($argument)) {
-                $argument = [ 'name' => $argument ];
-            }
-
-            if (! isset($argument['type'])) {
-                $argument['type'] = new Void_();
-            }
-
-            $keys = array_keys($argument);
-            sort($keys);
-            if ($keys !== [ 'name', 'type' ]) {
-                throw new \InvalidArgumentException(
-                    'Arguments can only have the "name" and "type" fields, found: ' . var_export($keys, true)
-                );
-            }
-        }
-
-        return $arguments;
-    }
-
-    private static function stripRestArg($argument)
-    {
-        if (strpos($argument, '...') === 0) {
-            $argument = trim(substr($argument, 3));
-        }
-
-        return $argument;
+        return $this->isStatic;
     }
 }

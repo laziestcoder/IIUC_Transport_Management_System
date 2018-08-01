@@ -49,33 +49,33 @@ final class DriverManager
      *
      * @var array
      */
-     private static $_driverMap = [
-         'pdo_mysql'          => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
-         'pdo_sqlite'         => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
-         'pdo_pgsql'          => 'Doctrine\DBAL\Driver\PDOPgSql\Driver',
-         'pdo_oci'            => 'Doctrine\DBAL\Driver\PDOOracle\Driver',
-         'oci8'               => 'Doctrine\DBAL\Driver\OCI8\Driver',
-         'ibm_db2'            => 'Doctrine\DBAL\Driver\IBMDB2\DB2Driver',
-         'pdo_sqlsrv'         => 'Doctrine\DBAL\Driver\PDOSqlsrv\Driver',
-         'mysqli'             => 'Doctrine\DBAL\Driver\Mysqli\Driver',
-         'drizzle_pdo_mysql'  => 'Doctrine\DBAL\Driver\DrizzlePDOMySql\Driver',
-         'sqlanywhere'        => 'Doctrine\DBAL\Driver\SQLAnywhere\Driver',
-         'sqlsrv'             => 'Doctrine\DBAL\Driver\SQLSrv\Driver',
+    private static $_driverMap = [
+        'pdo_mysql' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
+        'pdo_sqlite' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
+        'pdo_pgsql' => 'Doctrine\DBAL\Driver\PDOPgSql\Driver',
+        'pdo_oci' => 'Doctrine\DBAL\Driver\PDOOracle\Driver',
+        'oci8' => 'Doctrine\DBAL\Driver\OCI8\Driver',
+        'ibm_db2' => 'Doctrine\DBAL\Driver\IBMDB2\DB2Driver',
+        'pdo_sqlsrv' => 'Doctrine\DBAL\Driver\PDOSqlsrv\Driver',
+        'mysqli' => 'Doctrine\DBAL\Driver\Mysqli\Driver',
+        'drizzle_pdo_mysql' => 'Doctrine\DBAL\Driver\DrizzlePDOMySql\Driver',
+        'sqlanywhere' => 'Doctrine\DBAL\Driver\SQLAnywhere\Driver',
+        'sqlsrv' => 'Doctrine\DBAL\Driver\SQLSrv\Driver',
     ];
 
     /**
      * List of URL schemes from a database URL and their mappings to driver.
      */
     private static $driverSchemeAliases = [
-        'db2'        => 'ibm_db2',
-        'mssql'      => 'pdo_sqlsrv',
-        'mysql'      => 'pdo_mysql',
-        'mysql2'     => 'pdo_mysql', // Amazon RDS, for some weird reason
-        'postgres'   => 'pdo_pgsql',
+        'db2' => 'ibm_db2',
+        'mssql' => 'pdo_sqlsrv',
+        'mysql' => 'pdo_mysql',
+        'mysql2' => 'pdo_mysql', // Amazon RDS, for some weird reason
+        'postgres' => 'pdo_pgsql',
         'postgresql' => 'pdo_pgsql',
-        'pgsql'      => 'pdo_pgsql',
-        'sqlite'     => 'pdo_sqlite',
-        'sqlite3'    => 'pdo_sqlite',
+        'pgsql' => 'pdo_pgsql',
+        'sqlite' => 'pdo_sqlite',
+        'sqlite3' => 'pdo_sqlite',
     ];
 
     /**
@@ -132,8 +132,8 @@ final class DriverManager
      * <b>driverClass</b>:
      * The driver class to use.
      *
-     * @param array                              $params       The parameters.
-     * @param \Doctrine\DBAL\Configuration|null  $config       The configuration to use.
+     * @param array $params The parameters.
+     * @param \Doctrine\DBAL\Configuration|null $config The configuration to use.
      * @param \Doctrine\Common\EventManager|null $eventManager The event manager to use.
      *
      * @return \Doctrine\DBAL\Connection
@@ -141,22 +141,22 @@ final class DriverManager
      * @throws \Doctrine\DBAL\DBALException
      */
     public static function getConnection(
-            array $params,
-            Configuration $config = null,
-            EventManager $eventManager = null): Connection
+        array $params,
+        Configuration $config = null,
+        EventManager $eventManager = null): Connection
     {
         // create default config and event manager, if not set
-        if ( ! $config) {
+        if (!$config) {
             $config = new Configuration();
         }
-        if ( ! $eventManager) {
+        if (!$eventManager) {
             $eventManager = new EventManager();
         }
 
         $params = self::parseDatabaseUrl($params);
 
         // check for existing pdo object
-        if (isset($params['pdo']) && ! $params['pdo'] instanceof \PDO) {
+        if (isset($params['pdo']) && !$params['pdo'] instanceof \PDO) {
             throw DBALException::invalidPdoInstance();
         } elseif (isset($params['pdo'])) {
             $params['pdo']->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -172,66 +172,13 @@ final class DriverManager
         $wrapperClass = 'Doctrine\DBAL\Connection';
         if (isset($params['wrapperClass'])) {
             if (is_subclass_of($params['wrapperClass'], $wrapperClass)) {
-               $wrapperClass = $params['wrapperClass'];
+                $wrapperClass = $params['wrapperClass'];
             } else {
                 throw DBALException::invalidWrapperClass($params['wrapperClass']);
             }
         }
 
         return new $wrapperClass($params, $driver, $config, $eventManager);
-    }
-
-    /**
-     * Returns the list of supported drivers.
-     *
-     * @return array
-     */
-    public static function getAvailableDrivers(): array
-    {
-        return array_keys(self::$_driverMap);
-    }
-
-    /**
-     * Checks the list of parameters.
-     *
-     * @param array $params The list of parameters.
-     *
-     * @return void
-     *
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    private static function _checkParams(array $params): void
-    {
-        // check existence of mandatory parameters
-
-        // driver
-        if ( ! isset($params['driver']) && ! isset($params['driverClass'])) {
-            throw DBALException::driverRequired();
-        }
-
-        // check validity of parameters
-
-        // driver
-        if (isset($params['driver']) && ! isset(self::$_driverMap[$params['driver']])) {
-            throw DBALException::unknownDriver($params['driver'], array_keys(self::$_driverMap));
-        }
-
-        if (isset($params['driverClass']) && ! in_array('Doctrine\DBAL\Driver', class_implements($params['driverClass'], true))) {
-            throw DBALException::invalidDriverClass($params['driverClass']);
-        }
-    }
-
-    /**
-     * Normalizes the given connection URL path.
-     *
-     * @param string $urlPath
-     *
-     * @return string The normalized connection URL path
-     */
-    private static function normalizeDatabaseUrlPath(string $urlPath): string
-    {
-        // Trim leading slash from URL path.
-        return substr($urlPath, 1);
     }
 
     /**
@@ -287,108 +234,9 @@ final class DriverManager
     }
 
     /**
-     * Parses the given connection URL and resolves the given connection parameters.
-     *
-     * Assumes that the connection URL scheme is already parsed and resolved into the given connection parameters
-     * via {@link parseDatabaseUrlScheme}.
-     *
-     * @param array $url    The URL parts to evaluate.
-     * @param array $params The connection parameters to resolve.
-     *
-     * @return array The resolved connection parameters.
-     *
-     * @see parseDatabaseUrlScheme
-     */
-    private static function parseDatabaseUrlPath(array $url, array $params): array
-    {
-        if (! isset($url['path'])) {
-            return $params;
-        }
-
-        $url['path'] = self::normalizeDatabaseUrlPath($url['path']);
-
-        // If we do not have a known DBAL driver, we do not know any connection URL path semantics to evaluate
-        // and therefore treat the path as regular DBAL connection URL path.
-        if (! isset($params['driver'])) {
-            return self::parseRegularDatabaseUrlPath($url, $params);
-        }
-
-        if (strpos($params['driver'], 'sqlite') !== false) {
-            return self::parseSqliteDatabaseUrlPath($url, $params);
-        }
-
-        return self::parseRegularDatabaseUrlPath($url, $params);
-    }
-
-    /**
-     * Parses the query part of the given connection URL and resolves the given connection parameters.
-     *
-     * @param array $url    The connection URL parts to evaluate.
-     * @param array $params The connection parameters to resolve.
-     *
-     * @return array The resolved connection parameters.
-     */
-    private static function parseDatabaseUrlQuery(array $url, array $params): array
-    {
-        if (! isset($url['query'])) {
-            return $params;
-        }
-
-        $query = [];
-
-        parse_str($url['query'], $query); // simply ingest query as extra params, e.g. charset or sslmode
-
-        return array_merge($params, $query); // parse_str wipes existing array elements
-    }
-
-    /**
-     * Parses the given regular connection URL and resolves the given connection parameters.
-     *
-     * Assumes that the "path" URL part is already normalized via {@link normalizeDatabaseUrlPath}.
-     *
-     * @param array $url    The regular connection URL parts to evaluate.
-     * @param array $params The connection parameters to resolve.
-     *
-     * @return array The resolved connection parameters.
-     *
-     * @see normalizeDatabaseUrlPath
-     */
-    private static function parseRegularDatabaseUrlPath(array $url, array $params): array
-    {
-        $params['dbname'] = $url['path'];
-
-        return $params;
-    }
-
-    /**
-     * Parses the given SQLite connection URL and resolves the given connection parameters.
-     *
-     * Assumes that the "path" URL part is already normalized via {@link normalizeDatabaseUrlPath}.
-     *
-     * @param array $url    The SQLite connection URL parts to evaluate.
-     * @param array $params The connection parameters to resolve.
-     *
-     * @return array The resolved connection parameters.
-     *
-     * @see normalizeDatabaseUrlPath
-     */
-    private static function parseSqliteDatabaseUrlPath(array $url, array $params): array
-    {
-        if ($url['path'] === ':memory:') {
-            $params['memory'] = true;
-
-            return $params;
-        }
-
-        $params['path'] = $url['path']; // pdo_sqlite driver uses 'path' instead of 'dbname' key
-
-        return $params;
-    }
-
-    /**
      * Parses the scheme part from given connection URL and resolves the given connection parameters.
      *
-     * @param array $url    The connection URL parts to evaluate.
+     * @param array $url The connection URL parts to evaluate.
      * @param array $params The connection parameters to resolve.
      *
      * @return array The resolved connection parameters.
@@ -416,10 +264,162 @@ final class DriverManager
 
         // If a schemeless connection URL is given, we require a default driver or default custom driver
         // as connection parameter.
-        if (! isset($params['driverClass']) && ! isset($params['driver'])) {
+        if (!isset($params['driverClass']) && !isset($params['driver'])) {
             throw DBALException::driverRequired($params['url']);
         }
 
         return $params;
+    }
+
+    /**
+     * Parses the given connection URL and resolves the given connection parameters.
+     *
+     * Assumes that the connection URL scheme is already parsed and resolved into the given connection parameters
+     * via {@link parseDatabaseUrlScheme}.
+     *
+     * @param array $url The URL parts to evaluate.
+     * @param array $params The connection parameters to resolve.
+     *
+     * @return array The resolved connection parameters.
+     *
+     * @see parseDatabaseUrlScheme
+     */
+    private static function parseDatabaseUrlPath(array $url, array $params): array
+    {
+        if (!isset($url['path'])) {
+            return $params;
+        }
+
+        $url['path'] = self::normalizeDatabaseUrlPath($url['path']);
+
+        // If we do not have a known DBAL driver, we do not know any connection URL path semantics to evaluate
+        // and therefore treat the path as regular DBAL connection URL path.
+        if (!isset($params['driver'])) {
+            return self::parseRegularDatabaseUrlPath($url, $params);
+        }
+
+        if (strpos($params['driver'], 'sqlite') !== false) {
+            return self::parseSqliteDatabaseUrlPath($url, $params);
+        }
+
+        return self::parseRegularDatabaseUrlPath($url, $params);
+    }
+
+    /**
+     * Normalizes the given connection URL path.
+     *
+     * @param string $urlPath
+     *
+     * @return string The normalized connection URL path
+     */
+    private static function normalizeDatabaseUrlPath(string $urlPath): string
+    {
+        // Trim leading slash from URL path.
+        return substr($urlPath, 1);
+    }
+
+    /**
+     * Parses the given regular connection URL and resolves the given connection parameters.
+     *
+     * Assumes that the "path" URL part is already normalized via {@link normalizeDatabaseUrlPath}.
+     *
+     * @param array $url The regular connection URL parts to evaluate.
+     * @param array $params The connection parameters to resolve.
+     *
+     * @return array The resolved connection parameters.
+     *
+     * @see normalizeDatabaseUrlPath
+     */
+    private static function parseRegularDatabaseUrlPath(array $url, array $params): array
+    {
+        $params['dbname'] = $url['path'];
+
+        return $params;
+    }
+
+    /**
+     * Parses the given SQLite connection URL and resolves the given connection parameters.
+     *
+     * Assumes that the "path" URL part is already normalized via {@link normalizeDatabaseUrlPath}.
+     *
+     * @param array $url The SQLite connection URL parts to evaluate.
+     * @param array $params The connection parameters to resolve.
+     *
+     * @return array The resolved connection parameters.
+     *
+     * @see normalizeDatabaseUrlPath
+     */
+    private static function parseSqliteDatabaseUrlPath(array $url, array $params): array
+    {
+        if ($url['path'] === ':memory:') {
+            $params['memory'] = true;
+
+            return $params;
+        }
+
+        $params['path'] = $url['path']; // pdo_sqlite driver uses 'path' instead of 'dbname' key
+
+        return $params;
+    }
+
+    /**
+     * Parses the query part of the given connection URL and resolves the given connection parameters.
+     *
+     * @param array $url The connection URL parts to evaluate.
+     * @param array $params The connection parameters to resolve.
+     *
+     * @return array The resolved connection parameters.
+     */
+    private static function parseDatabaseUrlQuery(array $url, array $params): array
+    {
+        if (!isset($url['query'])) {
+            return $params;
+        }
+
+        $query = [];
+
+        parse_str($url['query'], $query); // simply ingest query as extra params, e.g. charset or sslmode
+
+        return array_merge($params, $query); // parse_str wipes existing array elements
+    }
+
+    /**
+     * Checks the list of parameters.
+     *
+     * @param array $params The list of parameters.
+     *
+     * @return void
+     *
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private static function _checkParams(array $params): void
+    {
+        // check existence of mandatory parameters
+
+        // driver
+        if (!isset($params['driver']) && !isset($params['driverClass'])) {
+            throw DBALException::driverRequired();
+        }
+
+        // check validity of parameters
+
+        // driver
+        if (isset($params['driver']) && !isset(self::$_driverMap[$params['driver']])) {
+            throw DBALException::unknownDriver($params['driver'], array_keys(self::$_driverMap));
+        }
+
+        if (isset($params['driverClass']) && !in_array('Doctrine\DBAL\Driver', class_implements($params['driverClass'], true))) {
+            throw DBALException::invalidDriverClass($params['driverClass']);
+        }
+    }
+
+    /**
+     * Returns the list of supported drivers.
+     *
+     * @return array
+     */
+    public static function getAvailableDrivers(): array
+    {
+        return array_keys(self::$_driverMap);
     }
 }

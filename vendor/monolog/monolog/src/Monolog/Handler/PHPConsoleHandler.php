@@ -66,10 +66,10 @@ class PHPConsoleHandler extends AbstractProcessingHandler
     private $connector;
 
     /**
-     * @param  array          $options   See \Monolog\Handler\PHPConsoleHandler::$options for more details
+     * @param  array $options See \Monolog\Handler\PHPConsoleHandler::$options for more details
      * @param  Connector|null $connector Instance of \PhpConsole\Connector class (optional)
-     * @param  int            $level
-     * @param  bool           $bubble
+     * @param  int $level
+     * @param  bool $bubble
      * @throws Exception
      */
     public function __construct(array $options = array(), Connector $connector = null, $level = Logger::DEBUG, $bubble = true)
@@ -193,6 +193,27 @@ class PHPConsoleHandler extends AbstractProcessingHandler
         $this->connector->getDebugDispatcher()->dispatchDebug($message, $tags, $this->options['classesPartialsTraceIgnore']);
     }
 
+    private function getRecordTags(array &$record)
+    {
+        $tags = null;
+        if (!empty($record['context'])) {
+            $context = &$record['context'];
+            foreach ($this->options['debugTagsKeysInContext'] as $key) {
+                if (!empty($context[$key])) {
+                    $tags = $context[$key];
+                    if ($key === 0) {
+                        array_shift($context);
+                    } else {
+                        unset($context[$key]);
+                    }
+                    break;
+                }
+            }
+        }
+
+        return $tags ?: strtolower($record['level_name']);
+    }
+
     private function handleExceptionRecord(array $record)
     {
         $this->connector->getErrorsDispatcher()->dispatchException($record['context']['exception']);
@@ -209,27 +230,6 @@ class PHPConsoleHandler extends AbstractProcessingHandler
             isset($context['line']) ? $context['line'] : null,
             $this->options['classesPartialsTraceIgnore']
         );
-    }
-
-    private function getRecordTags(array &$record)
-    {
-        $tags = null;
-        if (!empty($record['context'])) {
-            $context = & $record['context'];
-            foreach ($this->options['debugTagsKeysInContext'] as $key) {
-                if (!empty($context[$key])) {
-                    $tags = $context[$key];
-                    if ($key === 0) {
-                        array_shift($context);
-                    } else {
-                        unset($context[$key]);
-                    }
-                    break;
-                }
-            }
-        }
-
-        return $tags ?: strtolower($record['level_name']);
     }
 
     /**

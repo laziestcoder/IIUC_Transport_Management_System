@@ -2,8 +2,8 @@
 
 namespace Illuminate\Queue\Console;
 
-use Illuminate\Queue\Listener;
 use Illuminate\Console\Command;
+use Illuminate\Queue\Listener;
 use Illuminate\Queue\ListenerOptions;
 
 class ListenCommand extends Command
@@ -40,7 +40,7 @@ class ListenCommand extends Command
     /**
      * Create a new queue listen command.
      *
-     * @param  \Illuminate\Queue\Listener  $listener
+     * @param  \Illuminate\Queue\Listener $listener
      * @return void
      */
     public function __construct(Listener $listener)
@@ -48,6 +48,19 @@ class ListenCommand extends Command
         parent::__construct();
 
         $this->setOutputHandler($this->listener = $listener);
+    }
+
+    /**
+     * Set the options on the queue listener.
+     *
+     * @param  \Illuminate\Queue\Listener $listener
+     * @return void
+     */
+    protected function setOutputHandler(Listener $listener)
+    {
+        $listener->setOutputHandler(function ($type, $line) {
+            $this->output->write($line);
+        });
     }
 
     /**
@@ -72,7 +85,7 @@ class ListenCommand extends Command
     /**
      * Get the name of the queue connection to listen on.
      *
-     * @param  string  $connection
+     * @param  string $connection
      * @return string
      */
     protected function getQueue($connection)
@@ -97,18 +110,5 @@ class ListenCommand extends Command
             $this->option('sleep'), $this->option('tries'),
             $this->option('force')
         );
-    }
-
-    /**
-     * Set the options on the queue listener.
-     *
-     * @param  \Illuminate\Queue\Listener  $listener
-     * @return void
-     */
-    protected function setOutputHandler(Listener $listener)
-    {
-        $listener->setOutputHandler(function ($type, $line) {
-            $this->output->write($line);
-        });
     }
 }

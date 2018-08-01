@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Util\PHP;
 
 use PHPUnit\Framework\Exception;
@@ -42,12 +43,9 @@ class DefaultPhpProcess extends AbstractPhpProcess
         return $this->runProcess($job, $settings);
     }
 
-    /**
-     * Returns an array of file handles to be used in place of pipes
-     */
-    protected function getHandles(): array
+    protected function useTemporaryFile(): bool
     {
-        return [];
+        return false;
     }
 
     /**
@@ -199,6 +197,14 @@ class DefaultPhpProcess extends AbstractPhpProcess
         return ['stdout' => $stdout, 'stderr' => $stderr];
     }
 
+    /**
+     * Returns an array of file handles to be used in place of pipes
+     */
+    protected function getHandles(): array
+    {
+        return [];
+    }
+
     protected function process($pipe, string $job): void
     {
         \fwrite($pipe, $job);
@@ -209,10 +215,5 @@ class DefaultPhpProcess extends AbstractPhpProcess
         if ($this->tempFile) {
             \unlink($this->tempFile);
         }
-    }
-
-    protected function useTemporaryFile(): bool
-    {
-        return false;
     }
 }

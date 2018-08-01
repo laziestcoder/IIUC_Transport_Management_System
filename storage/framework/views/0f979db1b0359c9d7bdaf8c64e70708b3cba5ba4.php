@@ -4,13 +4,13 @@
     <div class="pull-right hidden-xs">
         <p>&copy <?php echo e(date("Y")); ?>
 
-
+            
             ITMS & <a href="https://github.com/laziestcoder"> Towfiqul Islam </a> | All Rights Reserved</p>
     </div>
     <!-- Default to the left -->
     <b>Today: </b><?php echo e(date(" l, d M, Y")); ?>
 
-
+    
     <div id="time"></div>
     <script type="text/JavaScript">
         /* document.write(new Date().gettime()); */

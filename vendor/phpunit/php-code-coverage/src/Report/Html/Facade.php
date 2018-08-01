@@ -41,10 +41,10 @@ final class Facade
 
     public function __construct(int $lowUpperBound = 50, int $highLowerBound = 90, string $generator = '')
     {
-        $this->generator      = $generator;
+        $this->generator = $generator;
         $this->highLowerBound = $highLowerBound;
-        $this->lowUpperBound  = $lowUpperBound;
-        $this->templatePath   = __DIR__ . '/Renderer/Template/';
+        $this->lowUpperBound = $lowUpperBound;
+        $this->templatePath = __DIR__ . '/Renderer/Template/';
     }
 
     /**
@@ -117,6 +117,27 @@ final class Facade
     /**
      * @throws RuntimeException
      */
+    private function getDirectory(string $directory): string
+    {
+        if (\substr($directory, -1, 1) != DIRECTORY_SEPARATOR) {
+            $directory .= DIRECTORY_SEPARATOR;
+        }
+
+        if (!@\mkdir($directory, 0777, true) && !\is_dir($directory)) {
+            throw new RuntimeException(
+                \sprintf(
+                    'Directory "%s" does not exist.',
+                    $directory
+                )
+            );
+        }
+
+        return $directory;
+    }
+
+    /**
+     * @throws RuntimeException
+     */
     private function copyFiles(string $target): void
     {
         $dir = $this->getDirectory($target . '.css');
@@ -150,26 +171,5 @@ final class Facade
         \copy($this->templatePath . 'js/nv.d3.min.js', $dir . 'nv.d3.min.js');
         \copy($this->templatePath . 'js/respond.min.js', $dir . 'respond.min.js');
         \copy($this->templatePath . 'js/file.js', $dir . 'file.js');
-    }
-
-    /**
-     * @throws RuntimeException
-     */
-    private function getDirectory(string $directory): string
-    {
-        if (\substr($directory, -1, 1) != DIRECTORY_SEPARATOR) {
-            $directory .= DIRECTORY_SEPARATOR;
-        }
-
-        if (!@\mkdir($directory, 0777, true) && !\is_dir($directory)) {
-            throw new RuntimeException(
-                \sprintf(
-                    'Directory "%s" does not exist.',
-                    $directory
-                )
-            );
-        }
-
-        return $directory;
     }
 }

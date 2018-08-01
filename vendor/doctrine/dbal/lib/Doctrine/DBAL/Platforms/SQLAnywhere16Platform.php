@@ -43,7 +43,7 @@ class SQLAnywhere16Platform extends SQLAnywhere12Platform
             );
         }
 
-        if ( ! $index->isPrimary() && $index->isUnique() && $index->hasFlag('with_nulls_distinct')) {
+        if (!$index->isPrimary() && $index->isUnique() && $index->hasFlag('with_nulls_distinct')) {
             return ' WITH NULLS DISTINCT' . parent::getAdvancedIndexOptionsSQL($index);
         }
 

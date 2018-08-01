@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Util\TestDox;
 
 final class TestResult
@@ -53,11 +54,11 @@ final class TestResult
 
     public function __construct(callable $colorize, string $testClass, string $testMethod)
     {
-        $this->colorize              = $colorize;
-        $this->testClass             = $testClass;
-        $this->testMethod            = $testMethod;
-        $this->testSuccesful         = true;
-        $this->symbol                = ($this->colorize)('fg-green', '✔');
+        $this->colorize = $colorize;
+        $this->testClass = $testClass;
+        $this->testMethod = $testMethod;
+        $this->testSuccesful = true;
+        $this->symbol = ($this->colorize)('fg-green', '✔');
         $this->additionalInformation = '';
     }
 
@@ -68,9 +69,9 @@ final class TestResult
 
     public function fail(string $symbol, string $additionalInformation, bool $additionalInformationVerbose = false): void
     {
-        $this->testSuccesful                = false;
-        $this->symbol                       = $symbol;
-        $this->additionalInformation        = $additionalInformation;
+        $this->testSuccesful = false;
+        $this->symbol = $symbol;
+        $this->additionalInformation = $additionalInformation;
         $this->additionalInformationVerbose = $additionalInformationVerbose;
     }
 
@@ -90,6 +91,19 @@ final class TestResult
             $verbose ? ' ' . $this->getFormattedRuntime() : '',
             $this->getFormattedAdditionalInformation($verbose)
         );
+    }
+
+    private function additionalInformationPrintable(bool $verbose): bool
+    {
+        if ($this->additionalInformation === '') {
+            return false;
+        }
+
+        if ($this->additionalInformationVerbose && !$verbose) {
+            return false;
+        }
+
+        return true;
     }
 
     private function getClassNameHeader(?string $previousTestClass): string
@@ -138,18 +152,5 @@ final class TestResult
                 )
             )
         );
-    }
-
-    private function additionalInformationPrintable(bool $verbose): bool
-    {
-        if ($this->additionalInformation === '') {
-            return false;
-        }
-
-        if ($this->additionalInformationVerbose && !$verbose) {
-            return false;
-        }
-
-        return true;
     }
 }

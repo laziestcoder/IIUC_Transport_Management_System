@@ -165,7 +165,7 @@ class PdoSessionHandler extends AbstractSessionHandler
      *  * lock_mode: The strategy for locking, see constants [default: LOCK_TRANSACTIONAL]
      *
      * @param \PDO|string|null $pdoOrDsn A \PDO instance or DSN string or URL string or null
-     * @param array            $options  An associative array of options
+     * @param array $options An associative array of options
      *
      * @throws \InvalidArgumentException When PDO error mode is not PDO::ERRMODE_EXCEPTION
      */
@@ -193,6 +193,102 @@ class PdoSessionHandler extends AbstractSessionHandler
         $this->password = isset($options['db_password']) ? $options['db_password'] : $this->password;
         $this->connectionOptions = isset($options['db_connection_options']) ? $options['db_connection_options'] : $this->connectionOptions;
         $this->lockMode = isset($options['lock_mode']) ? $options['lock_mode'] : $this->lockMode;
+    }
+
+    /**
+     * Builds a PDO DSN from a URL-like connection string.
+     *
+     * @param string $dsnOrUrl
+     *
+     * @return string
+     *
+     * @todo implement missing support for oci DSN (which look totally different from other PDO ones)
+     */
+    private function buildDsnFromUrl($dsnOrUrl)
+    {
+        // (pdo_)?sqlite3?:///... => (pdo_)?sqlite3?://localhost/... or else the URL will be invalid
+        $url = preg_replace('#^((?:pdo_)?sqlite3?):///#', '$1://localhost/', $dsnOrUrl);
+
+        $params = parse_url($url);
+
+        if (false === $params) {
+            return $dsnOrUrl; // If the URL is not valid, let's assume it might be a DSN already.
+        }
+
+        $params = array_map('rawurldecode', $params);
+
+        // Override the default username and password. Values passed through options will still win over these in the constructor.
+        if (isset($params['user'])) {
+            $this->username = $params['user'];
+        }
+
+        if (isset($params['pass'])) {
+            $this->password = $params['pass'];
+        }
+
+        if (!isset($params['scheme'])) {
+            throw new \InvalidArgumentException('URLs without scheme are not supported to configure the PdoSessionHandler');
+        }
+
+        $driverAliasMap = array(
+            'mssql' => 'sqlsrv',
+            'mysql2' => 'mysql', // Amazon RDS, for some weird reason
+            'postgres' => 'pgsql',
+            'postgresql' => 'pgsql',
+            'sqlite3' => 'sqlite',
+        );
+
+        $driver = isset($driverAliasMap[$params['scheme']]) ? $driverAliasMap[$params['scheme']] : $params['scheme'];
+
+        // Doctrine DBAL supports passing its internal pdo_* driver names directly too (allowing both dashes and underscores). This allows supporting the same here.
+        if (0 === strpos($driver, 'pdo_') || 0 === strpos($driver, 'pdo-')) {
+            $driver = substr($driver, 4);
+        }
+
+        switch ($driver) {
+            case 'mysql':
+            case 'pgsql':
+                $dsn = $driver . ':';
+
+                if (isset($params['host']) && '' !== $params['host']) {
+                    $dsn .= 'host=' . $params['host'] . ';';
+                }
+
+                if (isset($params['port']) && '' !== $params['port']) {
+                    $dsn .= 'port=' . $params['port'] . ';';
+                }
+
+                if (isset($params['path'])) {
+                    $dbName = substr($params['path'], 1); // Remove the leading slash
+                    $dsn .= 'dbname=' . $dbName . ';';
+                }
+
+                return $dsn;
+
+            case 'sqlite':
+                return 'sqlite:' . substr($params['path'], 1);
+
+            case 'sqlsrv':
+                $dsn = 'sqlsrv:server=';
+
+                if (isset($params['host'])) {
+                    $dsn .= $params['host'];
+                }
+
+                if (isset($params['port']) && '' !== $params['port']) {
+                    $dsn .= ',' . $params['port'];
+                }
+
+                if (isset($params['path'])) {
+                    $dbName = substr($params['path'], 1); // Remove the leading slash
+                    $dsn .= ';Database=' . $dbName;
+                }
+
+                return $dsn;
+
+            default:
+                throw new \InvalidArgumentException(sprintf('The scheme "%s" is not supported by the PdoSessionHandler URL configuration. Pass a PDO DSN directly.', $params['scheme']));
+        }
     }
 
     /**
@@ -242,6 +338,51 @@ class PdoSessionHandler extends AbstractSessionHandler
             $this->rollback();
 
             throw $e;
+        }
+    }
+
+    /**
+     * Return a PDO instance.
+     *
+     * @return \PDO
+     */
+    protected function getConnection()
+    {
+        if (null === $this->pdo) {
+            $this->connect($this->dsn ?: ini_get('session.save_path'));
+        }
+
+        return $this->pdo;
+    }
+
+    /**
+     * Lazy-connects to the database.
+     *
+     * @param string $dsn DSN string
+     */
+    private function connect($dsn)
+    {
+        $this->pdo = new \PDO($dsn, $this->username, $this->password, $this->connectionOptions);
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->driver = $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
+    }
+
+    /**
+     * Helper method to rollback a transaction.
+     */
+    private function rollback()
+    {
+        // We only need to rollback if we are in a transaction. Otherwise the resulting
+        // error would hide the real problem why rollback was called. We might not be
+        // in a transaction when not using the transactional locking behavior or when
+        // two callbacks (e.g. destroy and write) are invoked that both fail.
+        if ($this->inTransaction) {
+            if ('sqlite' === $this->driver) {
+                $this->pdo->exec('ROLLBACK');
+            } else {
+                $this->pdo->rollBack();
+            }
+            $this->inTransaction = false;
         }
     }
 
@@ -300,76 +441,9 @@ class PdoSessionHandler extends AbstractSessionHandler
     /**
      * {@inheritdoc}
      */
-    protected function doDestroy($sessionId)
-    {
-        // delete the record associated with this id
-        $sql = "DELETE FROM $this->table WHERE $this->idCol = :id";
-
-        try {
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam(':id', $sessionId, \PDO::PARAM_STR);
-            $stmt->execute();
-        } catch (\PDOException $e) {
-            $this->rollback();
-
-            throw $e;
-        }
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function doWrite($sessionId, $data)
-    {
-        $maxlifetime = (int) ini_get('session.gc_maxlifetime');
-
-        try {
-            // We use a single MERGE SQL query when supported by the database.
-            $mergeStmt = $this->getMergeStatement($sessionId, $data, $maxlifetime);
-            if (null !== $mergeStmt) {
-                $mergeStmt->execute();
-
-                return true;
-            }
-
-            $updateStmt = $this->getUpdateStatement($sessionId, $data, $maxlifetime);
-            $updateStmt->execute();
-
-            // When MERGE is not supported, like in Postgres < 9.5, we have to use this approach that can result in
-            // duplicate key errors when the same session is written simultaneously (given the LOCK_NONE behavior).
-            // We can just catch such an error and re-execute the update. This is similar to a serializable
-            // transaction with retry logic on serialization failures but without the overhead and without possible
-            // false positives due to longer gap locking.
-            if (!$updateStmt->rowCount()) {
-                try {
-                    $insertStmt = $this->getInsertStatement($sessionId, $data, $maxlifetime);
-                    $insertStmt->execute();
-                } catch (\PDOException $e) {
-                    // Handle integrity violation SQLSTATE 23000 (or a subclass like 23505 in Postgres) for duplicate keys
-                    if (0 === strpos($e->getCode(), '23')) {
-                        $updateStmt->execute();
-                    } else {
-                        throw $e;
-                    }
-                }
-            }
-        } catch (\PDOException $e) {
-            $this->rollback();
-
-            throw $e;
-        }
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function updateTimestamp($sessionId, $data)
     {
-        $maxlifetime = (int) ini_get('session.gc_maxlifetime');
+        $maxlifetime = (int)ini_get('session.gc_maxlifetime');
 
         try {
             $updateStmt = $this->pdo->prepare(
@@ -422,141 +496,6 @@ class PdoSessionHandler extends AbstractSessionHandler
     }
 
     /**
-     * Lazy-connects to the database.
-     *
-     * @param string $dsn DSN string
-     */
-    private function connect($dsn)
-    {
-        $this->pdo = new \PDO($dsn, $this->username, $this->password, $this->connectionOptions);
-        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->driver = $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
-    }
-
-    /**
-     * Builds a PDO DSN from a URL-like connection string.
-     *
-     * @param string $dsnOrUrl
-     *
-     * @return string
-     *
-     * @todo implement missing support for oci DSN (which look totally different from other PDO ones)
-     */
-    private function buildDsnFromUrl($dsnOrUrl)
-    {
-        // (pdo_)?sqlite3?:///... => (pdo_)?sqlite3?://localhost/... or else the URL will be invalid
-        $url = preg_replace('#^((?:pdo_)?sqlite3?):///#', '$1://localhost/', $dsnOrUrl);
-
-        $params = parse_url($url);
-
-        if (false === $params) {
-            return $dsnOrUrl; // If the URL is not valid, let's assume it might be a DSN already.
-        }
-
-        $params = array_map('rawurldecode', $params);
-
-        // Override the default username and password. Values passed through options will still win over these in the constructor.
-        if (isset($params['user'])) {
-            $this->username = $params['user'];
-        }
-
-        if (isset($params['pass'])) {
-            $this->password = $params['pass'];
-        }
-
-        if (!isset($params['scheme'])) {
-            throw new \InvalidArgumentException('URLs without scheme are not supported to configure the PdoSessionHandler');
-        }
-
-        $driverAliasMap = array(
-            'mssql' => 'sqlsrv',
-            'mysql2' => 'mysql', // Amazon RDS, for some weird reason
-            'postgres' => 'pgsql',
-            'postgresql' => 'pgsql',
-            'sqlite3' => 'sqlite',
-        );
-
-        $driver = isset($driverAliasMap[$params['scheme']]) ? $driverAliasMap[$params['scheme']] : $params['scheme'];
-
-        // Doctrine DBAL supports passing its internal pdo_* driver names directly too (allowing both dashes and underscores). This allows supporting the same here.
-        if (0 === strpos($driver, 'pdo_') || 0 === strpos($driver, 'pdo-')) {
-            $driver = substr($driver, 4);
-        }
-
-        switch ($driver) {
-            case 'mysql':
-            case 'pgsql':
-                $dsn = $driver.':';
-
-                if (isset($params['host']) && '' !== $params['host']) {
-                    $dsn .= 'host='.$params['host'].';';
-                }
-
-                if (isset($params['port']) && '' !== $params['port']) {
-                    $dsn .= 'port='.$params['port'].';';
-                }
-
-                if (isset($params['path'])) {
-                    $dbName = substr($params['path'], 1); // Remove the leading slash
-                    $dsn .= 'dbname='.$dbName.';';
-                }
-
-                return $dsn;
-
-            case 'sqlite':
-                return 'sqlite:'.substr($params['path'], 1);
-
-            case 'sqlsrv':
-                $dsn = 'sqlsrv:server=';
-
-                if (isset($params['host'])) {
-                    $dsn .= $params['host'];
-                }
-
-                if (isset($params['port']) && '' !== $params['port']) {
-                    $dsn .= ','.$params['port'];
-                }
-
-                if (isset($params['path'])) {
-                    $dbName = substr($params['path'], 1); // Remove the leading slash
-                    $dsn .= ';Database='.$dbName;
-                }
-
-                return $dsn;
-
-            default:
-                throw new \InvalidArgumentException(sprintf('The scheme "%s" is not supported by the PdoSessionHandler URL configuration. Pass a PDO DSN directly.', $params['scheme']));
-        }
-    }
-
-    /**
-     * Helper method to begin a transaction.
-     *
-     * Since SQLite does not support row level locks, we have to acquire a reserved lock
-     * on the database immediately. Because of https://bugs.php.net/42766 we have to create
-     * such a transaction manually which also means we cannot use PDO::commit or
-     * PDO::rollback or PDO::inTransaction for SQLite.
-     *
-     * Also MySQLs default isolation, REPEATABLE READ, causes deadlock for different sessions
-     * due to http://www.mysqlperformanceblog.com/2013/12/12/one-more-innodb-gap-lock-to-avoid/ .
-     * So we change it to READ COMMITTED.
-     */
-    private function beginTransaction()
-    {
-        if (!$this->inTransaction) {
-            if ('sqlite' === $this->driver) {
-                $this->pdo->exec('BEGIN IMMEDIATE TRANSACTION');
-            } else {
-                if ('mysql' === $this->driver) {
-                    $this->pdo->exec('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
-                }
-                $this->pdo->beginTransaction();
-            }
-            $this->inTransaction = true;
-        }
-    }
-
-    /**
      * Helper method to commit a transaction.
      */
     private function commit()
@@ -579,22 +518,186 @@ class PdoSessionHandler extends AbstractSessionHandler
     }
 
     /**
-     * Helper method to rollback a transaction.
+     * {@inheritdoc}
      */
-    private function rollback()
+    protected function doDestroy($sessionId)
     {
-        // We only need to rollback if we are in a transaction. Otherwise the resulting
-        // error would hide the real problem why rollback was called. We might not be
-        // in a transaction when not using the transactional locking behavior or when
-        // two callbacks (e.g. destroy and write) are invoked that both fail.
-        if ($this->inTransaction) {
-            if ('sqlite' === $this->driver) {
-                $this->pdo->exec('ROLLBACK');
-            } else {
-                $this->pdo->rollBack();
-            }
-            $this->inTransaction = false;
+        // delete the record associated with this id
+        $sql = "DELETE FROM $this->table WHERE $this->idCol = :id";
+
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':id', $sessionId, \PDO::PARAM_STR);
+            $stmt->execute();
+        } catch (\PDOException $e) {
+            $this->rollback();
+
+            throw $e;
         }
+
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doWrite($sessionId, $data)
+    {
+        $maxlifetime = (int)ini_get('session.gc_maxlifetime');
+
+        try {
+            // We use a single MERGE SQL query when supported by the database.
+            $mergeStmt = $this->getMergeStatement($sessionId, $data, $maxlifetime);
+            if (null !== $mergeStmt) {
+                $mergeStmt->execute();
+
+                return true;
+            }
+
+            $updateStmt = $this->getUpdateStatement($sessionId, $data, $maxlifetime);
+            $updateStmt->execute();
+
+            // When MERGE is not supported, like in Postgres < 9.5, we have to use this approach that can result in
+            // duplicate key errors when the same session is written simultaneously (given the LOCK_NONE behavior).
+            // We can just catch such an error and re-execute the update. This is similar to a serializable
+            // transaction with retry logic on serialization failures but without the overhead and without possible
+            // false positives due to longer gap locking.
+            if (!$updateStmt->rowCount()) {
+                try {
+                    $insertStmt = $this->getInsertStatement($sessionId, $data, $maxlifetime);
+                    $insertStmt->execute();
+                } catch (\PDOException $e) {
+                    // Handle integrity violation SQLSTATE 23000 (or a subclass like 23505 in Postgres) for duplicate keys
+                    if (0 === strpos($e->getCode(), '23')) {
+                        $updateStmt->execute();
+                    } else {
+                        throw $e;
+                    }
+                }
+            }
+        } catch (\PDOException $e) {
+            $this->rollback();
+
+            throw $e;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns a merge/upsert (i.e. insert or update) statement when supported by the database for writing session data.
+     */
+    private function getMergeStatement(string $sessionId, string $data, int $maxlifetime): ?\PDOStatement
+    {
+        switch (true) {
+            case 'mysql' === $this->driver:
+                $mergeSql = "INSERT INTO $this->table ($this->idCol, $this->dataCol, $this->lifetimeCol, $this->timeCol) VALUES (:id, :data, :lifetime, :time) " .
+                    "ON DUPLICATE KEY UPDATE $this->dataCol = VALUES($this->dataCol), $this->lifetimeCol = VALUES($this->lifetimeCol), $this->timeCol = VALUES($this->timeCol)";
+                break;
+            case 'sqlsrv' === $this->driver && version_compare($this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION), '10', '>='):
+                // MERGE is only available since SQL Server 2008 and must be terminated by semicolon
+                // It also requires HOLDLOCK according to http://weblogs.sqlteam.com/dang/archive/2009/01/31/UPSERT-Race-Condition-With-MERGE.aspx
+                $mergeSql = "MERGE INTO $this->table WITH (HOLDLOCK) USING (SELECT 1 AS dummy) AS src ON ($this->idCol = ?) " .
+                    "WHEN NOT MATCHED THEN INSERT ($this->idCol, $this->dataCol, $this->lifetimeCol, $this->timeCol) VALUES (?, ?, ?, ?) " .
+                    "WHEN MATCHED THEN UPDATE SET $this->dataCol = ?, $this->lifetimeCol = ?, $this->timeCol = ?;";
+                break;
+            case 'sqlite' === $this->driver:
+                $mergeSql = "INSERT OR REPLACE INTO $this->table ($this->idCol, $this->dataCol, $this->lifetimeCol, $this->timeCol) VALUES (:id, :data, :lifetime, :time)";
+                break;
+            case 'pgsql' === $this->driver && version_compare($this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION), '9.5', '>='):
+                $mergeSql = "INSERT INTO $this->table ($this->idCol, $this->dataCol, $this->lifetimeCol, $this->timeCol) VALUES (:id, :data, :lifetime, :time) " .
+                    "ON CONFLICT ($this->idCol) DO UPDATE SET ($this->dataCol, $this->lifetimeCol, $this->timeCol) = (EXCLUDED.$this->dataCol, EXCLUDED.$this->lifetimeCol, EXCLUDED.$this->timeCol)";
+                break;
+            default:
+                // MERGE is not supported with LOBs: http://www.oracle.com/technetwork/articles/fuecks-lobs-095315.html
+                return null;
+        }
+
+        $mergeStmt = $this->pdo->prepare($mergeSql);
+
+        if ('sqlsrv' === $this->driver) {
+            $mergeStmt->bindParam(1, $sessionId, \PDO::PARAM_STR);
+            $mergeStmt->bindParam(2, $sessionId, \PDO::PARAM_STR);
+            $mergeStmt->bindParam(3, $data, \PDO::PARAM_LOB);
+            $mergeStmt->bindParam(4, $maxlifetime, \PDO::PARAM_INT);
+            $mergeStmt->bindValue(5, time(), \PDO::PARAM_INT);
+            $mergeStmt->bindParam(6, $data, \PDO::PARAM_LOB);
+            $mergeStmt->bindParam(7, $maxlifetime, \PDO::PARAM_INT);
+            $mergeStmt->bindValue(8, time(), \PDO::PARAM_INT);
+        } else {
+            $mergeStmt->bindParam(':id', $sessionId, \PDO::PARAM_STR);
+            $mergeStmt->bindParam(':data', $data, \PDO::PARAM_LOB);
+            $mergeStmt->bindParam(':lifetime', $maxlifetime, \PDO::PARAM_INT);
+            $mergeStmt->bindValue(':time', time(), \PDO::PARAM_INT);
+        }
+
+        return $mergeStmt;
+    }
+
+    /**
+     * Returns an update statement supported by the database for writing session data.
+     *
+     * @param string $sessionId Session ID
+     * @param string $sessionData Encoded session data
+     * @param int $maxlifetime session.gc_maxlifetime
+     *
+     * @return \PDOStatement The update statement
+     */
+    private function getUpdateStatement($sessionId, $sessionData, $maxlifetime)
+    {
+        switch ($this->driver) {
+            case 'oci':
+                $data = fopen('php://memory', 'r+');
+                fwrite($data, $sessionData);
+                rewind($data);
+                $sql = "UPDATE $this->table SET $this->dataCol = EMPTY_BLOB(), $this->lifetimeCol = :lifetime, $this->timeCol = :time WHERE $this->idCol = :id RETURNING $this->dataCol into :data";
+                break;
+            default:
+                $data = $sessionData;
+                $sql = "UPDATE $this->table SET $this->dataCol = :data, $this->lifetimeCol = :lifetime, $this->timeCol = :time WHERE $this->idCol = :id";
+                break;
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id', $sessionId, \PDO::PARAM_STR);
+        $stmt->bindParam(':data', $data, \PDO::PARAM_LOB);
+        $stmt->bindParam(':lifetime', $maxlifetime, \PDO::PARAM_INT);
+        $stmt->bindValue(':time', time(), \PDO::PARAM_INT);
+
+        return $stmt;
+    }
+
+    /**
+     * Returns an insert statement supported by the database for writing session data.
+     *
+     * @param string $sessionId Session ID
+     * @param string $sessionData Encoded session data
+     * @param int $maxlifetime session.gc_maxlifetime
+     *
+     * @return \PDOStatement The insert statement
+     */
+    private function getInsertStatement($sessionId, $sessionData, $maxlifetime)
+    {
+        switch ($this->driver) {
+            case 'oci':
+                $data = fopen('php://memory', 'r+');
+                fwrite($data, $sessionData);
+                rewind($data);
+                $sql = "INSERT INTO $this->table ($this->idCol, $this->dataCol, $this->lifetimeCol, $this->timeCol) VALUES (:id, EMPTY_BLOB(), :lifetime, :time) RETURNING $this->dataCol into :data";
+                break;
+            default:
+                $data = $sessionData;
+                $sql = "INSERT INTO $this->table ($this->idCol, $this->dataCol, $this->lifetimeCol, $this->timeCol) VALUES (:id, :data, :lifetime, :time)";
+                break;
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id', $sessionId, \PDO::PARAM_STR);
+        $stmt->bindParam(':data', $data, \PDO::PARAM_LOB);
+        $stmt->bindParam(':lifetime', $maxlifetime, \PDO::PARAM_INT);
+        $stmt->bindValue(':time', time(), \PDO::PARAM_INT);
+
+        return $stmt;
     }
 
     /**
@@ -767,132 +870,29 @@ class PdoSessionHandler extends AbstractSessionHandler
     }
 
     /**
-     * Returns an insert statement supported by the database for writing session data.
+     * Helper method to begin a transaction.
      *
-     * @param string $sessionId   Session ID
-     * @param string $sessionData Encoded session data
-     * @param int    $maxlifetime session.gc_maxlifetime
+     * Since SQLite does not support row level locks, we have to acquire a reserved lock
+     * on the database immediately. Because of https://bugs.php.net/42766 we have to create
+     * such a transaction manually which also means we cannot use PDO::commit or
+     * PDO::rollback or PDO::inTransaction for SQLite.
      *
-     * @return \PDOStatement The insert statement
+     * Also MySQLs default isolation, REPEATABLE READ, causes deadlock for different sessions
+     * due to http://www.mysqlperformanceblog.com/2013/12/12/one-more-innodb-gap-lock-to-avoid/ .
+     * So we change it to READ COMMITTED.
      */
-    private function getInsertStatement($sessionId, $sessionData, $maxlifetime)
+    private function beginTransaction()
     {
-        switch ($this->driver) {
-            case 'oci':
-                $data = fopen('php://memory', 'r+');
-                fwrite($data, $sessionData);
-                rewind($data);
-                $sql = "INSERT INTO $this->table ($this->idCol, $this->dataCol, $this->lifetimeCol, $this->timeCol) VALUES (:id, EMPTY_BLOB(), :lifetime, :time) RETURNING $this->dataCol into :data";
-                break;
-            default:
-                $data = $sessionData;
-                $sql = "INSERT INTO $this->table ($this->idCol, $this->dataCol, $this->lifetimeCol, $this->timeCol) VALUES (:id, :data, :lifetime, :time)";
-                break;
+        if (!$this->inTransaction) {
+            if ('sqlite' === $this->driver) {
+                $this->pdo->exec('BEGIN IMMEDIATE TRANSACTION');
+            } else {
+                if ('mysql' === $this->driver) {
+                    $this->pdo->exec('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
+                }
+                $this->pdo->beginTransaction();
+            }
+            $this->inTransaction = true;
         }
-
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':id', $sessionId, \PDO::PARAM_STR);
-        $stmt->bindParam(':data', $data, \PDO::PARAM_LOB);
-        $stmt->bindParam(':lifetime', $maxlifetime, \PDO::PARAM_INT);
-        $stmt->bindValue(':time', time(), \PDO::PARAM_INT);
-
-        return $stmt;
-    }
-
-    /**
-     * Returns an update statement supported by the database for writing session data.
-     *
-     * @param string $sessionId   Session ID
-     * @param string $sessionData Encoded session data
-     * @param int    $maxlifetime session.gc_maxlifetime
-     *
-     * @return \PDOStatement The update statement
-     */
-    private function getUpdateStatement($sessionId, $sessionData, $maxlifetime)
-    {
-        switch ($this->driver) {
-            case 'oci':
-                $data = fopen('php://memory', 'r+');
-                fwrite($data, $sessionData);
-                rewind($data);
-                $sql = "UPDATE $this->table SET $this->dataCol = EMPTY_BLOB(), $this->lifetimeCol = :lifetime, $this->timeCol = :time WHERE $this->idCol = :id RETURNING $this->dataCol into :data";
-                break;
-            default:
-                $data = $sessionData;
-                $sql = "UPDATE $this->table SET $this->dataCol = :data, $this->lifetimeCol = :lifetime, $this->timeCol = :time WHERE $this->idCol = :id";
-                break;
-        }
-
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':id', $sessionId, \PDO::PARAM_STR);
-        $stmt->bindParam(':data', $data, \PDO::PARAM_LOB);
-        $stmt->bindParam(':lifetime', $maxlifetime, \PDO::PARAM_INT);
-        $stmt->bindValue(':time', time(), \PDO::PARAM_INT);
-
-        return $stmt;
-    }
-
-    /**
-     * Returns a merge/upsert (i.e. insert or update) statement when supported by the database for writing session data.
-     */
-    private function getMergeStatement(string $sessionId, string $data, int $maxlifetime): ?\PDOStatement
-    {
-        switch (true) {
-            case 'mysql' === $this->driver:
-                $mergeSql = "INSERT INTO $this->table ($this->idCol, $this->dataCol, $this->lifetimeCol, $this->timeCol) VALUES (:id, :data, :lifetime, :time) ".
-                    "ON DUPLICATE KEY UPDATE $this->dataCol = VALUES($this->dataCol), $this->lifetimeCol = VALUES($this->lifetimeCol), $this->timeCol = VALUES($this->timeCol)";
-                break;
-            case 'sqlsrv' === $this->driver && version_compare($this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION), '10', '>='):
-                // MERGE is only available since SQL Server 2008 and must be terminated by semicolon
-                // It also requires HOLDLOCK according to http://weblogs.sqlteam.com/dang/archive/2009/01/31/UPSERT-Race-Condition-With-MERGE.aspx
-                $mergeSql = "MERGE INTO $this->table WITH (HOLDLOCK) USING (SELECT 1 AS dummy) AS src ON ($this->idCol = ?) ".
-                    "WHEN NOT MATCHED THEN INSERT ($this->idCol, $this->dataCol, $this->lifetimeCol, $this->timeCol) VALUES (?, ?, ?, ?) ".
-                    "WHEN MATCHED THEN UPDATE SET $this->dataCol = ?, $this->lifetimeCol = ?, $this->timeCol = ?;";
-                break;
-            case 'sqlite' === $this->driver:
-                $mergeSql = "INSERT OR REPLACE INTO $this->table ($this->idCol, $this->dataCol, $this->lifetimeCol, $this->timeCol) VALUES (:id, :data, :lifetime, :time)";
-                break;
-            case 'pgsql' === $this->driver && version_compare($this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION), '9.5', '>='):
-                $mergeSql = "INSERT INTO $this->table ($this->idCol, $this->dataCol, $this->lifetimeCol, $this->timeCol) VALUES (:id, :data, :lifetime, :time) ".
-                    "ON CONFLICT ($this->idCol) DO UPDATE SET ($this->dataCol, $this->lifetimeCol, $this->timeCol) = (EXCLUDED.$this->dataCol, EXCLUDED.$this->lifetimeCol, EXCLUDED.$this->timeCol)";
-                break;
-            default:
-                // MERGE is not supported with LOBs: http://www.oracle.com/technetwork/articles/fuecks-lobs-095315.html
-                return null;
-        }
-
-        $mergeStmt = $this->pdo->prepare($mergeSql);
-
-        if ('sqlsrv' === $this->driver) {
-            $mergeStmt->bindParam(1, $sessionId, \PDO::PARAM_STR);
-            $mergeStmt->bindParam(2, $sessionId, \PDO::PARAM_STR);
-            $mergeStmt->bindParam(3, $data, \PDO::PARAM_LOB);
-            $mergeStmt->bindParam(4, $maxlifetime, \PDO::PARAM_INT);
-            $mergeStmt->bindValue(5, time(), \PDO::PARAM_INT);
-            $mergeStmt->bindParam(6, $data, \PDO::PARAM_LOB);
-            $mergeStmt->bindParam(7, $maxlifetime, \PDO::PARAM_INT);
-            $mergeStmt->bindValue(8, time(), \PDO::PARAM_INT);
-        } else {
-            $mergeStmt->bindParam(':id', $sessionId, \PDO::PARAM_STR);
-            $mergeStmt->bindParam(':data', $data, \PDO::PARAM_LOB);
-            $mergeStmt->bindParam(':lifetime', $maxlifetime, \PDO::PARAM_INT);
-            $mergeStmt->bindValue(':time', time(), \PDO::PARAM_INT);
-        }
-
-        return $mergeStmt;
-    }
-
-    /**
-     * Return a PDO instance.
-     *
-     * @return \PDO
-     */
-    protected function getConnection()
-    {
-        if (null === $this->pdo) {
-            $this->connect($this->dsn ?: ini_get('session.save_path'));
-        }
-
-        return $this->pdo;
     }
 }

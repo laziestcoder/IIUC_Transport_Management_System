@@ -53,7 +53,7 @@ class SQLServerSchemaManager extends AbstractSchemaManager
         } catch (DBALException $exception) {
             $exception = $exception->getPrevious();
 
-            if (! $exception instanceof DriverException) {
+            if (!$exception instanceof DriverException) {
                 throw $exception;
             }
 
@@ -72,11 +72,108 @@ class SQLServerSchemaManager extends AbstractSchemaManager
     }
 
     /**
+     * Closes currently active connections on the given database.
+     *
+     * This is useful to force DROP DATABASE operations which could fail because of active connections.
+     *
+     * @param string $database The name of the database to close currently active connections for.
+     *
+     * @return void
+     */
+    private function closeActiveDatabaseConnections($database)
+    {
+        $database = new Identifier($database);
+
+        $this->_execSql(
+            sprintf(
+                'ALTER DATABASE %s SET SINGLE_USER WITH ROLLBACK IMMEDIATE',
+                $database->getQuotedName($this->_platform)
+            )
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function listTableIndexes($table)
+    {
+        $sql = $this->_platform->getListTableIndexesSQL($table, $this->_conn->getDatabase());
+
+        try {
+            $tableIndexes = $this->_conn->fetchAll($sql);
+        } catch (\PDOException $e) {
+            if ($e->getCode() == "IMSSP") {
+                return [];
+            } else {
+                throw $e;
+            }
+        } catch (DBALException $e) {
+            if (strpos($e->getMessage(), 'SQLSTATE [01000, 15472]') === 0) {
+                return [];
+            } else {
+                throw $e;
+            }
+        }
+
+        return $this->_getPortableTableIndexesList($tableIndexes, $table);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _getPortableTableIndexesList($tableIndexRows, $tableName = null)
+    {
+        foreach ($tableIndexRows as &$tableIndex) {
+            $tableIndex['non_unique'] = (boolean)$tableIndex['non_unique'];
+            $tableIndex['primary'] = (boolean)$tableIndex['primary'];
+            $tableIndex['flags'] = $tableIndex['flags'] ? [$tableIndex['flags']] : null;
+        }
+
+        return parent::_getPortableTableIndexesList($tableIndexRows, $tableName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function alterTable(TableDiff $tableDiff)
+    {
+        if (count($tableDiff->removedColumns) > 0) {
+            foreach ($tableDiff->removedColumns as $col) {
+                $columnConstraintSql = $this->getColumnConstraintSQL($tableDiff->name, $col->getName());
+                foreach ($this->_conn->fetchAll($columnConstraintSql) as $constraint) {
+                    $this->_conn->exec("ALTER TABLE $tableDiff->name DROP CONSTRAINT " . $constraint['Name']);
+                }
+            }
+        }
+
+        parent::alterTable($tableDiff);
+    }
+
+    /**
+     * Returns the SQL to retrieve the constraints for a given column.
+     *
+     * @param string $table
+     * @param string $column
+     *
+     * @return string
+     */
+    private function getColumnConstraintSQL($table, $column)
+    {
+        return "SELECT SysObjects.[Name]
+            FROM SysObjects INNER JOIN (SELECT [Name],[ID] FROM SysObjects WHERE XType = 'U') AS Tab
+            ON Tab.[ID] = Sysobjects.[Parent_Obj]
+            INNER JOIN sys.default_constraints DefCons ON DefCons.[object_id] = Sysobjects.[ID]
+            INNER JOIN SysColumns Col ON Col.[ColID] = DefCons.[parent_column_id] AND Col.[ID] = Tab.[ID]
+            WHERE Col.[Name] = " . $this->_conn->quote($column) . " AND Tab.[Name] = " . $this->_conn->quote($table) . "
+            ORDER BY Col.[Name]";
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function _getPortableSequenceDefinition($sequence)
     {
-        return new Sequence($sequence['name'], (int) $sequence['increment'], (int) $sequence['start_value']);
+        return new Sequence($sequence['name'], (int)$sequence['increment'], (int)$sequence['start_value']);
     }
 
     /**
@@ -86,7 +183,7 @@ class SQLServerSchemaManager extends AbstractSchemaManager
     {
         $dbType = strtok($tableColumn['type'], '(), ');
         $fixed = null;
-        $length = (int) $tableColumn['length'];
+        $length = (int)$tableColumn['length'];
         $default = $tableColumn['default'];
 
         if (!isset($tableColumn['name'])) {
@@ -120,20 +217,20 @@ class SQLServerSchemaManager extends AbstractSchemaManager
             $fixed = true;
         }
 
-        $type                   = $this->_platform->getDoctrineTypeMapping($dbType);
-        $type                   = $this->extractDoctrineTypeFromComment($tableColumn['comment'], $type);
+        $type = $this->_platform->getDoctrineTypeMapping($dbType);
+        $type = $this->extractDoctrineTypeFromComment($tableColumn['comment'], $type);
         $tableColumn['comment'] = $this->removeDoctrineTypeFromComment($tableColumn['comment'], $type);
 
         $options = [
-            'length'        => ($length == 0 || !in_array($type, ['text', 'string'])) ? null : $length,
-            'unsigned'      => false,
-            'fixed'         => (bool) $fixed,
-            'default'       => $default !== 'NULL' ? $default : null,
-            'notnull'       => (bool) $tableColumn['notnull'],
-            'scale'         => $tableColumn['scale'],
-            'precision'     => $tableColumn['precision'],
-            'autoincrement' => (bool) $tableColumn['autoincrement'],
-            'comment'       => $tableColumn['comment'] !== '' ? $tableColumn['comment'] : null,
+            'length' => ($length == 0 || !in_array($type, ['text', 'string'])) ? null : $length,
+            'unsigned' => false,
+            'fixed' => (bool)$fixed,
+            'default' => $default !== 'NULL' ? $default : null,
+            'notnull' => (bool)$tableColumn['notnull'],
+            'scale' => $tableColumn['scale'],
+            'precision' => $tableColumn['precision'],
+            'autoincrement' => (bool)$tableColumn['autoincrement'],
+            'comment' => $tableColumn['comment'] !== '' ? $tableColumn['comment'] : null,
         ];
 
         $column = new Column($tableColumn['name'], Type::getType($type), $options);
@@ -153,7 +250,7 @@ class SQLServerSchemaManager extends AbstractSchemaManager
         $foreignKeys = [];
 
         foreach ($tableForeignKeys as $tableForeignKey) {
-            if ( ! isset($foreignKeys[$tableForeignKey['ForeignKey']])) {
+            if (!isset($foreignKeys[$tableForeignKey['ForeignKey']])) {
                 $foreignKeys[$tableForeignKey['ForeignKey']] = [
                     'local_columns' => [$tableForeignKey['ColumnName']],
                     'foreign_table' => $tableForeignKey['ReferenceTableName'],
@@ -171,20 +268,6 @@ class SQLServerSchemaManager extends AbstractSchemaManager
         }
 
         return parent::_getPortableTableForeignKeysList($foreignKeys);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getPortableTableIndexesList($tableIndexRows, $tableName=null)
-    {
-        foreach ($tableIndexRows as &$tableIndex) {
-            $tableIndex['non_unique'] = (boolean) $tableIndex['non_unique'];
-            $tableIndex['primary'] = (boolean) $tableIndex['primary'];
-            $tableIndex['flags'] = $tableIndex['flags'] ? [$tableIndex['flags']] : null;
-        }
-
-        return parent::_getPortableTableIndexesList($tableIndexRows, $tableName);
     }
 
     /**
@@ -236,88 +319,5 @@ class SQLServerSchemaManager extends AbstractSchemaManager
     {
         // @todo
         return new View($view['name'], null);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function listTableIndexes($table)
-    {
-        $sql = $this->_platform->getListTableIndexesSQL($table, $this->_conn->getDatabase());
-
-        try {
-            $tableIndexes = $this->_conn->fetchAll($sql);
-        } catch (\PDOException $e) {
-            if ($e->getCode() == "IMSSP") {
-                return [];
-            } else {
-                throw $e;
-            }
-        } catch (DBALException $e) {
-            if (strpos($e->getMessage(), 'SQLSTATE [01000, 15472]') === 0) {
-                return [];
-            } else {
-                throw $e;
-            }
-        }
-
-        return $this->_getPortableTableIndexesList($tableIndexes, $table);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function alterTable(TableDiff $tableDiff)
-    {
-        if (count($tableDiff->removedColumns) > 0) {
-            foreach ($tableDiff->removedColumns as $col) {
-                $columnConstraintSql = $this->getColumnConstraintSQL($tableDiff->name, $col->getName());
-                foreach ($this->_conn->fetchAll($columnConstraintSql) as $constraint) {
-                    $this->_conn->exec("ALTER TABLE $tableDiff->name DROP CONSTRAINT " . $constraint['Name']);
-                }
-            }
-        }
-
-        parent::alterTable($tableDiff);
-    }
-
-    /**
-     * Returns the SQL to retrieve the constraints for a given column.
-     *
-     * @param string $table
-     * @param string $column
-     *
-     * @return string
-     */
-    private function getColumnConstraintSQL($table, $column)
-    {
-        return "SELECT SysObjects.[Name]
-            FROM SysObjects INNER JOIN (SELECT [Name],[ID] FROM SysObjects WHERE XType = 'U') AS Tab
-            ON Tab.[ID] = Sysobjects.[Parent_Obj]
-            INNER JOIN sys.default_constraints DefCons ON DefCons.[object_id] = Sysobjects.[ID]
-            INNER JOIN SysColumns Col ON Col.[ColID] = DefCons.[parent_column_id] AND Col.[ID] = Tab.[ID]
-            WHERE Col.[Name] = " . $this->_conn->quote($column) ." AND Tab.[Name] = " . $this->_conn->quote($table) . "
-            ORDER BY Col.[Name]";
-    }
-
-    /**
-     * Closes currently active connections on the given database.
-     *
-     * This is useful to force DROP DATABASE operations which could fail because of active connections.
-     *
-     * @param string $database The name of the database to close currently active connections for.
-     *
-     * @return void
-     */
-    private function closeActiveDatabaseConnections($database)
-    {
-        $database = new Identifier($database);
-
-        $this->_execSql(
-            sprintf(
-                'ALTER DATABASE %s SET SINGLE_USER WITH ROLLBACK IMMEDIATE',
-                $database->getQuotedName($this->_platform)
-            )
-        );
     }
 }

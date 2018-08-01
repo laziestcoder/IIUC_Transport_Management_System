@@ -34,20 +34,20 @@ class ReservedWordsCommand extends Command
      * @var array
      */
     private $keywordListClasses = [
-        'mysql'         => 'Doctrine\DBAL\Platforms\Keywords\MySQLKeywords',
-        'mysql57'       => 'Doctrine\DBAL\Platforms\Keywords\MySQL57Keywords',
-        'mysql80'       => 'Doctrine\DBAL\Platforms\Keywords\MySQL80Keywords',
-        'sqlserver'     => 'Doctrine\DBAL\Platforms\Keywords\SQLServerKeywords',
+        'mysql' => 'Doctrine\DBAL\Platforms\Keywords\MySQLKeywords',
+        'mysql57' => 'Doctrine\DBAL\Platforms\Keywords\MySQL57Keywords',
+        'mysql80' => 'Doctrine\DBAL\Platforms\Keywords\MySQL80Keywords',
+        'sqlserver' => 'Doctrine\DBAL\Platforms\Keywords\SQLServerKeywords',
         'sqlserver2005' => 'Doctrine\DBAL\Platforms\Keywords\SQLServer2005Keywords',
         'sqlserver2008' => 'Doctrine\DBAL\Platforms\Keywords\SQLServer2008Keywords',
         'sqlserver2012' => 'Doctrine\DBAL\Platforms\Keywords\SQLServer2012Keywords',
-        'sqlite'        => 'Doctrine\DBAL\Platforms\Keywords\SQLiteKeywords',
-        'pgsql'         => 'Doctrine\DBAL\Platforms\Keywords\PostgreSQLKeywords',
-        'pgsql91'       => 'Doctrine\DBAL\Platforms\Keywords\PostgreSQL91Keywords',
-        'pgsql92'       => 'Doctrine\DBAL\Platforms\Keywords\PostgreSQL92Keywords',
-        'oracle'        => 'Doctrine\DBAL\Platforms\Keywords\OracleKeywords',
-        'db2'           => 'Doctrine\DBAL\Platforms\Keywords\DB2Keywords',
-        'sqlanywhere'   => 'Doctrine\DBAL\Platforms\Keywords\SQLAnywhereKeywords',
+        'sqlite' => 'Doctrine\DBAL\Platforms\Keywords\SQLiteKeywords',
+        'pgsql' => 'Doctrine\DBAL\Platforms\Keywords\PostgreSQLKeywords',
+        'pgsql91' => 'Doctrine\DBAL\Platforms\Keywords\PostgreSQL91Keywords',
+        'pgsql92' => 'Doctrine\DBAL\Platforms\Keywords\PostgreSQL92Keywords',
+        'oracle' => 'Doctrine\DBAL\Platforms\Keywords\OracleKeywords',
+        'db2' => 'Doctrine\DBAL\Platforms\Keywords\DB2Keywords',
+        'sqlanywhere' => 'Doctrine\DBAL\Platforms\Keywords\SQLAnywhereKeywords',
         'sqlanywhere11' => 'Doctrine\DBAL\Platforms\Keywords\SQLAnywhere11Keywords',
         'sqlanywhere12' => 'Doctrine\DBAL\Platforms\Keywords\SQLAnywhere12Keywords',
         'sqlanywhere16' => 'Doctrine\DBAL\Platforms\Keywords\SQLAnywhere16Keywords',
@@ -72,14 +72,14 @@ class ReservedWordsCommand extends Command
     protected function configure()
     {
         $this
-        ->setName('dbal:reserved-words')
-        ->setDescription('Checks if the current database contains identifiers that are reserved.')
-        ->setDefinition([
-            new InputOption(
-                'list', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Keyword-List name.'
-            )
-        ])
-        ->setHelp(<<<EOT
+            ->setName('dbal:reserved-words')
+            ->setDescription('Checks if the current database contains identifiers that are reserved.')
+            ->setDefinition([
+                new InputOption(
+                    'list', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Keyword-List name.'
+                )
+            ])
+            ->setHelp(<<<EOT
 Checks if the current database contains tables and columns
 with names that are identifiers in this dialect or in other SQL dialects.
 
@@ -112,7 +112,7 @@ The following keyword lists are currently shipped with Doctrine:
     * sqlanywhere16
     * db2 (Not checked by default)
 EOT
-        );
+            );
     }
 
     /**
@@ -123,8 +123,8 @@ EOT
         /* @var $conn \Doctrine\DBAL\Connection */
         $conn = $this->getHelper('db')->getConnection();
 
-        $keywordLists = (array) $input->getOption('list');
-        if ( ! $keywordLists) {
+        $keywordLists = (array)$input->getOption('list');
+        if (!$keywordLists) {
             $keywordLists = [
                 'mysql',
                 'mysql57',
@@ -148,7 +148,7 @@ EOT
         foreach ($keywordLists as $keywordList) {
             if (!isset($this->keywordListClasses[$keywordList])) {
                 throw new \InvalidArgumentException(
-                    "There exists no keyword list with name '" . $keywordList . "'. ".
+                    "There exists no keyword list with name '" . $keywordList . "'. " .
                     "Known lists: " . implode(", ", array_keys($this->keywordListClasses))
                 );
             }

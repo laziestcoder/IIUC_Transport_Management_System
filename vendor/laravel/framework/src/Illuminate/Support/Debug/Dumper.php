@@ -10,7 +10,7 @@ class Dumper
     /**
      * Dump a value with elegance.
      *
-     * @param  mixed  $value
+     * @param  mixed $value
      * @return void
      */
     public function dump($value)

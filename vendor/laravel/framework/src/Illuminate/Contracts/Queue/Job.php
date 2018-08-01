@@ -28,7 +28,7 @@ interface Job
     /**
      * Release the job back into the queue.
      *
-     * @param  int   $delay
+     * @param  int $delay
      * @return mixed
      */
     public function release($delay = 0);
@@ -64,7 +64,7 @@ interface Job
     /**
      * Process an exception that caused the job to fail.
      *
-     * @param  \Throwable  $e
+     * @param  \Throwable $e
      * @return void
      */
     public function failed($e);

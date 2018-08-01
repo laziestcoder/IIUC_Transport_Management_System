@@ -28,6 +28,17 @@ class ServiceValueResolverTest extends TestCase
         $this->assertFalse($resolver->supports($request, $argument));
     }
 
+    private function requestWithAttributes(array $attributes)
+    {
+        $request = Request::create('/');
+
+        foreach ($attributes as $name => $value) {
+            $request->attributes->set($name, $value);
+        }
+
+        return $request;
+    }
+
     public function testExistingController()
     {
         $resolver = new ServiceValueResolver(new ServiceLocator(array(
@@ -45,6 +56,16 @@ class ServiceValueResolverTest extends TestCase
 
         $this->assertTrue($resolver->supports($request, $argument));
         $this->assertYieldEquals(array(new DummyService()), $resolver->resolve($request, $argument));
+    }
+
+    private function assertYieldEquals(array $expected, \Generator $generator)
+    {
+        $args = array();
+        foreach ($generator as $arg) {
+            $args[] = $arg;
+        }
+
+        $this->assertEquals($expected, $args);
     }
 
     public function testExistingControllerWithATrailingBackSlash()
@@ -83,27 +104,6 @@ class ServiceValueResolverTest extends TestCase
 
         $this->assertTrue($resolver->supports($request, $argument));
         $this->assertYieldEquals(array(new DummyService()), $resolver->resolve($request, $argument));
-    }
-
-    private function requestWithAttributes(array $attributes)
-    {
-        $request = Request::create('/');
-
-        foreach ($attributes as $name => $value) {
-            $request->attributes->set($name, $value);
-        }
-
-        return $request;
-    }
-
-    private function assertYieldEquals(array $expected, \Generator $generator)
-    {
-        $args = array();
-        foreach ($generator as $arg) {
-            $args[] = $arg;
-        }
-
-        $this->assertEquals($expected, $args);
     }
 }
 

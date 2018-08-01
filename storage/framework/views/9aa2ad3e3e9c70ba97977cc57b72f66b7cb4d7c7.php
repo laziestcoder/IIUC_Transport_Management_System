@@ -18,24 +18,17 @@
             <form action="<?php echo $action; ?>" method="get" pjax-container>
                 <div class="modal-body">
                     <div class="form">
-                        <?php $__currentLoopData = $filters;
-                        $__env->addLoop($__currentLoopData);
-                        foreach ($__currentLoopData as $filter): $__env->incrementLoopIndices();
-                            $loop = $__env->getLastLoop(); ?>
+                        <?php $__currentLoopData = $filters; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $filter): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="form-group">
                                 <?php echo $filter->render(); ?>
 
                             </div>
-                        <?php endforeach;
-                        $__env->popLoop();
-                        $loop = $__env->getLastLoop(); ?>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit"
-                            class="btn btn-primary submit"><?php echo e(trans('admin.submit')); ?></button>
-                    <button type="reset"
-                            class="btn btn-warning pull-left"><?php echo e(trans('admin.reset')); ?></button>
+                    <button type="submit" class="btn btn-primary submit"><?php echo e(trans('admin.submit')); ?></button>
+                    <button type="reset" class="btn btn-warning pull-left"><?php echo e(trans('admin.reset')); ?></button>
                 </div>
             </form>
         </div>

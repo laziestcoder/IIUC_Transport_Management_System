@@ -12,9 +12,9 @@
 namespace Monolog\Handler;
 
 use Gelf\Message;
-use Monolog\TestCase;
-use Monolog\Logger;
 use Monolog\Formatter\GelfMessageFormatter;
+use Monolog\Logger;
+use Monolog\TestCase;
 
 class GelfHandlerLegacyTest extends TestCase
 {
@@ -36,13 +36,6 @@ class GelfHandlerLegacyTest extends TestCase
         $this->assertInstanceOf('Monolog\Handler\GelfHandler', $handler);
     }
 
-    protected function getHandler($messagePublisher)
-    {
-        $handler = new GelfHandler($messagePublisher);
-
-        return $handler;
-    }
-
     protected function getMessagePublisher()
     {
         return new GelfMockMessagePublisher('localhost');
@@ -60,6 +53,13 @@ class GelfHandlerLegacyTest extends TestCase
         $this->assertEquals('test', $messagePublisher->lastMessage->getFacility());
         $this->assertEquals($record['message'], $messagePublisher->lastMessage->getShortMessage());
         $this->assertEquals(null, $messagePublisher->lastMessage->getFullMessage());
+    }
+
+    protected function getHandler($messagePublisher)
+    {
+        $handler = new GelfHandler($messagePublisher);
+
+        return $handler;
     }
 
     public function testWarning()

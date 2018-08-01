@@ -19,7 +19,7 @@
 
 namespace Doctrine\Common\Cache;
 
-use \Memcached;
+use Memcached;
 
 /**
  * Memcached cache provider.
@@ -40,6 +40,16 @@ class MemcachedCache extends CacheProvider
     private $memcached;
 
     /**
+     * Gets the memcached instance used by the cache.
+     *
+     * @return Memcached|null
+     */
+    public function getMemcached()
+    {
+        return $this->memcached;
+    }
+
+    /**
      * Sets the memcache instance to use.
      *
      * @param Memcached $memcached
@@ -49,16 +59,6 @@ class MemcachedCache extends CacheProvider
     public function setMemcached(Memcached $memcached)
     {
         $this->memcached = $memcached;
-    }
-
-    /**
-     * Gets the memcached instance used by the cache.
-     *
-     * @return Memcached|null
-     */
-    public function getMemcached()
-    {
-        return $this->memcached;
     }
 
     /**
@@ -107,7 +107,7 @@ class MemcachedCache extends CacheProvider
         if ($lifeTime > 30 * 24 * 3600) {
             $lifeTime = time() + $lifeTime;
         }
-        return $this->memcached->set($id, $data, (int) $lifeTime);
+        return $this->memcached->set($id, $data, (int)$lifeTime);
     }
 
     /**
@@ -141,15 +141,15 @@ class MemcachedCache extends CacheProvider
      */
     protected function doGetStats()
     {
-        $stats   = $this->memcached->getStats();
+        $stats = $this->memcached->getStats();
         $servers = $this->memcached->getServerList();
-        $key     = $servers[0]['host'] . ':' . $servers[0]['port'];
-        $stats   = $stats[$key];
+        $key = $servers[0]['host'] . ':' . $servers[0]['port'];
+        $stats = $stats[$key];
         return [
-            Cache::STATS_HITS   => $stats['get_hits'],
+            Cache::STATS_HITS => $stats['get_hits'],
             Cache::STATS_MISSES => $stats['get_misses'],
             Cache::STATS_UPTIME => $stats['uptime'],
-            Cache::STATS_MEMORY_USAGE     => $stats['bytes'],
+            Cache::STATS_MEMORY_USAGE => $stats['bytes'],
             Cache::STATS_MEMORY_AVAILABLE => $stats['limit_maxbytes'],
         ];
     }

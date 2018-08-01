@@ -26,8 +26,8 @@ class EngineResolver
      *
      * The engine string typically corresponds to a file extension.
      *
-     * @param  string   $engine
-     * @param  \Closure  $resolver
+     * @param  string $engine
+     * @param  \Closure $resolver
      * @return void
      */
     public function register($engine, Closure $resolver)
@@ -40,7 +40,7 @@ class EngineResolver
     /**
      * Resolve an engine instance by name.
      *
-     * @param  string  $engine
+     * @param  string $engine
      * @return \Illuminate\Contracts\View\Engine
      * @throws \InvalidArgumentException
      */

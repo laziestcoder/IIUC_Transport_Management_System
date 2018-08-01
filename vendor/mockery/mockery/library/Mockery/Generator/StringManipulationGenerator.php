@@ -38,6 +38,11 @@ class StringManipulationGenerator implements Generator
 {
     protected $passes = array();
 
+    public function __construct(array $passes)
+    {
+        $this->passes = $passes;
+    }
+
     /**
      * Creates a new StringManipulationGenerator with the default passes
      *
@@ -59,11 +64,6 @@ class StringManipulationGenerator implements Generator
             new RemoveDestructorPass(),
             new ConstantsPass(),
         ]);
-    }
-
-    public function __construct(array $passes)
-    {
-        $this->passes = $passes;
     }
 
     public function generate(MockConfiguration $config)

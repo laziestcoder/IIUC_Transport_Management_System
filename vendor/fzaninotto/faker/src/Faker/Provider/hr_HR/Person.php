@@ -16,7 +16,7 @@ class Person extends \Faker\Provider\Person
      */
     protected static $firstNameFemale = array(
         'Ana', 'Anamarija', 'Andrea', 'Anja', 'Antonela', 'Antonija', 'Anđela', 'Barbara', 'Dora', 'Dorotea', 'Dunja', 'Ela', 'Elena', 'Ella', 'Ema', 'Ena', 'Eva', 'Franka', 'Gabrijela', 'Hana', 'Helena', 'Ines', 'Iris', 'Ivana', 'Ivona', 'Jelena', 'Josipa', 'Karla', 'Katarina', 'Katja', 'Klara', 'Korina', 'Kristina', 'Lana', 'Lara', 'Laura', 'Lea', 'Lena', 'Leona', 'Lora', 'Lorena', 'Lucija', 'Magdalena', 'Maja', 'Manuela', 'Mara', 'Marija', 'Marina', 'Marta', 'Martina', 'Matea', 'Maša', 'Melani', 'Melanie', 'Mia', 'Mihaela', 'Mila', 'Monika', 'Nela', 'Nika', 'Nikolina', 'Nina', 'Nora', 'Paola', 'Patricia', 'Paula', 'Petra', 'Sara', 'Stela', 'Stella', 'Tamara', 'Tara', 'Tea', 'Tena', 'Tia', 'Tina', 'Valentina', 'Vanesa', 'Vanessa', 'Veronika', 'Viktorija'
-     );
+    );
 
     /**
      * @link http://surnames.behindthename.com/names/usage/croatian

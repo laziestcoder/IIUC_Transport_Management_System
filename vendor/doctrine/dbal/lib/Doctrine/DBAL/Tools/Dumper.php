@@ -47,10 +47,10 @@ final class Dumper
      *
      * @link https://xdebug.org/
      *
-     * @param mixed $var      The variable to dump.
-     * @param int   $maxDepth The maximum nesting level for object properties.
+     * @param mixed $var The variable to dump.
+     * @param int $maxDepth The maximum nesting level for object properties.
      */
-    public static function dump($var, int $maxDepth = 2) : string
+    public static function dump($var, int $maxDepth = 2): string
     {
         $html = ini_get('html_errors');
 
@@ -82,7 +82,7 @@ final class Dumper
     public static function export($var, int $maxDepth)
     {
         $return = null;
-        $isObj  = is_object($var);
+        $isObj = is_object($var);
 
         if ($var instanceof Collection) {
             $var = $var->toArray();
@@ -103,15 +103,15 @@ final class Dumper
             return $return;
         }
 
-        if (! $isObj) {
+        if (!$isObj) {
             return $var;
         }
 
         $return = new stdClass();
         if ($var instanceof DateTimeInterface) {
             $return->__CLASS__ = get_class($var);
-            $return->date      = $var->format('c');
-            $return->timezone  = $var->getTimezone()->getName();
+            $return->date = $var->format('c');
+            $return->timezone = $var->getTimezone()->getName();
 
             return $return;
         }
@@ -119,7 +119,7 @@ final class Dumper
         $return->__CLASS__ = self::getClass($var);
 
         if ($var instanceof Proxy) {
-            $return->__IS_PROXY__          = true;
+            $return->__IS_PROXY__ = true;
             $return->__PROXY_INITIALIZED__ = $var->__isInitialized();
         }
 
@@ -128,6 +128,26 @@ final class Dumper
         }
 
         return self::fillReturnWithClassAttributes($var, $return, $maxDepth);
+    }
+
+    /**
+     * @param object $object
+     */
+    private static function getClass($object): string
+    {
+        $class = get_class($object);
+
+        if (!class_exists(Proxy::class)) {
+            return $class;
+        }
+
+        $pos = strrpos($class, '\\' . Proxy::MARKER . '\\');
+
+        if ($pos === false) {
+            return $class;
+        }
+
+        return substr($class, $pos + Proxy::MARKER_LENGTH + 2);
     }
 
     /**
@@ -140,10 +160,10 @@ final class Dumper
      */
     private static function fillReturnWithClassAttributes($var, stdClass $return, int $maxDepth)
     {
-        $clone = (array) $var;
+        $clone = (array)$var;
 
         foreach (array_keys($clone) as $key) {
-            $aux  = explode("\0", $key);
+            $aux = explode("\0", $key);
             $name = end($aux);
             if ($aux[0] === '') {
                 $name .= ':' . ($aux[1] === '*' ? 'protected' : $aux[1] . ':private');
@@ -152,25 +172,5 @@ final class Dumper
         }
 
         return $return;
-    }
-
-    /**
-     * @param object $object
-     */
-    private static function getClass($object) : string
-    {
-        $class = get_class($object);
-
-        if (! class_exists(Proxy::class)) {
-            return $class;
-        }
-
-        $pos = strrpos($class, '\\' . Proxy::MARKER . '\\');
-
-        if ($pos === false) {
-            return $class;
-        }
-
-        return substr($class, $pos + Proxy::MARKER_LENGTH + 2);
     }
 }

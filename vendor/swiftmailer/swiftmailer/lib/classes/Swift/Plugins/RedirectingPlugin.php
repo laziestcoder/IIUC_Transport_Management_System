@@ -42,16 +42,6 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     }
 
     /**
-     * Set the recipient of all messages.
-     *
-     * @param mixed $recipient
-     */
-    public function setRecipient($recipient)
-    {
-        $this->recipient = $recipient;
-    }
-
-    /**
      * Get the recipient of all messages.
      *
      * @return mixed
@@ -62,13 +52,13 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     }
 
     /**
-     * Set a list of regular expressions to whitelist certain recipients.
+     * Set the recipient of all messages.
      *
-     * @param array $whitelist
+     * @param mixed $recipient
      */
-    public function setWhitelist(array $whitelist)
+    public function setRecipient($recipient)
     {
-        $this->whitelist = $whitelist;
+        $this->recipient = $recipient;
     }
 
     /**
@@ -79,6 +69,16 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     public function getWhitelist()
     {
         return $this->whitelist;
+    }
+
+    /**
+     * Set a list of regular expressions to whitelist certain recipients.
+     *
+     * @param array $whitelist
+     */
+    public function setWhitelist(array $whitelist)
+    {
+        $this->whitelist = $whitelist;
     }
 
     /**
@@ -116,7 +116,7 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
             $to = array();
         }
 
-        foreach ((array) $this->recipient as $recipient) {
+        foreach ((array)$this->recipient as $recipient) {
             if (!array_key_exists($recipient, $to)) {
                 $message->addTo($recipient);
             }
@@ -127,7 +127,7 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
      * Filter header set against a whitelist of regular expressions.
      *
      * @param Swift_Mime_SimpleHeaderSet $headerSet
-     * @param string                     $type
+     * @param string $type
      */
     private function filterHeaderSet(Swift_Mime_SimpleHeaderSet $headerSet, $type)
     {
@@ -165,7 +165,7 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
      */
     protected function isWhitelisted($recipient)
     {
-        if (in_array($recipient, (array) $this->recipient)) {
+        if (in_array($recipient, (array)$this->recipient)) {
             return true;
         }
 

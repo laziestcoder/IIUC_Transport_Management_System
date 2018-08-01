@@ -11,8 +11,8 @@ trait ConfirmableTrait
      *
      * This method only asks for confirmation in production.
      *
-     * @param  string  $warning
-     * @param  \Closure|bool|null  $callback
+     * @param  string $warning
+     * @param  \Closure|bool|null $callback
      * @return bool
      */
     public function confirmToProceed($warning = 'Application In Production!', $callback = null)
@@ -30,7 +30,7 @@ trait ConfirmableTrait
 
             $confirmed = $this->confirm('Do you really wish to run this command?');
 
-            if (! $confirmed) {
+            if (!$confirmed) {
                 $this->comment('Command Cancelled!');
 
                 return false;

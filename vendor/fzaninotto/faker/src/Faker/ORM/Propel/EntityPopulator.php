@@ -2,8 +2,8 @@
 
 namespace Faker\ORM\Propel;
 
-use \Faker\Provider\Base;
-use \ColumnMap;
+use ColumnMap;
+use Faker\Provider\Base;
 
 /**
  * Service class for populating a table through a Propel ActiveRecord class.
@@ -30,19 +30,6 @@ class EntityPopulator
     public function getClass()
     {
         return $this->class;
-    }
-
-    public function setColumnFormatters($columnFormatters)
-    {
-        $this->columnFormatters = $columnFormatters;
-    }
-
-    /**
-     * @return array
-     */
-    public function getColumnFormatters()
-    {
-        return $this->columnFormatters;
     }
 
     public function mergeColumnFormattersWith($columnFormatters)
@@ -117,19 +104,6 @@ class EntityPopulator
         return false;
     }
 
-    public function setModifiers($modifiers)
-    {
-        $this->modifiers = $modifiers;
-    }
-
-    /**
-     * @return array
-     */
-    public function getModifiers()
-    {
-        return $this->modifiers;
-    }
-
     public function mergeModifiersWith($modifiers)
     {
         $this->modifiers = array_merge($this->modifiers, $modifiers);
@@ -187,5 +161,31 @@ class EntityPopulator
         $obj->save($con);
 
         return $obj->getPrimaryKey();
+    }
+
+    /**
+     * @return array
+     */
+    public function getColumnFormatters()
+    {
+        return $this->columnFormatters;
+    }
+
+    public function setColumnFormatters($columnFormatters)
+    {
+        $this->columnFormatters = $columnFormatters;
+    }
+
+    /**
+     * @return array
+     */
+    public function getModifiers()
+    {
+        return $this->modifiers;
+    }
+
+    public function setModifiers($modifiers)
+    {
+        $this->modifiers = $modifiers;
     }
 }

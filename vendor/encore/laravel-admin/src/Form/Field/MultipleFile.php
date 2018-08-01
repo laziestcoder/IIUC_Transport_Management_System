@@ -33,7 +33,7 @@ class MultipleFile extends Field
      * Create a new File instance.
      *
      * @param string $column
-     * @param array  $arguments
+     * @param array $arguments
      */
     public function __construct($column, $arguments = [])
     {
@@ -94,8 +94,8 @@ class MultipleFile extends Field
         $rules = $input = [];
 
         foreach ($value as $key => $file) {
-            $rules[$this->column.$key] = $this->getRules();
-            $input[$this->column.$key] = $file;
+            $rules[$this->column . $key] = $this->getRules();
+            $input[$this->column . $key] = $file;
         }
 
         return [$rules, $input];
@@ -120,6 +120,26 @@ class MultipleFile extends Field
     }
 
     /**
+     * Destroy original files.
+     *
+     * @return string.
+     */
+    public function destroy($key)
+    {
+        $files = $this->original ?: [];
+
+        $file = array_get($files, $key);
+
+        if ($this->storage->exists($file)) {
+            $this->storage->delete($file);
+        }
+
+        unset($files[$key]);
+
+        return array_values($files);
+    }
+
+    /**
      * @return array|mixed
      */
     public function original()
@@ -129,6 +149,43 @@ class MultipleFile extends Field
         }
 
         return $this->original;
+    }
+
+    /**
+     * Render file upload field.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function render()
+    {
+        $this->attribute('multiple', true);
+
+        $this->setupDefaultOptions();
+
+        if (!empty($this->value)) {
+            $this->options(['initialPreview' => $this->preview()]);
+            $this->setupPreviewOptions();
+        }
+
+        $options = json_encode($this->options);
+
+        $this->script = <<<EOT
+$("input{$this->getElementClassSelector()}").fileinput({$options});
+EOT;
+
+        return parent::render();
+    }
+
+    /**
+     * Preview html for file-upload plugin.
+     *
+     * @return array
+     */
+    protected function preview()
+    {
+        $files = $this->value ?: [];
+
+        return array_map([$this, 'objectUrl'], $files);
     }
 
     /**
@@ -145,18 +202,6 @@ class MultipleFile extends Field
         return tap($this->upload($file), function () {
             $this->name = null;
         });
-    }
-
-    /**
-     * Preview html for file-upload plugin.
-     *
-     * @return array
-     */
-    protected function preview()
-    {
-        $files = $this->value ?: [];
-
-        return array_map([$this, 'objectUrl'], $files);
     }
 
     /**
@@ -189,55 +234,10 @@ class MultipleFile extends Field
         foreach ($files as $index => $file) {
             $config[] = [
                 'caption' => basename($file),
-                'key'     => $index,
+                'key' => $index,
             ];
         }
 
         return $config;
-    }
-
-    /**
-     * Render file upload field.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function render()
-    {
-        $this->attribute('multiple', true);
-
-        $this->setupDefaultOptions();
-
-        if (!empty($this->value)) {
-            $this->options(['initialPreview' => $this->preview()]);
-            $this->setupPreviewOptions();
-        }
-
-        $options = json_encode($this->options);
-
-        $this->script = <<<EOT
-$("input{$this->getElementClassSelector()}").fileinput({$options});
-EOT;
-
-        return parent::render();
-    }
-
-    /**
-     * Destroy original files.
-     *
-     * @return string.
-     */
-    public function destroy($key)
-    {
-        $files = $this->original ?: [];
-
-        $file = array_get($files, $key);
-
-        if ($this->storage->exists($file)) {
-            $this->storage->delete($file);
-        }
-
-        unset($files[$key]);
-
-        return array_values($files);
     }
 }

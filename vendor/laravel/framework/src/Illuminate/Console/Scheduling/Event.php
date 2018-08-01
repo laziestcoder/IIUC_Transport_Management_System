@@ -4,13 +4,13 @@ namespace Illuminate\Console\Scheduling;
 
 use Closure;
 use Cron\CronExpression;
+use GuzzleHttp\Client as HttpClient;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
-use GuzzleHttp\Client as HttpClient;
-use Illuminate\Contracts\Mail\Mailer;
-use Symfony\Component\Process\Process;
 use Illuminate\Support\Traits\Macroable;
-use Illuminate\Contracts\Container\Container;
+use Symfony\Component\Process\Process;
 
 class Event
 {
@@ -85,42 +85,48 @@ class Event
      * @var bool
      */
     public $runInBackground = false;
-
-    /**
-     * The array of filter callbacks.
-     *
-     * @var array
-     */
-    protected $filters = [];
-
-    /**
-     * The array of reject callbacks.
-     *
-     * @var array
-     */
-    protected $rejects = [];
-
     /**
      * The location that output should be sent to.
      *
      * @var string
      */
     public $output = '/dev/null';
-
     /**
      * Indicates whether output should be appended.
      *
      * @var bool
      */
     public $shouldAppendOutput = false;
-
+    /**
+     * The human readable description of the event.
+     *
+     * @var string
+     */
+    public $description;
+    /**
+     * The event mutex implementation.
+     *
+     * @var \Illuminate\Console\Scheduling\EventMutex
+     */
+    public $mutex;
+    /**
+     * The array of filter callbacks.
+     *
+     * @var array
+     */
+    protected $filters = [];
+    /**
+     * The array of reject callbacks.
+     *
+     * @var array
+     */
+    protected $rejects = [];
     /**
      * The array of callbacks to be run before the event is started.
      *
      * @var array
      */
     protected $beforeCallbacks = [];
-
     /**
      * The array of callbacks to be run after the event is finished.
      *
@@ -129,24 +135,10 @@ class Event
     protected $afterCallbacks = [];
 
     /**
-     * The human readable description of the event.
-     *
-     * @var string
-     */
-    public $description;
-
-    /**
-     * The event mutex implementation.
-     *
-     * @var \Illuminate\Console\Scheduling\EventMutex
-     */
-    public $mutex;
-
-    /**
      * Create a new event instance.
      *
-     * @param  \Illuminate\Console\Scheduling\Mutex  $mutex
-     * @param  string  $command
+     * @param  \Illuminate\Console\Scheduling\Mutex $mutex
+     * @param  string $command
      * @return void
      */
     public function __construct(EventMutex $mutex, $command)
@@ -169,52 +161,25 @@ class Event
     /**
      * Run the given event.
      *
-     * @param  \Illuminate\Contracts\Container\Container  $container
+     * @param  \Illuminate\Contracts\Container\Container $container
      * @return void
      */
     public function run(Container $container)
     {
         if ($this->withoutOverlapping &&
-            ! $this->mutex->create($this)) {
+            !$this->mutex->create($this)) {
             return;
         }
 
         $this->runInBackground
-                    ? $this->runCommandInBackground($container)
-                    : $this->runCommandInForeground($container);
-    }
-
-    /**
-     * Get the mutex name for the scheduled command.
-     *
-     * @return string
-     */
-    public function mutexName()
-    {
-        return 'framework'.DIRECTORY_SEPARATOR.'schedule-'.sha1($this->expression.$this->command);
-    }
-
-    /**
-     * Run the command in the foreground.
-     *
-     * @param  \Illuminate\Contracts\Container\Container  $container
-     * @return void
-     */
-    protected function runCommandInForeground(Container $container)
-    {
-        $this->callBeforeCallbacks($container);
-
-        (new Process(
-            $this->buildCommand(), base_path(), null, null, null
-        ))->run();
-
-        $this->callAfterCallbacks($container);
+            ? $this->runCommandInBackground($container)
+            : $this->runCommandInForeground($container);
     }
 
     /**
      * Run the command in the background.
      *
-     * @param  \Illuminate\Contracts\Container\Container  $container
+     * @param  \Illuminate\Contracts\Container\Container $container
      * @return void
      */
     protected function runCommandInBackground(Container $container)
@@ -229,25 +194,12 @@ class Event
     /**
      * Call all of the "before" callbacks for the event.
      *
-     * @param  \Illuminate\Contracts\Container\Container  $container
+     * @param  \Illuminate\Contracts\Container\Container $container
      * @return void
      */
     public function callBeforeCallbacks(Container $container)
     {
         foreach ($this->beforeCallbacks as $callback) {
-            $container->call($callback);
-        }
-    }
-
-    /**
-     * Call all of the "after" callbacks for the event.
-     *
-     * @param  \Illuminate\Contracts\Container\Container  $container
-     * @return void
-     */
-    public function callAfterCallbacks(Container $container)
-    {
-        foreach ($this->afterCallbacks as $callback) {
             $container->call($callback);
         }
     }
@@ -263,19 +215,49 @@ class Event
     }
 
     /**
+     * Run the command in the foreground.
+     *
+     * @param  \Illuminate\Contracts\Container\Container $container
+     * @return void
+     */
+    protected function runCommandInForeground(Container $container)
+    {
+        $this->callBeforeCallbacks($container);
+
+        (new Process(
+            $this->buildCommand(), base_path(), null, null, null
+        ))->run();
+
+        $this->callAfterCallbacks($container);
+    }
+
+    /**
+     * Call all of the "after" callbacks for the event.
+     *
+     * @param  \Illuminate\Contracts\Container\Container $container
+     * @return void
+     */
+    public function callAfterCallbacks(Container $container)
+    {
+        foreach ($this->afterCallbacks as $callback) {
+            $container->call($callback);
+        }
+    }
+
+    /**
      * Determine if the given event should run based on the Cron expression.
      *
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @param  \Illuminate\Contracts\Foundation\Application $app
      * @return bool
      */
     public function isDue($app)
     {
-        if (! $this->runsInMaintenanceMode() && $app->isDownForMaintenance()) {
+        if (!$this->runsInMaintenanceMode() && $app->isDownForMaintenance()) {
             return false;
         }
 
         return $this->expressionPasses() &&
-               $this->runsInEnvironment($app->environment());
+            $this->runsInEnvironment($app->environment());
     }
 
     /**
@@ -307,7 +289,7 @@ class Event
     /**
      * Determine if the event runs in the given environment.
      *
-     * @param  string  $environment
+     * @param  string $environment
      * @return bool
      */
     public function runsInEnvironment($environment)
@@ -318,13 +300,13 @@ class Event
     /**
      * Determine if the filters pass for the event.
      *
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @param  \Illuminate\Contracts\Foundation\Application $app
      * @return bool
      */
     public function filtersPass($app)
     {
         foreach ($this->filters as $callback) {
-            if (! $app->call($callback)) {
+            if (!$app->call($callback)) {
                 return false;
             }
         }
@@ -339,10 +321,21 @@ class Event
     }
 
     /**
+     * Append the output of the command to a given location.
+     *
+     * @param  string $location
+     * @return $this
+     */
+    public function appendOutputTo($location)
+    {
+        return $this->sendOutputTo($location, true);
+    }
+
+    /**
      * Send the output of the command to a given location.
      *
-     * @param  string  $location
-     * @param  bool  $append
+     * @param  string $location
+     * @param  bool $append
      * @return $this
      */
     public function sendOutputTo($location, $append = false)
@@ -355,21 +348,23 @@ class Event
     }
 
     /**
-     * Append the output of the command to a given location.
+     * E-mail the results of the scheduled operation if it produces output.
      *
-     * @param  string  $location
+     * @param  array|mixed $addresses
      * @return $this
+     *
+     * @throws \LogicException
      */
-    public function appendOutputTo($location)
+    public function emailWrittenOutputTo($addresses)
     {
-        return $this->sendOutputTo($location, true);
+        return $this->emailOutputTo($addresses, true);
     }
 
     /**
      * E-mail the results of the scheduled operation.
      *
-     * @param  array|mixed  $addresses
-     * @param  bool  $onlyIfOutputExists
+     * @param  array|mixed $addresses
+     * @param  bool $onlyIfOutputExists
      * @return $this
      *
      * @throws \LogicException
@@ -386,19 +381,6 @@ class Event
     }
 
     /**
-     * E-mail the results of the scheduled operation if it produces output.
-     *
-     * @param  array|mixed  $addresses
-     * @return $this
-     *
-     * @throws \LogicException
-     */
-    public function emailWrittenOutputTo($addresses)
-    {
-        return $this->emailOutputTo($addresses, true);
-    }
-
-    /**
      * Ensure that output is being captured for email.
      *
      * @return void
@@ -406,16 +388,39 @@ class Event
     protected function ensureOutputIsBeingCapturedForEmail()
     {
         if (is_null($this->output) || $this->output == $this->getDefaultOutput()) {
-            $this->sendOutputTo(storage_path('logs/schedule-'.sha1($this->mutexName()).'.log'));
+            $this->sendOutputTo(storage_path('logs/schedule-' . sha1($this->mutexName()) . '.log'));
         }
+    }
+
+    /**
+     * Get the mutex name for the scheduled command.
+     *
+     * @return string
+     */
+    public function mutexName()
+    {
+        return 'framework' . DIRECTORY_SEPARATOR . 'schedule-' . sha1($this->expression . $this->command);
+    }
+
+    /**
+     * Register a callback to be called after the operation.
+     *
+     * @param  \Closure $callback
+     * @return $this
+     */
+    public function then(Closure $callback)
+    {
+        $this->afterCallbacks[] = $callback;
+
+        return $this;
     }
 
     /**
      * E-mail the output of the event to the recipients.
      *
-     * @param  \Illuminate\Contracts\Mail\Mailer  $mailer
-     * @param  array  $addresses
-     * @param  bool  $onlyIfOutputExists
+     * @param  \Illuminate\Contracts\Mail\Mailer $mailer
+     * @param  array $addresses
+     * @param  bool $onlyIfOutputExists
      * @return void
      */
     protected function emailOutput(Mailer $mailer, $addresses, $onlyIfOutputExists = false)
@@ -446,9 +451,21 @@ class Event
     }
 
     /**
+     * Register a callback to ping a given URL before the job runs if the given condition is true.
+     *
+     * @param  bool $value
+     * @param  string $url
+     * @return $this
+     */
+    public function pingBeforeIf($value, $url)
+    {
+        return $value ? $this->pingBefore($url) : $this;
+    }
+
+    /**
      * Register a callback to ping a given URL before the job runs.
      *
-     * @param  string  $url
+     * @param  string $url
      * @return $this
      */
     public function pingBefore($url)
@@ -459,21 +476,34 @@ class Event
     }
 
     /**
-     * Register a callback to ping a given URL before the job runs if the given condition is true.
+     * Register a callback to be called before the operation.
      *
-     * @param  bool  $value
-     * @param  string  $url
+     * @param  \Closure $callback
      * @return $this
      */
-    public function pingBeforeIf($value, $url)
+    public function before(Closure $callback)
     {
-        return $value ? $this->pingBefore($url) : $this;
+        $this->beforeCallbacks[] = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Register a callback to ping a given URL after the job runs if the given condition is true.
+     *
+     * @param  bool $value
+     * @param  string $url
+     * @return $this
+     */
+    public function thenPingIf($value, $url)
+    {
+        return $value ? $this->thenPing($url) : $this;
     }
 
     /**
      * Register a callback to ping a given URL after the job runs.
      *
-     * @param  string  $url
+     * @param  string $url
      * @return $this
      */
     public function thenPing($url)
@@ -481,18 +511,6 @@ class Event
         return $this->then(function () use ($url) {
             (new HttpClient)->get($url);
         });
-    }
-
-    /**
-     * Register a callback to ping a given URL after the job runs if the given condition is true.
-     *
-     * @param  bool  $value
-     * @param  string  $url
-     * @return $this
-     */
-    public function thenPingIf($value, $url)
-    {
-        return $value ? $this->thenPing($url) : $this;
     }
 
     /**
@@ -510,7 +528,7 @@ class Event
     /**
      * Set which user the command should run as.
      *
-     * @param  string  $user
+     * @param  string $user
      * @return $this
      */
     public function user($user)
@@ -523,7 +541,7 @@ class Event
     /**
      * Limit the environments the command should run in.
      *
-     * @param  array|mixed  $environments
+     * @param  array|mixed $environments
      * @return $this
      */
     public function environments($environments)
@@ -548,7 +566,7 @@ class Event
     /**
      * Do not allow the event to overlap each other.
      *
-     * @param  int  $expiresAt
+     * @param  int $expiresAt
      * @return $this
      */
     public function withoutOverlapping($expiresAt = 1440)
@@ -562,6 +580,21 @@ class Event
         })->skip(function () {
             return $this->mutex->exists($this);
         });
+    }
+
+    /**
+     * Register a callback to further filter the schedule.
+     *
+     * @param  \Closure|bool $callback
+     * @return $this
+     */
+    public function skip($callback)
+    {
+        $this->rejects[] = is_callable($callback) ? $callback : function () use ($callback) {
+            return $callback;
+        };
+
+        return $this;
     }
 
     /**
@@ -579,7 +612,7 @@ class Event
     /**
      * Register a callback to further filter the schedule.
      *
-     * @param  \Closure|bool  $callback
+     * @param  \Closure|bool $callback
      * @return $this
      */
     public function when($callback)
@@ -592,37 +625,9 @@ class Event
     }
 
     /**
-     * Register a callback to further filter the schedule.
-     *
-     * @param  \Closure|bool  $callback
-     * @return $this
-     */
-    public function skip($callback)
-    {
-        $this->rejects[] = is_callable($callback) ? $callback : function () use ($callback) {
-            return $callback;
-        };
-
-        return $this;
-    }
-
-    /**
-     * Register a callback to be called before the operation.
-     *
-     * @param  \Closure  $callback
-     * @return $this
-     */
-    public function before(Closure $callback)
-    {
-        $this->beforeCallbacks[] = $callback;
-
-        return $this;
-    }
-
-    /**
      * Register a callback to be called after the operation.
      *
-     * @param  \Closure  $callback
+     * @param  \Closure $callback
      * @return $this
      */
     public function after(Closure $callback)
@@ -631,22 +636,9 @@ class Event
     }
 
     /**
-     * Register a callback to be called after the operation.
-     *
-     * @param  \Closure  $callback
-     * @return $this
-     */
-    public function then(Closure $callback)
-    {
-        $this->afterCallbacks[] = $callback;
-
-        return $this;
-    }
-
-    /**
      * Set the human-friendly description of the event.
      *
-     * @param  string  $description
+     * @param  string $description
      * @return $this
      */
     public function name($description)
@@ -657,7 +649,7 @@ class Event
     /**
      * Set the human-friendly description of the event.
      *
-     * @param  string  $description
+     * @param  string $description
      * @return $this
      */
     public function description($description)
@@ -684,9 +676,9 @@ class Event
     /**
      * Determine the next due date for an event.
      *
-     * @param  \DateTime|string  $currentTime
-     * @param  int  $nth
-     * @param  bool  $allowCurrentDate
+     * @param  \DateTime|string $currentTime
+     * @param  int $nth
+     * @param  bool $allowCurrentDate
      * @return \Illuminate\Support\Carbon
      */
     public function nextRunDate($currentTime = 'now', $nth = 0, $allowCurrentDate = false)
@@ -709,7 +701,7 @@ class Event
     /**
      * Set the event mutex implementation to be used.
      *
-     * @param  \Illuminate\Console\Scheduling\EventMutex  $mutex
+     * @param  \Illuminate\Console\Scheduling\EventMutex $mutex
      * @return $this
      */
     public function preventOverlapsUsing(EventMutex $mutex)

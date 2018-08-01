@@ -3,8 +3,8 @@
 namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Encryption\Encrypter;
 use Illuminate\Console\ConfirmableTrait;
+use Illuminate\Encryption\Encrypter;
 
 class KeyGenerateCommand extends Command
 {
@@ -36,13 +36,13 @@ class KeyGenerateCommand extends Command
         $key = $this->generateRandomKey();
 
         if ($this->option('show')) {
-            return $this->line('<comment>'.$key.'</comment>');
+            return $this->line('<comment>' . $key . '</comment>');
         }
 
         // Next, we will replace the application key in the environment file so it is
         // automatically setup for this developer. This key gets generated using a
         // secure random byte generator and is later base64 encoded for storage.
-        if (! $this->setKeyInEnvironmentFile($key)) {
+        if (!$this->setKeyInEnvironmentFile($key)) {
             return;
         }
 
@@ -58,22 +58,22 @@ class KeyGenerateCommand extends Command
      */
     protected function generateRandomKey()
     {
-        return 'base64:'.base64_encode(
-            Encrypter::generateKey($this->laravel['config']['app.cipher'])
-        );
+        return 'base64:' . base64_encode(
+                Encrypter::generateKey($this->laravel['config']['app.cipher'])
+            );
     }
 
     /**
      * Set the application key in the environment file.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return bool
      */
     protected function setKeyInEnvironmentFile($key)
     {
         $currentKey = $this->laravel['config']['app.key'];
 
-        if (strlen($currentKey) !== 0 && (! $this->confirmToProceed())) {
+        if (strlen($currentKey) !== 0 && (!$this->confirmToProceed())) {
             return false;
         }
 
@@ -85,14 +85,14 @@ class KeyGenerateCommand extends Command
     /**
      * Write a new environment file with the given key.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return void
      */
     protected function writeNewEnvironmentFileWith($key)
     {
         file_put_contents($this->laravel->environmentFilePath(), preg_replace(
             $this->keyReplacementPattern(),
-            'APP_KEY='.$key,
+            'APP_KEY=' . $key,
             file_get_contents($this->laravel->environmentFilePath())
         ));
     }
@@ -104,7 +104,7 @@ class KeyGenerateCommand extends Command
      */
     protected function keyReplacementPattern()
     {
-        $escaped = preg_quote('='.$this->laravel['config']['app.key'], '/');
+        $escaped = preg_quote('=' . $this->laravel['config']['app.key'], '/');
 
         return "/^APP_KEY{$escaped}/m";
     }

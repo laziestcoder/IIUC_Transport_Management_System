@@ -11,6 +11,11 @@ class Swift_StreamFilters_StringReplacementFilterFactoryTest extends \PHPUnit\Fr
         );
     }
 
+    private function createFactory()
+    {
+        return new Swift_StreamFilters_StringReplacementFilterFactory();
+    }
+
     public function testSameInstancesAreCached()
     {
         $factory = $this->createFactory();
@@ -26,11 +31,6 @@ class Swift_StreamFilters_StringReplacementFilterFactoryTest extends \PHPUnit\Fr
         $filter2 = $factory->createFilter('a', 'c');
         $this->assertNotEquals($filter1, $filter2,
             '%s: Differing instances should not be cached'
-            );
-    }
-
-    private function createFactory()
-    {
-        return new Swift_StreamFilters_StringReplacementFilterFactory();
+        );
     }
 }

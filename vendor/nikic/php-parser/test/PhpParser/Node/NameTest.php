@@ -6,7 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 class NameTest extends TestCase
 {
-    public function testConstruct() {
+    public function testConstruct()
+    {
         $name = new Name(['foo', 'bar']);
         $this->assertSame(['foo', 'bar'], $name->parts);
 
@@ -17,7 +18,8 @@ class NameTest extends TestCase
         $this->assertSame(['foo', 'bar'], $name->parts);
     }
 
-    public function testGet() {
+    public function testGet()
+    {
         $name = new Name('foo');
         $this->assertSame('foo', $name->getFirst());
         $this->assertSame('foo', $name->getLast());
@@ -27,15 +29,17 @@ class NameTest extends TestCase
         $this->assertSame('bar', $name->getLast());
     }
 
-    public function testToString() {
+    public function testToString()
+    {
         $name = new Name('Foo\Bar');
 
-        $this->assertSame('Foo\Bar', (string) $name);
+        $this->assertSame('Foo\Bar', (string)$name);
         $this->assertSame('Foo\Bar', $name->toString());
         $this->assertSame('foo\bar', $name->toLowerString());
     }
 
-    public function testSlice() {
+    public function testSlice()
+    {
         $name = new Name('foo\bar\baz');
         $this->assertEquals(new Name('foo\bar\baz'), $name->slice(0));
         $this->assertEquals(new Name('bar\baz'), $name->slice(1));
@@ -55,7 +59,8 @@ class NameTest extends TestCase
      * @expectedException \OutOfBoundsException
      * @expectedExceptionMessage Offset 4 is out of bounds
      */
-    public function testSliceOffsetTooLarge() {
+    public function testSliceOffsetTooLarge()
+    {
         (new Name('foo\bar\baz'))->slice(4);
     }
 
@@ -63,7 +68,8 @@ class NameTest extends TestCase
      * @expectedException \OutOfBoundsException
      * @expectedExceptionMessage Offset -4 is out of bounds
      */
-    public function testSliceOffsetTooSmall() {
+    public function testSliceOffsetTooSmall()
+    {
         (new Name('foo\bar\baz'))->slice(-4);
     }
 
@@ -71,7 +77,8 @@ class NameTest extends TestCase
      * @expectedException \OutOfBoundsException
      * @expectedExceptionMessage Length 4 is out of bounds
      */
-    public function testSliceLengthTooLarge() {
+    public function testSliceLengthTooLarge()
+    {
         (new Name('foo\bar\baz'))->slice(0, 4);
     }
 
@@ -79,11 +86,13 @@ class NameTest extends TestCase
      * @expectedException \OutOfBoundsException
      * @expectedExceptionMessage Length -4 is out of bounds
      */
-    public function testSliceLengthTooSmall() {
+    public function testSliceLengthTooSmall()
+    {
         (new Name('foo\bar\baz'))->slice(0, -4);
     }
 
-    public function testConcat() {
+    public function testConcat()
+    {
         $this->assertEquals(new Name('foo\bar\baz'), Name::concat('foo', 'bar\baz'));
         $this->assertEquals(
             new Name\FullyQualified('foo\bar'),
@@ -101,7 +110,8 @@ class NameTest extends TestCase
         $this->assertNull(Name::concat(null, null));
     }
 
-    public function testNameTypes() {
+    public function testNameTypes()
+    {
         $name = new Name('foo');
         $this->assertTrue($name->isUnqualified());
         $this->assertFalse($name->isQualified());
@@ -135,7 +145,8 @@ class NameTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Expected string, array of parts or Name instance
      */
-    public function testInvalidArg() {
+    public function testInvalidArg()
+    {
         Name::concat('foo', new \stdClass);
     }
 
@@ -143,7 +154,8 @@ class NameTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Name cannot be empty
      */
-    public function testInvalidEmptyString() {
+    public function testInvalidEmptyString()
+    {
         new Name('');
     }
 
@@ -151,17 +163,20 @@ class NameTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Name cannot be empty
      */
-    public function testInvalidEmptyArray() {
+    public function testInvalidEmptyArray()
+    {
         new Name([]);
     }
 
     /** @dataProvider provideTestIsSpecialClassName */
-    public function testIsSpecialClassName($name, $expected) {
+    public function testIsSpecialClassName($name, $expected)
+    {
         $name = new Name($name);
         $this->assertSame($expected, $name->isSpecialClassName());
     }
 
-    public function provideTestIsSpecialClassName() {
+    public function provideTestIsSpecialClassName()
+    {
         return [
             ['self', true],
             ['PARENT', true],

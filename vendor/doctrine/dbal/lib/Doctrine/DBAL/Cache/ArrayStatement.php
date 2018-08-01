@@ -102,13 +102,26 @@ class ArrayStatement implements \IteratorAggregate, ResultStatement
     /**
      * {@inheritdoc}
      */
+    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
+    {
+        $rows = [];
+        while ($row = $this->fetch($fetchMode)) {
+            $rows[] = $row;
+        }
+
+        return $rows;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function fetch($fetchMode = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
-        if (! isset($this->data[$this->num])) {
+        if (!isset($this->data[$this->num])) {
             return false;
         }
 
-        $row       = $this->data[$this->num++];
+        $row = $this->data[$this->num++];
         $fetchMode = $fetchMode ?: $this->defaultFetchMode;
 
         if ($fetchMode === FetchMode::ASSOCIATIVE) {
@@ -128,19 +141,6 @@ class ArrayStatement implements \IteratorAggregate, ResultStatement
         }
 
         throw new \InvalidArgumentException('Invalid fetch-style given for fetching result.');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
-    {
-        $rows = [];
-        while ($row = $this->fetch($fetchMode)) {
-            $rows[] = $row;
-        }
-
-        return $rows;
     }
 
     /**

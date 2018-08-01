@@ -75,7 +75,7 @@ class Person extends \Faker\Provider\Person
         'Marinho', 'Marques', 'Martines', 'Mascarenhas', 'Matias', 'Matos',
         'Maia', 'Medina', 'Meireles', 'Mendes', 'Mendonça', 'Molina',
         'Montenegro', 'Neves', 'Oliveira', 'Ortega', 'Ortiz', 'Quintana',
-        'Queirós',  'Pacheco', 'Padilha', 'Padrão', 'Paes', 'Paz', 'Pedrosa',
+        'Queirós', 'Pacheco', 'Padilha', 'Padrão', 'Paes', 'Paz', 'Pedrosa',
         'Pena', 'Pereira', 'Perez', 'Prado', 'Pontes', 'Quintana', 'Queirós',
         'Ramires', 'Ramos', 'Rangel', 'Rezende', 'Reis', 'Rico', 'Rios',
         'Rivera', 'Rocha', 'Rodrigues', 'Romero', 'Roque', 'Rosa', 'Salas',
@@ -114,7 +114,7 @@ class Person extends \Faker\Provider\Person
         $n .= check_digit($n);
         $n .= check_digit($n);
 
-        return $formatted? vsprintf('%d%d%d.%d%d%d.%d%d%d-%d%d', str_split($n)) : $n;
+        return $formatted ? vsprintf('%d%d%d.%d%d%d.%d%d%d-%d%d', str_split($n)) : $n;
     }
 
     /**
@@ -128,6 +128,6 @@ class Person extends \Faker\Provider\Person
         $n = $this->generator->numerify('########');
         $n .= check_digit($n);
 
-        return $formatted? vsprintf('%d%d.%d%d%d.%d%d%d-%s', str_split($n)) : $n;
+        return $formatted ? vsprintf('%d%d.%d%d%d.%d%d%d-%s', str_split($n)) : $n;
     }
 }

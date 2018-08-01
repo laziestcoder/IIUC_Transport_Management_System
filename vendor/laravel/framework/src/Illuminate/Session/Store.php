@@ -3,11 +3,11 @@
 namespace Illuminate\Session;
 
 use Closure;
-use stdClass;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use SessionHandlerInterface;
-use Illuminate\Contracts\Session\Session;
+use stdClass;
 
 class Store implements Session
 {
@@ -70,7 +70,7 @@ class Store implements Session
     {
         $this->loadSession();
 
-        if (! $this->has('_token')) {
+        if (!$this->has('_token')) {
             $this->regenerateToken();
         }
 
@@ -97,7 +97,7 @@ class Store implements Session
         if ($data = $this->handler->read($this->getId())) {
             $data = @unserialize($this->prepareForUnserialize($data));
 
-            if ($data !== false && ! is_null($data) && is_array($data)) {
+            if ($data !== false && !is_null($data) && is_array($data)) {
                 return $data;
             }
         }
@@ -106,14 +106,88 @@ class Store implements Session
     }
 
     /**
+     * Get the current session ID.
+     *
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set the session ID.
+     *
+     * @param  string $id
+     * @return void
+     */
+    public function setId($id)
+    {
+        $this->id = $this->isValidId($id) ? $id : $this->generateSessionId();
+    }
+
+    /**
      * Prepare the raw string data from the session for unserialization.
      *
-     * @param  string  $data
+     * @param  string $data
      * @return string
      */
     protected function prepareForUnserialize($data)
     {
         return $data;
+    }
+
+    /**
+     * Checks if a key is present and not null.
+     *
+     * @param  string|array $key
+     * @return bool
+     */
+    public function has($key)
+    {
+        return !collect(is_array($key) ? $key : func_get_args())->contains(function ($key) {
+            return is_null($this->get($key));
+        });
+    }
+
+    /**
+     * Get an item from the session.
+     *
+     * @param  string $key
+     * @param  mixed $default
+     * @return mixed
+     */
+    public function get($key, $default = null)
+    {
+        return Arr::get($this->attributes, $key, $default);
+    }
+
+    /**
+     * Regenerate the CSRF token value.
+     *
+     * @return void
+     */
+    public function regenerateToken()
+    {
+        $this->put('_token', Str::random(40));
+    }
+
+    /**
+     * Put a key / value pair or array of key / value pairs in the session.
+     *
+     * @param  string|array $key
+     * @param  mixed $value
+     * @return void
+     */
+    public function put($key, $value = null)
+    {
+        if (!is_array($key)) {
+            $key = [$key => $value];
+        }
+
+        foreach ($key as $arrayKey => $arrayValue) {
+            Arr::set($this->attributes, $arrayKey, $arrayValue);
+        }
     }
 
     /**
@@ -133,17 +207,6 @@ class Store implements Session
     }
 
     /**
-     * Prepare the serialized session data for storage.
-     *
-     * @param  string  $data
-     * @return string
-     */
-    protected function prepareForStorage($data)
-    {
-        return $data;
-    }
-
-    /**
      * Age the flash data for the session.
      *
      * @return void
@@ -155,6 +218,28 @@ class Store implements Session
         $this->put('_flash.old', $this->get('_flash.new', []));
 
         $this->put('_flash.new', []);
+    }
+
+    /**
+     * Remove one or many items from the session.
+     *
+     * @param  string|array $keys
+     * @return void
+     */
+    public function forget($keys)
+    {
+        Arr::forget($this->attributes, $keys);
+    }
+
+    /**
+     * Prepare the serialized session data for storage.
+     *
+     * @param  string $data
+     * @return string
+     */
+    protected function prepareForStorage($data)
+    {
+        return $data;
     }
 
     /**
@@ -170,48 +255,23 @@ class Store implements Session
     /**
      * Checks if a key exists.
      *
-     * @param  string|array  $key
+     * @param  string|array $key
      * @return bool
      */
     public function exists($key)
     {
         $placeholder = new stdClass();
 
-        return ! collect(is_array($key) ? $key : func_get_args())->contains(function ($key) use ($placeholder) {
+        return !collect(is_array($key) ? $key : func_get_args())->contains(function ($key) use ($placeholder) {
             return $this->get($key, $placeholder) === $placeholder;
         });
     }
 
     /**
-     * Checks if a key is present and not null.
-     *
-     * @param  string|array  $key
-     * @return bool
-     */
-    public function has($key)
-    {
-        return ! collect(is_array($key) ? $key : func_get_args())->contains(function ($key) {
-            return is_null($this->get($key));
-        });
-    }
-
-    /**
-     * Get an item from the session.
-     *
-     * @param  string  $key
-     * @param  mixed  $default
-     * @return mixed
-     */
-    public function get($key, $default = null)
-    {
-        return Arr::get($this->attributes, $key, $default);
-    }
-
-    /**
      * Get the value of a given key and then forget it.
      *
-     * @param  string  $key
-     * @param  string  $default
+     * @param  string $key
+     * @param  string $default
      * @return mixed
      */
     public function pull($key, $default = null)
@@ -222,21 +282,21 @@ class Store implements Session
     /**
      * Determine if the session contains old input.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return bool
      */
     public function hasOldInput($key = null)
     {
         $old = $this->getOldInput($key);
 
-        return is_null($key) ? count($old) > 0 : ! is_null($old);
+        return is_null($key) ? count($old) > 0 : !is_null($old);
     }
 
     /**
      * Get the requested item from the flashed input array.
      *
-     * @param  string  $key
-     * @param  mixed   $default
+     * @param  string $key
+     * @param  mixed $default
      * @return mixed
      */
     public function getOldInput($key = null, $default = null)
@@ -247,7 +307,7 @@ class Store implements Session
     /**
      * Replace the given session attributes entirely.
      *
-     * @param  array  $attributes
+     * @param  array $attributes
      * @return void
      */
     public function replace(array $attributes)
@@ -256,33 +316,15 @@ class Store implements Session
     }
 
     /**
-     * Put a key / value pair or array of key / value pairs in the session.
-     *
-     * @param  string|array  $key
-     * @param  mixed       $value
-     * @return void
-     */
-    public function put($key, $value = null)
-    {
-        if (! is_array($key)) {
-            $key = [$key => $value];
-        }
-
-        foreach ($key as $arrayKey => $arrayValue) {
-            Arr::set($this->attributes, $arrayKey, $arrayValue);
-        }
-    }
-
-    /**
      * Get an item from the session, or store the default value.
      *
-     * @param  string  $key
-     * @param  \Closure  $callback
+     * @param  string $key
+     * @param  \Closure $callback
      * @return mixed
      */
     public function remember($key, Closure $callback)
     {
-        if (! is_null($value = $this->get($key))) {
+        if (!is_null($value = $this->get($key))) {
             return $value;
         }
 
@@ -292,40 +334,10 @@ class Store implements Session
     }
 
     /**
-     * Push a value onto a session array.
-     *
-     * @param  string  $key
-     * @param  mixed   $value
-     * @return void
-     */
-    public function push($key, $value)
-    {
-        $array = $this->get($key, []);
-
-        $array[] = $value;
-
-        $this->put($key, $array);
-    }
-
-    /**
-     * Increment the value of an item in the session.
-     *
-     * @param  string  $key
-     * @param  int  $amount
-     * @return mixed
-     */
-    public function increment($key, $amount = 1)
-    {
-        $this->put($key, $value = $this->get($key, 0) + $amount);
-
-        return $value;
-    }
-
-    /**
      * Decrement the value of an item in the session.
      *
-     * @param  string  $key
-     * @param  int  $amount
+     * @param  string $key
+     * @param  int $amount
      * @return int
      */
     public function decrement($key, $amount = 1)
@@ -334,19 +346,17 @@ class Store implements Session
     }
 
     /**
-     * Flash a key / value pair to the session.
+     * Increment the value of an item in the session.
      *
-     * @param  string  $key
-     * @param  mixed   $value
-     * @return void
+     * @param  string $key
+     * @param  int $amount
+     * @return mixed
      */
-    public function flash(string $key, $value = true)
+    public function increment($key, $amount = 1)
     {
-        $this->put($key, $value);
+        $this->put($key, $value = $this->get($key, 0) + $amount);
 
-        $this->push('_flash.new', $key);
-
-        $this->removeFromOldFlashData([$key]);
+        return $value;
     }
 
     /**
@@ -364,6 +374,22 @@ class Store implements Session
     }
 
     /**
+     * Push a value onto a session array.
+     *
+     * @param  string $key
+     * @param  mixed $value
+     * @return void
+     */
+    public function push($key, $value)
+    {
+        $array = $this->get($key, []);
+
+        $array[] = $value;
+
+        $this->put($key, $array);
+    }
+
+    /**
      * Reflash all of the session flash data.
      *
      * @return void
@@ -376,22 +402,9 @@ class Store implements Session
     }
 
     /**
-     * Reflash a subset of the current flash data.
-     *
-     * @param  array|mixed  $keys
-     * @return void
-     */
-    public function keep($keys = null)
-    {
-        $this->mergeNewFlashes($keys = is_array($keys) ? $keys : func_get_args());
-
-        $this->removeFromOldFlashData($keys);
-    }
-
-    /**
      * Merge new flash keys into the new flash array.
      *
-     * @param  array  $keys
+     * @param  array $keys
      * @return void
      */
     protected function mergeNewFlashes(array $keys)
@@ -402,9 +415,22 @@ class Store implements Session
     }
 
     /**
+     * Reflash a subset of the current flash data.
+     *
+     * @param  array|mixed $keys
+     * @return void
+     */
+    public function keep($keys = null)
+    {
+        $this->mergeNewFlashes($keys = is_array($keys) ? $keys : func_get_args());
+
+        $this->removeFromOldFlashData($keys);
+    }
+
+    /**
      * Remove the given keys from the old flash data.
      *
-     * @param  array  $keys
+     * @param  array $keys
      * @return void
      */
     protected function removeFromOldFlashData(array $keys)
@@ -415,7 +441,7 @@ class Store implements Session
     /**
      * Flash an input array to the session.
      *
-     * @param  array  $value
+     * @param  array $value
      * @return void
      */
     public function flashInput(array $value)
@@ -424,35 +450,30 @@ class Store implements Session
     }
 
     /**
+     * Flash a key / value pair to the session.
+     *
+     * @param  string $key
+     * @param  mixed $value
+     * @return void
+     */
+    public function flash(string $key, $value = true)
+    {
+        $this->put($key, $value);
+
+        $this->push('_flash.new', $key);
+
+        $this->removeFromOldFlashData([$key]);
+    }
+
+    /**
      * Remove an item from the session, returning its value.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return mixed
      */
     public function remove($key)
     {
         return Arr::pull($this->attributes, $key);
-    }
-
-    /**
-     * Remove one or many items from the session.
-     *
-     * @param  string|array  $keys
-     * @return void
-     */
-    public function forget($keys)
-    {
-        Arr::forget($this->attributes, $keys);
-    }
-
-    /**
-     * Remove all of the items from the session.
-     *
-     * @return void
-     */
-    public function flush()
-    {
-        $this->attributes = [];
     }
 
     /**
@@ -468,22 +489,19 @@ class Store implements Session
     }
 
     /**
-     * Generate a new session identifier.
+     * Remove all of the items from the session.
      *
-     * @param  bool  $destroy
-     * @return bool
+     * @return void
      */
-    public function regenerate($destroy = false)
+    public function flush()
     {
-        return tap($this->migrate($destroy), function () {
-            $this->regenerateToken();
-        });
+        $this->attributes = [];
     }
 
     /**
      * Generate a new session ID for the session.
      *
-     * @param  bool  $destroy
+     * @param  bool $destroy
      * @return bool
      */
     public function migrate($destroy = false)
@@ -497,6 +515,42 @@ class Store implements Session
         $this->setId($this->generateSessionId());
 
         return true;
+    }
+
+    /**
+     * Set the existence of the session on the handler if applicable.
+     *
+     * @param  bool $value
+     * @return void
+     */
+    public function setExists($value)
+    {
+        if ($this->handler instanceof ExistenceAwareInterface) {
+            $this->handler->setExists($value);
+        }
+    }
+
+    /**
+     * Get a new, random session ID.
+     *
+     * @return string
+     */
+    protected function generateSessionId()
+    {
+        return Str::random(40);
+    }
+
+    /**
+     * Generate a new session identifier.
+     *
+     * @param  bool $destroy
+     * @return bool
+     */
+    public function regenerate($destroy = false)
+    {
+        return tap($this->migrate($destroy), function () {
+            $this->regenerateToken();
+        });
     }
 
     /**
@@ -522,7 +576,7 @@ class Store implements Session
     /**
      * Set the name of the session.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return void
      */
     public function setName($name)
@@ -531,58 +585,14 @@ class Store implements Session
     }
 
     /**
-     * Get the current session ID.
-     *
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set the session ID.
-     *
-     * @param  string  $id
-     * @return void
-     */
-    public function setId($id)
-    {
-        $this->id = $this->isValidId($id) ? $id : $this->generateSessionId();
-    }
-
-    /**
      * Determine if this is a valid session ID.
      *
-     * @param  string  $id
+     * @param  string $id
      * @return bool
      */
     public function isValidId($id)
     {
         return is_string($id) && ctype_alnum($id) && strlen($id) === 40;
-    }
-
-    /**
-     * Get a new, random session ID.
-     *
-     * @return string
-     */
-    protected function generateSessionId()
-    {
-        return Str::random(40);
-    }
-
-    /**
-     * Set the existence of the session on the handler if applicable.
-     *
-     * @param  bool  $value
-     * @return void
-     */
-    public function setExists($value)
-    {
-        if ($this->handler instanceof ExistenceAwareInterface) {
-            $this->handler->setExists($value);
-        }
     }
 
     /**
@@ -593,16 +603,6 @@ class Store implements Session
     public function token()
     {
         return $this->get('_token');
-    }
-
-    /**
-     * Regenerate the CSRF token value.
-     *
-     * @return void
-     */
-    public function regenerateToken()
-    {
-        $this->put('_token', Str::random(40));
     }
 
     /**
@@ -618,7 +618,7 @@ class Store implements Session
     /**
      * Set the "previous" URL in the session.
      *
-     * @param  string  $url
+     * @param  string $url
      * @return void
      */
     public function setPreviousUrl($url)
@@ -637,19 +637,9 @@ class Store implements Session
     }
 
     /**
-     * Determine if the session handler needs a request.
-     *
-     * @return bool
-     */
-    public function handlerNeedsRequest()
-    {
-        return $this->handler instanceof CookieSessionHandler;
-    }
-
-    /**
      * Set the request on the handler instance.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return void
      */
     public function setRequestOnHandler($request)
@@ -657,5 +647,15 @@ class Store implements Session
         if ($this->handlerNeedsRequest()) {
             $this->handler->setRequest($request);
         }
+    }
+
+    /**
+     * Determine if the session handler needs a request.
+     *
+     * @return bool
+     */
+    public function handlerNeedsRequest()
+    {
+        return $this->handler instanceof CookieSessionHandler;
     }
 }

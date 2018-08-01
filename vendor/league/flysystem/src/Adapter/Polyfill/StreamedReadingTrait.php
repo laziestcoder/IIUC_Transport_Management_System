@@ -18,7 +18,7 @@ trait StreamedReadingTrait
      */
     public function readStream($path)
     {
-        if ( ! $data = $this->read($path)) {
+        if (!$data = $this->read($path)) {
             return false;
         }
 

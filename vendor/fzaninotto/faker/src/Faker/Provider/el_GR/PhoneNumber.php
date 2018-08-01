@@ -58,12 +58,6 @@ class PhoneNumber extends \Faker\Provider\PhoneNumber
         '69## ## ## ##',
         '69## ### ###',
     );
-
-    public static function mobilePhoneNumber()
-    {
-        return static::numerify(static::randomElement(static::$mobileFormats));
-    }
-
     protected static $tollFreeFormats = array(
         // International formats
         '+30 800#######',
@@ -77,6 +71,11 @@ class PhoneNumber extends \Faker\Provider\PhoneNumber
         '800 ## #####',
         '800 ### ####',
     );
+
+    public static function mobilePhoneNumber()
+    {
+        return static::numerify(static::randomElement(static::$mobileFormats));
+    }
 
     public static function tollFreeNumber()
     {

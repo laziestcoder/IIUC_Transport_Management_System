@@ -102,7 +102,7 @@ EOF
     public function testConstraintIsIdenticalArrayDiff(): void
     {
         $expected = [1, 2, 3, 4, 5, 6];
-        $actual   = [1, 2, 33, 4, 5, 6];
+        $actual = [1, 2, 33, 4, 5, 6];
 
         $constraint = new IsIdentical($expected);
 

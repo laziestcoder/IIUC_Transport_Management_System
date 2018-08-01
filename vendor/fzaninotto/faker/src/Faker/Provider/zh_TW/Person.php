@@ -139,6 +139,11 @@ class Person extends \Faker\Provider\Person
         '詩', '貞', '郁', '鈺', '雅', '雯', '靜', '馨',
     );
 
+    public static function firstNameMale()
+    {
+        return static::randomName(static::$characterMale, mt_rand(1, 2));
+    }
+
     public static function randomName($pool, $n)
     {
         $name = '';
@@ -146,11 +151,6 @@ class Person extends \Faker\Provider\Person
             $name .= static::randomElement($pool);
         }
         return $name;
-    }
-
-    public static function firstNameMale()
-    {
-        return static::randomName(static::$characterMale, mt_rand(1, 2));
     }
 
     public static function firstNameFemale()

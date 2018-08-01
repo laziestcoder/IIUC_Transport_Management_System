@@ -8,20 +8,17 @@ use Encore\Admin\Grid\Column;
 abstract class AbstractDisplayer
 {
     /**
+     * @var \stdClass
+     */
+    public $row;
+    /**
      * @var Grid
      */
     protected $grid;
-
     /**
      * @var Column
      */
     protected $column;
-
-    /**
-     * @var \stdClass
-     */
-    public $row;
-
     /**
      * @var mixed
      */
@@ -30,9 +27,9 @@ abstract class AbstractDisplayer
     /**
      * Create a new displayer instance.
      *
-     * @param mixed     $value
-     * @param Grid      $grid
-     * @param Column    $column
+     * @param mixed $value
+     * @param Grid $grid
+     * @param Column $column
      * @param \stdClass $row
      */
     public function __construct($value, Grid $grid, Column $column, $row)
@@ -64,6 +61,13 @@ abstract class AbstractDisplayer
     }
 
     /**
+     * Display method.
+     *
+     * @return mixed
+     */
+    abstract public function display();
+
+    /**
      * Get translation.
      *
      * @param string $text
@@ -74,11 +78,4 @@ abstract class AbstractDisplayer
     {
         return trans("admin.$text");
     }
-
-    /**
-     * Display method.
-     *
-     * @return mixed
-     */
-    abstract public function display();
 }

@@ -12,8 +12,6 @@
 
 namespace phpDocumentor\Reflection\DocBlock\Tags;
 
-use phpDocumentor\Reflection\DocBlock\Description;
-use phpDocumentor\Reflection\DocBlock\Tag;
 use Webmozart\Assert\Assert;
 
 /**
@@ -62,34 +60,15 @@ final class Example extends BaseTag
     /**
      * {@inheritdoc}
      */
-    public function getContent()
-    {
-        if (null === $this->description) {
-            $filePath = '"' . $this->filePath . '"';
-            if ($this->isURI) {
-                $filePath = $this->isUriRelative($this->filePath)
-                    ? str_replace('%2F', '/', rawurlencode($this->filePath))
-                    :$this->filePath;
-            }
-
-            return trim($filePath . ' ' . parent::getDescription());
-        }
-
-        return $this->description;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public static function create($body)
     {
         // File component: File path in quotes or File URI / Source information
-        if (! preg_match('/^(?:\"([^\"]+)\"|(\S+))(?:\s+(.*))?$/sux', $body, $matches)) {
+        if (!preg_match('/^(?:\"([^\"]+)\"|(\S+))(?:\s+(.*))?$/sux', $body, $matches)) {
             return null;
         }
 
         $filePath = null;
-        $fileUri  = null;
+        $fileUri = null;
         if ('' !== $matches[1]) {
             $filePath = $matches[1];
         } else {
@@ -97,8 +76,8 @@ final class Example extends BaseTag
         }
 
         $startingLine = 1;
-        $lineCount    = null;
-        $description  = null;
+        $lineCount = null;
+        $description = null;
 
         if (array_key_exists(3, $matches)) {
             $description = $matches[3];
@@ -117,12 +96,43 @@ final class Example extends BaseTag
         }
 
         return new static(
-            $filePath !== null?$filePath:$fileUri,
+            $filePath !== null ? $filePath : $fileUri,
             $fileUri !== null,
             $startingLine,
             $lineCount,
             $description
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContent()
+    {
+        if (null === $this->description) {
+            $filePath = '"' . $this->filePath . '"';
+            if ($this->isURI) {
+                $filePath = $this->isUriRelative($this->filePath)
+                    ? str_replace('%2F', '/', rawurlencode($this->filePath))
+                    : $this->filePath;
+            }
+
+            return trim($filePath . ' ' . parent::getDescription());
+        }
+
+        return $this->description;
+    }
+
+    /**
+     * Returns true if the provided URI is relative or contains a complete scheme (and thus is absolute).
+     *
+     * @param string $uri
+     *
+     * @return bool
+     */
+    private function isUriRelative($uri)
+    {
+        return false === strpos($uri, ':');
     }
 
     /**
@@ -144,18 +154,6 @@ final class Example extends BaseTag
     public function __toString()
     {
         return $this->filePath . ($this->description ? ' ' . $this->description : '');
-    }
-
-    /**
-     * Returns true if the provided URI is relative or contains a complete scheme (and thus is absolute).
-     *
-     * @param string $uri
-     *
-     * @return bool
-     */
-    private function isUriRelative($uri)
-    {
-        return false === strpos($uri, ':');
     }
 
     /**

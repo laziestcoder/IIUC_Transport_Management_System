@@ -3,9 +3,9 @@
 namespace Illuminate\Auth;
 
 use Illuminate\Auth\Access\Gate;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Support\ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -55,8 +55,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             AuthenticatableContract::class, function ($app) {
-                return call_user_func($app['auth']->userResolver());
-            }
+            return call_user_func($app['auth']->userResolver());
+        }
         );
     }
 

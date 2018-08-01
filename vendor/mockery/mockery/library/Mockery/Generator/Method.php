@@ -44,16 +44,16 @@ class Method
     public function getReturnType()
     {
         if (version_compare(PHP_VERSION, '7.0.0-dev') >= 0 && $this->method->hasReturnType()) {
-            $returnType = (string) $this->method->getReturnType();
+            $returnType = (string)$this->method->getReturnType();
 
             if ('self' === $returnType) {
-                $returnType = "\\".$this->method->getDeclaringClass()->getName();
+                $returnType = "\\" . $this->method->getDeclaringClass()->getName();
             } elseif (!\Mockery::isBuiltInType($returnType)) {
-                $returnType = '\\'.$returnType;
+                $returnType = '\\' . $returnType;
             }
 
             if (version_compare(PHP_VERSION, '7.1.0-dev') >= 0 && $this->method->getReturnType()->allowsNull()) {
-                $returnType = '?'.$returnType;
+                $returnType = '?' . $returnType;
             }
 
             return $returnType;

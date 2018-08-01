@@ -19,36 +19,36 @@ class ArraySubsetTest extends ConstraintTestCase
         return [
             'loose array subset and array other' => [
                 'expected' => true,
-                'subset'   => ['bar' => 0],
-                'other'    => ['foo' => '', 'bar' => '0'],
-                'strict'   => false
+                'subset' => ['bar' => 0],
+                'other' => ['foo' => '', 'bar' => '0'],
+                'strict' => false
             ],
             'strict array subset and array other' => [
                 'expected' => false,
-                'subset'   => ['bar' => 0],
-                'other'    => ['foo' => '', 'bar' => '0'],
-                'strict'   => true
+                'subset' => ['bar' => 0],
+                'other' => ['foo' => '', 'bar' => '0'],
+                'strict' => true
             ],
             'loose array subset and ArrayObject other' => [
                 'expected' => true,
-                'subset'   => ['bar' => 0],
-                'other'    => new \ArrayObject(['foo' => '', 'bar' => '0']),
-                'strict'   => false
+                'subset' => ['bar' => 0],
+                'other' => new \ArrayObject(['foo' => '', 'bar' => '0']),
+                'strict' => false
             ],
             'strict ArrayObject subset and array other' => [
                 'expected' => true,
-                'subset'   => new \ArrayObject(['bar' => 0]),
-                'other'    => ['foo' => '', 'bar' => 0],
-                'strict'   => true
+                'subset' => new \ArrayObject(['bar' => 0]),
+                'other' => ['foo' => '', 'bar' => 0],
+                'strict' => true
             ],
         ];
     }
 
     /**
-     * @param bool               $expected
+     * @param bool $expected
      * @param array|\Traversable $subset
      * @param array|\Traversable $other
-     * @param bool               $strict
+     * @param bool $strict
      *
      * @throws ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException

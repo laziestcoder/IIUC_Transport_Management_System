@@ -15,7 +15,7 @@ class IsJsonTest extends ConstraintTestCase
     public static function evaluateDataprovider()
     {
         return [
-            'valid JSON'                                     => [true, '{}'],
+            'valid JSON' => [true, '{}'],
             'empty string should be treated as invalid JSON' => [false, ''],
         ];
     }

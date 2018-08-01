@@ -77,13 +77,6 @@ class MockConfigurationBuilder
         }
     }
 
-    public function addTarget($target)
-    {
-        $this->targets[] = $target;
-
-        return $this;
-    }
-
     public function addTargets($targets)
     {
         foreach ($targets as $target) {
@@ -93,15 +86,16 @@ class MockConfigurationBuilder
         return $this;
     }
 
-    public function setName($name)
+    public function addTarget($target)
     {
-        $this->name = $name;
+        $this->targets[] = $target;
+
         return $this;
     }
 
-    public function addBlackListedMethod($blackListedMethod)
+    public function setName($name)
     {
-        $this->blackListedMethods[] = $blackListedMethod;
+        $this->name = $name;
         return $this;
     }
 
@@ -113,15 +107,15 @@ class MockConfigurationBuilder
         return $this;
     }
 
-    public function setBlackListedMethods(array $blackListedMethods)
+    public function addBlackListedMethod($blackListedMethod)
     {
-        $this->blackListedMethods = $blackListedMethods;
+        $this->blackListedMethods[] = $blackListedMethod;
         return $this;
     }
 
-    public function addWhiteListedMethod($whiteListedMethod)
+    public function setBlackListedMethods(array $blackListedMethods)
     {
-        $this->whiteListedMethods[] = $whiteListedMethod;
+        $this->blackListedMethods = $blackListedMethods;
         return $this;
     }
 
@@ -133,6 +127,12 @@ class MockConfigurationBuilder
         return $this;
     }
 
+    public function addWhiteListedMethod($whiteListedMethod)
+    {
+        $this->whiteListedMethods[] = $whiteListedMethod;
+        return $this;
+    }
+
     public function setWhiteListedMethods(array $whiteListedMethods)
     {
         $this->whiteListedMethods = $whiteListedMethods;
@@ -141,7 +141,7 @@ class MockConfigurationBuilder
 
     public function setInstanceMock($instanceMock)
     {
-        $this->instanceMock = (bool) $instanceMock;
+        $this->instanceMock = (bool)$instanceMock;
     }
 
     public function setParameterOverrides(array $overrides)

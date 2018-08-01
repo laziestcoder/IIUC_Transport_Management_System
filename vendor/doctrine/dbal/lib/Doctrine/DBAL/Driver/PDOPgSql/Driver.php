@@ -19,11 +19,11 @@
 
 namespace Doctrine\DBAL\Driver\PDOPgSql;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\AbstractPostgreSQLDriver;
 use Doctrine\DBAL\Driver\PDOConnection;
-use Doctrine\DBAL\DBALException;
-use PDOException;
 use PDO;
+use PDOException;
 use function defined;
 
 /**
@@ -47,7 +47,7 @@ class Driver extends AbstractPostgreSQLDriver
             );
 
             if (defined('PDO::PGSQL_ATTR_DISABLE_PREPARES')
-                && (! isset($driverOptions[PDO::PGSQL_ATTR_DISABLE_PREPARES])
+                && (!isset($driverOptions[PDO::PGSQL_ATTR_DISABLE_PREPARES])
                     || true === $driverOptions[PDO::PGSQL_ATTR_DISABLE_PREPARES]
                 )
             ) {

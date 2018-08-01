@@ -32,14 +32,6 @@ class DateTimeTzImmutableType extends DateTimeTzType
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return Type::DATETIMETZ_IMMUTABLE;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         if (null === $value) {
@@ -60,6 +52,14 @@ class DateTimeTzImmutableType extends DateTimeTzType
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return Type::DATETIMETZ_IMMUTABLE;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         if ($value === null || $value instanceof \DateTimeImmutable) {
@@ -68,7 +68,7 @@ class DateTimeTzImmutableType extends DateTimeTzType
 
         $dateTime = \DateTimeImmutable::createFromFormat($platform->getDateTimeTzFormatString(), $value);
 
-        if (! $dateTime) {
+        if (!$dateTime) {
             throw ConversionException::conversionFailedFormat(
                 $value,
                 $this->getName(),

@@ -24,17 +24,17 @@ class StreamHandler extends AbstractProcessingHandler
 {
     protected $stream;
     protected $url;
-    private $errorMessage;
     protected $filePermission;
     protected $useLocking;
+    private $errorMessage;
     private $dirCreated;
 
     /**
      * @param resource|string $stream
-     * @param int             $level          The minimum logging level at which this handler will be triggered
-     * @param Boolean         $bubble         Whether the messages that are handled can bubble up the stack or not
-     * @param int|null        $filePermission Optional file permissions (default (0644) are only for owner read/write)
-     * @param Boolean         $useLocking     Try to lock log file before doing any writes
+     * @param int $level The minimum logging level at which this handler will be triggered
+     * @param Boolean $bubble Whether the messages that are handled can bubble up the stack or not
+     * @param int|null $filePermission Optional file permissions (default (0644) are only for owner read/write)
+     * @param Boolean $useLocking Try to lock log file before doing any writes
      *
      * @throws \Exception                If a missing directory is not buildable
      * @throws \InvalidArgumentException If stream is not a resource or string
@@ -104,7 +104,7 @@ class StreamHandler extends AbstractProcessingHandler
             restore_error_handler();
             if (!is_resource($this->stream)) {
                 $this->stream = null;
-                throw new \UnexpectedValueException(sprintf('The stream or file "%s" could not be opened: '.$this->errorMessage, $this->url));
+                throw new \UnexpectedValueException(sprintf('The stream or file "%s" could not be opened: ' . $this->errorMessage, $this->url));
             }
         }
 
@@ -120,19 +120,24 @@ class StreamHandler extends AbstractProcessingHandler
         }
     }
 
-    /**
-     * Write to stream
-     * @param resource $stream
-     * @param array $record
-     */
-    protected function streamWrite($stream, array $record)
+    private function createDir()
     {
-        fwrite($stream, (string) $record['formatted']);
-    }
+        // Do not try to create dir if it has already been tried.
+        if ($this->dirCreated) {
+            return;
+        }
 
-    private function customErrorHandler($code, $msg)
-    {
-        $this->errorMessage = preg_replace('{^(fopen|mkdir)\(.*?\): }', '', $msg);
+        $dir = $this->getDirFromStream($this->url);
+        if (null !== $dir && !is_dir($dir)) {
+            $this->errorMessage = null;
+            set_error_handler(array($this, 'customErrorHandler'));
+            $status = mkdir($dir, 0777, true);
+            restore_error_handler();
+            if (false === $status) {
+                throw new \UnexpectedValueException(sprintf('There is no existing directory at "%s" and its not buildable: ' . $this->errorMessage, $dir));
+            }
+        }
+        $this->dirCreated = true;
     }
 
     /**
@@ -154,23 +159,18 @@ class StreamHandler extends AbstractProcessingHandler
         return;
     }
 
-    private function createDir()
+    /**
+     * Write to stream
+     * @param resource $stream
+     * @param array $record
+     */
+    protected function streamWrite($stream, array $record)
     {
-        // Do not try to create dir if it has already been tried.
-        if ($this->dirCreated) {
-            return;
-        }
+        fwrite($stream, (string)$record['formatted']);
+    }
 
-        $dir = $this->getDirFromStream($this->url);
-        if (null !== $dir && !is_dir($dir)) {
-            $this->errorMessage = null;
-            set_error_handler(array($this, 'customErrorHandler'));
-            $status = mkdir($dir, 0777, true);
-            restore_error_handler();
-            if (false === $status) {
-                throw new \UnexpectedValueException(sprintf('There is no existing directory at "%s" and its not buildable: '.$this->errorMessage, $dir));
-            }
-        }
-        $this->dirCreated = true;
+    private function customErrorHandler($code, $msg)
+    {
+        $this->errorMessage = preg_replace('{^(fopen|mkdir)\(.*?\): }', '', $msg);
     }
 }

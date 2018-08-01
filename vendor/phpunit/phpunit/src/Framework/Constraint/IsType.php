@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Framework\Constraint;
 
 /**
@@ -17,16 +18,16 @@ namespace PHPUnit\Framework\Constraint;
  */
 class IsType extends Constraint
 {
-    public const TYPE_ARRAY    = 'array';
-    public const TYPE_BOOL     = 'bool';
-    public const TYPE_FLOAT    = 'float';
-    public const TYPE_INT      = 'int';
-    public const TYPE_NULL     = 'null';
-    public const TYPE_NUMERIC  = 'numeric';
-    public const TYPE_OBJECT   = 'object';
+    public const TYPE_ARRAY = 'array';
+    public const TYPE_BOOL = 'bool';
+    public const TYPE_FLOAT = 'float';
+    public const TYPE_INT = 'int';
+    public const TYPE_NULL = 'null';
+    public const TYPE_NUMERIC = 'numeric';
+    public const TYPE_OBJECT = 'object';
     public const TYPE_RESOURCE = 'resource';
-    public const TYPE_STRING   = 'string';
-    public const TYPE_SCALAR   = 'scalar';
+    public const TYPE_STRING = 'string';
+    public const TYPE_SCALAR = 'scalar';
     public const TYPE_CALLABLE = 'callable';
     public const TYPE_ITERABLE = 'iterable';
 
@@ -34,20 +35,20 @@ class IsType extends Constraint
      * @var array
      */
     private $types = [
-        'array'    => true,
-        'boolean'  => true,
-        'bool'     => true,
-        'double'   => true,
-        'float'    => true,
-        'integer'  => true,
-        'int'      => true,
-        'null'     => true,
-        'numeric'  => true,
-        'object'   => true,
-        'real'     => true,
+        'array' => true,
+        'boolean' => true,
+        'bool' => true,
+        'double' => true,
+        'float' => true,
+        'integer' => true,
+        'int' => true,
+        'null' => true,
+        'numeric' => true,
+        'object' => true,
+        'real' => true,
         'resource' => true,
-        'string'   => true,
-        'scalar'   => true,
+        'string' => true,
+        'scalar' => true,
         'callable' => true,
         'iterable' => true
     ];

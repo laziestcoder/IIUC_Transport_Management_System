@@ -59,16 +59,16 @@ class SchemaCreateTableEventArgs extends SchemaEventArgs
     private $_sql = [];
 
     /**
-     * @param \Doctrine\DBAL\Schema\Table               $table
-     * @param array                                     $columns
-     * @param array                                     $options
+     * @param \Doctrine\DBAL\Schema\Table $table
+     * @param array $columns
+     * @param array $options
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      */
     public function __construct(Table $table, array $columns, array $options, AbstractPlatform $platform)
     {
-        $this->_table    = $table;
-        $this->_columns  = $columns;
-        $this->_options  = $options;
+        $this->_table = $table;
+        $this->_columns = $columns;
+        $this->_options = $options;
         $this->_platform = $platform;
     }
 

@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\ExpectationFailedException;
@@ -20,6 +21,70 @@ class LogicalNot extends Constraint
      * @var Constraint
      */
     private $constraint;
+
+    /**
+     * @param Constraint|mixed $constraint
+     */
+    public function __construct($constraint)
+    {
+        parent::__construct();
+
+        if (!($constraint instanceof Constraint)) {
+            $constraint = new IsEqual($constraint);
+        }
+
+        $this->constraint = $constraint;
+    }
+
+    /**
+     * Evaluates the constraint for parameter $other
+     *
+     * If $returnResult is set to false (the default), an exception is thrown
+     * in case of a failure. null is returned otherwise.
+     *
+     * If $returnResult is true, the result of the evaluation is returned as
+     * a boolean value instead: true in case of success, false in case of a
+     * failure.
+     *
+     * @param mixed $other value or object to evaluate
+     * @param string $description Additional information about the test
+     * @param bool $returnResult Whether to return a result or throw an exception
+     *
+     * @throws ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     *
+     * @return mixed
+     */
+    public function evaluate($other, $description = '', $returnResult = false)
+    {
+        $success = !$this->constraint->evaluate($other, $description, true);
+
+        if ($returnResult) {
+            return $success;
+        }
+
+        if (!$success) {
+            $this->fail($other, $description);
+        }
+    }
+
+    /**
+     * Returns a string representation of the constraint.
+     */
+    public function toString(): string
+    {
+        switch (\get_class($this->constraint)) {
+            case LogicalAnd::class:
+            case self::class:
+            case LogicalOr::class:
+                return 'not( ' . $this->constraint->toString() . ' )';
+
+            default:
+                return self::negate(
+                    $this->constraint->toString()
+                );
+        }
+    }
 
     public static function negate(string $string): string
     {
@@ -72,70 +137,6 @@ class LogicalNot extends Constraint
         }
 
         return $negatedString;
-    }
-
-    /**
-     * @param Constraint|mixed $constraint
-     */
-    public function __construct($constraint)
-    {
-        parent::__construct();
-
-        if (!($constraint instanceof Constraint)) {
-            $constraint = new IsEqual($constraint);
-        }
-
-        $this->constraint = $constraint;
-    }
-
-    /**
-     * Evaluates the constraint for parameter $other
-     *
-     * If $returnResult is set to false (the default), an exception is thrown
-     * in case of a failure. null is returned otherwise.
-     *
-     * If $returnResult is true, the result of the evaluation is returned as
-     * a boolean value instead: true in case of success, false in case of a
-     * failure.
-     *
-     * @param mixed  $other        value or object to evaluate
-     * @param string $description  Additional information about the test
-     * @param bool   $returnResult Whether to return a result or throw an exception
-     *
-     * @throws ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
-     *
-     * @return mixed
-     */
-    public function evaluate($other, $description = '', $returnResult = false)
-    {
-        $success = !$this->constraint->evaluate($other, $description, true);
-
-        if ($returnResult) {
-            return $success;
-        }
-
-        if (!$success) {
-            $this->fail($other, $description);
-        }
-    }
-
-    /**
-     * Returns a string representation of the constraint.
-     */
-    public function toString(): string
-    {
-        switch (\get_class($this->constraint)) {
-            case LogicalAnd::class:
-            case self::class:
-            case LogicalOr::class:
-                return 'not( ' . $this->constraint->toString() . ' )';
-
-            default:
-                return self::negate(
-                    $this->constraint->toString()
-                );
-        }
     }
 
     /**

@@ -46,6 +46,28 @@ class Driver extends AbstractSQLServerDriver
     }
 
     /**
+     * Separates a connection options from a driver options
+     *
+     * @param int[]|string[] $options
+     * @return int[][]|string[][]
+     */
+    private function splitOptions(array $options): array
+    {
+        $driverOptions = [];
+        $connectionOptions = [];
+
+        foreach ($options as $optionKey => $optionValue) {
+            if (is_int($optionKey)) {
+                $driverOptions[$optionKey] = $optionValue;
+            } else {
+                $connectionOptions[$optionKey] = $optionValue;
+            }
+        }
+
+        return [$driverOptions, $connectionOptions];
+    }
+
+    /**
      * Constructs the Sqlsrv PDO DSN.
      *
      * @param array $params
@@ -79,33 +101,11 @@ class Driver extends AbstractSQLServerDriver
     }
 
     /**
-     * Separates a connection options from a driver options
-     *
-     * @param int[]|string[] $options
-     * @return int[][]|string[][]
-     */
-    private function splitOptions(array $options) : array
-    {
-        $driverOptions     = [];
-        $connectionOptions = [];
-
-        foreach ($options as $optionKey => $optionValue) {
-            if (is_int($optionKey)) {
-                $driverOptions[$optionKey] = $optionValue;
-            } else {
-                $connectionOptions[$optionKey] = $optionValue;
-            }
-        }
-
-        return [$driverOptions, $connectionOptions];
-    }
-
-    /**
      * Converts a connection options array to the DSN
      *
      * @param string[] $connectionOptions
      */
-    private function getConnectionOptionsDsn(array $connectionOptions) : string
+    private function getConnectionOptionsDsn(array $connectionOptions): string
     {
         $connectionOptionsDsn = '';
 

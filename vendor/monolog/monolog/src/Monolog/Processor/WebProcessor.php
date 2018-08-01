@@ -31,16 +31,16 @@ class WebProcessor
      * @var array
      */
     protected $extraFields = array(
-        'url'         => 'REQUEST_URI',
-        'ip'          => 'REMOTE_ADDR',
+        'url' => 'REQUEST_URI',
+        'ip' => 'REMOTE_ADDR',
         'http_method' => 'REQUEST_METHOD',
-        'server'      => 'SERVER_NAME',
-        'referrer'    => 'HTTP_REFERER',
+        'server' => 'SERVER_NAME',
+        'referrer' => 'HTTP_REFERER',
     );
 
     /**
-     * @param array|\ArrayAccess $serverData  Array or object w/ ArrayAccess that provides access to the $_SERVER data
-     * @param array|null         $extraFields Field names and the related key inside $serverData to be added. If not provided it defaults to: url, ip, http_method, server, referrer
+     * @param array|\ArrayAccess $serverData Array or object w/ ArrayAccess that provides access to the $_SERVER data
+     * @param array|null $extraFields Field names and the related key inside $serverData to be added. If not provided it defaults to: url, ip, http_method, server, referrer
      */
     public function __construct($serverData = null, array $extraFields = null)
     {
@@ -83,18 +83,6 @@ class WebProcessor
     }
 
     /**
-     * @param  string $extraName
-     * @param  string $serverName
-     * @return $this
-     */
-    public function addExtraField($extraName, $serverName)
-    {
-        $this->extraFields[$extraName] = $serverName;
-
-        return $this;
-    }
-
-    /**
      * @param  array $extra
      * @return array
      */
@@ -109,5 +97,17 @@ class WebProcessor
         }
 
         return $extra;
+    }
+
+    /**
+     * @param  string $extraName
+     * @param  string $serverName
+     * @return $this
+     */
+    public function addExtraField($extraName, $serverName)
+    {
+        $this->extraFields[$extraName] = $serverName;
+
+        return $this;
     }
 }

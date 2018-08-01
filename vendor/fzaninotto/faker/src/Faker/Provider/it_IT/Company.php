@@ -37,6 +37,16 @@ class Company extends \Faker\Provider\Company
     protected static $companySuffix = array('SPA', 'e figli', 'Group', 's.r.l.');
 
     /**
+     * Italian VAT number (Partita iva)
+     * @link https://it.wikipedia.org/wiki/Partita_IVA
+     * @return string
+     */
+    public static function vatId()
+    {
+        return static::numerify('IT###########');
+    }
+
+    /**
      * @example 'Robust full-range hub'
      */
     public function catchPhrase()
@@ -60,15 +70,5 @@ class Company extends \Faker\Provider\Company
         }
 
         return join($result, ' ');
-    }
-
-    /**
-     * Italian VAT number (Partita iva)
-     * @link https://it.wikipedia.org/wiki/Partita_IVA
-     * @return string
-     */
-    public static function vatId()
-    {
-        return static::numerify('IT###########');
     }
 }

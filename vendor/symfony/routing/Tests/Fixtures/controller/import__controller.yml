@@ -1,4 +1,4 @@
 _static:
-    resource: routing.yml
-    defaults:
-        _controller: FrameworkBundle:Template:template
+  resource: routing.yml
+  defaults:
+    _controller: FrameworkBundle:Template:template

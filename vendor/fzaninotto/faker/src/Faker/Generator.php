@@ -238,22 +238,6 @@ class Generator
         return $this->format($attribute);
     }
 
-    /**
-     * @param string $method
-     * @param array $attributes
-     *
-     * @return mixed
-     */
-    public function __call($method, $attributes)
-    {
-        return $this->format($method, $attributes);
-    }
-
-    protected function callFormatWithMatches($matches)
-    {
-        return $this->format($matches[1]);
-    }
-
     public function format($formatter, $arguments = array())
     {
         return call_user_func_array($this->getFormatter($formatter), $arguments);
@@ -277,5 +261,21 @@ class Generator
             }
         }
         throw new \InvalidArgumentException(sprintf('Unknown formatter "%s"', $formatter));
+    }
+
+    /**
+     * @param string $method
+     * @param array $attributes
+     *
+     * @return mixed
+     */
+    public function __call($method, $attributes)
+    {
+        return $this->format($method, $attributes);
+    }
+
+    protected function callFormatWithMatches($matches)
+    {
+        return $this->format($matches[1]);
     }
 }

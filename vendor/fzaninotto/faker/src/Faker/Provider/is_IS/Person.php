@@ -52,46 +52,6 @@ class Person extends \Faker\Provider\Person
     }
 
     /**
-     * Generate prepared last name for further processing
-     *
-     * @return string
-     */
-    public function lastName()
-    {
-        $name = static::firstNameMale();
-
-        if (substr($name, -2) === 'ur') {
-            $name = substr($name, 0, strlen($name) - 2);
-        }
-
-        if (substr($name, -1) !== 's') {
-            $name .= 's';
-        }
-
-        return $name;
-    }
-
-    /**
-     * Randomly return a icelandic last name for woman.
-     *
-     * @return string
-     */
-    public function lastNameMale()
-    {
-        return $this->lastName().'son';
-    }
-
-    /**
-     * Randomly return a icelandic last name for man.
-     *
-     * @return string
-     */
-    public function lastNameFemale()
-    {
-        return $this->lastName().'dóttir';
-    }
-
-    /**
      * Randomly return a icelandic Kennitala (Social Security number) format.
      *
      * @link http://en.wikipedia.org/wiki/Kennitala
@@ -112,12 +72,12 @@ class Person extends \Faker\Provider\Person
         // valid flag
         $valid = false;
 
-        while (! $valid) {
+        while (!$valid) {
             // make two random numbers
-            $rand = static::randomDigit().static::randomDigit();
+            $rand = static::randomDigit() . static::randomDigit();
 
             // 8 char string with birth date and two random numbers
-            $tmp = $birthdate->format('dmy').$rand;
+            $tmp = $birthdate->format('dmy') . $rand;
 
             // loop through temp string
             for ($i = 7, $sum = 0; $i >= 0; $i--) {
@@ -129,12 +89,52 @@ class Person extends \Faker\Provider\Person
             $chk = ($sum % 11 === 0) ? 0 : (11 - ($sum % 11));
 
             if ($chk < 10) {
-                $lastFour = $rand.$chk.substr($birthdate->format('Y'), 1, 1);
+                $lastFour = $rand . $chk . substr($birthdate->format('Y'), 1, 1);
 
                 $valid = true;
             }
         }
 
         return sprintf('%s-%s', $birthdate->format('dmy'), $lastFour);
+    }
+
+    /**
+     * Randomly return a icelandic last name for woman.
+     *
+     * @return string
+     */
+    public function lastNameMale()
+    {
+        return $this->lastName() . 'son';
+    }
+
+    /**
+     * Generate prepared last name for further processing
+     *
+     * @return string
+     */
+    public function lastName()
+    {
+        $name = static::firstNameMale();
+
+        if (substr($name, -2) === 'ur') {
+            $name = substr($name, 0, strlen($name) - 2);
+        }
+
+        if (substr($name, -1) !== 's') {
+            $name .= 's';
+        }
+
+        return $name;
+    }
+
+    /**
+     * Randomly return a icelandic last name for man.
+     *
+     * @return string
+     */
+    public function lastNameFemale()
+    {
+        return $this->lastName() . 'dóttir';
     }
 }

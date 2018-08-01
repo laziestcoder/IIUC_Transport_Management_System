@@ -34,7 +34,7 @@ interface Swift_Transport_IoBuffer extends Swift_InputByteStream, Swift_OutputBy
      * Set an individual param on the buffer (e.g. switching to SSL).
      *
      * @param string $param
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function setParam($param, $value);
 

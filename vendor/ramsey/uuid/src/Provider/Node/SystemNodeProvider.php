@@ -55,31 +55,6 @@ class SystemNodeProvider implements NodeProviderInterface
     }
 
     /**
-     * Returns the network interface configuration for the system
-     *
-     * @codeCoverageIgnore
-     * @return string
-     */
-    protected function getIfconfig()
-    {
-        ob_start();
-        switch (strtoupper(substr(php_uname('a'), 0, 3))) {
-            case 'WIN':
-                passthru('ipconfig /all 2>&1');
-                break;
-            case 'DAR':
-                passthru('ifconfig 2>&1');
-                break;
-            case 'LIN':
-            default:
-                passthru('netstat -ie 2>&1');
-                break;
-        }
-
-        return ob_get_clean();
-    }
-
-    /**
      * Returns mac address from the first system interface via the sysfs interface
      *
      * @return string|bool
@@ -115,5 +90,30 @@ class SystemNodeProvider implements NodeProviderInterface
         }
 
         return $mac;
+    }
+
+    /**
+     * Returns the network interface configuration for the system
+     *
+     * @codeCoverageIgnore
+     * @return string
+     */
+    protected function getIfconfig()
+    {
+        ob_start();
+        switch (strtoupper(substr(php_uname('a'), 0, 3))) {
+            case 'WIN':
+                passthru('ipconfig /all 2>&1');
+                break;
+            case 'DAR':
+                passthru('ifconfig 2>&1');
+                break;
+            case 'LIN':
+            default:
+                passthru('netstat -ie 2>&1');
+                break;
+        }
+
+        return ob_get_clean();
     }
 }

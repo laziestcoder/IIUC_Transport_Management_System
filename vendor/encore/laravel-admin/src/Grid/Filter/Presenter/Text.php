@@ -32,27 +32,13 @@ class Text extends Presenter
     }
 
     /**
-     * Get variables for field template.
-     *
-     * @return array
-     */
-    public function variables() : array
-    {
-        return [
-            'placeholder' => $this->placeholder,
-            'icon'        => $this->icon,
-            'type'        => $this->type,
-        ];
-    }
-
-    /**
      * Set input placeholder.
      *
      * @param string $placeholder
      *
      * @return $this
      */
-    public function placeholder($placeholder = '') : self
+    public function placeholder($placeholder = ''): self
     {
         $this->placeholder = $placeholder;
 
@@ -60,17 +46,48 @@ class Text extends Presenter
     }
 
     /**
-     * @return Text
+     * Get variables for field template.
+     *
+     * @return array
      */
-    public function url() : self
+    public function variables(): array
     {
-        return $this->inputmask(['alias' => 'url'], 'internet-explorer');
+        return [
+            'placeholder' => $this->placeholder,
+            'icon' => $this->icon,
+            'type' => $this->type,
+        ];
     }
 
     /**
      * @return Text
      */
-    public function email() : self
+    public function url(): self
+    {
+        return $this->inputmask(['alias' => 'url'], 'internet-explorer');
+    }
+
+    /**
+     * @param array $options
+     * @param string $icon
+     *
+     * @return $this
+     */
+    public function inputmask($options = [], $icon = 'pencil'): self
+    {
+        $options = json_encode($options);
+
+        Admin::script("$('#filter-modal input.{$this->filter->getId()}').inputmask($options);");
+
+        $this->icon = $icon;
+
+        return $this;
+    }
+
+    /**
+     * @return Text
+     */
+    public function email(): self
     {
         return $this->inputmask(['alias' => 'email'], 'envelope');
     }
@@ -78,7 +95,7 @@ class Text extends Presenter
     /**
      * @return Text
      */
-    public function integer() : self
+    public function integer(): self
     {
         return $this->inputmask(['alias' => 'integer']);
     }
@@ -90,7 +107,7 @@ class Text extends Presenter
      *
      * @return Text
      */
-    public function decimal($options = []) : self
+    public function decimal($options = []): self
     {
         return $this->inputmask(array_merge($options, ['alias' => 'decimal']));
     }
@@ -102,11 +119,11 @@ class Text extends Presenter
      *
      * @return Text
      */
-    public function currency($options = []) : self
+    public function currency($options = []): self
     {
         return $this->inputmask(array_merge($options, [
-            'alias'              => 'currency',
-            'prefix'             => '',
+            'alias' => 'currency',
+            'prefix' => '',
             'removeMaskOnSubmit' => true,
         ]));
     }
@@ -128,7 +145,7 @@ class Text extends Presenter
     /**
      * @return Text
      */
-    public function ip() : self
+    public function ip(): self
     {
         return $this->inputmask(['alias' => 'ip'], 'laptop');
     }
@@ -136,7 +153,7 @@ class Text extends Presenter
     /**
      * @return Text
      */
-    public function mac() : self
+    public function mac(): self
     {
         return $this->inputmask(['alias' => 'mac'], 'laptop');
     }
@@ -146,25 +163,8 @@ class Text extends Presenter
      *
      * @return Text
      */
-    public function mobile($mask = '19999999999') : self
+    public function mobile($mask = '19999999999'): self
     {
         return $this->inputmask(compact('mask'), 'phone');
-    }
-
-    /**
-     * @param array  $options
-     * @param string $icon
-     *
-     * @return $this
-     */
-    public function inputmask($options = [], $icon = 'pencil') : self
-    {
-        $options = json_encode($options);
-
-        Admin::script("$('#filter-modal input.{$this->filter->getId()}').inputmask($options);");
-
-        $this->icon = $icon;
-
-        return $this;
     }
 }

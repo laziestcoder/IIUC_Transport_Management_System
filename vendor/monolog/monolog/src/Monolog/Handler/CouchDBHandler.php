@@ -26,9 +26,9 @@ class CouchDBHandler extends AbstractProcessingHandler
     public function __construct(array $options = array(), $level = Logger::DEBUG, $bubble = true)
     {
         $this->options = array_merge(array(
-            'host'     => 'localhost',
-            'port'     => 5984,
-            'dbname'   => 'logger',
+            'host' => 'localhost',
+            'port' => 5984,
+            'dbname' => 'logger',
             'username' => null,
             'password' => null,
         ), $options);
@@ -46,14 +46,14 @@ class CouchDBHandler extends AbstractProcessingHandler
             $basicAuth = sprintf('%s:%s@', $this->options['username'], $this->options['password']);
         }
 
-        $url = 'http://'.$basicAuth.$this->options['host'].':'.$this->options['port'].'/'.$this->options['dbname'];
+        $url = 'http://' . $basicAuth . $this->options['host'] . ':' . $this->options['port'] . '/' . $this->options['dbname'];
         $context = stream_context_create(array(
             'http' => array(
-                'method'        => 'POST',
-                'content'       => $record['formatted'],
+                'method' => 'POST',
+                'content' => $record['formatted'],
                 'ignore_errors' => true,
                 'max_redirects' => 0,
-                'header'        => 'Content-type: application/json',
+                'header' => 'Content-type: application/json',
             ),
         ));
 

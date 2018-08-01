@@ -12,82 +12,6 @@ use Faker\Provider\Person as PersonProvider;
 
 class PaymentTest extends \PHPUnit_Framework_TestCase
 {
-    private $faker;
-
-    public function setUp()
-    {
-        $faker = new Generator();
-        $faker->addProvider(new BaseProvider($faker));
-        $faker->addProvider(new DateTimeProvider($faker));
-        $faker->addProvider(new PersonProvider($faker));
-        $faker->addProvider(new PaymentProvider($faker));
-        $this->faker = $faker;
-    }
-
-    public function localeDataProvider()
-    {
-        $providerPath = realpath(__DIR__ . '/../../../src/Faker/Provider');
-        $localePaths = array_filter(glob($providerPath . '/*', GLOB_ONLYDIR));
-        foreach ($localePaths as $path) {
-            $parts = explode('/', $path);
-            $locales[] = array($parts[count($parts) - 1]);
-        }
-
-        return $locales;
-    }
-
-    public function loadLocalProviders($locale)
-    {
-        $providerPath = realpath(__DIR__ . '/../../../src/Faker/Provider');
-        if (file_exists($providerPath.'/'.$locale.'/Payment.php')) {
-            $payment = "\\Faker\\Provider\\$locale\\Payment";
-            $this->faker->addProvider(new $payment($this->faker));
-        }
-    }
-
-    public function testCreditCardTypeReturnsValidVendorName()
-    {
-        $this->assertTrue(in_array($this->faker->creditCardType, array('Visa', 'MasterCard', 'American Express', 'Discover Card')));
-    }
-
-    public function creditCardNumberProvider()
-    {
-        return array(
-            array('Discover Card', '/^6011\d{12}$/'),
-            array('Visa', '/^4\d{12,15}$/'),
-            array('MasterCard', '/^(5[1-5]|2[2-7])\d{14}$/')
-        );
-    }
-
-    /**
-     * @dataProvider creditCardNumberProvider
-     */
-    public function testCreditCardNumberReturnsValidCreditCardNumber($type, $regexp)
-    {
-        $cardNumber = $this->faker->creditCardNumber($type);
-        $this->assertRegExp($regexp, $cardNumber);
-        $this->assertTrue(Luhn::isValid($cardNumber));
-    }
-
-    public function testCreditCardNumberCanFormatOutput()
-    {
-        $this->assertRegExp('/^6011-\d{4}-\d{4}-\d{4}$/', $this->faker->creditCardNumber('Discover Card', true));
-    }
-
-    public function testCreditCardExpirationDateReturnsValidDateByDefault()
-    {
-        $expirationDate = $this->faker->creditCardExpirationDate;
-        $this->assertTrue(intval($expirationDate->format('U')) > strtotime('now'));
-        $this->assertTrue(intval($expirationDate->format('U')) < strtotime('+36 months'));
-    }
-
-    public function testRandomCard()
-    {
-        $cardDetails = $this->faker->creditCardDetails;
-        $this->assertEquals(count($cardDetails), 4);
-        $this->assertEquals(array('type', 'number', 'name', 'expirationDate'), array_keys($cardDetails));
-    }
-
     protected $ibanFormats = array(
         'AD' => '/^AD\d{2}\d{4}\d{4}[A-Z0-9]{12}$/',
         'AE' => '/^AE\d{2}\d{3}\d{16}$/',
@@ -152,6 +76,72 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
         'TR' => '/^TR\d{2}\d{5}\d{1}[A-Z0-9]{16}$/',
         'VG' => '/^VG\d{2}[A-Z]{4}\d{16}$/',
     );
+    private $faker;
+
+    public function setUp()
+    {
+        $faker = new Generator();
+        $faker->addProvider(new BaseProvider($faker));
+        $faker->addProvider(new DateTimeProvider($faker));
+        $faker->addProvider(new PersonProvider($faker));
+        $faker->addProvider(new PaymentProvider($faker));
+        $this->faker = $faker;
+    }
+
+    public function localeDataProvider()
+    {
+        $providerPath = realpath(__DIR__ . '/../../../src/Faker/Provider');
+        $localePaths = array_filter(glob($providerPath . '/*', GLOB_ONLYDIR));
+        foreach ($localePaths as $path) {
+            $parts = explode('/', $path);
+            $locales[] = array($parts[count($parts) - 1]);
+        }
+
+        return $locales;
+    }
+
+    public function testCreditCardTypeReturnsValidVendorName()
+    {
+        $this->assertTrue(in_array($this->faker->creditCardType, array('Visa', 'MasterCard', 'American Express', 'Discover Card')));
+    }
+
+    public function creditCardNumberProvider()
+    {
+        return array(
+            array('Discover Card', '/^6011\d{12}$/'),
+            array('Visa', '/^4\d{12,15}$/'),
+            array('MasterCard', '/^(5[1-5]|2[2-7])\d{14}$/')
+        );
+    }
+
+    /**
+     * @dataProvider creditCardNumberProvider
+     */
+    public function testCreditCardNumberReturnsValidCreditCardNumber($type, $regexp)
+    {
+        $cardNumber = $this->faker->creditCardNumber($type);
+        $this->assertRegExp($regexp, $cardNumber);
+        $this->assertTrue(Luhn::isValid($cardNumber));
+    }
+
+    public function testCreditCardNumberCanFormatOutput()
+    {
+        $this->assertRegExp('/^6011-\d{4}-\d{4}-\d{4}$/', $this->faker->creditCardNumber('Discover Card', true));
+    }
+
+    public function testCreditCardExpirationDateReturnsValidDateByDefault()
+    {
+        $expirationDate = $this->faker->creditCardExpirationDate;
+        $this->assertTrue(intval($expirationDate->format('U')) > strtotime('now'));
+        $this->assertTrue(intval($expirationDate->format('U')) < strtotime('+36 months'));
+    }
+
+    public function testRandomCard()
+    {
+        $cardDetails = $this->faker->creditCardDetails;
+        $this->assertEquals(count($cardDetails), 4);
+        $this->assertEquals(array('type', 'number', 'name', 'expirationDate'), array_keys($cardDetails));
+    }
 
     /**
      * @dataProvider localeDataProvider
@@ -183,6 +173,15 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(Iban::isValid($iban), "Checksum for $iban is invalid");
     }
 
+    public function loadLocalProviders($locale)
+    {
+        $providerPath = realpath(__DIR__ . '/../../../src/Faker/Provider');
+        if (file_exists($providerPath . '/' . $locale . '/Payment.php')) {
+            $payment = "\\Faker\\Provider\\$locale\\Payment";
+            $this->faker->addProvider(new $payment($this->faker));
+        }
+    }
+
     public function ibanFormatProvider()
     {
         $return = array();
@@ -191,6 +190,7 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
         }
         return $return;
     }
+
     /**
      * @dataProvider ibanFormatProvider
      */

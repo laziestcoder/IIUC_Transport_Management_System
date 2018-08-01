@@ -23,10 +23,7 @@
     <div class="box-body">
         <ul class="products-list product-list-in-box">
 
-            <?php $__currentLoopData = $extensions;
-            $__env->addLoop($__currentLoopData);
-            foreach ($__currentLoopData as $extension): $__env->incrementLoopIndices();
-                $loop = $__env->getLastLoop(); ?>
+            <?php $__currentLoopData = $extensions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $extension): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <li class="item">
                     <div class="product-img">
                         <i class="fa fa-<?php echo e($extension['icon']); ?> fa-2x ext-icon"></i>
@@ -36,16 +33,14 @@
                             <?php echo e($extension['name']); ?>
 
                         </a>
-                        <?php if ($extension['installed']): ?>
+                        <?php if($extension['installed']): ?>
                             <span class="pull-right installed"><i class="fa fa-check"></i></span>
                         <?php endif; ?>
                     </div>
                 </li>
-            <?php endforeach;
-            $__env->popLoop();
-            $loop = $__env->getLastLoop(); ?>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-            <!-- /.item -->
+        <!-- /.item -->
         </ul>
     </div>
     <!-- /.box-body -->

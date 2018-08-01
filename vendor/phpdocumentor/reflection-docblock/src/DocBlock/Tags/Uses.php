@@ -32,12 +32,12 @@ final class Uses extends BaseTag implements Factory\StaticMethod
     /**
      * Initializes this tag.
      *
-     * @param Fqsen       $refers
+     * @param Fqsen $refers
      * @param Description $description
      */
     public function __construct(Fqsen $refers, Description $description = null)
     {
-        $this->refers      = $refers;
+        $this->refers = $refers;
         $this->description = $description;
     }
 
@@ -49,7 +49,8 @@ final class Uses extends BaseTag implements Factory\StaticMethod
         FqsenResolver $resolver = null,
         DescriptionFactory $descriptionFactory = null,
         TypeContext $context = null
-    ) {
+    )
+    {
         Assert::string($body);
         Assert::allNotNull([$resolver, $descriptionFactory]);
 

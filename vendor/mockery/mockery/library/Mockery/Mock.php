@@ -239,6 +239,38 @@ class Mock implements MockInterface
         return $this->_mockery_receivedMethodCalls ?: $this->_mockery_receivedMethodCalls = new \Mockery\ReceivedMethodCalls();
     }
 
+    public function mockery_getMethod($name)
+    {
+        foreach ($this->mockery_getMethods() as $method) {
+            if ($method->getName() == $name) {
+                return $method;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Uses reflection to get the list of all
+     * methods within the current mock object
+     *
+     * @return array
+     */
+    protected function mockery_getMethods()
+    {
+        if (static::$_mockery_methods && \Mockery::getConfiguration()->reflectionCacheEnabled()) {
+            return static::$_mockery_methods;
+        }
+
+        if (isset($this->_mockery_partial)) {
+            $reflected = new \ReflectionObject($this->_mockery_partial);
+        } else {
+            $reflected = new \ReflectionClass($this);
+        }
+
+        return static::$_mockery_methods = $reflected->getMethods();
+    }
+
     protected function _mockery_findExpectedMethodHandler($method)
     {
         if (isset($this->_mockery_expectations[$method])) {
@@ -364,27 +396,6 @@ class Mock implements MockInterface
     }
 
     /**
-     * Uses reflection to get the list of all
-     * methods within the current mock object
-     *
-     * @return array
-     */
-    protected function mockery_getMethods()
-    {
-        if (static::$_mockery_methods && \Mockery::getConfiguration()->reflectionCacheEnabled()) {
-            return static::$_mockery_methods;
-        }
-
-        if (isset($this->_mockery_partial)) {
-            $reflected = new \ReflectionObject($this->_mockery_partial);
-        } else {
-            $reflected = new \ReflectionClass($this);
-        }
-
-        return static::$_mockery_methods = $reflected->getMethods();
-    }
-
-    /**
      * @param mixed $something String method name or map of method => return
      * @return self|\Mockery\ExpectationInterface|\Mockery\Expectation|\Mockery\HigherOrderMessage
      */
@@ -450,17 +461,6 @@ class Mock implements MockInterface
         }
         );
         return $lastExpectation;
-    }
-
-    public function mockery_getMethod($name)
-    {
-        foreach ($this->mockery_getMethods() as $method) {
-            if ($method->getName() == $name) {
-                return $method;
-            }
-        }
-
-        return null;
     }
 
     /**

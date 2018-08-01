@@ -60,7 +60,7 @@ class MagicCallPatch implements ClassPatchInterface
             $reflectionClass = new \ReflectionClass($type);
             $tagList = $this->tagRetriever->getTagList($reflectionClass);
 
-            foreach($tagList as $tag) {
+            foreach ($tagList as $tag) {
                 $methodName = $tag->getMethodName();
 
                 if (empty($methodName)) {

@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Util\TestDox;
 
 use Exception;
@@ -25,18 +26,6 @@ final class CliTestDoxPrinterTest extends TestCase
      * @var TestableCliTestDoxPrinter
      */
     private $verbosePrinter;
-
-    protected function setUp(): void
-    {
-        $this->printer        = new TestableCliTestDoxPrinter;
-        $this->verbosePrinter = new TestableCliTestDoxPrinter(null, true);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->printer        = null;
-        $this->verbosePrinter = null;
-    }
 
     public function testPrintsTheClassNameOfTheTestClass(): void
     {
@@ -205,5 +194,17 @@ final class CliTestDoxPrinterTest extends TestCase
 
         $this->assertContains('│', $this->verbosePrinter->getBuffer());
         $this->assertContains('S_K_I_P_P_E_D', $this->verbosePrinter->getBuffer());
+    }
+
+    protected function setUp(): void
+    {
+        $this->printer = new TestableCliTestDoxPrinter;
+        $this->verbosePrinter = new TestableCliTestDoxPrinter(null, true);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->printer = null;
+        $this->verbosePrinter = null;
     }
 }

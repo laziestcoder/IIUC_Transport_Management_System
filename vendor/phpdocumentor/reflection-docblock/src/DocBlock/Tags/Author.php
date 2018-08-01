@@ -42,8 +42,30 @@ final class Author extends BaseTag implements Factory\StaticMethod
             throw new \InvalidArgumentException('The author tag does not have a valid e-mail address');
         }
 
-        $this->authorName  = $authorName;
+        $this->authorName = $authorName;
         $this->authorEmail = $authorEmail;
+    }
+
+    /**
+     * Attempts to create a new Author object based on †he tag body.
+     *
+     * @param string $body
+     *
+     * @return static
+     */
+    public static function create($body)
+    {
+        Assert::string($body);
+
+        $splitTagContent = preg_match('/^([^\<]*)(?:\<([^\>]*)\>)?$/u', $body, $matches);
+        if (!$splitTagContent) {
+            return null;
+        }
+
+        $authorName = trim($matches[1]);
+        $email = isset($matches[2]) ? trim($matches[2]) : '';
+
+        return new static($authorName, $email);
     }
 
     /**
@@ -74,27 +96,5 @@ final class Author extends BaseTag implements Factory\StaticMethod
     public function __toString()
     {
         return $this->authorName . (strlen($this->authorEmail) ? ' <' . $this->authorEmail . '>' : '');
-    }
-
-    /**
-     * Attempts to create a new Author object based on †he tag body.
-     *
-     * @param string $body
-     *
-     * @return static
-     */
-    public static function create($body)
-    {
-        Assert::string($body);
-
-        $splitTagContent = preg_match('/^([^\<]*)(?:\<([^\>]*)\>)?$/u', $body, $matches);
-        if (!$splitTagContent) {
-            return null;
-        }
-
-        $authorName = trim($matches[1]);
-        $email = isset($matches[2]) ? trim($matches[2]) : '';
-
-        return new static($authorName, $email);
     }
 }

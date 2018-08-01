@@ -18,7 +18,7 @@ class Authenticate
     /**
      * Create a new middleware instance.
      *
-     * @param  \Illuminate\Contracts\Auth\Factory  $auth
+     * @param  \Illuminate\Contracts\Auth\Factory $auth
      * @return void
      */
     public function __construct(Auth $auth)
@@ -29,9 +29,9 @@ class Authenticate
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string[]  ...$guards
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Closure $next
+     * @param  string[] ...$guards
      * @return mixed
      *
      * @throws \Illuminate\Auth\AuthenticationException
@@ -46,7 +46,7 @@ class Authenticate
     /**
      * Determine if the user is logged in to any of the given guards.
      *
-     * @param  array  $guards
+     * @param  array $guards
      * @return void
      *
      * @throws \Illuminate\Auth\AuthenticationException

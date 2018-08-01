@@ -40,7 +40,7 @@ class Swift_Mailer
     public function createMessage($service = 'message')
     {
         return Swift_DependencyContainer::getInstance()
-            ->lookup('message.'.$service);
+            ->lookup('message.' . $service);
     }
 
     /**
@@ -55,13 +55,13 @@ class Swift_Mailer
      * delivery.
      *
      * @param Swift_Mime_SimpleMessage $message
-     * @param array                    $failedRecipients An array of failures by-reference
+     * @param array $failedRecipients An array of failures by-reference
      *
      * @return int The number of successful recipients. Can be 0 which indicates failure
      */
     public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
     {
-        $failedRecipients = (array) $failedRecipients;
+        $failedRecipients = (array)$failedRecipients;
 
         if (!$this->transport->isStarted()) {
             $this->transport->start();

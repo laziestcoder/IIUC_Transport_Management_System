@@ -25,7 +25,9 @@
 
 nav img {
     display: block;
-    height: 100px;
+    height: 80px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .navbar-shrink img {
@@ -117,7 +119,8 @@ header.masthead .intro-text {
     width: 90%;
     text-align: initial;
 }
-.userinfo table img{
+
+.userinfo table img {
     /*display: inline-block;*/
     width: 100px;
     height: 100px;
@@ -126,14 +129,16 @@ header.masthead .intro-text {
     margin-bottom:10px;
     margin-left:10px; */
 }
-.userinfo .table-active{
+
+.userinfo .table-active {
     /* background: black; */
     margin: 10px;
     height: 150px;
     width: 600px;
 }
-.userinfo .tableSpace{
-    margin-left: 10px;    
+
+.userinfo .tableSpace {
+    margin-left: 10px;
 }
 
 .userrouteinfo {

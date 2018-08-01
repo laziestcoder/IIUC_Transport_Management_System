@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\User;
+use Illuminate\Http\Request;
 use Bestmomo\LaravelEmailConfirmation\Traits\RegistersUsers;
 use Illuminate\Support\Facades\Validator;
 use Mail;
@@ -68,25 +69,28 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        if ($request->hasFile('image')) {
-            //Get Filename with extension
-            $filenameWithExt = $request->file('image')->getClientOriginalName();
+        //$request = $data;
+        // if ($request->hasFile('image')) {
+        //     //Get Filename with extension
+        //     $filenameWithExt = $request->file('image')->getClientOriginalName();
 
-            // Get just file name
-            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+        //     // Get just file name
+        //     $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
 
-            // Get just file extension
-            $extension = $request->file('image')->getClientOriginalExtension();
+        //     // Get just file extension
+        //     $extension = $request->file('image')->getClientOriginalExtension();
 
-            // File name to store
-            $fileNameToStore = $filename . '_' . time() . '.' . $extension;
+        //     // File name to store
+        //     $fileNameToStore = $filename . '_' . time() . '.' . $extension;
 
-            //uload image
-            $path = $request->file('image')->storeAs('public/image/user', $fileNameToStore);
+        //     //uload image
+        //     $path = $request->file('image')->storeAs('public/image/user', $fileNameToStore);
 
-        } else {
-            $fileNameToStore = 'defaultAdmin.png';
-        }
+        // } else {
+        //     $fileNameToStore = 'defaultAdmin.png';
+        // }
+
+        $fileNameToStore = 'defaultAdmin.png';
 
         return User::create([
             'name' => $data['name'],
@@ -99,7 +103,7 @@ class RegisterController extends Controller
         ]);
     }
 
-    
+
     // Account activation process
 
 

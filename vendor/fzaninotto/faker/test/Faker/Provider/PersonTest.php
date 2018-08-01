@@ -2,8 +2,8 @@
 
 namespace Faker\Test\Provider;
 
-use Faker\Provider\Person;
 use Faker\Generator;
+use Faker\Provider\Person;
 
 class PersonTest extends \PHPUnit_Framework_TestCase
 {

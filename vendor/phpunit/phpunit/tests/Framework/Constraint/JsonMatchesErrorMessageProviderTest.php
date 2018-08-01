@@ -17,7 +17,7 @@ class JsonMatchesErrorMessageProviderTest extends TestCase
     public static function determineJsonErrorDataprovider()
     {
         return [
-            'JSON_ERROR_NONE'  => [
+            'JSON_ERROR_NONE' => [
                 null, 'json_error_none', ''
             ],
             'JSON_ERROR_DEPTH' => [
@@ -50,8 +50,8 @@ class JsonMatchesErrorMessageProviderTest extends TestCase
     {
         return [
             'expected' => ['Expected value JSON decode error - ', 'expected'],
-            'actual'   => ['Actual value JSON decode error - ', 'actual'],
-            'default'  => ['', ''],
+            'actual' => ['Actual value JSON decode error - ', 'actual'],
+            'default' => ['', ''],
         ];
     }
 

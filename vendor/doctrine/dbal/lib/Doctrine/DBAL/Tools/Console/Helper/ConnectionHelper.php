@@ -19,8 +19,8 @@
 
 namespace Doctrine\DBAL\Tools\Console\Helper;
 
-use Symfony\Component\Console\Helper\Helper;
 use Doctrine\DBAL\Connection;
+use Symfony\Component\Console\Helper\Helper;
 
 /**
  * Doctrine CLI Connection Helper.

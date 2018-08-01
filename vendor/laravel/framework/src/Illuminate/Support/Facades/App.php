@@ -8,7 +8,7 @@ namespace Illuminate\Support\Facades;
  * @method static string environment()
  * @method static bool isDownForMaintenance()
  * @method static void registerConfiguredProviders()
- * @method static \Illuminate\Support\ServiceProvider register(\Illuminate\Support\ServiceProvider|string $provider, array $options = [], bool $force = false)
+ * @method static \Illuminate\Support\ServiceProvider register(\Illuminate\Support\ServiceProvider | string $provider, array $options = [], bool $force = false)
  * @method static void registerDeferredProvider(string $provider, string $service = null)
  * @method static void boot()
  * @method static void booting(mixed $callback)

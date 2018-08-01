@@ -4,21 +4,19 @@ namespace Encore\Admin\Form\Field;
 
 class Currency extends Text
 {
-    protected $symbol = '$';
-
     protected static $js = [
         '/vendor/laravel-admin/AdminLTE/plugins/input-mask/jquery.inputmask.bundle.min.js',
     ];
-
+    protected $symbol = '$';
     /**
      * @see https://github.com/RobinHerbots/Inputmask#options
      *
      * @var array
      */
     protected $options = [
-        'alias'              => 'currency',
-        'radixPoint'         => '.',
-        'prefix'             => '',
+        'alias' => 'currency',
+        'radixPoint' => '.',
+        'prefix' => '',
         'removeMaskOnSubmit' => true,
     ];
 
@@ -31,7 +29,7 @@ class Currency extends Text
 
     public function prepare($value)
     {
-        return (float) $value;
+        return (float)$value;
     }
 
     public function render()

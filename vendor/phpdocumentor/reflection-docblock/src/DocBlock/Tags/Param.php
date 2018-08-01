@@ -61,7 +61,8 @@ final class Param extends BaseTag implements Factory\StaticMethod
         TypeResolver $typeResolver = null,
         DescriptionFactory $descriptionFactory = null,
         TypeContext $context = null
-    ) {
+    )
+    {
         Assert::stringNotEmpty($body);
         Assert::allNotNull([$typeResolver, $descriptionFactory]);
 
@@ -117,16 +118,6 @@ final class Param extends BaseTag implements Factory\StaticMethod
     }
 
     /**
-     * Returns whether this tag is variadic.
-     *
-     * @return boolean
-     */
-    public function isVariadic()
-    {
-        return $this->isVariadic;
-    }
-
-    /**
      * Returns a string representation for this tag.
      *
      * @return string
@@ -134,8 +125,18 @@ final class Param extends BaseTag implements Factory\StaticMethod
     public function __toString()
     {
         return ($this->type ? $this->type . ' ' : '')
-        . ($this->isVariadic() ? '...' : '')
-        . '$' . $this->variableName
-        . ($this->description ? ' ' . $this->description : '');
+            . ($this->isVariadic() ? '...' : '')
+            . '$' . $this->variableName
+            . ($this->description ? ' ' . $this->description : '');
+    }
+
+    /**
+     * Returns whether this tag is variadic.
+     *
+     * @return boolean
+     */
+    public function isVariadic()
+    {
+        return $this->isVariadic;
     }
 }

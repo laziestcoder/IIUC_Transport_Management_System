@@ -19,12 +19,12 @@
 
 namespace Doctrine\DBAL\Id;
 
-use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\LockMode;
-use const CASE_LOWER;
 use function array_change_key_case;
+use const CASE_LOWER;
 
 /**
  * Table ID Generator for those poor languages that are missing sequences.
@@ -84,7 +84,7 @@ class TableGenerator
 
     /**
      * @param \Doctrine\DBAL\Connection $conn
-     * @param string                    $generatorTableName
+     * @param string $generatorTableName
      *
      * @throws \Doctrine\DBAL\DBALException
      */
@@ -123,11 +123,11 @@ class TableGenerator
 
         try {
             $platform = $this->conn->getDatabasePlatform();
-            $sql      = 'SELECT sequence_value, sequence_increment_by'
+            $sql = 'SELECT sequence_value, sequence_increment_by'
                 . ' FROM ' . $platform->appendLockHint($this->generatorTableName, LockMode::PESSIMISTIC_WRITE)
                 . ' WHERE sequence_name = ? ' . $platform->getWriteLockSQL();
-            $stmt     = $this->conn->executeQuery($sql, [$sequenceName]);
-            $row      = $stmt->fetch(FetchMode::ASSOCIATIVE);
+            $stmt = $this->conn->executeQuery($sql, [$sequenceName]);
+            $row = $stmt->fetch(FetchMode::ASSOCIATIVE);
 
             if ($row !== false) {
                 $row = array_change_key_case($row, CASE_LOWER);
@@ -142,9 +142,9 @@ class TableGenerator
                     ];
                 }
 
-                $sql = "UPDATE " . $this->generatorTableName . " ".
-                       "SET sequence_value = sequence_value + sequence_increment_by " .
-                       "WHERE sequence_name = ? AND sequence_value = ?";
+                $sql = "UPDATE " . $this->generatorTableName . " " .
+                    "SET sequence_value = sequence_value + sequence_increment_by " .
+                    "WHERE sequence_name = ? AND sequence_value = ?";
                 $rows = $this->conn->executeUpdate($sql, [$sequenceName, $row['sequence_value']]);
 
                 if ($rows != 1) {

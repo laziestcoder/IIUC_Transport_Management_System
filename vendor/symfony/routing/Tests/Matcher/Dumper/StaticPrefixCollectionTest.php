@@ -26,6 +26,22 @@ class StaticPrefixCollectionTest extends TestCase
         $this->assertEquals($expected, $dumped);
     }
 
+    private function dumpCollection(StaticPrefixCollection $collection, $prefix = '')
+    {
+        $lines = array();
+
+        foreach ($collection->getItems() as $item) {
+            if ($item instanceof StaticPrefixCollection) {
+                $lines[] = $prefix . $item->getPrefix();
+                $lines[] = $this->dumpCollection($item, $prefix . '-> ');
+            } else {
+                $lines[] = $prefix . implode(' ', $item);
+            }
+        }
+
+        return implode("\n", $lines);
+    }
+
     public function routeProvider()
     {
         return array(
@@ -155,21 +171,5 @@ EOF
 EOF
             ),
         );
-    }
-
-    private function dumpCollection(StaticPrefixCollection $collection, $prefix = '')
-    {
-        $lines = array();
-
-        foreach ($collection->getItems() as $item) {
-            if ($item instanceof StaticPrefixCollection) {
-                $lines[] = $prefix.$item->getPrefix();
-                $lines[] = $this->dumpCollection($item, $prefix.'-> ');
-            } else {
-                $lines[] = $prefix.implode(' ', $item);
-            }
-        }
-
-        return implode("\n", $lines);
     }
 }

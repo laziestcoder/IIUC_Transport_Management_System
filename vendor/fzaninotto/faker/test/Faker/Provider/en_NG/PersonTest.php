@@ -7,7 +7,7 @@ use Faker\Provider\en_NG\Person;
 
 class PersonTest extends \PHPUnit_Framework_TestCase
 {
-     /**
+    /**
      * @var Generator
      */
     private $faker;

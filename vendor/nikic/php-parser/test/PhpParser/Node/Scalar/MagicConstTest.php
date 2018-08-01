@@ -9,11 +9,13 @@ class MagicConstTest extends TestCase
     /**
      * @dataProvider provideTestGetName
      */
-    public function testGetName(MagicConst $magicConst, $name) {
+    public function testGetName(MagicConst $magicConst, $name)
+    {
         $this->assertSame($name, $magicConst->getName());
     }
 
-    public function provideTestGetName() {
+    public function provideTestGetName()
+    {
         return [
             [new MagicConst\Class_, '__CLASS__'],
             [new MagicConst\Dir, '__DIR__'],

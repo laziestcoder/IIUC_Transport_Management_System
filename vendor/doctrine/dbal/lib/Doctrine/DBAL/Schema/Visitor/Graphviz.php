@@ -19,9 +19,9 @@
 
 namespace Doctrine\DBAL\Schema\Visitor;
 
-use Doctrine\DBAL\Schema\Table;
-use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\Table;
 use function current;
 use function file_put_contents;
 use function in_array;
@@ -45,10 +45,10 @@ class Graphviz extends AbstractVisitor
     public function acceptForeignKey(Table $localTable, ForeignKeyConstraint $fkConstraint)
     {
         $this->output .= $this->createNodeRelation(
-            $fkConstraint->getLocalTableName() . ":col" . current($fkConstraint->getLocalColumns()).":se",
-            $fkConstraint->getForeignTableName() . ":col" . current($fkConstraint->getForeignColumns()).":se",
+            $fkConstraint->getLocalTableName() . ":col" . current($fkConstraint->getLocalColumns()) . ":se",
+            $fkConstraint->getForeignTableName() . ":col" . current($fkConstraint->getForeignColumns()) . ":se",
             [
-                'dir'       => 'back',
+                'dir' => 'back',
                 'arrowtail' => 'dot',
                 'arrowhead' => 'normal',
             ]
@@ -56,14 +56,32 @@ class Graphviz extends AbstractVisitor
     }
 
     /**
+     * @param string $node1
+     * @param string $node2
+     * @param array $options
+     *
+     * @return string
+     */
+    private function createNodeRelation($node1, $node2, $options)
+    {
+        $relation = $node1 . ' -> ' . $node2 . ' [';
+        foreach ($options as $key => $value) {
+            $relation .= $key . '=' . $value . ' ';
+        }
+        $relation .= "]\n";
+
+        return $relation;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function acceptSchema(Schema $schema)
     {
-        $this->output  = 'digraph "' . sha1(mt_rand()) . '" {' . "\n";
+        $this->output = 'digraph "' . sha1(mt_rand()) . '" {' . "\n";
         $this->output .= 'splines = true;' . "\n";
         $this->output .= 'overlap = false;' . "\n";
-        $this->output .= 'outputorder=edgesfirst;'."\n";
+        $this->output .= 'outputorder=edgesfirst;' . "\n";
         $this->output .= 'mindist = 0.6;' . "\n";
         $this->output .= 'sep = .2;' . "\n";
     }
@@ -80,6 +98,23 @@ class Graphviz extends AbstractVisitor
                 'shape' => 'plaintext',
             ]
         );
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     *
+     * @return string
+     */
+    private function createNode($name, $options)
+    {
+        $node = $name . " [";
+        foreach ($options as $key => $value) {
+            $node .= $key . '=' . $value . ' ';
+        }
+        $node .= "]\n";
+
+        return $node;
     }
 
     /**
@@ -103,7 +138,7 @@ class Graphviz extends AbstractVisitor
             $label .= '<TD BORDER="0" ALIGN="LEFT" BGCOLOR="#eeeeec">';
             $label .= '<FONT COLOR="#2e3436" FACE="Helvetica" POINT-SIZE="12">' . $columnLabel . '</FONT>';
             $label .= '</TD><TD BORDER="0" ALIGN="LEFT" BGCOLOR="#eeeeec"><FONT COLOR="#2e3436" FACE="Helvetica" POINT-SIZE="10">' . strtolower($column->getType()) . '</FONT></TD>';
-            $label .= '<TD BORDER="0" ALIGN="RIGHT" BGCOLOR="#eeeeec" PORT="col'.$column->getName().'">';
+            $label .= '<TD BORDER="0" ALIGN="RIGHT" BGCOLOR="#eeeeec" PORT="col' . $column->getName() . '">';
             if ($table->hasPrimaryKey() && in_array($column->getName(), $table->getPrimaryKey()->getColumns())) {
                 $label .= "\xe2\x9c\xb7";
             }
@@ -114,51 +149,6 @@ class Graphviz extends AbstractVisitor
         $label .= '</TABLE>>';
 
         return $label;
-    }
-
-    /**
-     * @param string $name
-     * @param array  $options
-     *
-     * @return string
-     */
-    private function createNode($name, $options)
-    {
-        $node = $name . " [";
-        foreach ($options as $key => $value) {
-            $node .= $key . '=' . $value . ' ';
-        }
-        $node .= "]\n";
-
-        return $node;
-    }
-
-    /**
-     * @param string $node1
-     * @param string $node2
-     * @param array  $options
-     *
-     * @return string
-     */
-    private function createNodeRelation($node1, $node2, $options)
-    {
-        $relation = $node1 . ' -> ' . $node2 . ' [';
-        foreach ($options as $key => $value) {
-            $relation .= $key . '=' . $value . ' ';
-        }
-        $relation .= "]\n";
-
-        return $relation;
-    }
-
-    /**
-     * Get Graphviz Output
-     *
-     * @return string
-     */
-    public function getOutput()
-    {
-        return $this->output . "}";
     }
 
     /**
@@ -176,5 +166,15 @@ class Graphviz extends AbstractVisitor
     public function write($filename)
     {
         file_put_contents($filename, $this->getOutput());
+    }
+
+    /**
+     * Get Graphviz Output
+     *
+     * @return string
+     */
+    public function getOutput()
+    {
+        return $this->output . "}";
     }
 }

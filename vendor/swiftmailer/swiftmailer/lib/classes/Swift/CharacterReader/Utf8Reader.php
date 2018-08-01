@@ -70,15 +70,15 @@ class Swift_CharacterReader_Utf8Reader implements Swift_CharacterReader
         "\xe8" => 3, "\xe9" => 3, "\xea" => 3, "\xeb" => 3, "\xec" => 3, "\xed" => 3, "\xee" => 3, "\xef" => 3,
         "\xf0" => 4, "\xf1" => 4, "\xf2" => 4, "\xf3" => 4, "\xf4" => 4, "\xf5" => 4, "\xf6" => 4, "\xf7" => 4,
         "\xf8" => 5, "\xf9" => 5, "\xfa" => 5, "\xfb" => 5, "\xfc" => 6, "\xfd" => 6, "\xfe" => 0, "\xff" => 0,
-     );
+    );
 
     /**
      * Returns the complete character map.
      *
      * @param string $string
-     * @param int    $startOffset
-     * @param array  $currentMap
-     * @param mixed  $ignoredChars
+     * @param int $startOffset
+     * @param array $currentMap
+     * @param mixed $ignoredChars
      *
      * @return int
      */
@@ -150,7 +150,7 @@ class Swift_CharacterReader_Utf8Reader implements Swift_CharacterReader
      * A value of -1 means this cannot possibly be a valid character.
      *
      * @param string $bytes
-     * @param int    $size
+     * @param int $size
      *
      * @return int
      */

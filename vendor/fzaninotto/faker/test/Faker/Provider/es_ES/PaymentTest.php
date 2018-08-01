@@ -40,8 +40,8 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
     function isValidCIFFormat($docNumber)
     {
         return $this->respectsDocPattern($docNumber, '/^[PQSNWR][0-9][0-9][0-9][0-9][0-9][0-9][0-9][A-Z0-9]/')
-                ||
-               $this->respectsDocPattern($docNumber, '/^[ABCDEFGHJUV][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/');
+            ||
+            $this->respectsDocPattern($docNumber, '/^[ABCDEFGHJUV][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/');
     }
 
     function respectsDocPattern($givenString, $pattern)

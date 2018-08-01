@@ -19,8 +19,8 @@ class ValidationData
     /**
      * Gather a copy of the attribute data filled with any missing attributes.
      *
-     * @param  string  $attribute
-     * @param  array  $masterData
+     * @param  string $attribute
+     * @param  array $masterData
      * @return array
      */
     protected static function initializeAttributeOnData($attribute, $masterData)
@@ -29,7 +29,7 @@ class ValidationData
 
         $data = static::extractDataFromPath($explicitPath, $masterData);
 
-        if (! Str::contains($attribute, '*') || Str::endsWith($attribute, '*')) {
+        if (!Str::contains($attribute, '*') || Str::endsWith($attribute, '*')) {
             return $data;
         }
 
@@ -37,34 +37,18 @@ class ValidationData
     }
 
     /**
-     * Get all of the exact attribute values for a given wildcard attribute.
+     * Get the explicit part of the attribute name.
      *
-     * @param  array  $masterData
-     * @param  array  $data
-     * @param  string  $attribute
-     * @return array
+     * E.g. 'foo.bar.*.baz' -> 'foo.bar'
+     *
+     * Allows us to not spin through all of the flattened data for some operations.
+     *
+     * @param  string $attribute
+     * @return string
      */
-    protected static function extractValuesForWildcards($masterData, $data, $attribute)
+    public static function getLeadingExplicitAttributePath($attribute)
     {
-        $keys = [];
-
-        $pattern = str_replace('\*', '[^\.]+', preg_quote($attribute));
-
-        foreach ($data as $key => $value) {
-            if ((bool) preg_match('/^'.$pattern.'/', $key, $matches)) {
-                $keys[] = $matches[0];
-            }
-        }
-
-        $keys = array_unique($keys);
-
-        $data = [];
-
-        foreach ($keys as $key) {
-            $data[$key] = Arr::get($masterData, $key);
-        }
-
-        return $data;
+        return rtrim(explode('*', $attribute)[0], '.') ?: null;
     }
 
     /**
@@ -72,8 +56,8 @@ class ValidationData
      *
      * Used to extract a sub-section of the data for faster iteration.
      *
-     * @param  string  $attribute
-     * @param  array  $masterData
+     * @param  string $attribute
+     * @param  array $masterData
      * @return array
      */
     public static function extractDataFromPath($attribute, $masterData)
@@ -90,17 +74,33 @@ class ValidationData
     }
 
     /**
-     * Get the explicit part of the attribute name.
+     * Get all of the exact attribute values for a given wildcard attribute.
      *
-     * E.g. 'foo.bar.*.baz' -> 'foo.bar'
-     *
-     * Allows us to not spin through all of the flattened data for some operations.
-     *
-     * @param  string  $attribute
-     * @return string
+     * @param  array $masterData
+     * @param  array $data
+     * @param  string $attribute
+     * @return array
      */
-    public static function getLeadingExplicitAttributePath($attribute)
+    protected static function extractValuesForWildcards($masterData, $data, $attribute)
     {
-        return rtrim(explode('*', $attribute)[0], '.') ?: null;
+        $keys = [];
+
+        $pattern = str_replace('\*', '[^\.]+', preg_quote($attribute));
+
+        foreach ($data as $key => $value) {
+            if ((bool)preg_match('/^' . $pattern . '/', $key, $matches)) {
+                $keys[] = $matches[0];
+            }
+        }
+
+        $keys = array_unique($keys);
+
+        $data = [];
+
+        foreach ($keys as $key) {
+            $data[$key] = Arr::get($masterData, $key);
+        }
+
+        return $data;
     }
 }

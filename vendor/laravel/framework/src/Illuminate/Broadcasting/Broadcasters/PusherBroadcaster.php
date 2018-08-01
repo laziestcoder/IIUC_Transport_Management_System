@@ -2,10 +2,10 @@
 
 namespace Illuminate\Broadcasting\Broadcasters;
 
-use Pusher\Pusher;
+use Illuminate\Broadcasting\BroadcastException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Broadcasting\BroadcastException;
+use Pusher\Pusher;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PusherBroadcaster extends Broadcaster
@@ -20,7 +20,7 @@ class PusherBroadcaster extends Broadcaster
     /**
      * Create a new broadcaster instance.
      *
-     * @param  \Pusher\Pusher  $pusher
+     * @param  \Pusher\Pusher $pusher
      * @return void
      */
     public function __construct(Pusher $pusher)
@@ -31,20 +31,20 @@ class PusherBroadcaster extends Broadcaster
     /**
      * Authenticate the incoming request for a given channel.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return mixed
      * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
      */
     public function auth($request)
     {
         if (Str::startsWith($request->channel_name, ['private-', 'presence-']) &&
-            ! $request->user()) {
+            !$request->user()) {
             throw new AccessDeniedHttpException;
         }
 
         $channelName = Str::startsWith($request->channel_name, 'private-')
-                            ? Str::replaceFirst('private-', '', $request->channel_name)
-                            : Str::replaceFirst('presence-', '', $request->channel_name);
+            ? Str::replaceFirst('private-', '', $request->channel_name)
+            : Str::replaceFirst('presence-', '', $request->channel_name);
 
         return parent::verifyUserCanAccessChannel(
             $request, $channelName
@@ -54,8 +54,8 @@ class PusherBroadcaster extends Broadcaster
     /**
      * Return the valid authentication response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  mixed  $result
+     * @param  \Illuminate\Http\Request $request
+     * @param  mixed $result
      * @return mixed
      */
     public function validAuthenticationResponse($request, $result)
@@ -78,26 +78,26 @@ class PusherBroadcaster extends Broadcaster
     /**
      * Decode the given Pusher response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  mixed  $response
+     * @param  \Illuminate\Http\Request $request
+     * @param  mixed $response
      * @return array
      */
     protected function decodePusherResponse($request, $response)
     {
-        if (! $request->callback) {
+        if (!$request->callback) {
             return json_decode($response, true);
         }
 
         return response()->json(json_decode($response, true))
-                    ->withCallback($request->callback);
+            ->withCallback($request->callback);
     }
 
     /**
      * Broadcast the given event.
      *
-     * @param  array  $channels
-     * @param  string  $event
-     * @param  array  $payload
+     * @param  array $channels
+     * @param  string $event
+     * @param  array $payload
      * @return void
      */
     public function broadcast(array $channels, $event, array $payload = [])

@@ -17,6 +17,21 @@ class Swift_Plugins_ReporterPluginTest extends \SwiftMailerTestCase
         $plugin->sendPerformed($evt);
     }
 
+    private function createMessage()
+    {
+        return $this->getMockery('Swift_Mime_SimpleMessage')->shouldIgnoreMissing();
+    }
+
+    private function createSendEvent()
+    {
+        return $this->getMockery('Swift_Events_SendEvent')->shouldIgnoreMissing();
+    }
+
+    private function createReporter()
+    {
+        return $this->getMockery('Swift_Plugins_Reporter')->shouldIgnoreMissing();
+    }
+
     public function testReportingFailedTo()
     {
         $message = $this->createMessage();
@@ -67,20 +82,5 @@ class Swift_Plugins_ReporterPluginTest extends \SwiftMailerTestCase
 
         $plugin = new Swift_Plugins_ReporterPlugin($reporter);
         $plugin->sendPerformed($evt);
-    }
-
-    private function createMessage()
-    {
-        return $this->getMockery('Swift_Mime_SimpleMessage')->shouldIgnoreMissing();
-    }
-
-    private function createSendEvent()
-    {
-        return $this->getMockery('Swift_Events_SendEvent')->shouldIgnoreMissing();
-    }
-
-    private function createReporter()
-    {
-        return $this->getMockery('Swift_Plugins_Reporter')->shouldIgnoreMissing();
     }
 }

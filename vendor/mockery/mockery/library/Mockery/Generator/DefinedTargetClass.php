@@ -34,11 +34,6 @@ class DefinedTargetClass implements TargetClassInterface
         return new self(new \ReflectionClass($name));
     }
 
-    public function getName()
-    {
-        return $this->rfc->getName();
-    }
-
     public function isAbstract()
     {
         return $this->rfc->isAbstract();
@@ -67,6 +62,11 @@ class DefinedTargetClass implements TargetClassInterface
     public function __toString()
     {
         return $this->getName();
+    }
+
+    public function getName()
+    {
+        return $this->rfc->getName();
     }
 
     public function getNamespaceName()

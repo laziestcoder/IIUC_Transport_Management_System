@@ -10,7 +10,6 @@ namespace Hamcrest;
  * be cast to certain data types such as numerics (or even strings if
  * __toString() has not be defined).
  */
-
 abstract class TypeSafeMatcher extends BaseMatcher
 {
 

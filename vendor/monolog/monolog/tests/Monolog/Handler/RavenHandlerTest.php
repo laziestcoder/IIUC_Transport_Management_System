@@ -11,9 +11,9 @@
 
 namespace Monolog\Handler;
 
-use Monolog\TestCase;
-use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Logger;
+use Monolog\TestCase;
 
 class RavenHandlerTest extends TestCase
 {
@@ -35,13 +35,6 @@ class RavenHandlerTest extends TestCase
         $this->assertInstanceOf('Monolog\Handler\RavenHandler', $handler);
     }
 
-    protected function getHandler($ravenClient)
-    {
-        $handler = new RavenHandler($ravenClient);
-
-        return $handler;
-    }
-
     protected function getRavenClient()
     {
         $dsn = 'http://43f6017361224d098402974103bfc53d:a6a0538fc2934ba2bed32e08741b2cd3@marca.python.live.cheggnet.com:9000/1';
@@ -59,6 +52,13 @@ class RavenHandlerTest extends TestCase
 
         $this->assertEquals($ravenClient::DEBUG, $ravenClient->lastData['level']);
         $this->assertContains($record['message'], $ravenClient->lastData['message']);
+    }
+
+    protected function getHandler($ravenClient)
+    {
+        $handler = new RavenHandler($ravenClient);
+
+        return $handler;
     }
 
     public function testWarning()
@@ -163,6 +163,11 @@ class RavenHandlerTest extends TestCase
         $this->assertEquals($record['message'], $ravenClient->lastData['message']);
     }
 
+    private function methodThatThrowsAnException()
+    {
+        throw new \Exception('This is an exception');
+    }
+
     public function testHandleBatch()
     {
         $records = $this->getMultipleRecords();
@@ -246,10 +251,5 @@ class RavenHandlerTest extends TestCase
         $record = $this->getRecord(Logger::INFO, 'test', array('release' => $localRelease));
         $handler->handle($record);
         $this->assertEquals($localRelease, $ravenClient->lastData['release']);
-    }
-
-    private function methodThatThrowsAnException()
-    {
-        throw new \Exception('This is an exception');
     }
 }

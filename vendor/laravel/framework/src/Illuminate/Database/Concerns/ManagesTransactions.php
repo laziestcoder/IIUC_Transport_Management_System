@@ -11,8 +11,8 @@ trait ManagesTransactions
     /**
      * Execute a Closure within a transaction.
      *
-     * @param  \Closure  $callback
-     * @param  int  $attempts
+     * @param  \Closure $callback
+     * @param  int $attempts
      * @return mixed
      *
      * @throws \Exception|\Throwable
@@ -31,9 +31,9 @@ trait ManagesTransactions
                 });
             }
 
-            // If we catch an exception we'll rollback this transaction and try again if we
-            // are not out of attempts. If we are out of attempts we will just throw the
-            // exception back out and let the developer handle an uncaught exceptions.
+                // If we catch an exception we'll rollback this transaction and try again if we
+                // are not out of attempts. If we are out of attempts we will just throw the
+                // exception back out and let the developer handle an uncaught exceptions.
             catch (Exception $e) {
                 $this->handleTransactionException(
                     $e, $currentAttempt, $attempts
@@ -44,41 +44,6 @@ trait ManagesTransactions
                 throw $e;
             }
         }
-    }
-
-    /**
-     * Handle an exception encountered when running a transacted statement.
-     *
-     * @param  \Exception  $e
-     * @param  int  $currentAttempt
-     * @param  int  $maxAttempts
-     * @return void
-     *
-     * @throws \Exception
-     */
-    protected function handleTransactionException($e, $currentAttempt, $maxAttempts)
-    {
-        // On a deadlock, MySQL rolls back the entire transaction so we can't just
-        // retry the query. We have to throw this exception all the way out and
-        // let the developer handle it in another way. We will decrement too.
-        if ($this->causedByDeadlock($e) &&
-            $this->transactions > 1) {
-            $this->transactions--;
-
-            throw $e;
-        }
-
-        // If there was an exception we will rollback this transaction and then we
-        // can check if we have exceeded the maximum attempt count for this and
-        // if we haven't we will return and try this query again in our loop.
-        $this->rollBack();
-
-        if ($this->causedByDeadlock($e) &&
-            $currentAttempt < $maxAttempts) {
-            return;
-        }
-
-        throw $e;
     }
 
     /**
@@ -115,21 +80,9 @@ trait ManagesTransactions
     }
 
     /**
-     * Create a save point within the database.
-     *
-     * @return void
-     */
-    protected function createSavepoint()
-    {
-        $this->getPdo()->exec(
-            $this->queryGrammar->compileSavepoint('trans'.($this->transactions + 1))
-        );
-    }
-
-    /**
      * Handle an exception from a transaction beginning.
      *
-     * @param  \Throwable  $e
+     * @param  \Throwable $e
      * @return void
      *
      * @throws \Exception
@@ -143,6 +96,18 @@ trait ManagesTransactions
         } else {
             throw $e;
         }
+    }
+
+    /**
+     * Create a save point within the database.
+     *
+     * @return void
+     */
+    protected function createSavepoint()
+    {
+        $this->getPdo()->exec(
+            $this->queryGrammar->compileSavepoint('trans' . ($this->transactions + 1))
+        );
     }
 
     /**
@@ -162,9 +127,44 @@ trait ManagesTransactions
     }
 
     /**
+     * Handle an exception encountered when running a transacted statement.
+     *
+     * @param  \Exception $e
+     * @param  int $currentAttempt
+     * @param  int $maxAttempts
+     * @return void
+     *
+     * @throws \Exception
+     */
+    protected function handleTransactionException($e, $currentAttempt, $maxAttempts)
+    {
+        // On a deadlock, MySQL rolls back the entire transaction so we can't just
+        // retry the query. We have to throw this exception all the way out and
+        // let the developer handle it in another way. We will decrement too.
+        if ($this->causedByDeadlock($e) &&
+            $this->transactions > 1) {
+            $this->transactions--;
+
+            throw $e;
+        }
+
+        // If there was an exception we will rollback this transaction and then we
+        // can check if we have exceeded the maximum attempt count for this and
+        // if we haven't we will return and try this query again in our loop.
+        $this->rollBack();
+
+        if ($this->causedByDeadlock($e) &&
+            $currentAttempt < $maxAttempts) {
+            return;
+        }
+
+        throw $e;
+    }
+
+    /**
      * Rollback the active database transaction.
      *
-     * @param  int|null  $toLevel
+     * @param  int|null $toLevel
      * @return void
      */
     public function rollBack($toLevel = null)
@@ -173,8 +173,8 @@ trait ManagesTransactions
         // that this given transaction level is valid before attempting to rollback to
         // that level. If it's not we will just return out and not attempt anything.
         $toLevel = is_null($toLevel)
-                    ? $this->transactions - 1
-                    : $toLevel;
+            ? $this->transactions - 1
+            : $toLevel;
 
         if ($toLevel < 0 || $toLevel >= $this->transactions) {
             return;
@@ -193,7 +193,7 @@ trait ManagesTransactions
     /**
      * Perform a rollback within the database.
      *
-     * @param  int  $toLevel
+     * @param  int $toLevel
      * @return void
      */
     protected function performRollBack($toLevel)
@@ -202,7 +202,7 @@ trait ManagesTransactions
             $this->getPdo()->rollBack();
         } elseif ($this->queryGrammar->supportsSavepoints()) {
             $this->getPdo()->exec(
-                $this->queryGrammar->compileSavepointRollBack('trans'.($toLevel + 1))
+                $this->queryGrammar->compileSavepointRollBack('trans' . ($toLevel + 1))
             );
         }
     }

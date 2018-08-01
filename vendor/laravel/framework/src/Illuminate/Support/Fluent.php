@@ -3,9 +3,9 @@
 namespace Illuminate\Support;
 
 use ArrayAccess;
-use JsonSerializable;
-use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Jsonable;
+use JsonSerializable;
 
 class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
@@ -19,7 +19,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
     /**
      * Create a new fluent container instance.
      *
-     * @param  array|object    $attributes
+     * @param  array|object $attributes
      * @return void
      */
     public function __construct($attributes = [])
@@ -27,22 +27,6 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
         foreach ($attributes as $key => $value) {
             $this->attributes[$key] = $value;
         }
-    }
-
-    /**
-     * Get an attribute from the container.
-     *
-     * @param  string  $key
-     * @param  mixed   $default
-     * @return mixed
-     */
-    public function get($key, $default = null)
-    {
-        if (array_key_exists($key, $this->attributes)) {
-            return $this->attributes[$key];
-        }
-
-        return value($default);
     }
 
     /**
@@ -56,13 +40,14 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
     }
 
     /**
-     * Convert the Fluent instance to an array.
+     * Convert the Fluent instance to JSON.
      *
-     * @return array
+     * @param  int $options
+     * @return string
      */
-    public function toArray()
+    public function toJson($options = 0)
     {
-        return $this->attributes;
+        return json_encode($this->jsonSerialize(), $options);
     }
 
     /**
@@ -76,31 +61,19 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
     }
 
     /**
-     * Convert the Fluent instance to JSON.
+     * Convert the Fluent instance to an array.
      *
-     * @param  int  $options
-     * @return string
+     * @return array
      */
-    public function toJson($options = 0)
+    public function toArray()
     {
-        return json_encode($this->jsonSerialize(), $options);
-    }
-
-    /**
-     * Determine if the given offset exists.
-     *
-     * @param  string  $offset
-     * @return bool
-     */
-    public function offsetExists($offset)
-    {
-        return isset($this->attributes[$offset]);
+        return $this->attributes;
     }
 
     /**
      * Get the value for a given offset.
      *
-     * @param  string  $offset
+     * @param  string $offset
      * @return mixed
      */
     public function offsetGet($offset)
@@ -109,33 +82,26 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
     }
 
     /**
-     * Set the value at the given offset.
+     * Get an attribute from the container.
      *
-     * @param  string  $offset
-     * @param  mixed   $value
-     * @return void
+     * @param  string $key
+     * @param  mixed $default
+     * @return mixed
      */
-    public function offsetSet($offset, $value)
+    public function get($key, $default = null)
     {
-        $this->attributes[$offset] = $value;
-    }
+        if (array_key_exists($key, $this->attributes)) {
+            return $this->attributes[$key];
+        }
 
-    /**
-     * Unset the value at the given offset.
-     *
-     * @param  string  $offset
-     * @return void
-     */
-    public function offsetUnset($offset)
-    {
-        unset($this->attributes[$offset]);
+        return value($default);
     }
 
     /**
      * Handle dynamic calls to the container to set attributes.
      *
-     * @param  string  $method
-     * @param  array   $parameters
+     * @param  string $method
+     * @param  array $parameters
      * @return $this
      */
     public function __call($method, $parameters)
@@ -148,7 +114,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
     /**
      * Dynamically retrieve the value of an attribute.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return mixed
      */
     public function __get($key)
@@ -159,8 +125,8 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
     /**
      * Dynamically set the value of an attribute.
      *
-     * @param  string  $key
-     * @param  mixed   $value
+     * @param  string $key
+     * @param  mixed $value
      * @return void
      */
     public function __set($key, $value)
@@ -169,9 +135,21 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
     }
 
     /**
+     * Set the value at the given offset.
+     *
+     * @param  string $offset
+     * @param  mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->attributes[$offset] = $value;
+    }
+
+    /**
      * Dynamically check if an attribute is set.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return bool
      */
     public function __isset($key)
@@ -180,13 +158,35 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
     }
 
     /**
+     * Determine if the given offset exists.
+     *
+     * @param  string $offset
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->attributes[$offset]);
+    }
+
+    /**
      * Dynamically unset an attribute.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return void
      */
     public function __unset($key)
     {
         $this->offsetUnset($key);
+    }
+
+    /**
+     * Unset the value at the given offset.
+     *
+     * @param  string $offset
+     * @return void
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->attributes[$offset]);
     }
 }

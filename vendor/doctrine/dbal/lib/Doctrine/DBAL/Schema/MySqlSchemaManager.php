@@ -22,7 +22,6 @@ namespace Doctrine\DBAL\Schema;
 use Doctrine\DBAL\Platforms\MariaDb1027Platform;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Types\Type;
-use const CASE_LOWER;
 use function array_change_key_case;
 use function array_shift;
 use function array_values;
@@ -34,6 +33,7 @@ use function stripslashes;
 use function strpos;
 use function strtok;
 use function strtolower;
+use const CASE_LOWER;
 
 /**
  * Schema manager for the MySql RDBMS.
@@ -125,18 +125,18 @@ class MySqlSchemaManager extends AbstractSchemaManager
 
         $fixed = null;
 
-        if ( ! isset($tableColumn['name'])) {
+        if (!isset($tableColumn['name'])) {
             $tableColumn['name'] = '';
         }
 
-        $scale     = null;
+        $scale = null;
         $precision = null;
 
         $type = $this->_platform->getDoctrineTypeMapping($dbType);
 
         // In cases where not connected to a database DESCRIBE $table does not return 'Comment'
         if (isset($tableColumn['comment'])) {
-            $type                   = $this->extractDoctrineTypeFromComment($tableColumn['comment'], $type);
+            $type = $this->extractDoctrineTypeFromComment($tableColumn['comment'], $type);
             $tableColumn['comment'] = $this->removeDoctrineTypeFromComment($tableColumn['comment'], $type);
         }
 
@@ -152,8 +152,8 @@ class MySqlSchemaManager extends AbstractSchemaManager
             case 'decimal':
                 if (preg_match('([A-Za-z]+\(([0-9]+)\,([0-9]+)\))', $tableColumn['type'], $match)) {
                     $precision = $match[1];
-                    $scale     = $match[2];
-                    $length    = null;
+                    $scale = $match[2];
+                    $length = null;
                 }
                 break;
             case 'tinytext':
@@ -192,22 +192,22 @@ class MySqlSchemaManager extends AbstractSchemaManager
         }
 
         $options = [
-            'length'        => $length !== null ? (int) $length : null,
-            'unsigned'      => strpos($tableColumn['type'], 'unsigned') !== false,
-            'fixed'         => (bool) $fixed,
-            'default'       => $columnDefault,
-            'notnull'       => $tableColumn['null'] !== 'YES',
-            'scale'         => null,
-            'precision'     => null,
+            'length' => $length !== null ? (int)$length : null,
+            'unsigned' => strpos($tableColumn['type'], 'unsigned') !== false,
+            'fixed' => (bool)$fixed,
+            'default' => $columnDefault,
+            'notnull' => $tableColumn['null'] !== 'YES',
+            'scale' => null,
+            'precision' => null,
             'autoincrement' => strpos($tableColumn['extra'], 'auto_increment') !== false,
-            'comment'       => isset($tableColumn['comment']) && $tableColumn['comment'] !== ''
+            'comment' => isset($tableColumn['comment']) && $tableColumn['comment'] !== ''
                 ? $tableColumn['comment']
                 : null,
         ];
 
         if ($scale !== null && $precision !== null) {
-            $options['scale']     = (int) $scale;
-            $options['precision'] = (int) $precision;
+            $options['scale'] = (int)$scale;
+            $options['precision'] = (int)$precision;
         }
 
         $column = new Column($tableColumn['field'], Type::getType($type), $options);
@@ -235,7 +235,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
      *
      * @param null|string $columnDefault default value as stored in information_schema for MariaDB >= 10.2.7
      */
-    private function getMariaDb1027ColumnDefault(MariaDb1027Platform $platform, ?string $columnDefault) : ?string
+    private function getMariaDb1027ColumnDefault(MariaDb1027Platform $platform, ?string $columnDefault): ?string
     {
         if ($columnDefault === 'NULL' || $columnDefault === null) {
             return null;
@@ -266,11 +266,11 @@ class MySqlSchemaManager extends AbstractSchemaManager
         $list = [];
         foreach ($tableForeignKeys as $value) {
             $value = array_change_key_case($value, CASE_LOWER);
-            if ( ! isset($list[$value['constraint_name']])) {
-                if ( ! isset($value['delete_rule']) || $value['delete_rule'] === "RESTRICT") {
+            if (!isset($list[$value['constraint_name']])) {
+                if (!isset($value['delete_rule']) || $value['delete_rule'] === "RESTRICT") {
                     $value['delete_rule'] = null;
                 }
-                if ( ! isset($value['update_rule']) || $value['update_rule'] === "RESTRICT") {
+                if (!isset($value['update_rule']) || $value['update_rule'] === "RESTRICT") {
                     $value['update_rule'] = null;
                 }
 
@@ -283,7 +283,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
                     'onUpdate' => $value['update_rule'],
                 ];
             }
-            $list[$value['constraint_name']]['local'][]   = $value['column_name'];
+            $list[$value['constraint_name']]['local'][] = $value['column_name'];
             $list[$value['constraint_name']]['foreign'][] = $value['referenced_column_name'];
         }
 

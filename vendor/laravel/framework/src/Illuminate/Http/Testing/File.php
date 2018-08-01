@@ -30,8 +30,8 @@ class File extends UploadedFile
     /**
      * Create a new file instance.
      *
-     * @param  string  $name
-     * @param  resource  $tempFile
+     * @param  string $name
+     * @param  resource $tempFile
      * @return void
      */
     public function __construct($name, $tempFile)
@@ -46,10 +46,30 @@ class File extends UploadedFile
     }
 
     /**
+     * Get the path to the temporary file.
+     *
+     * @return string
+     */
+    protected function tempFilePath()
+    {
+        return stream_get_meta_data($this->tempFile)['uri'];
+    }
+
+    /**
+     * Get the MIME type for the file.
+     *
+     * @return string
+     */
+    public function getMimeType()
+    {
+        return MimeType::from($this->name);
+    }
+
+    /**
      * Create a new fake file.
      *
-     * @param  string  $name
-     * @param  int  $kilobytes
+     * @param  string $name
+     * @param  int $kilobytes
      * @return \Illuminate\Http\Testing\File
      */
     public static function create($name, $kilobytes = 0)
@@ -60,9 +80,9 @@ class File extends UploadedFile
     /**
      * Create a new fake image.
      *
-     * @param  string  $name
-     * @param  int  $width
-     * @param  int  $height
+     * @param  string $name
+     * @param  int $width
+     * @param  int $height
      * @return \Illuminate\Http\Testing\File
      */
     public static function image($name, $width = 10, $height = 10)
@@ -73,7 +93,7 @@ class File extends UploadedFile
     /**
      * Set the "size" of the file in kilobytes.
      *
-     * @param  int  $kilobytes
+     * @param  int $kilobytes
      * @return $this
      */
     public function size($kilobytes)
@@ -91,25 +111,5 @@ class File extends UploadedFile
     public function getSize()
     {
         return $this->sizeToReport ?: parent::getSize();
-    }
-
-    /**
-     * Get the MIME type for the file.
-     *
-     * @return string
-     */
-    public function getMimeType()
-    {
-        return MimeType::from($this->name);
-    }
-
-    /**
-     * Get the path to the temporary file.
-     *
-     * @return string
-     */
-    protected function tempFilePath()
-    {
-        return stream_get_meta_data($this->tempFile)['uri'];
     }
 }

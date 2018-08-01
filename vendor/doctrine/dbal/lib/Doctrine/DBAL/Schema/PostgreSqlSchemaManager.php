@@ -23,7 +23,6 @@ use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Types\Type;
-use const CASE_LOWER;
 use function array_change_key_case;
 use function array_filter;
 use function array_keys;
@@ -41,6 +40,7 @@ use function strlen;
 use function strpos;
 use function strtolower;
 use function trim;
+use const CASE_LOWER;
 
 /**
  * PostgreSQL Schema Manager.
@@ -58,34 +58,106 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
     private $existingSchemaPaths;
 
     /**
-     * Gets all the existing schema names.
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    public function getSchemaNames()
+    public function dropDatabase($database)
     {
-        $statement = $this->_conn->executeQuery("SELECT nspname FROM pg_namespace WHERE nspname !~ '^pg_.*' AND nspname != 'information_schema'");
+        try {
+            parent::dropDatabase($database);
+        } catch (DriverException $exception) {
+            // If we have a SQLSTATE 55006, the drop database operation failed
+            // because of active connections on the database.
+            // To force dropping the database, we first have to close all active connections
+            // on that database and issue the drop database operation again.
+            if ($exception->getSQLState() !== '55006') {
+                throw $exception;
+            }
 
-        return $statement->fetchAll(FetchMode::COLUMN);
+            assert($this->_platform instanceof PostgreSqlPlatform);
+
+            $this->_execSql(
+                [
+                    $this->_platform->getDisallowDatabaseConnectionsSQL($database),
+                    $this->_platform->getCloseActiveDatabaseConnectionsSQL($database),
+                ]
+            );
+
+            parent::dropDatabase($database);
+        }
     }
 
     /**
-     * Returns an array of schema search paths.
-     *
-     * This is a PostgreSQL only function.
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    public function getSchemaSearchPaths()
+    protected function _getPortableTableForeignKeyDefinition($tableForeignKey)
     {
-        $params = $this->_conn->getParams();
-        $schema = explode(",", $this->_conn->fetchColumn('SHOW search_path'));
+        $onUpdate = null;
+        $onDelete = null;
+        $localColumns = null;
+        $foreignColumns = null;
+        $foreignTable = null;
 
-        if (isset($params['user'])) {
-            $schema = str_replace('"$user"', $params['user'], $schema);
+        if (preg_match('(ON UPDATE ([a-zA-Z0-9]+( (NULL|ACTION|DEFAULT))?))', $tableForeignKey['condef'], $match)) {
+            $onUpdate = $match[1];
+        }
+        if (preg_match('(ON DELETE ([a-zA-Z0-9]+( (NULL|ACTION|DEFAULT))?))', $tableForeignKey['condef'], $match)) {
+            $onDelete = $match[1];
         }
 
-        return array_map('trim', $schema);
+        if (preg_match('/FOREIGN KEY \((.+)\) REFERENCES (.+)\((.+)\)/', $tableForeignKey['condef'], $values)) {
+            // PostgreSQL returns identifiers that are keywords with quotes, we need them later, don't get
+            // the idea to trim them here.
+            $localColumns = array_map('trim', explode(",", $values[1]));
+            $foreignColumns = array_map('trim', explode(",", $values[3]));
+            $foreignTable = $values[2];
+        }
+
+        return new ForeignKeyConstraint(
+            $localColumns, $foreignTable, $foreignColumns, $tableForeignKey['conname'],
+            ['onUpdate' => $onUpdate, 'onDelete' => $onDelete]
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _getPortableTriggerDefinition($trigger)
+    {
+        return $trigger['trigger_name'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _getPortableViewDefinition($view)
+    {
+        return new View($view['schemaname'] . '.' . $view['viewname'], $view['definition']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _getPortableUserDefinition($user)
+    {
+        return [
+            'user' => $user['usename'],
+            'password' => $user['passwd']
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _getPortableTableDefinition($table)
+    {
+        $schemas = $this->getExistingSchemaSearchPaths();
+        $firstSchema = array_shift($schemas);
+
+        if ($table['schema_name'] == $firstSchema) {
+            return $table['table_name'];
+        }
+
+        return $table['schema_name'] . "." . $table['table_name'];
     }
 
     /**
@@ -122,106 +194,34 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
     }
 
     /**
-     * {@inheritdoc}
+     * Gets all the existing schema names.
+     *
+     * @return array
      */
-    public function dropDatabase($database)
+    public function getSchemaNames()
     {
-        try {
-            parent::dropDatabase($database);
-        } catch (DriverException $exception) {
-            // If we have a SQLSTATE 55006, the drop database operation failed
-            // because of active connections on the database.
-            // To force dropping the database, we first have to close all active connections
-            // on that database and issue the drop database operation again.
-            if ($exception->getSQLState() !== '55006') {
-                throw $exception;
-            }
+        $statement = $this->_conn->executeQuery("SELECT nspname FROM pg_namespace WHERE nspname !~ '^pg_.*' AND nspname != 'information_schema'");
 
-            assert($this->_platform instanceof PostgreSqlPlatform);
-
-            $this->_execSql(
-                [
-                    $this->_platform->getDisallowDatabaseConnectionsSQL($database),
-                    $this->_platform->getCloseActiveDatabaseConnectionsSQL($database),
-                ]
-            );
-
-            parent::dropDatabase($database);
-        }
+        return $statement->fetchAll(FetchMode::COLUMN);
     }
 
     /**
-     * {@inheritdoc}
+     * Returns an array of schema search paths.
+     *
+     * This is a PostgreSQL only function.
+     *
+     * @return array
      */
-    protected function _getPortableTableForeignKeyDefinition($tableForeignKey)
+    public function getSchemaSearchPaths()
     {
-        $onUpdate       = null;
-        $onDelete       = null;
-        $localColumns   = null;
-        $foreignColumns = null;
-        $foreignTable   = null;
+        $params = $this->_conn->getParams();
+        $schema = explode(",", $this->_conn->fetchColumn('SHOW search_path'));
 
-        if (preg_match('(ON UPDATE ([a-zA-Z0-9]+( (NULL|ACTION|DEFAULT))?))', $tableForeignKey['condef'], $match)) {
-            $onUpdate = $match[1];
-        }
-        if (preg_match('(ON DELETE ([a-zA-Z0-9]+( (NULL|ACTION|DEFAULT))?))', $tableForeignKey['condef'], $match)) {
-            $onDelete = $match[1];
+        if (isset($params['user'])) {
+            $schema = str_replace('"$user"', $params['user'], $schema);
         }
 
-        if (preg_match('/FOREIGN KEY \((.+)\) REFERENCES (.+)\((.+)\)/', $tableForeignKey['condef'], $values)) {
-            // PostgreSQL returns identifiers that are keywords with quotes, we need them later, don't get
-            // the idea to trim them here.
-            $localColumns = array_map('trim', explode(",", $values[1]));
-            $foreignColumns = array_map('trim', explode(",", $values[3]));
-            $foreignTable = $values[2];
-        }
-
-        return new ForeignKeyConstraint(
-            $localColumns, $foreignTable, $foreignColumns, $tableForeignKey['conname'],
-            ['onUpdate' => $onUpdate, 'onDelete' => $onDelete]
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getPortableTriggerDefinition($trigger)
-    {
-        return $trigger['trigger_name'];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getPortableViewDefinition($view)
-    {
-        return new View($view['schemaname'].'.'.$view['viewname'], $view['definition']);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getPortableUserDefinition($user)
-    {
-        return [
-            'user' => $user['usename'],
-            'password' => $user['passwd']
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getPortableTableDefinition($table)
-    {
-        $schemas = $this->getExistingSchemaSearchPaths();
-        $firstSchema = array_shift($schemas);
-
-        if ($table['schema_name'] == $firstSchema) {
-            return $table['table_name'];
-        }
-
-        return $table['schema_name'] . "." . $table['table_name'];
+        return array_map('trim', $schema);
     }
 
     /**
@@ -230,7 +230,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
      * @license New BSD License
      * @link http://ezcomponents.org/docs/api/trunk/DatabaseSchema/ezcDbSchemaPgsqlReader.html
      */
-    protected function _getPortableTableIndexesList($tableIndexes, $tableName=null)
+    protected function _getPortableTableIndexesList($tableIndexes, $tableName = null)
     {
         $buffer = [];
         foreach ($tableIndexes as $row) {
@@ -298,14 +298,6 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
-    protected function getPortableNamespaceDefinition(array $namespace)
-    {
-        return $namespace['nspname'];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function _getPortableSequenceDefinition($sequence)
     {
         if ($sequence['schemaname'] !== 'public') {
@@ -314,14 +306,22 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             $sequenceName = $sequence['relname'];
         }
 
-        if ( ! isset($sequence['increment_by'], $sequence['min_value'])) {
+        if (!isset($sequence['increment_by'], $sequence['min_value'])) {
             /** @var string[] $data */
-            $data      = $this->_conn->fetchAssoc('SELECT min_value, increment_by FROM ' . $this->_platform->quoteIdentifier($sequenceName));
+            $data = $this->_conn->fetchAssoc('SELECT min_value, increment_by FROM ' . $this->_platform->quoteIdentifier($sequenceName));
 
             $sequence += $data;
         }
 
-        return new Sequence($sequenceName, (int) $sequence['increment_by'], (int) $sequence['min_value']);
+        return new Sequence($sequenceName, (int)$sequence['increment_by'], (int)$sequence['min_value']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getPortableNamespaceDefinition(array $namespace)
+    {
+        return $namespace['nspname'];
     }
 
     /**
@@ -358,7 +358,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         if ($length == '-1' && isset($tableColumn['atttypmod'])) {
             $length = $tableColumn['atttypmod'] - 4;
         }
-        if ((int) $length <= 0) {
+        if ((int)$length <= 0) {
             $length = null;
         }
         $fixed = null;
@@ -454,15 +454,15 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         }
 
         $options = [
-            'length'        => $length,
-            'notnull'       => (bool) $tableColumn['isnotnull'],
-            'default'       => $tableColumn['default'],
-            'precision'     => $precision,
-            'scale'         => $scale,
-            'fixed'         => $fixed,
-            'unsigned'      => false,
+            'length' => $length,
+            'notnull' => (bool)$tableColumn['isnotnull'],
+            'default' => $tableColumn['default'],
+            'precision' => $precision,
+            'scale' => $scale,
+            'fixed' => $fixed,
+            'unsigned' => false,
             'autoincrement' => $autoincrement,
-            'comment'       => isset($tableColumn['comment']) && $tableColumn['comment'] !== ''
+            'comment' => isset($tableColumn['comment']) && $tableColumn['comment'] !== ''
                 ? $tableColumn['comment']
                 : null,
         ];

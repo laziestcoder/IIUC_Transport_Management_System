@@ -3,11 +3,23 @@
 namespace Illuminate\Routing\Middleware;
 
 use Closure;
-use Illuminate\Redis\Limiters\DurationLimiter;
 use Illuminate\Contracts\Redis\Factory as Redis;
+use Illuminate\Redis\Limiters\DurationLimiter;
 
 class ThrottleRequestsWithRedis extends ThrottleRequests
 {
+    /**
+     * The timestamp of the end of the current duration.
+     *
+     * @var int
+     */
+    public $decaysAt;
+    /**
+     * The number of remaining slots.
+     *
+     * @var int
+     */
+    public $remaining;
     /**
      * The Redis factory implementation.
      *
@@ -16,23 +28,9 @@ class ThrottleRequestsWithRedis extends ThrottleRequests
     protected $redis;
 
     /**
-     * The timestamp of the end of the current duration.
-     *
-     * @var int
-     */
-    public $decaysAt;
-
-    /**
-     * The number of remaining slots.
-     *
-     * @var int
-     */
-    public $remaining;
-
-    /**
      * Create a new request throttler.
      *
-     * @param  \Illuminate\Contracts\Redis\Factory  $redis
+     * @param  \Illuminate\Contracts\Redis\Factory $redis
      * @return void
      */
     public function __construct(Redis $redis)
@@ -43,10 +41,10 @@ class ThrottleRequestsWithRedis extends ThrottleRequests
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  int|string  $maxAttempts
-     * @param  float|int  $decayMinutes
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Closure $next
+     * @param  int|string $maxAttempts
+     * @param  float|int $decayMinutes
      * @return mixed
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      */
@@ -71,9 +69,9 @@ class ThrottleRequestsWithRedis extends ThrottleRequests
     /**
      * Determine if the given key has been "accessed" too many times.
      *
-     * @param  string  $key
-     * @param  int  $maxAttempts
-     * @param  int  $decayMinutes
+     * @param  string $key
+     * @param  int $maxAttempts
+     * @param  int $decayMinutes
      * @return mixed
      */
     protected function tooManyAttempts($key, $maxAttempts, $decayMinutes)
@@ -82,7 +80,7 @@ class ThrottleRequestsWithRedis extends ThrottleRequests
             $this->redis, $key, $maxAttempts, $decayMinutes * 60
         );
 
-        return tap(! $limiter->acquire(), function () use ($limiter) {
+        return tap(!$limiter->acquire(), function () use ($limiter) {
             list($this->decaysAt, $this->remaining) = [
                 $limiter->decaysAt, $limiter->remaining,
             ];
@@ -92,9 +90,9 @@ class ThrottleRequestsWithRedis extends ThrottleRequests
     /**
      * Calculate the number of remaining attempts.
      *
-     * @param  string  $key
-     * @param  int  $maxAttempts
-     * @param  int|null  $retryAfter
+     * @param  string $key
+     * @param  int $maxAttempts
+     * @param  int|null $retryAfter
      * @return int
      */
     protected function calculateRemainingAttempts($key, $maxAttempts, $retryAfter = null)
@@ -109,7 +107,7 @@ class ThrottleRequestsWithRedis extends ThrottleRequests
     /**
      * Get the number of seconds until the lock is released.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return int
      */
     protected function getTimeUntilNextRetry($key)

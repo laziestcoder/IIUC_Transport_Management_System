@@ -3,7 +3,6 @@
 namespace Faker\Provider\en_ZA;
 
 use Faker\Calculator\Luhn;
-use Faker\Provider\DateTime;
 
 class Person extends \Faker\Provider\Person
 {
@@ -130,9 +129,9 @@ class Person extends \Faker\Provider\Person
     /**
      * @link https://en.wikipedia.org/wiki/National_identification_number#South_Africa
      *
-     * @param int    $minAge
-     * @param int    $maxAge
-     * @param bool   $citizen
+     * @param int $minAge
+     * @param int $maxAge
+     * @param bool $citizen
      * @param string $gender
      *
      * @return string

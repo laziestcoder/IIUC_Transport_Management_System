@@ -50,7 +50,7 @@ class AuthMakeCommand extends Command
 
         $this->exportViews();
 
-        if (! $this->option('views')) {
+        if (!$this->option('views')) {
             file_put_contents(
                 app_path('Http/Controllers/HomeController.php'),
                 $this->compileControllerStub()
@@ -58,7 +58,7 @@ class AuthMakeCommand extends Command
 
             file_put_contents(
                 base_path('routes/web.php'),
-                file_get_contents(__DIR__.'/stubs/make/routes.stub'),
+                file_get_contents(__DIR__ . '/stubs/make/routes.stub'),
                 FILE_APPEND
             );
         }
@@ -73,11 +73,11 @@ class AuthMakeCommand extends Command
      */
     protected function createDirectories()
     {
-        if (! is_dir($directory = resource_path('views/layouts'))) {
+        if (!is_dir($directory = resource_path('views/layouts'))) {
             mkdir($directory, 0755, true);
         }
 
-        if (! is_dir($directory = resource_path('views/auth/passwords'))) {
+        if (!is_dir($directory = resource_path('views/auth/passwords'))) {
             mkdir($directory, 0755, true);
         }
     }
@@ -90,14 +90,14 @@ class AuthMakeCommand extends Command
     protected function exportViews()
     {
         foreach ($this->views as $key => $value) {
-            if (file_exists($view = resource_path('views/'.$value)) && ! $this->option('force')) {
-                if (! $this->confirm("The [{$value}] view already exists. Do you want to replace it?")) {
+            if (file_exists($view = resource_path('views/' . $value)) && !$this->option('force')) {
+                if (!$this->confirm("The [{$value}] view already exists. Do you want to replace it?")) {
                     continue;
                 }
             }
 
             copy(
-                __DIR__.'/stubs/make/views/'.$key,
+                __DIR__ . '/stubs/make/views/' . $key,
                 $view
             );
         }
@@ -113,7 +113,7 @@ class AuthMakeCommand extends Command
         return str_replace(
             '{{namespace}}',
             $this->getAppNamespace(),
-            file_get_contents(__DIR__.'/stubs/make/controllers/HomeController.stub')
+            file_get_contents(__DIR__ . '/stubs/make/controllers/HomeController.stub')
         );
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Illuminate\Foundation\Console;
 
-use Illuminate\Support\Str;
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputOption;
 
 class ListenerMakeCommand extends GeneratorCommand
@@ -32,19 +32,19 @@ class ListenerMakeCommand extends GeneratorCommand
     /**
      * Build the class with the given name.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return string
      */
     protected function buildClass($name)
     {
         $event = $this->option('event');
 
-        if (! Str::startsWith($event, [
+        if (!Str::startsWith($event, [
             $this->laravel->getNamespace(),
             'Illuminate',
             '\\',
         ])) {
-            $event = $this->laravel->getNamespace().'Events\\'.$event;
+            $event = $this->laravel->getNamespace() . 'Events\\' . $event;
         }
 
         $stub = str_replace(
@@ -65,19 +65,19 @@ class ListenerMakeCommand extends GeneratorCommand
     {
         if ($this->option('queued')) {
             return $this->option('event')
-                        ? __DIR__.'/stubs/listener-queued.stub'
-                        : __DIR__.'/stubs/listener-queued-duck.stub';
+                ? __DIR__ . '/stubs/listener-queued.stub'
+                : __DIR__ . '/stubs/listener-queued-duck.stub';
         }
 
         return $this->option('event')
-                    ? __DIR__.'/stubs/listener.stub'
-                    : __DIR__.'/stubs/listener-duck.stub';
+            ? __DIR__ . '/stubs/listener.stub'
+            : __DIR__ . '/stubs/listener-duck.stub';
     }
 
     /**
      * Determine if the class already exists.
      *
-     * @param  string  $rawName
+     * @param  string $rawName
      * @return bool
      */
     protected function alreadyExists($rawName)
@@ -88,12 +88,12 @@ class ListenerMakeCommand extends GeneratorCommand
     /**
      * Get the default namespace for the class.
      *
-     * @param  string  $rootNamespace
+     * @param  string $rootNamespace
      * @return string
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Listeners';
+        return $rootNamespace . '\Listeners';
     }
 
     /**

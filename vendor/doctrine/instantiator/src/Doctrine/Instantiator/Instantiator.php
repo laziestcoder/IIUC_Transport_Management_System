@@ -36,7 +36,7 @@ final class Instantiator implements InstantiatorInterface
      * the method {@see \Serializable::unserialize()} when dealing with classes implementing
      * the {@see \Serializable} interface.
      */
-    const SERIALIZATION_FORMAT_USE_UNSERIALIZER   = 'C';
+    const SERIALIZATION_FORMAT_USE_UNSERIALIZER = 'C';
     const SERIALIZATION_FORMAT_AVOID_UNSERIALIZER = 'O';
 
     /**
@@ -74,7 +74,7 @@ final class Instantiator implements InstantiatorInterface
      */
     private function buildAndCacheFromFactory(string $className)
     {
-        $factory  = self::$cachedInstantiators[$className] = $this->buildFactory($className);
+        $factory = self::$cachedInstantiators[$className] = $this->buildFactory($className);
         $instance = $factory();
 
         if ($this->isSafeToClone(new ReflectionClass($instance))) {
@@ -92,7 +92,7 @@ final class Instantiator implements InstantiatorInterface
      * @throws UnexpectedValueException
      * @throws \ReflectionException
      */
-    private function buildFactory(string $className) : callable
+    private function buildFactory(string $className): callable
     {
         $reflectionClass = $this->getReflectionClass($className);
 
@@ -122,9 +122,9 @@ final class Instantiator implements InstantiatorInterface
      * @throws InvalidArgumentException
      * @throws \ReflectionException
      */
-    private function getReflectionClass($className) : ReflectionClass
+    private function getReflectionClass($className): ReflectionClass
     {
-        if (! class_exists($className)) {
+        if (!class_exists($className)) {
             throw InvalidArgumentException::fromNonExistingClass($className);
         }
 
@@ -137,15 +137,34 @@ final class Instantiator implements InstantiatorInterface
         return $reflection;
     }
 
+    private function isInstantiableViaReflection(ReflectionClass $reflectionClass): bool
+    {
+        return !($this->hasInternalAncestors($reflectionClass) && $reflectionClass->isFinal());
+    }
+
+    /**
+     * Verifies whether the given class is to be considered internal
+     */
+    private function hasInternalAncestors(ReflectionClass $reflectionClass): bool
+    {
+        do {
+            if ($reflectionClass->isInternal()) {
+                return true;
+            }
+        } while ($reflectionClass = $reflectionClass->getParentClass());
+
+        return false;
+    }
+
     /**
      * @param ReflectionClass $reflectionClass
-     * @param string          $serializedString
+     * @param string $serializedString
      *
      * @throws UnexpectedValueException
      *
      * @return void
      */
-    private function checkIfUnSerializationIsSupported(ReflectionClass $reflectionClass, $serializedString) : void
+    private function checkIfUnSerializationIsSupported(ReflectionClass $reflectionClass, $serializedString): void
     {
         set_error_handler(function ($code, $message, $file, $line) use ($reflectionClass, & $error) : void {
             $error = UnexpectedValueException::fromUncleanUnSerialization(
@@ -168,13 +187,13 @@ final class Instantiator implements InstantiatorInterface
 
     /**
      * @param ReflectionClass $reflectionClass
-     * @param string          $serializedString
+     * @param string $serializedString
      *
      * @throws UnexpectedValueException
      *
      * @return void
      */
-    private function attemptInstantiationViaUnSerialization(ReflectionClass $reflectionClass, $serializedString) : void
+    private function attemptInstantiationViaUnSerialization(ReflectionClass $reflectionClass, $serializedString): void
     {
         try {
             unserialize($serializedString);
@@ -185,32 +204,13 @@ final class Instantiator implements InstantiatorInterface
         }
     }
 
-    private function isInstantiableViaReflection(ReflectionClass $reflectionClass) : bool
-    {
-        return ! ($this->hasInternalAncestors($reflectionClass) && $reflectionClass->isFinal());
-    }
-
-    /**
-     * Verifies whether the given class is to be considered internal
-     */
-    private function hasInternalAncestors(ReflectionClass $reflectionClass) : bool
-    {
-        do {
-            if ($reflectionClass->isInternal()) {
-                return true;
-            }
-        } while ($reflectionClass = $reflectionClass->getParentClass());
-
-        return false;
-    }
-
     /**
      * Checks if a class is cloneable
      *
      * Classes implementing `__clone` cannot be safely cloned, as that may cause side-effects.
      */
-    private function isSafeToClone(ReflectionClass $reflection) : bool
+    private function isSafeToClone(ReflectionClass $reflection): bool
     {
-        return $reflection->isCloneable() && ! $reflection->hasMethod('__clone');
+        return $reflection->isCloneable() && !$reflection->hasMethod('__clone');
     }
 }

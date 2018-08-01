@@ -2,14 +2,14 @@
 
 namespace Illuminate\Queue\Console;
 
-use Illuminate\Queue\Worker;
-use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Queue\Job;
-use Illuminate\Queue\WorkerOptions;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Queue\Worker;
+use Illuminate\Queue\WorkerOptions;
+use Illuminate\Support\Carbon;
 
 class WorkCommand extends Command
 {
@@ -47,7 +47,7 @@ class WorkCommand extends Command
     /**
      * Create a new queue work command.
      *
-     * @param  \Illuminate\Queue\Worker  $worker
+     * @param  \Illuminate\Queue\Worker $worker
      * @return void
      */
     public function __construct(Worker $worker)
@@ -74,7 +74,7 @@ class WorkCommand extends Command
         $this->listenForEvents();
 
         $connection = $this->argument('connection')
-                        ?: $this->laravel['config']['queue.default'];
+            ?: $this->laravel['config']['queue.default'];
 
         // We need to get the right queue for the connection which is set in the queue
         // configuration file for the application. We will pull it based on the set
@@ -87,33 +87,13 @@ class WorkCommand extends Command
     }
 
     /**
-     * Run the worker instance.
+     * Determine if the worker should run in maintenance mode.
      *
-     * @param  string  $connection
-     * @param  string  $queue
-     * @return array
+     * @return bool
      */
-    protected function runWorker($connection, $queue)
+    protected function downForMaintenance()
     {
-        $this->worker->setCache($this->laravel['cache']->driver());
-
-        return $this->worker->{$this->option('once') ? 'runNextJob' : 'daemon'}(
-            $connection, $queue, $this->gatherWorkerOptions()
-        );
-    }
-
-    /**
-     * Gather all of the queue worker options as a single object.
-     *
-     * @return \Illuminate\Queue\WorkerOptions
-     */
-    protected function gatherWorkerOptions()
-    {
-        return new WorkerOptions(
-            $this->option('delay'), $this->option('memory'),
-            $this->option('timeout'), $this->option('sleep'),
-            $this->option('tries'), $this->option('force')
-        );
+        return $this->option('force') ? false : $this->laravel->isDownForMaintenance();
     }
 
     /**
@@ -141,7 +121,7 @@ class WorkCommand extends Command
     /**
      * Write the status output for the queue worker.
      *
-     * @param  \Illuminate\Contracts\Queue\Job  $job
+     * @param  \Illuminate\Contracts\Queue\Job $job
      * @param  string $status
      * @return void
      */
@@ -160,9 +140,9 @@ class WorkCommand extends Command
     /**
      * Format the status output for the queue worker.
      *
-     * @param  \Illuminate\Contracts\Queue\Job  $job
-     * @param  string  $status
-     * @param  string  $type
+     * @param  \Illuminate\Contracts\Queue\Job $job
+     * @param  string $status
+     * @param  string $type
      * @return void
      */
     protected function writeStatus(Job $job, $status, $type)
@@ -178,7 +158,7 @@ class WorkCommand extends Command
     /**
      * Store a failed job event.
      *
-     * @param  \Illuminate\Queue\Events\JobFailed  $event
+     * @param  \Illuminate\Queue\Events\JobFailed $event
      * @return void
      */
     protected function logFailedJob(JobFailed $event)
@@ -192,7 +172,7 @@ class WorkCommand extends Command
     /**
      * Get the queue name for the worker.
      *
-     * @param  string  $connection
+     * @param  string $connection
      * @return string
      */
     protected function getQueue($connection)
@@ -203,12 +183,32 @@ class WorkCommand extends Command
     }
 
     /**
-     * Determine if the worker should run in maintenance mode.
+     * Run the worker instance.
      *
-     * @return bool
+     * @param  string $connection
+     * @param  string $queue
+     * @return array
      */
-    protected function downForMaintenance()
+    protected function runWorker($connection, $queue)
     {
-        return $this->option('force') ? false : $this->laravel->isDownForMaintenance();
+        $this->worker->setCache($this->laravel['cache']->driver());
+
+        return $this->worker->{$this->option('once') ? 'runNextJob' : 'daemon'}(
+            $connection, $queue, $this->gatherWorkerOptions()
+        );
+    }
+
+    /**
+     * Gather all of the queue worker options as a single object.
+     *
+     * @return \Illuminate\Queue\WorkerOptions
+     */
+    protected function gatherWorkerOptions()
+    {
+        return new WorkerOptions(
+            $this->option('delay'), $this->option('memory'),
+            $this->option('timeout'), $this->option('sleep'),
+            $this->option('tries'), $this->option('force')
+        );
     }
 }

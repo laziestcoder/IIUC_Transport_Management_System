@@ -119,6 +119,41 @@ class Address extends \Faker\Provider\Address
     );
 
     /**
+     * Returns the abbreviation of a canton.
+     * @return string
+     */
+    public static function cantonShort()
+    {
+        $canton = static::canton();
+        return key($canton);
+    }
+
+    /**
+     * Returns a canton
+     * @example array('BE' => 'Bern')
+     * @return array
+     */
+    public static function canton()
+    {
+        return static::randomElement(static::$canton);
+    }
+
+    /**
+     * Returns the name of canton.
+     * @return string
+     */
+    public static function cantonName()
+    {
+        $canton = static::canton();
+        return current($canton);
+    }
+
+    public static function buildingNumber()
+    {
+        return static::regexify(self::numerify(static::randomElement(static::$buildingNumber)));
+    }
+
+    /**
      * Returns a random city name.
      * @example Luzern
      * @return string
@@ -146,40 +181,5 @@ class Address extends \Faker\Provider\Address
     public function streetSuffixLong()
     {
         return static::randomElement(static::$streetSuffixLong);
-    }
-
-    /**
-     * Returns a canton
-     * @example array('BE' => 'Bern')
-     * @return array
-     */
-    public static function canton()
-    {
-        return static::randomElement(static::$canton);
-    }
-
-    /**
-     * Returns the abbreviation of a canton.
-     * @return string
-     */
-    public static function cantonShort()
-    {
-        $canton = static::canton();
-        return key($canton);
-    }
-
-    /**
-     * Returns the name of canton.
-     * @return string
-     */
-    public static function cantonName()
-    {
-        $canton = static::canton();
-        return current($canton);
-    }
-
-    public static function buildingNumber()
-    {
-        return static::regexify(self::numerify(static::randomElement(static::$buildingNumber)));
     }
 }

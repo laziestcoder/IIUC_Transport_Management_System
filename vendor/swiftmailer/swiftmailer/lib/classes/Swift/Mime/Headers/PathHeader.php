@@ -35,7 +35,7 @@ class Swift_Mime_Headers_PathHeader extends Swift_Mime_Headers_AbstractHeader
     /**
      * Creates a new PathHeader with the given $name.
      *
-     * @param string         $name
+     * @param string $name
      * @param EmailValidator $emailValidator
      */
     public function __construct($name, EmailValidator $emailValidator)
@@ -82,6 +82,18 @@ class Swift_Mime_Headers_PathHeader extends Swift_Mime_Headers_AbstractHeader
     }
 
     /**
+     * Get the address which is used in this Header (if any).
+     *
+     * Null is returned if no address is set.
+     *
+     * @return string
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
      * Set the Address which should appear in this Header.
      *
      * @param string $address
@@ -102,18 +114,6 @@ class Swift_Mime_Headers_PathHeader extends Swift_Mime_Headers_AbstractHeader
     }
 
     /**
-     * Get the address which is used in this Header (if any).
-     *
-     * Null is returned if no address is set.
-     *
-     * @return string
-     */
-    public function getAddress()
-    {
-        return $this->address;
-    }
-
-    /**
      * Get the string value of the body in this Header.
      *
      * This is not necessarily RFC 2822 compliant since folding white space will
@@ -127,7 +127,7 @@ class Swift_Mime_Headers_PathHeader extends Swift_Mime_Headers_AbstractHeader
     {
         if (!$this->getCachedValue()) {
             if (isset($this->address)) {
-                $this->setCachedValue('<'.$this->address.'>');
+                $this->setCachedValue('<' . $this->address . '>');
             }
         }
 

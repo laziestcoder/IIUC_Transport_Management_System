@@ -138,7 +138,7 @@ abstract class AbstractMySQLDriver implements Driver, ExceptionConverterDriver, 
             return new MariaDb1027Platform();
         }
 
-        if (! $mariadb) {
+        if (!$mariadb) {
             $oracleMysqlVersion = $this->getOracleMysqlVersionNumber($version);
             if (version_compare($oracleMysqlVersion, '8', '>=')) {
                 return new MySQL80Platform();
@@ -152,15 +152,38 @@ abstract class AbstractMySQLDriver implements Driver, ExceptionConverterDriver, 
     }
 
     /**
+     * Detect MariaDB server version, including hack for some mariadb distributions
+     * that starts with the prefix '5.5.5-'
+     *
+     * @param string $versionString Version string as returned by mariadb server, i.e. '5.5.5-Mariadb-10.0.8-xenial'
+     * @throws DBALException
+     */
+    private function getMariaDbMysqlVersionNumber(string $versionString): string
+    {
+        if (!preg_match(
+            '/^(?:5\.5\.5-)?(mariadb-)?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)/i',
+            $versionString,
+            $versionParts
+        )) {
+            throw DBALException::invalidPlatformVersionSpecified(
+                $versionString,
+                '^(?:5\.5\.5-)?(mariadb-)?<major_version>.<minor_version>.<patch_version>'
+            );
+        }
+
+        return $versionParts['major'] . '.' . $versionParts['minor'] . '.' . $versionParts['patch'];
+    }
+
+    /**
      * Get a normalized 'version number' from the server string
      * returned by Oracle MySQL servers.
      *
      * @param string $versionString Version string returned by the driver, i.e. '5.7.10'
      * @throws DBALException
      */
-    private function getOracleMysqlVersionNumber(string $versionString) : string
+    private function getOracleMysqlVersionNumber(string $versionString): string
     {
-        if ( ! preg_match(
+        if (!preg_match(
             '/^(?P<major>\d+)(?:\.(?P<minor>\d+)(?:\.(?P<patch>\d+))?)?/',
             $versionString,
             $versionParts
@@ -182,26 +205,12 @@ abstract class AbstractMySQLDriver implements Driver, ExceptionConverterDriver, 
     }
 
     /**
-     * Detect MariaDB server version, including hack for some mariadb distributions
-     * that starts with the prefix '5.5.5-'
-     *
-     * @param string $versionString Version string as returned by mariadb server, i.e. '5.5.5-Mariadb-10.0.8-xenial'
-     * @throws DBALException
+     * {@inheritdoc}
+     * @return MySqlPlatform
      */
-    private function getMariaDbMysqlVersionNumber(string $versionString) : string
+    public function getDatabasePlatform()
     {
-        if ( ! preg_match(
-            '/^(?:5\.5\.5-)?(mariadb-)?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)/i',
-            $versionString,
-            $versionParts
-        )) {
-            throw DBALException::invalidPlatformVersionSpecified(
-                $versionString,
-                '^(?:5\.5\.5-)?(mariadb-)?<major_version>.<minor_version>.<patch_version>'
-            );
-        }
-
-        return $versionParts['major'] . '.' . $versionParts['minor'] . '.' . $versionParts['patch'];
+        return new MySqlPlatform();
     }
 
     /**
@@ -212,15 +221,6 @@ abstract class AbstractMySQLDriver implements Driver, ExceptionConverterDriver, 
         $params = $conn->getParams();
 
         return $params['dbname'] ?? $conn->query('SELECT DATABASE()')->fetchColumn();
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return MySqlPlatform
-     */
-    public function getDatabasePlatform()
-    {
-        return new MySqlPlatform();
     }
 
     /**

@@ -33,6 +33,6 @@ class PersonTest extends \PHPUnit_Framework_TestCase
 
         list(, $number, $letter) = $matches;
 
-        return strtoupper($letter) === $map[((int) $number) % 23];
+        return strtoupper($letter) === $map[((int)$number) % 23];
     }
 }

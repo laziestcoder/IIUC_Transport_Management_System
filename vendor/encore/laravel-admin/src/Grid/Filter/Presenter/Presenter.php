@@ -26,11 +26,11 @@ abstract class Presenter
      *
      * @return string
      */
-    public function view() : string
+    public function view(): string
     {
         $reflect = new \ReflectionClass(get_called_class());
 
-        return 'admin::filter.'.strtolower($reflect->getShortName());
+        return 'admin::filter.' . strtolower($reflect->getShortName());
     }
 
     /**
@@ -52,7 +52,7 @@ abstract class Presenter
      *
      * @return array
      */
-    public function variables() : array
+    public function variables(): array
     {
         return [];
     }

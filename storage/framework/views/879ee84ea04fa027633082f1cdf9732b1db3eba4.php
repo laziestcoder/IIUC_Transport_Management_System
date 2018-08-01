@@ -17,50 +17,50 @@
 
                 <table class="table-active">
                     <thead class="tableSpace">
-                        <tr>
-                            <td>
-                                <img src="storage/image/user/<?php echo e(Auth::user()->image); ?>">
-                            <td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Name: <?php echo e(Auth::user()->name); ?>
+                    <tr>
+                        <td>
+                            <img src="storage/image/user/<?php echo e(Auth::user()->image); ?>">
+                        <td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Name: <?php echo e(Auth::user()->name); ?>
 
-                            </td>
-                            
-                        </tr>
-                        <tr>
-                            <td>
-                                ID: <?php echo e(Auth::user()->id); ?>
+                        </td>
 
-                            </td>
-                            
-                        </tr>
-                        <tr>
-                            <td>
-                                Gender: <?php echo e(Auth::user()->gender == 0 ? 'Male' : 'Female'); ?>
+                    </tr>
+                    <tr>
+                        <td>
+                            ID: <?php echo e(Auth::user()->id); ?>
 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Registered
-                                As: <?php echo e(Auth::user()->userrole == 1 ? 'Student' : ( Auth::user()->userrole == 2 ? 'Faculty Member' :(Auth::user()->userrole == 3 ? 'Officer/Staff' : 'undefined'))); ?>
+                        </td>
 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Email: <?php echo e(Auth::user()->email); ?>
+                    </tr>
+                    <tr>
+                        <td>
+                            Gender: <?php echo e(Auth::user()->gender == 0 ? 'Male' : 'Female'); ?>
 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Contact: <?php echo e(Auth::user()->contact ? Auth::user()->contact : 'none'); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Registered
+                            As: <?php echo e(Auth::user()->userrole == 1 ? 'Student' : ( Auth::user()->userrole == 2 ? 'Faculty Member' :(Auth::user()->userrole == 3 ? 'Officer/Staff' : 'undefined'))); ?>
 
-                            </td>
-                        </tr>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Email: <?php echo e(Auth::user()->email); ?>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Contact: <?php echo e(Auth::user()->contact ? Auth::user()->contact : 'none'); ?>
+
+                        </td>
+                    </tr>
                     </thead>
                 </table>
             </div>

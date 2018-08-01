@@ -129,6 +129,16 @@ EOF;
         $this->fail();
     }
 
+    private function stringify(array $constraints): string
+    {
+        return \implode(
+            ' or ',
+            \array_map(function (Constraint $constraint) {
+                return $constraint->toString();
+            }, $constraints)
+        );
+    }
+
     /**
      * @dataProvider providerFailingConstraints
      *
@@ -136,7 +146,7 @@ EOF;
      */
     public function testEvaluateThrowsExceptionWithCustomMessageIfAllOfTheComposedConstraintsEvaluateToFalse(array $constraints): void
     {
-        $other             = 'whatever';
+        $other = 'whatever';
         $customDescription = 'Not very happy about the results at this point in time, I have to admit!';
 
         $constraint = new LogicalOr();
@@ -219,15 +229,5 @@ EOF;
                 $constraints,
             ];
         }
-    }
-
-    private function stringify(array $constraints): string
-    {
-        return \implode(
-            ' or ',
-            \array_map(function (Constraint $constraint) {
-                return $constraint->toString();
-            }, $constraints)
-        );
     }
 }

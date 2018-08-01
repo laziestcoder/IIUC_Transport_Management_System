@@ -6,10 +6,10 @@ import style from './style'
 import transition from './transition'
 
 export default [
-  attrs,
-  klass,
-  events,
-  domProps,
-  style,
-  transition
+    attrs,
+    klass,
+    events,
+    domProps,
+    style,
+    transition
 ]

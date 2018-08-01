@@ -15,10 +15,10 @@
             <table class="table table-striped">
 
                 @foreach($envs as $env)
-                <tr>
-                    <td width="120px">{{ $env['name'] }}</td>
-                    <td>{{ $env['value'] }}</td>
-                </tr>
+                    <tr>
+                        <td width="120px">{{ $env['name'] }}</td>
+                        <td>{{ $env['value'] }}</td>
+                    </tr>
                 @endforeach
             </table>
         </div>

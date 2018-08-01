@@ -38,12 +38,29 @@ class Generic extends BaseTag implements Factory\StaticMethod
     }
 
     /**
+     * Validates if the tag name matches the expected format, otherwise throws an exception.
+     *
+     * @param string $name
+     *
+     * @return void
+     */
+    private function validateTagName($name)
+    {
+        if (!preg_match('/^' . StandardTagFactory::REGEX_TAGNAME . '$/u', $name)) {
+            throw new \InvalidArgumentException(
+                'The tag name "' . $name . '" is not wellformed. Tags may only consist of letters, underscores, '
+                . 'hyphens and backslashes.'
+            );
+        }
+    }
+
+    /**
      * Creates a new tag that represents any unknown tag type.
      *
-     * @param string             $body
-     * @param string             $name
+     * @param string $body
+     * @param string $name
      * @param DescriptionFactory $descriptionFactory
-     * @param TypeContext        $context
+     * @param TypeContext $context
      *
      * @return static
      */
@@ -52,7 +69,8 @@ class Generic extends BaseTag implements Factory\StaticMethod
         $name = '',
         DescriptionFactory $descriptionFactory = null,
         TypeContext $context = null
-    ) {
+    )
+    {
         Assert::string($body);
         Assert::stringNotEmpty($name);
         Assert::notNull($descriptionFactory);
@@ -70,22 +88,5 @@ class Generic extends BaseTag implements Factory\StaticMethod
     public function __toString()
     {
         return ($this->description ? $this->description->render() : '');
-    }
-
-    /**
-     * Validates if the tag name matches the expected format, otherwise throws an exception.
-     *
-     * @param string $name
-     *
-     * @return void
-     */
-    private function validateTagName($name)
-    {
-        if (! preg_match('/^' . StandardTagFactory::REGEX_TAGNAME . '$/u', $name)) {
-            throw new \InvalidArgumentException(
-                'The tag name "' . $name . '" is not wellformed. Tags may only consist of letters, underscores, '
-                . 'hyphens and backslashes.'
-            );
-        }
     }
 }

@@ -1,4 +1,4 @@
-<input type="checkbox" class="grid-select-all" />&nbsp;
+<input type="checkbox" class="grid-select-all"/>&nbsp;
 
 <div class="btn-group">
     <a class="btn btn-sm btn-default">  {{ trans('admin.action') }}</a>

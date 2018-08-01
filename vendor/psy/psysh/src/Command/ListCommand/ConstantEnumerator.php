@@ -39,7 +39,7 @@ class ConstantEnumerator extends Enumerator
             return;
         }
 
-        $user     = $input->getOption('user');
+        $user = $input->getOption('user');
         $internal = $input->getOption('internal');
         $category = $input->getOption('category');
 
@@ -110,7 +110,7 @@ class ConstantEnumerator extends Enumerator
         foreach ($names as $name) {
             if ($this->showItem($name)) {
                 $ret[$name] = [
-                    'name'  => $name,
+                    'name' => $name,
                     'style' => self::IS_CONSTANT,
                     'value' => $this->presentRef($constants[$name]),
                 ];

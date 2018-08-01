@@ -77,10 +77,10 @@ class NormalizerFormatterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(
             'exception' => array(
-                'class'   => get_class($e2),
+                'class' => get_class($e2),
                 'message' => $e2->getMessage(),
-                'code'    => $e2->getCode(),
-                'file'    => $e2->getFile().':'.$e2->getLine(),
+                'code' => $e2->getCode(),
+                'file' => $e2->getFile() . ':' . $e2->getLine(),
             ),
         ), $formatted);
     }
@@ -104,7 +104,7 @@ class NormalizerFormatterTest extends \PHPUnit_Framework_TestCase
                 'class' => 'SoapFault',
                 'message' => 'bar',
                 'code' => 0,
-                'file' => $e->getFile().':'.$e->getLine(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
                 'faultcode' => 'foo',
                 'faultactor' => 'hello',
                 'detail' => 'world',
@@ -279,9 +279,9 @@ class NormalizerFormatterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param mixed $in     Input
+     * @param mixed $in Input
      * @param mixed $expect Expected output
-     * @covers Monolog\Formatter\NormalizerFormatter::detectAndCleanUtf8
+     * @covers       Monolog\Formatter\NormalizerFormatter::detectAndCleanUtf8
      * @dataProvider providesDetectAndCleanUtf8
      */
     public function testDetectAndCleanUtf8($in, $expect)
@@ -311,7 +311,7 @@ class NormalizerFormatterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param int    $code
+     * @param int $code
      * @param string $msg
      * @dataProvider providesHandleJsonErrorFailure
      */
@@ -410,7 +410,7 @@ class TestStreamFoo
     {
         fseek($this->resource, 0);
 
-        return $this->foo . ' - ' . (string) stream_get_contents($this->resource);
+        return $this->foo . ' - ' . (string)stream_get_contents($this->resource);
     }
 }
 

@@ -19,9 +19,9 @@ class Swift_Mime_ContentEncoder_Base64ContentEncoder extends Swift_Encoder_Base6
      * Encode stream $in to stream $out.
      *
      * @param Swift_OutputByteStream $os
-     * @param Swift_InputByteStream  $is
-     * @param int                    $firstLineOffset
-     * @param int                    $maxLineLength,  optional, 0 indicates the default of 76 bytes
+     * @param Swift_InputByteStream $is
+     * @param int $firstLineOffset
+     * @param int $maxLineLength ,  optional, 0 indicates the default of 76 bytes
      */
     public function encodeByteStream(Swift_OutputByteStream $os, Swift_InputByteStream $is, $firstLineOffset = 0, $maxLineLength = 0)
     {
@@ -46,7 +46,7 @@ class Swift_Mime_ContentEncoder_Base64ContentEncoder extends Swift_Encoder_Base6
             if ($atEOF) {
                 $streamTheseBytes = $base64ReadBufferRemainderBytes;
             } else {
-                $streamTheseBytes = $base64ReadBufferRemainderBytes.$readBytes;
+                $streamTheseBytes = $base64ReadBufferRemainderBytes . $readBytes;
             }
             $base64ReadBufferRemainderBytes = null;
             $bytesLength = strlen($streamTheseBytes);
@@ -70,7 +70,7 @@ class Swift_Mime_ContentEncoder_Base64ContentEncoder extends Swift_Encoder_Base6
             $thisMaxLineLength = $maxLineLength - $remainder - $firstLineOffset;
 
             while ($thisMaxLineLength < strlen($encoded)) {
-                $encodedTransformed .= substr($encoded, 0, $thisMaxLineLength)."\r\n";
+                $encodedTransformed .= substr($encoded, 0, $thisMaxLineLength) . "\r\n";
                 $firstLineOffset = 0;
                 $encoded = substr($encoded, $thisMaxLineLength);
                 $thisMaxLineLength = $maxLineLength;

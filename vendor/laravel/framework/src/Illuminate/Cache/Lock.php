@@ -2,8 +2,8 @@
 
 namespace Illuminate\Cache;
 
-use Illuminate\Support\InteractsWithTime;
 use Illuminate\Contracts\Cache\LockTimeoutException;
+use Illuminate\Support\InteractsWithTime;
 
 abstract class Lock
 {
@@ -26,8 +26,8 @@ abstract class Lock
     /**
      * Create a new lock instance.
      *
-     * @param  string  $name
-     * @param  int  $seconds
+     * @param  string $name
+     * @param  int $seconds
      * @return void
      */
     public function __construct($name, $seconds)
@@ -39,14 +39,7 @@ abstract class Lock
     /**
      * Attempt to acquire the lock.
      *
-     * @return bool
-     */
-    abstract public function acquire();
-
-    /**
-     * Attempt to acquire the lock.
-     *
-     * @param  callable|null  $callback
+     * @param  callable|null $callback
      * @return bool
      */
     public function get($callback = null)
@@ -63,10 +56,17 @@ abstract class Lock
     }
 
     /**
+     * Attempt to acquire the lock.
+     *
+     * @return bool
+     */
+    abstract public function acquire();
+
+    /**
      * Attempt to acquire the lock for the given number of seconds.
      *
-     * @param  int  $seconds
-     * @param  callable|null  $callback
+     * @param  int $seconds
+     * @param  callable|null $callback
      * @return bool
      * @throws \Illuminate\Contracts\Cache\LockTimeoutException
      */
@@ -74,7 +74,7 @@ abstract class Lock
     {
         $starting = $this->currentTime();
 
-        while (! $this->acquire()) {
+        while (!$this->acquire()) {
             usleep(250 * 1000);
 
             if ($this->currentTime() - $seconds >= $starting) {

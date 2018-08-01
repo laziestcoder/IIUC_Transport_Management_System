@@ -25,13 +25,13 @@ class AddressTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function canton ()
+    public function canton()
     {
         $canton = $this->faker->canton();
         $this->assertInternalType('array', $canton);
         $this->assertCount(1, $canton);
 
-        foreach ($canton as $cantonShort => $cantonName){
+        foreach ($canton as $cantonShort => $cantonName) {
             $this->assertInternalType('string', $cantonShort);
             $this->assertEquals(2, strlen($cantonShort));
             $this->assertInternalType('string', $cantonName);
@@ -42,7 +42,7 @@ class AddressTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function cantonName ()
+    public function cantonName()
     {
         $cantonName = $this->faker->cantonName();
         $this->assertInternalType('string', $cantonName);
@@ -52,7 +52,7 @@ class AddressTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function cantonShort ()
+    public function cantonShort()
     {
         $cantonShort = $this->faker->cantonShort();
         $this->assertInternalType('string', $cantonShort);
@@ -62,7 +62,8 @@ class AddressTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function address (){
+    public function address()
+    {
         $address = $this->faker->address();
         $this->assertInternalType('string', $address);
     }

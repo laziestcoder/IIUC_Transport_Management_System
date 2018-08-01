@@ -53,7 +53,7 @@ class HasMany extends Field
      */
     protected $views = [
         'default' => 'admin::form.hasmany',
-        'tab'     => 'admin::form.hasmanytab',
+        'tab' => 'admin::form.hasmanytab',
     ];
 
     /**
@@ -107,7 +107,7 @@ class HasMany extends Field
 
             if (is_array($column)) {
                 foreach ($column as $key => $name) {
-                    $rules[$name.$key] = $fieldRules;
+                    $rules[$name . $key] = $fieldRules;
                 }
 
                 $this->resetInputKey($input, $column);
@@ -139,39 +139,41 @@ class HasMany extends Field
     }
 
     /**
-     * Format validation attributes.
+     * Build a Nested form.
      *
-     * @param array  $input
-     * @param string $label
      * @param string $column
+     * @param \Closure $builder
+     * @param null $key
      *
-     * @return array
+     * @return NestedForm
      */
-    protected function formatValidationAttribute($input, $label, $column)
+    protected function buildNestedForm($column, \Closure $builder, $key = null)
     {
-        $new = $attributes = [];
+        $form = new Form\NestedForm($column, $key);
 
-        if (is_array($column)) {
-            foreach ($column as $index => $col) {
-                $new[$col.$index] = $col;
-            }
+        $form->setForm($this->form);
+
+        call_user_func($builder, $form);
+
+        $form->hidden($this->getKeyName());
+
+        $form->hidden(NestedForm::REMOVE_FLAG_NAME)->default(0)->addElementClass(NestedForm::REMOVE_FLAG_CLASS);
+
+        return $form;
+    }
+
+    /**
+     * Get the HasMany relation key name.
+     *
+     * @return string
+     */
+    protected function getKeyName()
+    {
+        if (is_null($this->form)) {
+            return;
         }
 
-        foreach (array_keys(array_dot($input)) as $key) {
-            if (is_string($column)) {
-                if (Str::endsWith($key, ".$column")) {
-                    $attributes[$key] = $label;
-                }
-            } else {
-                foreach ($new as $k => $val) {
-                    if (Str::endsWith($key, ".$k")) {
-                        $attributes[$key] = $label."[$val]";
-                    }
-                }
-            }
-        }
-
-        return $attributes;
+        return $this->form->model()->{$this->relationName}()->getRelated()->getKeyName();
     }
 
     /**
@@ -224,7 +226,7 @@ class HasMany extends Field
                  *
                  * I don't know why a form need range input? Only can imagine is for range search....
                  */
-                $newKey = $name.$column[$name];
+                $newKey = $name . $column[$name];
 
                 /*
                  * set new key
@@ -236,6 +238,42 @@ class HasMany extends Field
                 array_forget($input, "{$this->column}.$index.$name");
             }
         }
+    }
+
+    /**
+     * Format validation attributes.
+     *
+     * @param array $input
+     * @param string $label
+     * @param string $column
+     *
+     * @return array
+     */
+    protected function formatValidationAttribute($input, $label, $column)
+    {
+        $new = $attributes = [];
+
+        if (is_array($column)) {
+            foreach ($column as $index => $col) {
+                $new[$col . $index] = $col;
+            }
+        }
+
+        foreach (array_keys(array_dot($input)) as $key) {
+            if (is_string($column)) {
+                if (Str::endsWith($key, ".$column")) {
+                    $attributes[$key] = $label;
+                }
+            } else {
+                foreach ($new as $k => $val) {
+                    if (Str::endsWith($key, ".$k")) {
+                        $attributes[$key] = $label . "[$val]";
+                    }
+                }
+            }
+        }
+
+        return $attributes;
     }
 
     /**
@@ -253,41 +291,13 @@ class HasMany extends Field
     }
 
     /**
-     * Build a Nested form.
+     * Use tab mode to showing hasmany field.
      *
-     * @param string   $column
-     * @param \Closure $builder
-     * @param null     $key
-     *
-     * @return NestedForm
+     * @return HasMany
      */
-    protected function buildNestedForm($column, \Closure $builder, $key = null)
+    public function useTab()
     {
-        $form = new Form\NestedForm($column, $key);
-
-        $form->setForm($this->form);
-
-        call_user_func($builder, $form);
-
-        $form->hidden($this->getKeyName());
-
-        $form->hidden(NestedForm::REMOVE_FLAG_NAME)->default(0)->addElementClass(NestedForm::REMOVE_FLAG_CLASS);
-
-        return $form;
-    }
-
-    /**
-     * Get the HasMany relation key name.
-     *
-     * @return string
-     */
-    protected function getKeyName()
-    {
-        if (is_null($this->form)) {
-            return;
-        }
-
-        return $this->form->model()->{$this->relationName}()->getRelated()->getKeyName();
+        return $this->mode('tab');
     }
 
     /**
@@ -307,13 +317,41 @@ class HasMany extends Field
     }
 
     /**
-     * Use tab mode to showing hasmany field.
+     * Render the `HasMany` field.
      *
-     * @return HasMany
+     * @throws \Exception
+     *
+     * @return \Illuminate\View\View
      */
-    public function useTab()
+    public function render()
     {
-        return $this->mode('tab');
+        // specify a view to render.
+        $this->view = $this->views[$this->viewMode];
+
+        list($template, $script) = $this->buildNestedForm($this->column, $this->builder)
+            ->getTemplateHtmlAndScript();
+
+        $this->setupScript($script);
+
+        return parent::render()->with([
+            'forms' => $this->buildRelatedForms(),
+            'template' => $template,
+            'relationName' => $this->relationName,
+        ]);
+    }
+
+    /**
+     * Setup script for this field in different view mode.
+     *
+     * @param string $script
+     *
+     * @return void
+     */
+    protected function setupScript($script)
+    {
+        $method = 'setupScriptFor' . ucfirst($this->viewMode) . 'View';
+
+        call_user_func([$this, $method], $script);
     }
 
     /**
@@ -365,20 +403,6 @@ class HasMany extends Field
         }
 
         return $forms;
-    }
-
-    /**
-     * Setup script for this field in different view mode.
-     *
-     * @param string $script
-     *
-     * @return void
-     */
-    protected function setupScript($script)
-    {
-        $method = 'setupScriptFor'.ucfirst($this->viewMode).'View';
-
-        call_user_func([$this, $method], $script);
     }
 
     /**
@@ -476,29 +500,5 @@ if ($('.has-error').length) {
 EOT;
 
         Admin::script($script);
-    }
-
-    /**
-     * Render the `HasMany` field.
-     *
-     * @throws \Exception
-     *
-     * @return \Illuminate\View\View
-     */
-    public function render()
-    {
-        // specify a view to render.
-        $this->view = $this->views[$this->viewMode];
-
-        list($template, $script) = $this->buildNestedForm($this->column, $this->builder)
-            ->getTemplateHtmlAndScript();
-
-        $this->setupScript($script);
-
-        return parent::render()->with([
-            'forms'        => $this->buildRelatedForms(),
-            'template'     => $template,
-            'relationName' => $this->relationName,
-        ]);
     }
 }

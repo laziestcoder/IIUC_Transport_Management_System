@@ -15,12 +15,23 @@ use InvalidArgumentException;
 class Luhn
 {
     /**
+     * Checks whether a number (partial number + check digit) is Luhn compliant
+     *
+     * @param string $number
+     * @return bool
+     */
+    public static function isValid($number)
+    {
+        return self::checksum($number) === 0;
+    }
+
+    /**
      * @param string $number
      * @return int
      */
     private static function checksum($number)
     {
-        $number = (string) $number;
+        $number = (string)$number;
         $length = strlen($number);
         $sum = 0;
         for ($i = $length - 1; $i >= 0; $i -= 2) {
@@ -31,31 +42,6 @@ class Luhn
         }
 
         return $sum % 10;
-    }
-
-    /**
-     * @param $partialNumber
-     * @return string
-     */
-    public static function computeCheckDigit($partialNumber)
-    {
-        $checkDigit = self::checksum($partialNumber . '0');
-        if ($checkDigit === 0) {
-            return 0;
-        }
-
-        return (string) (10 - $checkDigit);
-    }
-
-    /**
-     * Checks whether a number (partial number + check digit) is Luhn compliant
-     *
-     * @param string $number
-     * @return bool
-     */
-    public static function isValid($number)
-    {
-        return self::checksum($number) === 0;
     }
 
     /**
@@ -71,5 +57,19 @@ class Luhn
             throw new InvalidArgumentException('Argument should be an integer.');
         }
         return $partialValue . Luhn::computeCheckDigit($partialValue);
+    }
+
+    /**
+     * @param $partialNumber
+     * @return string
+     */
+    public static function computeCheckDigit($partialNumber)
+    {
+        $checkDigit = self::checksum($partialNumber . '0');
+        if ($checkDigit === 0) {
+            return 0;
+        }
+
+        return (string)(10 - $checkDigit);
     }
 }

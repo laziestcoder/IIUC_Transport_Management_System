@@ -54,6 +54,23 @@ class InternetTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp($pattern, $emailAddress);
     }
 
+    public function loadLocalProviders($locale)
+    {
+        $providerPath = realpath(__DIR__ . '/../../../src/Faker/Provider');
+        if (file_exists($providerPath . '/' . $locale . '/Internet.php')) {
+            $internet = "\\Faker\\Provider\\$locale\\Internet";
+            $this->faker->addProvider(new $internet($this->faker));
+        }
+        if (file_exists($providerPath . '/' . $locale . '/Person.php')) {
+            $person = "\\Faker\\Provider\\$locale\\Person";
+            $this->faker->addProvider(new $person($this->faker));
+        }
+        if (file_exists($providerPath . '/' . $locale . '/Company.php')) {
+            $company = "\\Faker\\Provider\\$locale\\Company";
+            $this->faker->addProvider(new $company($this->faker));
+        }
+    }
+
     /**
      * @dataProvider localeDataProvider
      */
@@ -97,23 +114,6 @@ class InternetTest extends \PHPUnit_Framework_TestCase
         $pattern = '/^[a-z]+$/';
         $domainWord = $this->faker->domainWord();
         $this->assertRegExp($pattern, $domainWord);
-    }
-
-    public function loadLocalProviders($locale)
-    {
-        $providerPath = realpath(__DIR__ . '/../../../src/Faker/Provider');
-        if (file_exists($providerPath.'/'.$locale.'/Internet.php')) {
-            $internet = "\\Faker\\Provider\\$locale\\Internet";
-            $this->faker->addProvider(new $internet($this->faker));
-        }
-        if (file_exists($providerPath.'/'.$locale.'/Person.php')) {
-            $person = "\\Faker\\Provider\\$locale\\Person";
-            $this->faker->addProvider(new $person($this->faker));
-        }
-        if (file_exists($providerPath.'/'.$locale.'/Company.php')) {
-            $company = "\\Faker\\Provider\\$locale\\Company";
-            $this->faker->addProvider(new $company($this->faker));
-        }
     }
 
     public function testPasswordIsValid()

@@ -19,8 +19,8 @@
 
 namespace Doctrine\DBAL;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Driver\Statement as DriverStatement;
+use Doctrine\DBAL\Types\Type;
 use function is_array;
 use function is_string;
 
@@ -78,7 +78,7 @@ class Statement implements \IteratorAggregate, DriverStatement
     /**
      * Creates a new <tt>Statement</tt> for the given SQL and <tt>Connection</tt>.
      *
-     * @param string                    $sql  The SQL of the statement.
+     * @param string $sql The SQL of the statement.
      * @param \Doctrine\DBAL\Connection $conn The connection on which the statement should be executed.
      */
     public function __construct($sql, Connection $conn)
@@ -97,9 +97,9 @@ class Statement implements \IteratorAggregate, DriverStatement
      * type and the value undergoes the conversion routines of the mapping type before
      * being bound.
      *
-     * @param string $name  The name or position of the parameter.
-     * @param mixed  $value The value of the parameter.
-     * @param mixed  $type  Either a PDO binding type or a DBAL mapping type name or instance.
+     * @param string $name The name or position of the parameter.
+     * @param mixed $value The value of the parameter.
+     * @param mixed $type Either a PDO binding type or a DBAL mapping type name or instance.
      *
      * @return bool TRUE on success, FALSE on failure.
      */
@@ -129,9 +129,9 @@ class Statement implements \IteratorAggregate, DriverStatement
      *
      * Binding a parameter by reference does not support DBAL mapping types.
      *
-     * @param string   $name   The name or position of the parameter.
-     * @param mixed    $var    The reference to the variable to bind.
-     * @param int      $type   The PDO binding type.
+     * @param string $name The name or position of the parameter.
+     * @param mixed $var The reference to the variable to bind.
+     * @param int $type The PDO binding type.
      * @param int|null $length Must be specified when using an OUT bind
      *                         so that PHP allocates enough memory to hold the returned value.
      *

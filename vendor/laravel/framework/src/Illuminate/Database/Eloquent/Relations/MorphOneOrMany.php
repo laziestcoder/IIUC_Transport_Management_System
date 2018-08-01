@@ -2,8 +2,8 @@
 
 namespace Illuminate\Database\Eloquent\Relations;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 abstract class MorphOneOrMany extends HasOneOrMany
 {
@@ -24,11 +24,11 @@ abstract class MorphOneOrMany extends HasOneOrMany
     /**
      * Create a new morph one or many relationship instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  \Illuminate\Database\Eloquent\Model  $parent
-     * @param  string  $type
-     * @param  string  $id
-     * @param  string  $localKey
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Model $parent
+     * @param  string $type
+     * @param  string $id
+     * @param  string $localKey
      * @return void
      */
     public function __construct(Builder $query, Model $parent, $type, $id, $localKey)
@@ -57,7 +57,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
     /**
      * Set the constraints for an eager load of the relation.
      *
-     * @param  array  $models
+     * @param  array $models
      * @return void
      */
     public function addEagerConstraints(array $models)
@@ -70,7 +70,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
     /**
      * Attach a model instance to the parent model.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param  \Illuminate\Database\Eloquent\Model $model
      * @return \Illuminate\Database\Eloquent\Model
      */
     public function save(Model $model)
@@ -81,24 +81,21 @@ abstract class MorphOneOrMany extends HasOneOrMany
     }
 
     /**
-     * Set the foreign ID and type for creating a related model.
+     * Get the plain morph type name without the table.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return void
+     * @return string
      */
-    protected function setForeignAttributesForCreate(Model $model)
+    public function getMorphType()
     {
-        $model->{$this->getForeignKeyName()} = $this->getParentKey();
-
-        $model->{$this->getMorphType()} = $this->morphClass;
+        return last(explode('.', $this->morphType));
     }
 
     /**
      * Get the relationship query.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  \Illuminate\Database\Eloquent\Builder  $parentQuery
-     * @param  array|mixed  $columns
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder $parentQuery
+     * @param  array|mixed $columns
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*'])
@@ -119,16 +116,6 @@ abstract class MorphOneOrMany extends HasOneOrMany
     }
 
     /**
-     * Get the plain morph type name without the table.
-     *
-     * @return string
-     */
-    public function getMorphType()
-    {
-        return last(explode('.', $this->morphType));
-    }
-
-    /**
      * Get the class name of the parent model.
      *
      * @return string
@@ -136,5 +123,18 @@ abstract class MorphOneOrMany extends HasOneOrMany
     public function getMorphClass()
     {
         return $this->morphClass;
+    }
+
+    /**
+     * Set the foreign ID and type for creating a related model.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model $model
+     * @return void
+     */
+    protected function setForeignAttributesForCreate(Model $model)
+    {
+        $model->{$this->getForeignKeyName()} = $this->getParentKey();
+
+        $model->{$this->getMorphType()} = $this->morphClass;
     }
 }

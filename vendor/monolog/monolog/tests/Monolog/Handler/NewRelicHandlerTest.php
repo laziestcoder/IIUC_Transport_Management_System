@@ -12,8 +12,8 @@
 namespace Monolog\Handler;
 
 use Monolog\Formatter\LineFormatter;
-use Monolog\TestCase;
 use Monolog\Logger;
+use Monolog\TestCase;
 
 class NewRelicHandlerTest extends TestCase
 {

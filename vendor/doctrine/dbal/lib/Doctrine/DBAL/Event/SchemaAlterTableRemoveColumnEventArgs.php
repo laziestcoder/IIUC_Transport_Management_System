@@ -55,15 +55,15 @@ class SchemaAlterTableRemoveColumnEventArgs extends SchemaEventArgs
     private $_sql = [];
 
     /**
-     * @param \Doctrine\DBAL\Schema\Column              $column
-     * @param \Doctrine\DBAL\Schema\TableDiff           $tableDiff
+     * @param \Doctrine\DBAL\Schema\Column $column
+     * @param \Doctrine\DBAL\Schema\TableDiff $tableDiff
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      */
     public function __construct(Column $column, TableDiff $tableDiff, AbstractPlatform $platform)
     {
-        $this->_column    = $column;
+        $this->_column = $column;
         $this->_tableDiff = $tableDiff;
-        $this->_platform  = $platform;
+        $this->_platform = $platform;
     }
 
     /**

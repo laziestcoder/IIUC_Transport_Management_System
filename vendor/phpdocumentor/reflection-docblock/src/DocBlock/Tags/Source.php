@@ -37,8 +37,8 @@ final class Source extends BaseTag implements Factory\StaticMethod
         Assert::nullOrIntegerish($lineCount);
 
         $this->startingLine = (int)$startingLine;
-        $this->lineCount    = $lineCount !== null ? (int)$lineCount : null;
-        $this->description  = $description;
+        $this->lineCount = $lineCount !== null ? (int)$lineCount : null;
+        $this->description = $description;
     }
 
     /**
@@ -50,8 +50,8 @@ final class Source extends BaseTag implements Factory\StaticMethod
         Assert::notNull($descriptionFactory);
 
         $startingLine = 1;
-        $lineCount    = null;
-        $description  = null;
+        $lineCount = null;
+        $description = null;
 
         // Starting line / Number of lines / Description
         if (preg_match('/^([1-9]\d*)\s*(?:((?1))\s+)?(.*)$/sux', $body, $matches)) {
@@ -91,7 +91,7 @@ final class Source extends BaseTag implements Factory\StaticMethod
     public function __toString()
     {
         return $this->startingLine
-        . ($this->lineCount !== null ? ' ' . $this->lineCount : '')
-        . ($this->description ? ' ' . $this->description->render() : '');
+            . ($this->lineCount !== null ? ' ' . $this->lineCount : '')
+            . ($this->description ? ' ' . $this->description->render() : '');
     }
 }

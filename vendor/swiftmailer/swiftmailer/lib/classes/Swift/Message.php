@@ -46,7 +46,7 @@ class Swift_Message extends Swift_Mime_SimpleMessage
             array($this, 'Swift_Mime_SimpleMessage::__construct'),
             Swift_DependencyContainer::getInstance()
                 ->createDependenciesFor('mime.message')
-            );
+        );
 
         if (!isset($charset)) {
             $charset = Swift_DependencyContainer::getInstance()
@@ -64,8 +64,8 @@ class Swift_Message extends Swift_Mime_SimpleMessage
      * Add a MimePart to this Message.
      *
      * @param string|Swift_OutputByteStream $body
-     * @param string                        $contentType
-     * @param string                        $charset
+     * @param string $contentType
+     * @param string $charset
      *
      * @return $this
      */
@@ -145,30 +145,17 @@ class Swift_Message extends Swift_Mime_SimpleMessage
     }
 
     /**
-     * Write this message to a {@link Swift_InputByteStream}.
-     *
-     * @param Swift_InputByteStream $is
+     * save the message before any signature is applied.
      */
-    public function toByteStream(Swift_InputByteStream $is)
+    protected function saveMessage()
     {
-        if (empty($this->headerSigners) && empty($this->bodySigners)) {
-            parent::toByteStream($is);
-
-            return;
+        $this->savedMessage = array('headers' => array());
+        $this->savedMessage['body'] = $this->getBody();
+        $this->savedMessage['children'] = $this->getChildren();
+        if (count($this->savedMessage['children']) > 0 && $this->getBody() != '') {
+            $this->setChildren(array_merge(array($this->becomeMimePart()), $this->savedMessage['children']));
+            $this->setBody('');
         }
-
-        $this->saveMessage();
-
-        $this->doSign();
-
-        parent::toByteStream($is);
-
-        $this->restoreMessage();
-    }
-
-    public function __wakeup()
-    {
-        Swift_DependencyContainer::getInstance()->createDependenciesFor('mime.message');
     }
 
     /**
@@ -198,20 +185,6 @@ class Swift_Message extends Swift_Mime_SimpleMessage
     }
 
     /**
-     * save the message before any signature is applied.
-     */
-    protected function saveMessage()
-    {
-        $this->savedMessage = array('headers' => array());
-        $this->savedMessage['body'] = $this->getBody();
-        $this->savedMessage['children'] = $this->getChildren();
-        if (count($this->savedMessage['children']) > 0 && $this->getBody() != '') {
-            $this->setChildren(array_merge(array($this->becomeMimePart()), $this->savedMessage['children']));
-            $this->setBody('');
-        }
-    }
-
-    /**
      * save the original headers.
      *
      * @param array $altered
@@ -225,6 +198,18 @@ class Swift_Message extends Swift_Mime_SimpleMessage
                 $this->savedMessage['headers'][$lc] = $this->getHeaders()->getAll($head);
             }
         }
+    }
+
+    /**
+     * Restore message body.
+     */
+    protected function restoreMessage()
+    {
+        $this->setBody($this->savedMessage['body']);
+        $this->setChildren($this->savedMessage['children']);
+
+        $this->restoreHeaders();
+        $this->savedMessage = array();
     }
 
     /**
@@ -244,15 +229,30 @@ class Swift_Message extends Swift_Mime_SimpleMessage
     }
 
     /**
-     * Restore message body.
+     * Write this message to a {@link Swift_InputByteStream}.
+     *
+     * @param Swift_InputByteStream $is
      */
-    protected function restoreMessage()
+    public function toByteStream(Swift_InputByteStream $is)
     {
-        $this->setBody($this->savedMessage['body']);
-        $this->setChildren($this->savedMessage['children']);
+        if (empty($this->headerSigners) && empty($this->bodySigners)) {
+            parent::toByteStream($is);
 
-        $this->restoreHeaders();
-        $this->savedMessage = array();
+            return;
+        }
+
+        $this->saveMessage();
+
+        $this->doSign();
+
+        parent::toByteStream($is);
+
+        $this->restoreMessage();
+    }
+
+    public function __wakeup()
+    {
+        Swift_DependencyContainer::getInstance()->createDependenciesFor('mime.message');
     }
 
     /**

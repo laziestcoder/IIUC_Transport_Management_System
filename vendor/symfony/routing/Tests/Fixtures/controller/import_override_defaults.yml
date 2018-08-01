@@ -1,5 +1,5 @@
 _static:
-    resource: routing.yml
-    controller: FrameworkBundle:Template:template
-    defaults:
-        _controller: AppBundle:Homepage:show
+  resource: routing.yml
+  controller: FrameworkBundle:Template:template
+  defaults:
+    _controller: AppBundle:Homepage:show

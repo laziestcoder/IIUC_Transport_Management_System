@@ -19,9 +19,9 @@
 
 namespace Doctrine\DBAL\Event\Listeners;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Event\ConnectionEventArgs;
 use Doctrine\DBAL\Events;
-use Doctrine\Common\EventSubscriber;
 use function array_change_key_case;
 use function array_merge;
 use function count;
@@ -79,7 +79,7 @@ class OracleSessionInit implements EventSubscriber
                     $vars[] = $option . " = '" . $value . "'";
                 }
             }
-            $sql = "ALTER SESSION SET ".implode(" ", $vars);
+            $sql = "ALTER SESSION SET " . implode(" ", $vars);
             $args->getConnection()->executeUpdate($sql);
         }
     }

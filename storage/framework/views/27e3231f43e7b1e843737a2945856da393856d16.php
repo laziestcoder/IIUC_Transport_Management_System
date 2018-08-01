@@ -19,14 +19,14 @@
                         <td>
                             Name: <?php echo e(Auth::user()->name); ?>
 
-                        </td>                        
+                        </td>
                     </tr>
                     <tr>
                         <td>
                             ID: <?php echo e(Auth::user()->id); ?>
 
                         </td>
-                        
+
                     </tr>
                     <tr>
                         <td>

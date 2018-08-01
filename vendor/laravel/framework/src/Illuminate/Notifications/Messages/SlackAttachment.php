@@ -123,8 +123,8 @@ class SlackAttachment
     /**
      * Set the title of the attachment.
      *
-     * @param  string  $title
-     * @param  string|null  $url
+     * @param  string $title
+     * @param  string|null $url
      * @return $this
      */
     public function title($title, $url = null)
@@ -138,7 +138,7 @@ class SlackAttachment
     /**
      * Set the pretext of the attachment.
      *
-     * @param  string  $pretext
+     * @param  string $pretext
      * @return $this
      */
     public function pretext($pretext)
@@ -151,7 +151,7 @@ class SlackAttachment
     /**
      * Set the content (text) of the attachment.
      *
-     * @param  string  $content
+     * @param  string $content
      * @return $this
      */
     public function content($content)
@@ -164,7 +164,7 @@ class SlackAttachment
     /**
      * A plain-text summary of the attachment.
      *
-     * @param  string  $fallback
+     * @param  string $fallback
      * @return $this
      */
     public function fallback($fallback)
@@ -177,7 +177,7 @@ class SlackAttachment
     /**
      * Set the color of the attachment.
      *
-     * @param  string  $color
+     * @param  string $color
      * @return $this
      */
     public function color($color)
@@ -214,7 +214,7 @@ class SlackAttachment
     /**
      * Set the fields of the attachment.
      *
-     * @param  array  $fields
+     * @param  array $fields
      * @return $this
      */
     public function fields(array $fields)
@@ -227,7 +227,7 @@ class SlackAttachment
     /**
      * Set the fields containing markdown.
      *
-     * @param  array  $fields
+     * @param  array $fields
      * @return $this
      */
     public function markdown(array $fields)
@@ -240,7 +240,7 @@ class SlackAttachment
     /**
      * Set the image URL.
      *
-     * @param  string  $url
+     * @param  string $url
      * @return $this
      */
     public function image($url)
@@ -253,7 +253,7 @@ class SlackAttachment
     /**
      * Set the URL to the attachment thumbnail.
      *
-     * @param  string  $url
+     * @param  string $url
      * @return $this
      */
     public function thumb($url)
@@ -266,9 +266,9 @@ class SlackAttachment
     /**
      * Set the author of the attachment.
      *
-     * @param  string  $name
-     * @param  string|null  $link
-     * @param  string|null  $icon
+     * @param  string $name
+     * @param  string|null $link
+     * @param  string|null $icon
      * @return $this
      */
     public function author($name, $link = null, $icon = null)
@@ -283,7 +283,7 @@ class SlackAttachment
     /**
      * Set the footer content.
      *
-     * @param  string  $footer
+     * @param  string $footer
      * @return $this
      */
     public function footer($footer)
@@ -309,7 +309,7 @@ class SlackAttachment
     /**
      * Set the timestamp.
      *
-     * @param  \DateTimeInterface|\DateInterval|int  $timestamp
+     * @param  \DateTimeInterface|\DateInterval|int $timestamp
      * @return $this
      */
     public function timestamp($timestamp)

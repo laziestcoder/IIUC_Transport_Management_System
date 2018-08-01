@@ -237,7 +237,7 @@ class LexerTest extends TestCase
             ['<?php ... __halt_compiler();Remaining Text', 'Remaining Text'],
             ['<?php ... __halt_compiler ( ) ;Remaining Text', 'Remaining Text'],
             ['<?php ... __halt_compiler() ?>Remaining Text', 'Remaining Text'],
-                ' . "\0", "\0"),
+            ' . "\0", "\0"),
                 //array('
         ];
     }

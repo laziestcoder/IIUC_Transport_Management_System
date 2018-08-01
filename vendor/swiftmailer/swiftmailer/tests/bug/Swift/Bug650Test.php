@@ -22,7 +22,7 @@ class Swift_Bug650Test extends \PHPUnit\Framework\TestCase
             'test@example.com' => $name,
         ));
 
-        $this->assertSame('To: '.$expectedEncodedName." <test@example.com>\r\n", $header->toString());
+        $this->assertSame('To: ' . $expectedEncodedName . " <test@example.com>\r\n", $header->toString());
     }
 
     public function encodingDataProvider()

@@ -30,7 +30,7 @@ class Radio extends Presenter
             $options = $options->toArray();
         }
 
-        $this->options = (array) $options;
+        $this->options = (array)$options;
 
         return $this;
     }
@@ -40,11 +40,24 @@ class Radio extends Presenter
      *
      * @return $this
      */
-    public function stacked() : self
+    public function stacked(): self
     {
         $this->inline = false;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function variables(): array
+    {
+        $this->prepare();
+
+        return [
+            'options' => $this->options,
+            'inline' => $this->inline,
+        ];
     }
 
     protected function prepare()
@@ -52,18 +65,5 @@ class Radio extends Presenter
         $script = "$('.{$this->filter->getId()}').iCheck({radioClass:'iradio_minimal-blue'});";
 
         Admin::script($script);
-    }
-
-    /**
-     * @return array
-     */
-    public function variables() : array
-    {
-        $this->prepare();
-
-        return [
-            'options' => $this->options,
-            'inline'  => $this->inline,
-        ];
     }
 }

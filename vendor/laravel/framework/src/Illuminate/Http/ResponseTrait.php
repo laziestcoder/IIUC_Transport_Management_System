@@ -3,8 +3,8 @@
 namespace Illuminate\Http;
 
 use Exception;
-use Symfony\Component\HttpFoundation\HeaderBag;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Symfony\Component\HttpFoundation\HeaderBag;
 
 trait ResponseTrait
 {
@@ -57,9 +57,9 @@ trait ResponseTrait
     /**
      * Set a header on the Response.
      *
-     * @param  string  $key
-     * @param  array|string  $values
-     * @param  bool    $replace
+     * @param  string $key
+     * @param  array|string $values
+     * @param  bool $replace
      * @return $this
      */
     public function header($key, $values, $replace = true)
@@ -72,7 +72,7 @@ trait ResponseTrait
     /**
      * Add an array of headers to the response.
      *
-     * @param  \Symfony\Component\HttpFoundation\HeaderBag|array  $headers
+     * @param  \Symfony\Component\HttpFoundation\HeaderBag|array $headers
      * @return $this
      */
     public function withHeaders($headers)
@@ -91,7 +91,7 @@ trait ResponseTrait
     /**
      * Add a cookie to the response.
      *
-     * @param  \Symfony\Component\HttpFoundation\Cookie|mixed  $cookie
+     * @param  \Symfony\Component\HttpFoundation\Cookie|mixed $cookie
      * @return $this
      */
     public function cookie($cookie)
@@ -102,7 +102,7 @@ trait ResponseTrait
     /**
      * Add a cookie to the response.
      *
-     * @param  \Symfony\Component\HttpFoundation\Cookie|mixed  $cookie
+     * @param  \Symfony\Component\HttpFoundation\Cookie|mixed $cookie
      * @return $this
      */
     public function withCookie($cookie)
@@ -119,7 +119,7 @@ trait ResponseTrait
     /**
      * Set the exception to attach to the response.
      *
-     * @param  \Exception  $e
+     * @param  \Exception $e
      * @return $this
      */
     public function withException(Exception $e)

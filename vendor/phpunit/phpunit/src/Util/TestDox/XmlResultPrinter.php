@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Util\TestDox;
 
 use DOMDocument;
@@ -50,7 +51,7 @@ class XmlResultPrinter extends Printer implements TestListener
      */
     public function __construct($out = null)
     {
-        $this->document               = new DOMDocument('1.0', 'UTF-8');
+        $this->document = new DOMDocument('1.0', 'UTF-8');
         $this->document->formatOutput = true;
 
         $this->root = $this->document->createElement('tests');
@@ -187,7 +188,7 @@ class XmlResultPrinter extends Printer implements TestListener
             }
 
             $class = new ReflectionClass($test);
-            $file  = $class->getFileName();
+            $file = $class->getFileName();
 
             foreach ($steps as $step) {
                 if (isset($step['file']) && $step['file'] === $file) {

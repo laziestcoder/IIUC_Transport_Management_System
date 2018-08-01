@@ -32,7 +32,7 @@ class TestListener extends BaseTestListener
      * endTest is called after each test and checks if \Mockery::close() has
      * been called, and will let the test fail if it hasn't.
      *
-     * @param Test  $test
+     * @param Test $test
      * @param float $time
      */
     public function endTest(Test $test, $time)

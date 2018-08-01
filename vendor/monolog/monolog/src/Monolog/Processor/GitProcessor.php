@@ -21,8 +21,8 @@ use Monolog\Logger;
  */
 class GitProcessor
 {
-    private $level;
     private static $cache;
+    private $level;
 
     public function __construct($level = Logger::DEBUG)
     {

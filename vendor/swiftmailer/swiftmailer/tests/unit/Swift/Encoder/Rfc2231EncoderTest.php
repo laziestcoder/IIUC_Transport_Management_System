@@ -22,18 +22,18 @@ class Swift_Encoder_Rfc2231EncoderTest extends \SwiftMailerTestCase
             $char = pack('C', $octet);
             $string .= $char;
             $charStream->shouldReceive('read')
-                       ->once()
-                       ->andReturn($char);
+                ->once()
+                ->andReturn($char);
         }
 
         $charStream->shouldReceive('flushContents')
-                    ->once();
+            ->once();
         $charStream->shouldReceive('importString')
-                    ->once()
-                    ->with($string);
+            ->once()
+            ->with($string);
         $charStream->shouldReceive('read')
-                    ->atLeast()->times(1)
-                    ->andReturn(false);
+            ->atLeast()->times(1)
+            ->andReturn(false);
 
         $encoder = new Swift_Encoder_Rfc2231Encoder($charStream);
         $encoded = $encoder->encodeString($string);
@@ -53,17 +53,17 @@ class Swift_Encoder_Rfc2231EncoderTest extends \SwiftMailerTestCase
             $char = pack('C', $octet);
             $string .= $char;
             $charStream->shouldReceive('read')
-                       ->once()
-                       ->andReturn($char);
+                ->once()
+                ->andReturn($char);
         }
         $charStream->shouldReceive('flushContents')
-                    ->once();
+            ->once();
         $charStream->shouldReceive('importString')
-                    ->once()
-                    ->with($string);
+            ->once()
+            ->with($string);
         $charStream->shouldReceive('read')
-                    ->atLeast()->times(1)
-                    ->andReturn(false);
+            ->atLeast()->times(1)
+            ->andReturn(false);
         $encoder = new Swift_Encoder_Rfc2231Encoder($charStream);
 
         $encoded = $encoder->encodeString($string);
@@ -83,28 +83,28 @@ class Swift_Encoder_Rfc2231EncoderTest extends \SwiftMailerTestCase
             $char = 'a';
             $string .= $char;
             $charStream->shouldReceive('read')
-                       ->once()
-                       ->andReturn($char);
+                ->once()
+                ->andReturn($char);
         }
         $charStream->shouldReceive('flushContents')
-                    ->once();
+            ->once();
         $charStream->shouldReceive('importString')
-                    ->once()
-                    ->with($string);
+            ->once()
+            ->with($string);
         $charStream->shouldReceive('read')
-                    ->atLeast()->times(1)
-                    ->andReturn(false);
+            ->atLeast()->times(1)
+            ->andReturn(false);
         $encoder = new Swift_Encoder_Rfc2231Encoder($charStream);
 
         $encoded = $encoder->encodeString($string, 0, 75);
 
         $this->assertEquals(
-            str_repeat('a', 75)."\r\n".
-            str_repeat('a', 75)."\r\n".
+            str_repeat('a', 75) . "\r\n" .
+            str_repeat('a', 75) . "\r\n" .
             str_repeat('a', 50),
             $encoded,
             '%s: Lines should be wrapped at each 75 characters'
-            );
+        );
     }
 
     public function testFirstLineCanHaveShorterLength()
@@ -116,26 +116,26 @@ class Swift_Encoder_Rfc2231EncoderTest extends \SwiftMailerTestCase
             $char = 'a';
             $string .= $char;
             $charStream->shouldReceive('read')
-                       ->once()
-                       ->andReturn($char);
+                ->once()
+                ->andReturn($char);
         }
         $charStream->shouldReceive('flushContents')
-                    ->once();
+            ->once();
         $charStream->shouldReceive('importString')
-                    ->once()
-                    ->with($string);
+            ->once()
+            ->with($string);
         $charStream->shouldReceive('read')
-                    ->atLeast()->times(1)
-                    ->andReturn(false);
+            ->atLeast()->times(1)
+            ->andReturn(false);
         $encoder = new Swift_Encoder_Rfc2231Encoder($charStream);
         $encoded = $encoder->encodeString($string, 25, 75);
 
         $this->assertEquals(
-            str_repeat('a', 50)."\r\n".
-            str_repeat('a', 75)."\r\n".
+            str_repeat('a', 50) . "\r\n" .
+            str_repeat('a', 75) . "\r\n" .
             str_repeat('a', 75),
             $encoded,
             '%s: First line should be 25 bytes shorter than the others.'
-            );
+        );
     }
 }

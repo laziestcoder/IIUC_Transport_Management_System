@@ -210,6 +210,58 @@ class TestSuite implements Test, SelfDescribing, IteratorAggregate
     }
 
     /**
+     * Adds a test to the suite.
+     *
+     * @param Test $test
+     * @param array $groups
+     */
+    public function addTest(Test $test, $groups = []): void
+    {
+        $class = new ReflectionClass($test);
+
+        if (!$class->isAbstract()) {
+            $this->tests[] = $test;
+            $this->numTests = -1;
+
+            if ($test instanceof self && empty($groups)) {
+                $groups = $test->getGroups();
+            }
+
+            if (empty($groups)) {
+                $groups = ['default'];
+            }
+
+            foreach ($groups as $group) {
+                if (!isset($this->groups[$group])) {
+                    $this->groups[$group] = [$test];
+                } else {
+                    $this->groups[$group][] = $test;
+                }
+            }
+
+            if ($test instanceof TestCase) {
+                $test->setGroups($groups);
+            }
+        }
+    }
+
+    /**
+     * Returns the test groups of the suite.
+     */
+    public function getGroups(): array
+    {
+        return \array_keys($this->groups);
+    }
+
+    /**
+     * @param string $message
+     */
+    protected static function warning($message): WarningTestCase
+    {
+        return new WarningTestCase($message);
+    }
+
+    /**
      * @param ReflectionClass $class
      * @param ReflectionMethod $method
      *
@@ -468,14 +520,6 @@ class TestSuite implements Test, SelfDescribing, IteratorAggregate
     }
 
     /**
-     * @param string $message
-     */
-    protected static function warning($message): WarningTestCase
-    {
-        return new WarningTestCase($message);
-    }
-
-    /**
      * @param string $class
      * @param string $methodName
      * @param string $message
@@ -506,50 +550,6 @@ class TestSuite implements Test, SelfDescribing, IteratorAggregate
     public function setName(string $name): void
     {
         $this->name = $name;
-    }
-
-    /**
-     * Adds a test to the suite.
-     *
-     * @param Test $test
-     * @param array $groups
-     */
-    public function addTest(Test $test, $groups = []): void
-    {
-        $class = new ReflectionClass($test);
-
-        if (!$class->isAbstract()) {
-            $this->tests[] = $test;
-            $this->numTests = -1;
-
-            if ($test instanceof self && empty($groups)) {
-                $groups = $test->getGroups();
-            }
-
-            if (empty($groups)) {
-                $groups = ['default'];
-            }
-
-            foreach ($groups as $group) {
-                if (!isset($this->groups[$group])) {
-                    $this->groups[$group] = [$test];
-                } else {
-                    $this->groups[$group][] = $test;
-                }
-            }
-
-            if ($test instanceof TestCase) {
-                $test->setGroups($groups);
-            }
-        }
-    }
-
-    /**
-     * Returns the test groups of the suite.
-     */
-    public function getGroups(): array
-    {
-        return \array_keys($this->groups);
     }
 
     /**

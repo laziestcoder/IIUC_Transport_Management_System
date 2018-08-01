@@ -4,8 +4,8 @@ import klass from './class'
 import style from './style'
 
 export default [
-  attrs,
-  domProps,
-  klass,
-  style
+    attrs,
+    domProps,
+    klass,
+    style
 ]

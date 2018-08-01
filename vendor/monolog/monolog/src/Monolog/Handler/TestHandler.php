@@ -95,20 +95,6 @@ class TestHandler extends AbstractProcessingHandler
         }, $level);
     }
 
-    public function hasRecordThatContains($message, $level)
-    {
-        return $this->hasRecordThatPasses(function ($rec) use ($message) {
-            return strpos($rec['message'], $message) !== false;
-        }, $level);
-    }
-
-    public function hasRecordThatMatches($regex, $level)
-    {
-        return $this->hasRecordThatPasses(function ($rec) use ($regex) {
-            return preg_match($regex, $rec['message']) > 0;
-        }, $level);
-    }
-
     public function hasRecordThatPasses($predicate, $level)
     {
         if (!is_callable($predicate)) {
@@ -128,13 +114,18 @@ class TestHandler extends AbstractProcessingHandler
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function write(array $record)
+    public function hasRecordThatContains($message, $level)
     {
-        $this->recordsByLevel[$record['level']][] = $record;
-        $this->records[] = $record;
+        return $this->hasRecordThatPasses(function ($rec) use ($message) {
+            return strpos($rec['message'], $message) !== false;
+        }, $level);
+    }
+
+    public function hasRecordThatMatches($regex, $level)
+    {
+        return $this->hasRecordThatPasses(function ($rec) use ($regex) {
+            return preg_match($regex, $rec['message']) > 0;
+        }, $level);
     }
 
     public function __call($method, $args)
@@ -150,5 +141,14 @@ class TestHandler extends AbstractProcessingHandler
         }
 
         throw new \BadMethodCallException('Call to undefined method ' . get_class($this) . '::' . $method . '()');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function write(array $record)
+    {
+        $this->recordsByLevel[$record['level']][] = $record;
+        $this->records[] = $record;
     }
 }

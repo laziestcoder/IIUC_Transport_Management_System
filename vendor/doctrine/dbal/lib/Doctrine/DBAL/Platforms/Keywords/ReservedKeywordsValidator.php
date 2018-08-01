@@ -19,13 +19,13 @@
 
 namespace Doctrine\DBAL\Platforms\Keywords;
 
-use Doctrine\DBAL\Schema\Visitor\Visitor;
-use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
+use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Sequence;
-use Doctrine\DBAL\Schema\Index;
+use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\Visitor\Visitor;
 use function implode;
 use function str_replace;
 
@@ -58,6 +58,32 @@ class ReservedKeywordsValidator implements Visitor
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function acceptColumn(Table $table, Column $column)
+    {
+        $this->addViolation(
+            'Table ' . $table->getName() . ' column ' . $column->getName(),
+            $this->isReservedWord($column->getName())
+        );
+    }
+
+    /**
+     * @param string $asset
+     * @param array $violatedPlatforms
+     *
+     * @return void
+     */
+    private function addViolation($asset, $violatedPlatforms)
+    {
+        if (!$violatedPlatforms) {
+            return;
+        }
+
+        $this->violations[] = $asset . ' keyword violations: ' . implode(', ', $violatedPlatforms);
+    }
+
+    /**
      * @param string $word
      *
      * @return array
@@ -76,32 +102,6 @@ class ReservedKeywordsValidator implements Visitor
         }
 
         return $keywordLists;
-    }
-
-    /**
-     * @param string $asset
-     * @param array  $violatedPlatforms
-     *
-     * @return void
-     */
-    private function addViolation($asset, $violatedPlatforms)
-    {
-        if ( ! $violatedPlatforms) {
-            return;
-        }
-
-        $this->violations[] = $asset . ' keyword violations: ' . implode(', ', $violatedPlatforms);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function acceptColumn(Table $table, Column $column)
-    {
-        $this->addViolation(
-            'Table ' . $table->getName() . ' column ' . $column->getName(),
-            $this->isReservedWord($column->getName())
-        );
     }
 
     /**

@@ -98,19 +98,6 @@ EOT;
 
     protected static $encoding = 'UTF-8';
 
-    protected static function explode($text)
-    {
-        $chars = array();
-
-        foreach (preg_split('//u', str_replace(PHP_EOL, '', $text)) as $char) {
-            if (! empty($char)) {
-                $chars[] = $char;
-            }
-        }
-
-        return $chars;
-    }
-
     protected static function strlen($text)
     {
         return function_exists('mb_strlen')
@@ -118,9 +105,22 @@ EOT;
             : count(static::explode($text));
     }
 
+    protected static function explode($text)
+    {
+        $chars = array();
+
+        foreach (preg_split('//u', str_replace(PHP_EOL, '', $text)) as $char) {
+            if (!empty($char)) {
+                $chars[] = $char;
+            }
+        }
+
+        return $chars;
+    }
+
     protected static function validStart($word)
     {
-        return ! in_array($word, static::$notBeginPunct);
+        return !in_array($word, static::$notBeginPunct);
     }
 
     protected static function appendEnd($text)
@@ -173,19 +173,19 @@ EOT;
             switch (true) {
                 case $ord > 251:
                     $temp .= $chars[++$i];
-                    // no break
+                // no break
                 case $ord > 247:
                     $temp .= $chars[++$i];
-                    // no break
+                // no break
                 case $ord > 239:
                     $temp .= $chars[++$i];
-                    // no break
+                // no break
                 case $ord > 223:
                     $temp .= $chars[++$i];
-                    // no break
+                // no break
                 case $ord > 191:
                     $temp .= $chars[++$i];
-                    // no break
+                // no break
             }
 
             $encoding[] = $temp;

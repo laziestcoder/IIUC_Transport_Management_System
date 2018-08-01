@@ -28,19 +28,6 @@ abstract class ConstraintTestCase extends TestCase
         ));
     }
 
-    final public function testIsSelfDescribing(): void
-    {
-        $className = $this->className();
-
-        $reflection = new \ReflectionClass($className);
-
-        $this->assertTrue($reflection->implementsInterface(SelfDescribing::class), \sprintf(
-            'Failed to assert that "%s" implements "%s".',
-            $className,
-            \Countable::class
-        ));
-    }
-
     /**
      * Returns the class name of the constraint.
      *
@@ -53,5 +40,18 @@ abstract class ConstraintTestCase extends TestCase
             '',
             static::class
         );
+    }
+
+    final public function testIsSelfDescribing(): void
+    {
+        $className = $this->className();
+
+        $reflection = new \ReflectionClass($className);
+
+        $this->assertTrue($reflection->implementsInterface(SelfDescribing::class), \sprintf(
+            'Failed to assert that "%s" implements "%s".',
+            $className,
+            \Countable::class
+        ));
     }
 }

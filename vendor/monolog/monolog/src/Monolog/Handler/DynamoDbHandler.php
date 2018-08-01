@@ -11,9 +11,9 @@
 
 namespace Monolog\Handler;
 
-use Aws\Sdk;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
+use Aws\Sdk;
 use Monolog\Formatter\ScalarFormatter;
 use Monolog\Logger;
 
@@ -49,9 +49,9 @@ class DynamoDbHandler extends AbstractProcessingHandler
 
     /**
      * @param DynamoDbClient $client
-     * @param string         $table
-     * @param int            $level
-     * @param bool           $bubble
+     * @param string $table
+     * @param int $level
+     * @param bool $bubble
      */
     public function __construct(DynamoDbClient $client, $table, $level = Logger::DEBUG, $bubble = true)
     {

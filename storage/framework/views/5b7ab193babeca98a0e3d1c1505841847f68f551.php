@@ -1,21 +1,16 @@
 <form <?php echo $attributes; ?>>
     <div class="box-body fields-group">
 
-        <?php $__currentLoopData = $fields;
-        $__env->addLoop($__currentLoopData);
-        foreach ($__currentLoopData as $field): $__env->incrementLoopIndices();
-            $loop = $__env->getLastLoop(); ?>
+        <?php $__currentLoopData = $fields; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <?php echo $field->render(); ?>
 
-        <?php endforeach;
-        $__env->popLoop();
-        $loop = $__env->getLastLoop(); ?>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
     </div>
 
     <!-- /.box-body -->
     <div class="box-footer">
-        <?php if ($method != 'GET'): ?>
+        <?php if($method != 'GET'): ?>
             <input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>">
         <?php endif; ?>
         <div class="col-md-2"></div>

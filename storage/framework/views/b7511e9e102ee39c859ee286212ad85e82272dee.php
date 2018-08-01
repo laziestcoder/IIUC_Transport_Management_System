@@ -154,19 +154,24 @@
             </div>
 
             <div class="row">
-                <?php if(count($notices) > 0): ?>
+                <?php if (count($notices) > 0): ?>
                     <?php $count = 0; ?>
-                    <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php $__currentLoopData = $notices;
+                    $__env->addLoop($__currentLoopData);
+                    foreach ($__currentLoopData as $notice): $__env->incrementLoopIndices();
+                        $loop = $__env->getLastLoop(); ?>
                         <?php $count = $count + 1; ?>
-                        <?php if($count<=12): ?>
+                        <?php if ($count <= 12): ?>
                             <div class="col-md-3 col-md-3 portfolio-item">
-                                <a class="portfolio-link" data-toggle="modal" href="#portfolioModal<?php echo e($count); ?>">
+                                <a class="portfolio-link" data-toggle="modal"
+                                   href="#portfolioModal<?php echo e($count); ?>">
                                     <div class="portfolio-hover">
                                         <div class="portfolio-hover-content">
                                             <i class="fa fa-plus fa-3x"></i>
                                         </div>
                                     </div>
-                                    <img class="img-fluid" src="/storage/cover_images/<?php echo e($notice->cover_image); ?>"
+                                    <img class="img-fluid"
+                                         src="/storage/cover_images/<?php echo e($notice->cover_image); ?>"
                                          alt="<?php echo e($notice->title); ?>"> </a>
                                 <div class="portfolio-caption">
                                     <h4><?php echo e($notice->title); ?></h4>
@@ -187,7 +192,9 @@
                         <?php else: ?>
                             <?php break; ?>
                         <?php endif; ?>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php endforeach;
+                    $__env->popLoop();
+                    $loop = $__env->getLastLoop(); ?>
                 <?php else: ?>
                     <h4>No notices found</h4>
                 <?php endif; ?>
@@ -237,7 +244,6 @@
 
 
     <!-- Team -->
-
 
 
     <section class="bg-light">
@@ -452,68 +458,73 @@
     </section>
 
 
-
     <!-- Portfolio Modals -->
 
     <!-- Modal 1 -->
-    <?php if(count($notices) > 0): ?>
-        <?php $count = 0; ?>
-        <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <?php $count = $count + 1; ?>
-            <?php if($count<=12): ?>
-                <div class="portfolio-modal modal fade" id="portfolioModal<?php echo e($count); ?>" tabindex="-1" role="dialog"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="close-modal" data-dismiss="modal">
-                                <div class="lr">
-                                    <div class="rl"></div>
-                                </div>
+<?php if (count($notices) > 0): ?>
+    <?php $count = 0; ?>
+    <?php $__currentLoopData = $notices;
+    $__env->addLoop($__currentLoopData);
+    foreach ($__currentLoopData as $notice): $__env->incrementLoopIndices();
+        $loop = $__env->getLastLoop(); ?>
+        <?php $count = $count + 1; ?>
+        <?php if ($count <= 12): ?>
+            <div class="portfolio-modal modal fade" id="portfolioModal<?php echo e($count); ?>" tabindex="-1"
+                 role="dialog"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="close-modal" data-dismiss="modal">
+                            <div class="lr">
+                                <div class="rl"></div>
                             </div>
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-lg-8 mx-auto">
-                                        <div class="modal-body">
+                        </div>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8 mx-auto">
+                                    <div class="modal-body">
 
-                                            <!-- Project Details Go Here -->
+                                        <!-- Project Details Go Here -->
 
-                                            <h2 class="text-uppercase"><?php echo $notice->title; ?></h2>
-                                            <p class="item-intro text-muted">Posted
-                                                By: <?php echo DB::table('admin_users')->where('id', $notice->user_id)->first()->name; ?></p>
-                                            <img class="img-fluid d-block mx-auto"
-                                                 src="/storage/cover_images/<?php echo $notice->cover_image; ?>"
-                                                 alt="<?php echo $notice->title; ?>">
-                                            <div style="text-align:left;">
-                                                <?php echo $notice->body; ?>
+                                        <h2 class="text-uppercase"><?php echo $notice->title; ?></h2>
+                                        <p class="item-intro text-muted">Posted
+                                            By: <?php echo DB::table('admin_users')->where('id', $notice->user_id)->first()->name; ?></p>
+                                        <img class="img-fluid d-block mx-auto"
+                                             src="/storage/cover_images/<?php echo $notice->cover_image; ?>"
+                                             alt="<?php echo $notice->title; ?>">
+                                        <div style="text-align:left;">
+                                            <?php echo $notice->body; ?>
 
-                                            </div>
-                                            <br><br>
-                                            <ul class="list-inline" style="text-align:left;">
-                                                <li>
-                                                    <small>
-                                                        Date: <?php echo $notice->created_at; ?>
-
-                                                    </small>
-                                                </li>
-                                                
-                                                
-                                            </ul>
-                                            <button class="btn btn-primary" data-dismiss="modal" type="button">
-                                                <i class="fa fa-times"></i>
-                                                Close
-                                            </button>
                                         </div>
+                                        <br><br>
+                                        <ul class="list-inline" style="text-align:left;">
+                                            <li>
+                                                <small>
+                                                    Date: <?php echo $notice->created_at; ?>
+
+                                                </small>
+                                            </li>
+
+
+                                        </ul>
+                                        <button class="btn btn-primary" data-dismiss="modal" type="button">
+                                            <i class="fa fa-times"></i>
+                                            Close
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            <?php else: ?>
-                <?php break; ?>
-            <?php endif; ?>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-    <?php endif; ?>
+            </div>
+        <?php else: ?>
+            <?php break; ?>
+        <?php endif; ?>
+    <?php endforeach;
+    $__env->popLoop();
+    $loop = $__env->getLastLoop(); ?>
+<?php endif; ?>
 <?php $__env->stopSection(); ?>
 
 

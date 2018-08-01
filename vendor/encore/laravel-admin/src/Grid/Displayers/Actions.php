@@ -85,28 +85,6 @@ class Actions extends AbstractDisplayer
     }
 
     /**
-     * Set resource of current resource.
-     *
-     * @param $resource
-     *
-     * @return void
-     */
-    public function setResource($resource)
-    {
-        $this->resource = $resource;
-    }
-
-    /**
-     * Get resource of current resource.
-     *
-     * @return string
-     */
-    public function getResource()
-    {
-        return $this->resource ?: parent::getResource();
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function display($callback = null)
@@ -129,22 +107,6 @@ class Actions extends AbstractDisplayer
         return implode('', $actions);
     }
 
-    public function setKey($key)
-    {
-        $this->key = $key;
-
-        return $this;
-    }
-
-    public function getKey()
-    {
-        if ($this->key) {
-            return $this->key;
-        }
-
-        return parent::getKey();
-    }
-
     /**
      * Built edit action.
      *
@@ -157,6 +119,44 @@ class Actions extends AbstractDisplayer
     <i class="fa fa-edit"></i>
 </a>
 EOT;
+    }
+
+    /**
+     * Get resource of current resource.
+     *
+     * @return string
+     */
+    public function getResource()
+    {
+        return $this->resource ?: parent::getResource();
+    }
+
+    /**
+     * Set resource of current resource.
+     *
+     * @param $resource
+     *
+     * @return void
+     */
+    public function setResource($resource)
+    {
+        $this->resource = $resource;
+    }
+
+    public function getKey()
+    {
+        if ($this->key) {
+            return $this->key;
+        }
+
+        return parent::getKey();
+    }
+
+    public function setKey($key)
+    {
+        $this->key = $key;
+
+        return $this;
     }
 
     /**

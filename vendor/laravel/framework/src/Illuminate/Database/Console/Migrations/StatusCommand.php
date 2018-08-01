@@ -2,8 +2,8 @@
 
 namespace Illuminate\Database\Console\Migrations;
 
-use Illuminate\Support\Collection;
 use Illuminate\Database\Migrations\Migrator;
+use Illuminate\Support\Collection;
 use Symfony\Component\Console\Input\InputOption;
 
 class StatusCommand extends BaseCommand
@@ -51,7 +51,7 @@ class StatusCommand extends BaseCommand
     {
         $this->migrator->setConnection($this->option('database'));
 
-        if (! $this->migrator->repositoryExists()) {
+        if (!$this->migrator->repositoryExists()) {
             return $this->error('No migrations found.');
         }
 
@@ -69,20 +69,20 @@ class StatusCommand extends BaseCommand
     /**
      * Get the status for the given ran migrations.
      *
-     * @param  array  $ran
-     * @param  array  $batches
+     * @param  array $ran
+     * @param  array $batches
      * @return \Illuminate\Support\Collection
      */
     protected function getStatusFor(array $ran, array $batches)
     {
         return Collection::make($this->getAllMigrationFiles())
-                    ->map(function ($migration) use ($ran, $batches) {
-                        $migrationName = $this->migrator->getMigrationName($migration);
+            ->map(function ($migration) use ($ran, $batches) {
+                $migrationName = $this->migrator->getMigrationName($migration);
 
-                        return in_array($migrationName, $ran)
-                                ? ['<info>Y</info>', $migrationName, $batches[$migrationName]]
-                                : ['<fg=red>N</fg=red>', $migrationName];
-                    });
+                return in_array($migrationName, $ran)
+                    ? ['<info>Y</info>', $migrationName, $batches[$migrationName]]
+                    : ['<fg=red>N</fg=red>', $migrationName];
+            });
     }
 
     /**

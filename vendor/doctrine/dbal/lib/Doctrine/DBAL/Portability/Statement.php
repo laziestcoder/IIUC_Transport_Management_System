@@ -23,7 +23,6 @@ use Doctrine\DBAL\Driver\StatementIterator;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
 use function array_change_key_case;
-use function is_null;
 use function is_string;
 use function rtrim;
 
@@ -59,7 +58,7 @@ class Statement implements \IteratorAggregate, \Doctrine\DBAL\Driver\Statement
     /**
      * Wraps <tt>Statement</tt> and applies portability measures.
      *
-     * @param \Doctrine\DBAL\Driver\Statement       $stmt
+     * @param \Doctrine\DBAL\Driver\Statement $stmt
      * @param \Doctrine\DBAL\Portability\Connection $conn
      */
     public function __construct($stmt, Connection $conn)
@@ -152,8 +151,8 @@ class Statement implements \IteratorAggregate, \Doctrine\DBAL\Driver\Statement
 
         $row = $this->stmt->fetch($fetchMode);
 
-        $iterateRow = $this->portability & (Connection::PORTABILITY_EMPTY_TO_NULL|Connection::PORTABILITY_RTRIM);
-        $fixCase    = $this->case !== null
+        $iterateRow = $this->portability & (Connection::PORTABILITY_EMPTY_TO_NULL | Connection::PORTABILITY_RTRIM);
+        $fixCase = $this->case !== null
             && ($fetchMode === FetchMode::ASSOCIATIVE || $fetchMode === FetchMode::MIXED)
             && ($this->portability & Connection::PORTABILITY_FIX_CASE);
 
@@ -163,56 +162,15 @@ class Statement implements \IteratorAggregate, \Doctrine\DBAL\Driver\Statement
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
-    {
-        $fetchMode = $fetchMode ?: $this->defaultFetchMode;
-
-        if ($fetchArgument) {
-            $rows = $this->stmt->fetchAll($fetchMode, $fetchArgument);
-        } else {
-            $rows = $this->stmt->fetchAll($fetchMode);
-        }
-
-        $iterateRow = $this->portability & (Connection::PORTABILITY_EMPTY_TO_NULL|Connection::PORTABILITY_RTRIM);
-        $fixCase    = $this->case !== null
-            && ($fetchMode === FetchMode::ASSOCIATIVE || $fetchMode === FetchMode::MIXED)
-            && ($this->portability & Connection::PORTABILITY_FIX_CASE);
-
-        if ( ! $iterateRow && !$fixCase) {
-            return $rows;
-        }
-
-        if ($fetchMode === FetchMode::COLUMN) {
-            foreach ($rows as $num => $row) {
-                $rows[$num] = [$row];
-            }
-        }
-
-        foreach ($rows as $num => $row) {
-            $rows[$num] = $this->fixRow($row, $iterateRow, $fixCase);
-        }
-
-        if ($fetchMode === FetchMode::COLUMN) {
-            foreach ($rows as $num => $row) {
-                $rows[$num] = $row[0];
-            }
-        }
-
-        return $rows;
-    }
-
-    /**
      * @param mixed $row
-     * @param int   $iterateRow
-     * @param bool  $fixCase
+     * @param int $iterateRow
+     * @param bool $fixCase
      *
      * @return array
      */
     protected function fixRow($row, $iterateRow, $fixCase)
     {
-        if ( ! $row) {
+        if (!$row) {
             return $row;
         }
 
@@ -236,11 +194,52 @@ class Statement implements \IteratorAggregate, \Doctrine\DBAL\Driver\Statement
     /**
      * {@inheritdoc}
      */
+    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
+    {
+        $fetchMode = $fetchMode ?: $this->defaultFetchMode;
+
+        if ($fetchArgument) {
+            $rows = $this->stmt->fetchAll($fetchMode, $fetchArgument);
+        } else {
+            $rows = $this->stmt->fetchAll($fetchMode);
+        }
+
+        $iterateRow = $this->portability & (Connection::PORTABILITY_EMPTY_TO_NULL | Connection::PORTABILITY_RTRIM);
+        $fixCase = $this->case !== null
+            && ($fetchMode === FetchMode::ASSOCIATIVE || $fetchMode === FetchMode::MIXED)
+            && ($this->portability & Connection::PORTABILITY_FIX_CASE);
+
+        if (!$iterateRow && !$fixCase) {
+            return $rows;
+        }
+
+        if ($fetchMode === FetchMode::COLUMN) {
+            foreach ($rows as $num => $row) {
+                $rows[$num] = [$row];
+            }
+        }
+
+        foreach ($rows as $num => $row) {
+            $rows[$num] = $this->fixRow($row, $iterateRow, $fixCase);
+        }
+
+        if ($fetchMode === FetchMode::COLUMN) {
+            foreach ($rows as $num => $row) {
+                $rows[$num] = $row[0];
+            }
+        }
+
+        return $rows;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function fetchColumn($columnIndex = 0)
     {
         $value = $this->stmt->fetchColumn($columnIndex);
 
-        if ($this->portability & (Connection::PORTABILITY_EMPTY_TO_NULL|Connection::PORTABILITY_RTRIM)) {
+        if ($this->portability & (Connection::PORTABILITY_EMPTY_TO_NULL | Connection::PORTABILITY_RTRIM)) {
             if (($this->portability & Connection::PORTABILITY_EMPTY_TO_NULL) && $value === '') {
                 $value = null;
             } elseif (($this->portability & Connection::PORTABILITY_RTRIM) && is_string($value)) {

@@ -65,14 +65,6 @@ final class Facade
         $this->saveDocument($this->project->asDom(), 'index');
     }
 
-    private function setBuildInformation(): void
-    {
-        $buildNode = $this->project->getBuildInformation();
-        $buildNode->setRuntimeInformation(new Runtime());
-        $buildNode->setBuildTime(\DateTime::createFromFormat('U', $_SERVER['REQUEST_TIME']));
-        $buildNode->setGeneratorVersions($this->phpUnitVersion, Version::id());
-    }
-
     /**
      * @throws RuntimeException
      */
@@ -97,6 +89,27 @@ final class Facade
         }
     }
 
+    private function setBuildInformation(): void
+    {
+        $buildNode = $this->project->getBuildInformation();
+        $buildNode->setRuntimeInformation(new Runtime());
+        $buildNode->setBuildTime(\DateTime::createFromFormat('U', $_SERVER['REQUEST_TIME']));
+        $buildNode->setGeneratorVersions($this->phpUnitVersion, Version::id());
+    }
+
+    private function processTests(array $tests): void
+    {
+        $testsObject = $this->project->getTests();
+
+        foreach ($tests as $test => $result) {
+            if ($test === 'UNCOVERED_FILES_FROM_WHITELIST') {
+                continue;
+            }
+
+            $testsObject->addTest($test, $result);
+        }
+    }
+
     private function processDirectory(DirectoryNode $directory, Node $context): void
     {
         $directoryName = $directory->getName();
@@ -116,6 +129,39 @@ final class Facade
         foreach ($directory->getFiles() as $node) {
             $this->processFile($node, $directoryObject);
         }
+    }
+
+    private function setTotals(AbstractNode $node, Totals $totals): void
+    {
+        $loc = $node->getLinesOfCode();
+
+        $totals->setNumLines(
+            $loc['loc'],
+            $loc['cloc'],
+            $loc['ncloc'],
+            $node->getNumExecutableLines(),
+            $node->getNumExecutedLines()
+        );
+
+        $totals->setNumClasses(
+            $node->getNumClasses(),
+            $node->getNumTestedClasses()
+        );
+
+        $totals->setNumTraits(
+            $node->getNumTraits(),
+            $node->getNumTestedTraits()
+        );
+
+        $totals->setNumMethods(
+            $node->getNumMethods(),
+            $node->getNumTestedMethods()
+        );
+
+        $totals->setNumFunctions(
+            $node->getNumFunctions(),
+            $node->getNumTestedFunctions()
+        );
     }
 
     /**
@@ -216,57 +262,6 @@ final class Facade
         $functionObject->setTotals($function['executableLines'], $function['executedLines'], $function['coverage']);
     }
 
-    private function processTests(array $tests): void
-    {
-        $testsObject = $this->project->getTests();
-
-        foreach ($tests as $test => $result) {
-            if ($test === 'UNCOVERED_FILES_FROM_WHITELIST') {
-                continue;
-            }
-
-            $testsObject->addTest($test, $result);
-        }
-    }
-
-    private function setTotals(AbstractNode $node, Totals $totals): void
-    {
-        $loc = $node->getLinesOfCode();
-
-        $totals->setNumLines(
-            $loc['loc'],
-            $loc['cloc'],
-            $loc['ncloc'],
-            $node->getNumExecutableLines(),
-            $node->getNumExecutedLines()
-        );
-
-        $totals->setNumClasses(
-            $node->getNumClasses(),
-            $node->getNumTestedClasses()
-        );
-
-        $totals->setNumTraits(
-            $node->getNumTraits(),
-            $node->getNumTestedTraits()
-        );
-
-        $totals->setNumMethods(
-            $node->getNumMethods(),
-            $node->getNumTestedMethods()
-        );
-
-        $totals->setNumFunctions(
-            $node->getNumFunctions(),
-            $node->getNumTestedFunctions()
-        );
-    }
-
-    private function getTargetDirectory(): string
-    {
-        return $this->target;
-    }
-
     /**
      * @throws RuntimeException
      */
@@ -274,10 +269,15 @@ final class Facade
     {
         $filename = \sprintf('%s/%s.xml', $this->getTargetDirectory(), $name);
 
-        $document->formatOutput       = true;
+        $document->formatOutput = true;
         $document->preserveWhiteSpace = false;
         $this->initTargetDirectory(\dirname($filename));
 
         $document->save($filename);
+    }
+
+    private function getTargetDirectory(): string
+    {
+        return $this->target;
     }
 }

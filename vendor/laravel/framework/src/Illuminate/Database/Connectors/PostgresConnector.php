@@ -21,7 +21,7 @@ class PostgresConnector extends Connector implements ConnectorInterface
     /**
      * Establish a database connection.
      *
-     * @param  array  $config
+     * @param  array $config
      * @return \PDO
      */
     public function connect(array $config)
@@ -51,86 +51,9 @@ class PostgresConnector extends Connector implements ConnectorInterface
     }
 
     /**
-     * Set the connection character set and collation.
-     *
-     * @param  \PDO  $connection
-     * @param  array  $config
-     * @return void
-     */
-    protected function configureEncoding($connection, $config)
-    {
-        $charset = $config['charset'];
-
-        $connection->prepare("set names '$charset'")->execute();
-    }
-
-    /**
-     * Set the timezone on the connection.
-     *
-     * @param  \PDO  $connection
-     * @param  array  $config
-     * @return void
-     */
-    protected function configureTimezone($connection, array $config)
-    {
-        if (isset($config['timezone'])) {
-            $timezone = $config['timezone'];
-
-            $connection->prepare("set time zone '{$timezone}'")->execute();
-        }
-    }
-
-    /**
-     * Set the schema on the connection.
-     *
-     * @param  \PDO  $connection
-     * @param  array  $config
-     * @return void
-     */
-    protected function configureSchema($connection, $config)
-    {
-        if (isset($config['schema'])) {
-            $schema = $this->formatSchema($config['schema']);
-
-            $connection->prepare("set search_path to {$schema}")->execute();
-        }
-    }
-
-    /**
-     * Format the schema for the DSN.
-     *
-     * @param  array|string  $schema
-     * @return string
-     */
-    protected function formatSchema($schema)
-    {
-        if (is_array($schema)) {
-            return '"'.implode('", "', $schema).'"';
-        }
-
-        return '"'.$schema.'"';
-    }
-
-    /**
-     * Set the schema on the connection.
-     *
-     * @param  \PDO  $connection
-     * @param  array  $config
-     * @return void
-     */
-    protected function configureApplicationName($connection, $config)
-    {
-        if (isset($config['application_name'])) {
-            $applicationName = $config['application_name'];
-
-            $connection->prepare("set application_name to '$applicationName'")->execute();
-        }
-    }
-
-    /**
      * Create a DSN string from a configuration.
      *
-     * @param  array   $config
+     * @param  array $config
      * @return string
      */
     protected function getDsn(array $config)
@@ -157,8 +80,8 @@ class PostgresConnector extends Connector implements ConnectorInterface
     /**
      * Add the SSL options to the DSN.
      *
-     * @param  string  $dsn
-     * @param  array  $config
+     * @param  string $dsn
+     * @param  array $config
      * @return string
      */
     protected function addSslOptions($dsn, array $config)
@@ -170,5 +93,82 @@ class PostgresConnector extends Connector implements ConnectorInterface
         }
 
         return $dsn;
+    }
+
+    /**
+     * Set the connection character set and collation.
+     *
+     * @param  \PDO $connection
+     * @param  array $config
+     * @return void
+     */
+    protected function configureEncoding($connection, $config)
+    {
+        $charset = $config['charset'];
+
+        $connection->prepare("set names '$charset'")->execute();
+    }
+
+    /**
+     * Set the timezone on the connection.
+     *
+     * @param  \PDO $connection
+     * @param  array $config
+     * @return void
+     */
+    protected function configureTimezone($connection, array $config)
+    {
+        if (isset($config['timezone'])) {
+            $timezone = $config['timezone'];
+
+            $connection->prepare("set time zone '{$timezone}'")->execute();
+        }
+    }
+
+    /**
+     * Set the schema on the connection.
+     *
+     * @param  \PDO $connection
+     * @param  array $config
+     * @return void
+     */
+    protected function configureSchema($connection, $config)
+    {
+        if (isset($config['schema'])) {
+            $schema = $this->formatSchema($config['schema']);
+
+            $connection->prepare("set search_path to {$schema}")->execute();
+        }
+    }
+
+    /**
+     * Format the schema for the DSN.
+     *
+     * @param  array|string $schema
+     * @return string
+     */
+    protected function formatSchema($schema)
+    {
+        if (is_array($schema)) {
+            return '"' . implode('", "', $schema) . '"';
+        }
+
+        return '"' . $schema . '"';
+    }
+
+    /**
+     * Set the schema on the connection.
+     *
+     * @param  \PDO $connection
+     * @param  array $config
+     * @return void
+     */
+    protected function configureApplicationName($connection, $config)
+    {
+        if (isset($config['application_name'])) {
+            $applicationName = $config['application_name'];
+
+            $connection->prepare("set application_name to '$applicationName'")->execute();
+        }
     }
 }

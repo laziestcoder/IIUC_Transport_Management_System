@@ -32,30 +32,7 @@ abstract class AbstractHandlerTest extends TestCase
         $this->assertRemainingContent($reader, $remainingContent);
     }
 
-    /** @dataProvider getDontHandleValueTestData */
-    public function testDontHandleValue($value)
-    {
-        $reader = new Reader($value);
-        $stream = new TokenStream();
-
-        $this->assertFalse($this->generateHandler()->handle($reader, $stream));
-        $this->assertStreamEmpty($stream);
-        $this->assertRemainingContent($reader, $value);
-    }
-
-    abstract public function getHandleValueTestData();
-
-    abstract public function getDontHandleValueTestData();
-
     abstract protected function generateHandler();
-
-    protected function assertStreamEmpty(TokenStream $stream)
-    {
-        $property = new \ReflectionProperty($stream, 'tokens');
-        $property->setAccessible(true);
-
-        $this->assertEquals(array(), $property->getValue($stream));
-    }
 
     protected function assertRemainingContent(Reader $reader, $remainingContent)
     {
@@ -67,4 +44,27 @@ abstract class AbstractHandlerTest extends TestCase
             $this->assertEquals(0, $reader->getOffset($remainingContent));
         }
     }
+
+    /** @dataProvider getDontHandleValueTestData */
+    public function testDontHandleValue($value)
+    {
+        $reader = new Reader($value);
+        $stream = new TokenStream();
+
+        $this->assertFalse($this->generateHandler()->handle($reader, $stream));
+        $this->assertStreamEmpty($stream);
+        $this->assertRemainingContent($reader, $value);
+    }
+
+    protected function assertStreamEmpty(TokenStream $stream)
+    {
+        $property = new \ReflectionProperty($stream, 'tokens');
+        $property->setAccessible(true);
+
+        $this->assertEquals(array(), $property->getValue($stream));
+    }
+
+    abstract public function getHandleValueTestData();
+
+    abstract public function getDontHandleValueTestData();
 }

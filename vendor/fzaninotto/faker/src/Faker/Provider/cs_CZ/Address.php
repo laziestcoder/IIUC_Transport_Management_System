@@ -68,16 +68,6 @@ class Address extends \Faker\Provider\Address
         'Trinidad a Tobago', 'Tunisko', 'Turecko', 'Turkmenistán', 'Tuvalu', 'Uganda', 'Ukrajina', 'Uruguay',
         'Uzbekistán', 'Vanuatu', 'Vatikán', 'Venezuela', 'Vietnam', 'Východní Timor', 'Zambie', 'Zimbabwe',
     );
-
-    /**
-     * Source: https://cs.wikipedia.org/wiki/Kraje_v_%C4%8Cesku#Ekonomika
-     */
-    private static $regions = array(
-        'Hlavní město Praha', 'Jihomoravský kraj', 'Jihočeský kraj', 'Karlovarský kraj', 'Královéhradecký kraj',
-        'Liberecký kraj', 'Moravskoslezský kraj', 'Olomoucký kraj', 'Pardubický kraj', 'Plzeňský kraj',
-        'Středočeský kraj', 'Vysočina', 'Zlínský kraj', 'Ústecký kraj',
-    );
-
     /**
      * Source: http://aplikace.mvcr.cz/adresy/
      */
@@ -109,18 +99,14 @@ class Address extends \Faker\Provider\Address
         'Velenická', 'Violková', 'Vlašská', 'Voděradská', 'Vyderská', 'Vysokoškolská', 'Výpadová', 'Vřesovická',
         'Za Pekárnou', 'Zámecká',
     );
-
     /**
-     * Randomly returns a czech city.
-     *
-     * @example 'Krnov'
-     *
-     * @return string
+     * Source: https://cs.wikipedia.org/wiki/Kraje_v_%C4%8Cesku#Ekonomika
      */
-    public function city()
-    {
-        return static::randomElement(static::$city);
-    }
+    private static $regions = array(
+        'Hlavní město Praha', 'Jihomoravský kraj', 'Jihočeský kraj', 'Karlovarský kraj', 'Královéhradecký kraj',
+        'Liberecký kraj', 'Moravskoslezský kraj', 'Olomoucký kraj', 'Pardubický kraj', 'Plzeňský kraj',
+        'Středočeský kraj', 'Vysočina', 'Zlínský kraj', 'Ústecký kraj',
+    );
 
     /**
      * Randomly returns a czech region.
@@ -132,6 +118,18 @@ class Address extends \Faker\Provider\Address
     public static function region()
     {
         return static::randomElement(static::$regions);
+    }
+
+    /**
+     * Randomly returns a czech city.
+     *
+     * @example 'Krnov'
+     *
+     * @return string
+     */
+    public function city()
+    {
+        return static::randomElement(static::$city);
     }
 
     /**

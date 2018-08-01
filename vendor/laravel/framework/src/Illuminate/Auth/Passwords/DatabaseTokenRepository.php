@@ -2,11 +2,11 @@
 
 namespace Illuminate\Auth\Passwords;
 
-use Illuminate\Support\Str;
-use Illuminate\Support\Carbon;
-use Illuminate\Database\ConnectionInterface;
-use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Contracts\Hashing\Hasher as HasherContract;
+use Illuminate\Database\ConnectionInterface;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class DatabaseTokenRepository implements TokenRepositoryInterface
 {
@@ -48,11 +48,11 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     /**
      * Create a new token repository instance.
      *
-     * @param  \Illuminate\Database\ConnectionInterface  $connection
-     * @param  \Illuminate\Contracts\Hashing\Hasher  $hasher
-     * @param  string  $table
-     * @param  string  $hashKey
-     * @param  int  $expires
+     * @param  \Illuminate\Database\ConnectionInterface $connection
+     * @param  \Illuminate\Contracts\Hashing\Hasher $hasher
+     * @param  string $table
+     * @param  string $hashKey
+     * @param  int $expires
      * @return void
      */
     public function __construct(ConnectionInterface $connection, HasherContract $hasher,
@@ -68,7 +68,7 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     /**
      * Create a new token record.
      *
-     * @param  \Illuminate\Contracts\Auth\CanResetPassword  $user
+     * @param  \Illuminate\Contracts\Auth\CanResetPassword $user
      * @return string
      */
     public function create(CanResetPasswordContract $user)
@@ -90,7 +90,7 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     /**
      * Delete all existing reset tokens from the database.
      *
-     * @param  \Illuminate\Contracts\Auth\CanResetPassword  $user
+     * @param  \Illuminate\Contracts\Auth\CanResetPassword $user
      * @return int
      */
     protected function deleteExisting(CanResetPasswordContract $user)
@@ -99,10 +99,30 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     }
 
     /**
+     * Begin a new database query against the table.
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    protected function getTable()
+    {
+        return $this->connection->table($this->table);
+    }
+
+    /**
+     * Create a new token for the user.
+     *
+     * @return string
+     */
+    public function createNewToken()
+    {
+        return hash_hmac('sha256', Str::random(40), $this->hashKey);
+    }
+
+    /**
      * Build the record payload for the table.
      *
-     * @param  string  $email
-     * @param  string  $token
+     * @param  string $email
+     * @param  string $token
      * @return array
      */
     protected function getPayload($email, $token)
@@ -113,25 +133,25 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     /**
      * Determine if a token record exists and is valid.
      *
-     * @param  \Illuminate\Contracts\Auth\CanResetPassword  $user
-     * @param  string  $token
+     * @param  \Illuminate\Contracts\Auth\CanResetPassword $user
+     * @param  string $token
      * @return bool
      */
     public function exists(CanResetPasswordContract $user, $token)
     {
-        $record = (array) $this->getTable()->where(
+        $record = (array)$this->getTable()->where(
             'email', $user->getEmailForPasswordReset()
         )->first();
 
         return $record &&
-               ! $this->tokenExpired($record['created_at']) &&
-                 $this->hasher->check($token, $record['token']);
+            !$this->tokenExpired($record['created_at']) &&
+            $this->hasher->check($token, $record['token']);
     }
 
     /**
      * Determine if the token has expired.
      *
-     * @param  string  $createdAt
+     * @param  string $createdAt
      * @return bool
      */
     protected function tokenExpired($createdAt)
@@ -142,7 +162,7 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     /**
      * Delete a token record by user.
      *
-     * @param  \Illuminate\Contracts\Auth\CanResetPassword  $user
+     * @param  \Illuminate\Contracts\Auth\CanResetPassword $user
      * @return void
      */
     public function delete(CanResetPasswordContract $user)
@@ -163,16 +183,6 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     }
 
     /**
-     * Create a new token for the user.
-     *
-     * @return string
-     */
-    public function createNewToken()
-    {
-        return hash_hmac('sha256', Str::random(40), $this->hashKey);
-    }
-
-    /**
      * Get the database connection instance.
      *
      * @return \Illuminate\Database\ConnectionInterface
@@ -180,16 +190,6 @@ class DatabaseTokenRepository implements TokenRepositoryInterface
     public function getConnection()
     {
         return $this->connection;
-    }
-
-    /**
-     * Begin a new database query against the table.
-     *
-     * @return \Illuminate\Database\Query\Builder
-     */
-    protected function getTable()
-    {
-        return $this->connection->table($this->table);
     }
 
     /**

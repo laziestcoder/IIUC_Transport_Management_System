@@ -59,7 +59,7 @@ class BinaryType extends Type
             $value = $fp;
         }
 
-        if ( ! is_resource($value)) {
+        if (!is_resource($value)) {
             throw ConversionException::conversionFailed($value, self::BINARY);
         }
 

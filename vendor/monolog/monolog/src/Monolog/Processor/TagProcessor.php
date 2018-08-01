@@ -25,14 +25,14 @@ class TagProcessor
         $this->setTags($tags);
     }
 
-    public function addTags(array $tags = array())
-    {
-        $this->tags = array_merge($this->tags, $tags);
-    }
-
     public function setTags(array $tags = array())
     {
         $this->tags = $tags;
+    }
+
+    public function addTags(array $tags = array())
+    {
+        $this->tags = array_merge($this->tags, $tags);
     }
 
     public function __invoke(array $record)

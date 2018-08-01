@@ -36,7 +36,7 @@ class PhoneNumber extends Base
      */
     public function imei()
     {
-        $imei = (string) static::numerify('##############');
+        $imei = (string)static::numerify('##############');
         $imei .= Luhn::computeCheckDigit($imei);
         return $imei;
     }

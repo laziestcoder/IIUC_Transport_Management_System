@@ -22,21 +22,13 @@ class MongoDBFormatter implements FormatterInterface
     private $maxNestingLevel;
 
     /**
-     * @param int  $maxNestingLevel        0 means infinite nesting, the $record itself is level 1, $record['context'] is 2
+     * @param int $maxNestingLevel 0 means infinite nesting, the $record itself is level 1, $record['context'] is 2
      * @param bool $exceptionTraceAsString set to false to log exception traces as a sub documents instead of strings
      */
     public function __construct($maxNestingLevel = 3, $exceptionTraceAsString = true)
     {
         $this->maxNestingLevel = max($maxNestingLevel, 0);
-        $this->exceptionTraceAsString = (bool) $exceptionTraceAsString;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function format(array $record)
-    {
-        return $this->formatArray($record);
+        $this->exceptionTraceAsString = (bool)$exceptionTraceAsString;
     }
 
     /**
@@ -49,6 +41,14 @@ class MongoDBFormatter implements FormatterInterface
         }
 
         return $records;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function format(array $record)
+    {
+        return $this->formatArray($record);
     }
 
     protected function formatArray(array $record, $nestingLevel = 0)
@@ -72,12 +72,9 @@ class MongoDBFormatter implements FormatterInterface
         return $record;
     }
 
-    protected function formatObject($value, $nestingLevel)
+    protected function formatDate(\DateTime $value, $nestingLevel)
     {
-        $objectVars = get_object_vars($value);
-        $objectVars['class'] = get_class($value);
-
-        return $this->formatArray($objectVars, $nestingLevel);
+        return new \MongoDate($value->getTimestamp());
     }
 
     protected function formatException(\Exception $exception, $nestingLevel)
@@ -98,8 +95,11 @@ class MongoDBFormatter implements FormatterInterface
         return $this->formatArray($formattedException, $nestingLevel);
     }
 
-    protected function formatDate(\DateTime $value, $nestingLevel)
+    protected function formatObject($value, $nestingLevel)
     {
-        return new \MongoDate($value->getTimestamp());
+        $objectVars = get_object_vars($value);
+        $objectVars['class'] = get_class($value);
+
+        return $this->formatArray($objectVars, $nestingLevel);
     }
 }

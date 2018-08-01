@@ -16,29 +16,38 @@
 class Swift_Transport_LoadBalancedTransport implements Swift_Transport
 {
     /**
-     * Transports which are deemed useless.
-     *
-     * @var Swift_Transport[]
-     */
-    private $deadTransports = array();
-
-    /**
      * The Transports which are used in rotation.
      *
      * @var Swift_Transport[]
      */
     protected $transports = array();
-
     /**
      * The Transport used in the last successful send operation.
      *
      * @var Swift_Transport
      */
     protected $lastUsedTransport = null;
+    /**
+     * Transports which are deemed useless.
+     *
+     * @var Swift_Transport[]
+     */
+    private $deadTransports = array();
 
     // needed as __construct is called from elsewhere explicitly
+
     public function __construct()
     {
+    }
+
+    /**
+     * Get $transports to delegate to.
+     *
+     * @return Swift_Transport[]
+     */
+    public function getTransports()
+    {
+        return array_merge($this->transports, $this->deadTransports);
     }
 
     /**
@@ -50,16 +59,6 @@ class Swift_Transport_LoadBalancedTransport implements Swift_Transport
     {
         $this->transports = $transports;
         $this->deadTransports = array();
-    }
-
-    /**
-     * Get $transports to delegate to.
-     *
-     * @return Swift_Transport[]
-     */
-    public function getTransports()
-    {
-        return array_merge($this->transports, $this->deadTransports);
     }
 
     /**
@@ -115,13 +114,27 @@ class Swift_Transport_LoadBalancedTransport implements Swift_Transport
     }
 
     /**
+     * Tag the currently used (top of stack) transport as dead/useless.
+     */
+    protected function killCurrentTransport()
+    {
+        if ($transport = array_pop($this->transports)) {
+            try {
+                $transport->stop();
+            } catch (Exception $e) {
+            }
+            $this->deadTransports[] = $transport;
+        }
+    }
+
+    /**
      * Send the given Message.
      *
      * Recipient/sender data will be retrieved from the Message API.
      * The return value is the number of recipients who were accepted for delivery.
      *
      * @param Swift_Mime_SimpleMessage $message
-     * @param string[]           $failedRecipients An array of failures by-reference
+     * @param string[] $failedRecipients An array of failures by-reference
      *
      * @return int
      */
@@ -132,7 +145,7 @@ class Swift_Transport_LoadBalancedTransport implements Swift_Transport
         $this->lastUsedTransport = null;
 
         for ($i = 0; $i < $maxTransports
-            && $transport = $this->getNextTransport(); ++$i) {
+        && $transport = $this->getNextTransport(); ++$i) {
             try {
                 if (!$transport->isStarted()) {
                     $transport->start();
@@ -149,22 +162,10 @@ class Swift_Transport_LoadBalancedTransport implements Swift_Transport
         if (count($this->transports) == 0) {
             throw new Swift_TransportException(
                 'All Transports in LoadBalancedTransport failed, or no Transports available'
-                );
+            );
         }
 
         return $sent;
-    }
-
-    /**
-     * Register a plugin.
-     *
-     * @param Swift_Events_EventListener $plugin
-     */
-    public function registerPlugin(Swift_Events_EventListener $plugin)
-    {
-        foreach ($this->transports as $transport) {
-            $transport->registerPlugin($plugin);
-        }
     }
 
     /**
@@ -182,16 +183,14 @@ class Swift_Transport_LoadBalancedTransport implements Swift_Transport
     }
 
     /**
-     * Tag the currently used (top of stack) transport as dead/useless.
+     * Register a plugin.
+     *
+     * @param Swift_Events_EventListener $plugin
      */
-    protected function killCurrentTransport()
+    public function registerPlugin(Swift_Events_EventListener $plugin)
     {
-        if ($transport = array_pop($this->transports)) {
-            try {
-                $transport->stop();
-            } catch (Exception $e) {
-            }
-            $this->deadTransports[] = $transport;
+        foreach ($this->transports as $transport) {
+            $transport->registerPlugin($plugin);
         }
     }
 }

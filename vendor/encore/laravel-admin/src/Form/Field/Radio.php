@@ -7,33 +7,13 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class Radio extends Field
 {
-    protected $inline = true;
-
     protected static $css = [
         '/vendor/laravel-admin/AdminLTE/plugins/iCheck/all.css',
     ];
-
     protected static $js = [
         'vendor/laravel-admin/AdminLTE/plugins/iCheck/icheck.min.js',
     ];
-
-    /**
-     * Set options.
-     *
-     * @param array|callable|string $options
-     *
-     * @return $this
-     */
-    public function options($options = [])
-    {
-        if ($options instanceof Arrayable) {
-            $options = $options->toArray();
-        }
-
-        $this->options = (array) $options;
-
-        return $this;
-    }
+    protected $inline = true;
 
     /**
      * Draw inline radios.
@@ -69,6 +49,24 @@ class Radio extends Field
     public function values($values)
     {
         return $this->options($values);
+    }
+
+    /**
+     * Set options.
+     *
+     * @param array|callable|string $options
+     *
+     * @return $this
+     */
+    public function options($options = [])
+    {
+        if ($options instanceof Arrayable) {
+            $options = $options->toArray();
+        }
+
+        $this->options = (array)$options;
+
+        return $this;
     }
 
     /**

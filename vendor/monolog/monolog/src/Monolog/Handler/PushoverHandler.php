@@ -65,19 +65,19 @@ class PushoverHandler extends SocketHandler
     );
 
     /**
-     * @param string       $token             Pushover api token
-     * @param string|array $users             Pushover user id or array of ids the message will be sent to
-     * @param string       $title             Title sent to the Pushover API
-     * @param int          $level             The minimum logging level at which this handler will be triggered
-     * @param Boolean      $bubble            Whether the messages that are handled can bubble up the stack or not
-     * @param Boolean      $useSSL            Whether to connect via SSL. Required when pushing messages to users that are not
+     * @param string $token Pushover api token
+     * @param string|array $users Pushover user id or array of ids the message will be sent to
+     * @param string $title Title sent to the Pushover API
+     * @param int $level The minimum logging level at which this handler will be triggered
+     * @param Boolean $bubble Whether the messages that are handled can bubble up the stack or not
+     * @param Boolean $useSSL Whether to connect via SSL. Required when pushing messages to users that are not
      *                                        the pushover.net app owner. OpenSSL is required for this option.
-     * @param int          $highPriorityLevel The minimum logging level at which this handler will start
+     * @param int $highPriorityLevel The minimum logging level at which this handler will start
      *                                        sending "high priority" requests to the Pushover API
-     * @param int          $emergencyLevel    The minimum logging level at which this handler will start
+     * @param int $emergencyLevel The minimum logging level at which this handler will start
      *                                        sending "emergency" requests to the Pushover API
-     * @param int          $retry             The retry parameter specifies how often (in seconds) the Pushover servers will send the same notification to the user.
-     * @param int          $expire            The expire parameter specifies how many seconds your notification will continue to be retried for (every retry seconds).
+     * @param int $retry The retry parameter specifies how often (in seconds) the Pushover servers will send the same notification to the user.
+     * @param int $expire The expire parameter specifies how many seconds your notification will continue to be retried for (every retry seconds).
      */
     public function __construct($token, $users, $title = null, $level = Logger::CRITICAL, $bubble = true, $useSSL = true, $highPriorityLevel = Logger::CRITICAL, $emergencyLevel = Logger::EMERGENCY, $retry = 30, $expire = 25200)
     {
@@ -85,12 +85,31 @@ class PushoverHandler extends SocketHandler
         parent::__construct($connectionString, $level, $bubble);
 
         $this->token = $token;
-        $this->users = (array) $users;
+        $this->users = (array)$users;
         $this->title = $title ?: gethostname();
         $this->highPriorityLevel = Logger::toMonologLevel($highPriorityLevel);
         $this->emergencyLevel = Logger::toMonologLevel($emergencyLevel);
         $this->retry = $retry;
         $this->expire = $expire;
+    }
+
+    public function setHighPriorityLevel($value)
+    {
+        $this->highPriorityLevel = $value;
+    }
+
+    public function setEmergencyLevel($value)
+    {
+        $this->emergencyLevel = $value;
+    }
+
+    /**
+     * Use the formatted message?
+     * @param bool $value
+     */
+    public function useFormattedMessage($value)
+    {
+        $this->useFormattedMessage = (boolean)$value;
     }
 
     protected function generateDataStream($record)
@@ -162,24 +181,5 @@ class PushoverHandler extends SocketHandler
         }
 
         $this->user = null;
-    }
-
-    public function setHighPriorityLevel($value)
-    {
-        $this->highPriorityLevel = $value;
-    }
-
-    public function setEmergencyLevel($value)
-    {
-        $this->emergencyLevel = $value;
-    }
-
-    /**
-     * Use the formatted message?
-     * @param bool $value
-     */
-    public function useFormattedMessage($value)
-    {
-        $this->useFormattedMessage = (boolean) $value;
     }
 }

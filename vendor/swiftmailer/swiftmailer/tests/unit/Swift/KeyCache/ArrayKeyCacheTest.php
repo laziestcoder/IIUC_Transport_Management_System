@@ -11,8 +11,18 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
         $cache = $this->createCache($is);
         $cache->setString(
             $this->key1, 'foo', 'test', Swift_KeyCache::MODE_WRITE
-            );
+        );
         $this->assertEquals('test', $cache->getString($this->key1, 'foo'));
+    }
+
+    private function createKeyCacheInputStream()
+    {
+        return $this->getMockBuilder('Swift_KeyCache_KeyCacheInputStream')->getMock();
+    }
+
+    private function createCache($is)
+    {
+        return new Swift_KeyCache_ArrayKeyCache($is);
     }
 
     public function testStringDataCanBeOverwritten()
@@ -21,10 +31,10 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
         $cache = $this->createCache($is);
         $cache->setString(
             $this->key1, 'foo', 'test', Swift_KeyCache::MODE_WRITE
-            );
+        );
         $cache->setString(
             $this->key1, 'foo', 'whatever', Swift_KeyCache::MODE_WRITE
-            );
+        );
 
         $this->assertEquals('whatever', $cache->getString($this->key1, 'foo'));
     }
@@ -35,10 +45,10 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
         $cache = $this->createCache($is);
         $cache->setString(
             $this->key1, 'foo', 'test', Swift_KeyCache::MODE_WRITE
-            );
+        );
         $cache->setString(
             $this->key1, 'foo', 'ing', Swift_KeyCache::MODE_APPEND
-            );
+        );
 
         $this->assertEquals('testing', $cache->getString($this->key1, 'foo'));
     }
@@ -49,7 +59,7 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
         $cache = $this->createCache($is);
         $cache->setString(
             $this->key1, 'foo', 'test', Swift_KeyCache::MODE_WRITE
-            );
+        );
 
         $this->assertTrue($cache->hasKey($this->key1, 'foo'));
     }
@@ -60,10 +70,10 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
         $cache = $this->createCache($is);
         $cache->setString(
             $this->key1, 'foo', 'test', Swift_KeyCache::MODE_WRITE
-            );
+        );
         $cache->setString(
             $this->key2, 'foo', 'ing', Swift_KeyCache::MODE_WRITE
-            );
+        );
 
         $this->assertEquals('test', $cache->getString($this->key1, 'foo'));
         $this->assertEquals('ing', $cache->getString($this->key2, 'foo'));
@@ -75,10 +85,10 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
         $cache = $this->createCache($is);
         $cache->setString(
             $this->key1, 'foo', 'test', Swift_KeyCache::MODE_WRITE
-            );
+        );
         $cache->setString(
             $this->key1, 'bar', 'ing', Swift_KeyCache::MODE_WRITE
-            );
+        );
 
         $this->assertEquals('test', $cache->getString($this->key1, 'foo'));
         $this->assertEquals('ing', $cache->getString($this->key1, 'bar'));
@@ -88,21 +98,26 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
     {
         $os = $this->createOutputStream();
         $os->expects($this->at(0))
-           ->method('read')
-           ->will($this->returnValue('abc'));
+            ->method('read')
+            ->will($this->returnValue('abc'));
         $os->expects($this->at(1))
-           ->method('read')
-           ->will($this->returnValue('def'));
+            ->method('read')
+            ->will($this->returnValue('def'));
         $os->expects($this->at(2))
-           ->method('read')
-           ->will($this->returnValue(false));
+            ->method('read')
+            ->will($this->returnValue(false));
 
         $is = $this->createKeyCacheInputStream();
         $cache = $this->createCache($is);
         $cache->importFromByteStream(
             $this->key1, 'foo', $os, Swift_KeyCache::MODE_WRITE
-            );
+        );
         $this->assertEquals('abcdef', $cache->getString($this->key1, 'foo'));
+    }
+
+    private function createOutputStream()
+    {
+        return $this->getMockBuilder('Swift_OutputByteStream')->getMock();
     }
 
     public function testByteStreamCanBeAppended()
@@ -135,10 +150,10 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
 
         $cache->importFromByteStream(
             $this->key1, 'foo', $os1, Swift_KeyCache::MODE_APPEND
-            );
+        );
         $cache->importFromByteStream(
             $this->key1, 'foo', $os2, Swift_KeyCache::MODE_APPEND
-            );
+        );
 
         $this->assertEquals('abcdefxyzuvw', $cache->getString($this->key1, 'foo'));
     }
@@ -147,14 +162,14 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
     {
         $os = $this->createOutputStream();
         $os->expects($this->at(0))
-           ->method('read')
-           ->will($this->returnValue('abc'));
+            ->method('read')
+            ->will($this->returnValue('abc'));
         $os->expects($this->at(1))
-           ->method('read')
-           ->will($this->returnValue('def'));
+            ->method('read')
+            ->will($this->returnValue('def'));
         $os->expects($this->at(2))
-           ->method('read')
-           ->will($this->returnValue(false));
+            ->method('read')
+            ->will($this->returnValue(false));
 
         $is = $this->createKeyCacheInputStream(true);
 
@@ -162,10 +177,10 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
 
         $cache->setString(
             $this->key1, 'foo', 'test', Swift_KeyCache::MODE_APPEND
-            );
+        );
         $cache->importFromByteStream(
             $this->key1, 'foo', $os, Swift_KeyCache::MODE_APPEND
-            );
+        );
         $this->assertEquals('testabcdef', $cache->getString($this->key1, 'foo'));
     }
 
@@ -174,7 +189,7 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
         //See acceptance test for more detail
         $is = $this->createInputStream();
         $is->expects($this->atLeastOnce())
-           ->method('write');
+            ->method('write');
 
         $kcis = $this->createKeyCacheInputStream(true);
 
@@ -182,9 +197,14 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
 
         $cache->setString(
             $this->key1, 'foo', 'test', Swift_KeyCache::MODE_WRITE
-            );
+        );
 
         $cache->exportToByteStream($this->key1, 'foo', $is);
+    }
+
+    private function createInputStream()
+    {
+        return $this->getMockBuilder('Swift_InputByteStream')->getMock();
     }
 
     public function testKeyCanBeCleared()
@@ -194,7 +214,7 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
 
         $cache->setString(
             $this->key1, 'foo', 'test', Swift_KeyCache::MODE_WRITE
-            );
+        );
         $this->assertTrue($cache->hasKey($this->key1, 'foo'));
         $cache->clearKey($this->key1, 'foo');
         $this->assertFalse($cache->hasKey($this->key1, 'foo'));
@@ -207,34 +227,14 @@ class Swift_KeyCache_ArrayKeyCacheTest extends \PHPUnit\Framework\TestCase
 
         $cache->setString(
             $this->key1, 'foo', 'test', Swift_KeyCache::MODE_WRITE
-            );
+        );
         $cache->setString(
             $this->key1, 'bar', 'xyz', Swift_KeyCache::MODE_WRITE
-            );
+        );
         $this->assertTrue($cache->hasKey($this->key1, 'foo'));
         $this->assertTrue($cache->hasKey($this->key1, 'bar'));
         $cache->clearAll($this->key1);
         $this->assertFalse($cache->hasKey($this->key1, 'foo'));
         $this->assertFalse($cache->hasKey($this->key1, 'bar'));
-    }
-
-    private function createCache($is)
-    {
-        return new Swift_KeyCache_ArrayKeyCache($is);
-    }
-
-    private function createKeyCacheInputStream()
-    {
-        return $this->getMockBuilder('Swift_KeyCache_KeyCacheInputStream')->getMock();
-    }
-
-    private function createOutputStream()
-    {
-        return $this->getMockBuilder('Swift_OutputByteStream')->getMock();
-    }
-
-    private function createInputStream()
-    {
-        return $this->getMockBuilder('Swift_InputByteStream')->getMock();
     }
 }

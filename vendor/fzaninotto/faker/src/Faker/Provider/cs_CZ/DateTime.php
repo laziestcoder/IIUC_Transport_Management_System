@@ -14,7 +14,7 @@ class DateTime extends \Faker\Provider\DateTime
         'leden', 'únor', 'březen', 'duben', 'květen', 'červen', 'červenec',
         'srpen', 'září', 'říjen', 'listopad', 'prosinec'
     );
-    protected static $monthsGenitive  = array(
+    protected static $monthsGenitive = array(
         'ledna', 'února', 'března', 'dubna', 'května', 'června', 'července',
         'srpna', 'září', 'října', 'listopadu', 'prosince'
     );

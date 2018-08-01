@@ -22,8 +22,6 @@ use Webmozart\Assert\Assert;
  */
 final class Deprecated extends BaseTag implements Factory\StaticMethod
 {
-    protected $name = 'deprecated';
-
     /**
      * PCRE regular expression matching a version vector.
      * Assumes the "x" modifier.
@@ -39,7 +37,7 @@ final class Deprecated extends BaseTag implements Factory\StaticMethod
         # around the actual version vector.
         [^\s\:]+\:\s*\$[^\$]+\$
     )';
-
+    protected $name = 'deprecated';
     /** @var string The version vector. */
     private $version = '';
 

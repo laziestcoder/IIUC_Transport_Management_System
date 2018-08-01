@@ -34,7 +34,7 @@ final class MariaDb1027Platform extends MySqlPlatform
     /**
      * {@inheritdoc}
      */
-    public function hasNativeJsonType() : bool
+    public function hasNativeJsonType(): bool
     {
         return false;
     }
@@ -44,7 +44,7 @@ final class MariaDb1027Platform extends MySqlPlatform
      *
      * @link https://mariadb.com/kb/en/library/json-data-type/
      */
-    public function getJsonTypeDeclarationSQL(array $field) : string
+    public function getJsonTypeDeclarationSQL(array $field): string
     {
         return 'LONGTEXT';
     }
@@ -52,7 +52,7 @@ final class MariaDb1027Platform extends MySqlPlatform
     /**
      * {@inheritdoc}
      */
-    protected function getReservedKeywordsClass() : string
+    protected function getReservedKeywordsClass(): string
     {
         return Keywords\MariaDb102Keywords::class;
     }
@@ -60,7 +60,7 @@ final class MariaDb1027Platform extends MySqlPlatform
     /**
      * {@inheritdoc}
      */
-    protected function initializeDoctrineTypeMappings() : void
+    protected function initializeDoctrineTypeMappings(): void
     {
         parent::initializeDoctrineTypeMappings();
 

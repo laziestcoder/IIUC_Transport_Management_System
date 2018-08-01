@@ -27,15 +27,15 @@ abstract class AbstractTool implements Renderable
     }
 
     /**
-     * {@inheritdoc}
-     */
-    abstract public function render();
-
-    /**
      * @return string
      */
     public function __toString()
     {
         return $this->render();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    abstract public function render();
 }

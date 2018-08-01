@@ -104,7 +104,7 @@ abstract class AbstractPostgreSQLDriver implements Driver, ExceptionConverterDri
      */
     public function createDatabasePlatformForVersion($version)
     {
-        if ( ! preg_match('/^(?P<major>\d+)(?:\.(?P<minor>\d+)(?:\.(?P<patch>\d+))?)?/', $version, $versionParts)) {
+        if (!preg_match('/^(?P<major>\d+)(?:\.(?P<minor>\d+)(?:\.(?P<patch>\d+))?)?/', $version, $versionParts)) {
             throw DBALException::invalidPlatformVersionSpecified(
                 $version,
                 '<major_version>.<minor_version>.<patch_version>'
@@ -114,9 +114,9 @@ abstract class AbstractPostgreSQLDriver implements Driver, ExceptionConverterDri
         $majorVersion = $versionParts['major'];
         $minorVersion = $versionParts['minor'] ?? 0;
         $patchVersion = $versionParts['patch'] ?? 0;
-        $version      = $majorVersion . '.' . $minorVersion . '.' . $patchVersion;
+        $version = $majorVersion . '.' . $minorVersion . '.' . $patchVersion;
 
-        switch(true) {
+        switch (true) {
             case version_compare($version, '10.0', '>='):
                 return new PostgreSQL100Platform();
             case version_compare($version, '9.4', '>='):

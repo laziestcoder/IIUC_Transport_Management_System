@@ -2,5 +2,5 @@ preset: psr2
 
 finder:
   not-name:
-    - MockingParameterAndReturnTypesTest.php
-    - SemiReservedWordsAsMethods.php
+  - MockingParameterAndReturnTypesTest.php
+  - SemiReservedWordsAsMethods.php

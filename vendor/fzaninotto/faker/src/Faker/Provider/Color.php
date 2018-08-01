@@ -43,14 +43,6 @@ class Color extends Base
     );
 
     /**
-     * @example '#fa3cc2'
-     */
-    public static function hexColor()
-    {
-        return '#' . str_pad(dechex(mt_rand(1, 16777215)), 6, '0', STR_PAD_LEFT);
-    }
-
-    /**
      * @example '#ff0044'
      */
     public static function safeHexColor()
@@ -58,6 +50,22 @@ class Color extends Base
         $color = str_pad(dechex(mt_rand(0, 255)), 3, '0', STR_PAD_LEFT);
 
         return '#' . $color[0] . $color[0] . $color[1] . $color[1] . $color[2] . $color[2];
+    }
+
+    /**
+     * @example 'rgb(0,255,122)'
+     */
+    public static function rgbCssColor()
+    {
+        return 'rgb(' . static::rgbColor() . ')';
+    }
+
+    /**
+     * @example '0,255,122'
+     */
+    public static function rgbColor()
+    {
+        return implode(',', static::rgbColorAsArray());
     }
 
     /**
@@ -75,19 +83,11 @@ class Color extends Base
     }
 
     /**
-     * @example '0,255,122'
+     * @example '#fa3cc2'
      */
-    public static function rgbColor()
+    public static function hexColor()
     {
-        return implode(',', static::rgbColorAsArray());
-    }
-
-    /**
-     * @example 'rgb(0,255,122)'
-     */
-    public static function rgbCssColor()
-    {
-        return 'rgb(' . static::rgbColor() . ')';
+        return '#' . str_pad(dechex(mt_rand(1, 16777215)), 6, '0', STR_PAD_LEFT);
     }
 
     /**

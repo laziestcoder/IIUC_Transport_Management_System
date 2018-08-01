@@ -14,8 +14,8 @@
 
 namespace Ramsey\Uuid\Converter\Number;
 
-use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 use Ramsey\Uuid\Converter\NumberConverterInterface;
+use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 /**
  * DegradedNumberConverter throws `UnsatisfiedDependencyException` exceptions

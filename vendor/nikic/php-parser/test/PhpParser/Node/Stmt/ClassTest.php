@@ -6,7 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 class ClassTest extends TestCase
 {
-    public function testIsAbstract() {
+    public function testIsAbstract()
+    {
         $class = new Class_('Foo', ['type' => Class_::MODIFIER_ABSTRACT]);
         $this->assertTrue($class->isAbstract());
 
@@ -14,7 +15,8 @@ class ClassTest extends TestCase
         $this->assertFalse($class->isAbstract());
     }
 
-    public function testIsFinal() {
+    public function testIsFinal()
+    {
         $class = new Class_('Foo', ['type' => Class_::MODIFIER_FINAL]);
         $this->assertTrue($class->isFinal());
 
@@ -22,7 +24,8 @@ class ClassTest extends TestCase
         $this->assertFalse($class->isFinal());
     }
 
-    public function testGetMethods() {
+    public function testGetMethods()
+    {
         $methods = [
             new ClassMethod('foo'),
             new ClassMethod('bar'),
@@ -42,7 +45,8 @@ class ClassTest extends TestCase
         $this->assertSame($methods, $class->getMethods());
     }
 
-    public function testGetMethod() {
+    public function testGetMethod()
+    {
         $methodConstruct = new ClassMethod('__CONSTRUCT');
         $methodTest = new ClassMethod('test');
         $class = new Class_('Foo', [

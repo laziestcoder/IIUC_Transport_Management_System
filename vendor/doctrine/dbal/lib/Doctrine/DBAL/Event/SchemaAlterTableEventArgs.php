@@ -49,13 +49,13 @@ class SchemaAlterTableEventArgs extends SchemaEventArgs
     private $_sql = [];
 
     /**
-     * @param \Doctrine\DBAL\Schema\TableDiff           $tableDiff
+     * @param \Doctrine\DBAL\Schema\TableDiff $tableDiff
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      */
     public function __construct(TableDiff $tableDiff, AbstractPlatform $platform)
     {
         $this->_tableDiff = $tableDiff;
-        $this->_platform  = $platform;
+        $this->_platform = $platform;
     }
 
     /**

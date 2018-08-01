@@ -2,9 +2,9 @@
 
 namespace Illuminate\Routing\Console;
 
+use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 class ControllerMakeCommand extends GeneratorCommand
@@ -49,24 +49,24 @@ class ControllerMakeCommand extends GeneratorCommand
 
         if ($this->option('api') && is_null($stub)) {
             $stub = '/stubs/controller.api.stub';
-        } elseif ($this->option('api') && ! is_null($stub)) {
+        } elseif ($this->option('api') && !is_null($stub)) {
             $stub = str_replace('.stub', '.api.stub', $stub);
         }
 
         $stub = $stub ?? '/stubs/controller.plain.stub';
 
-        return __DIR__.$stub;
+        return __DIR__ . $stub;
     }
 
     /**
      * Get the default namespace for the class.
      *
-     * @param  string  $rootNamespace
+     * @param  string $rootNamespace
      * @return string
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Http\Controllers';
+        return $rootNamespace . '\Http\Controllers';
     }
 
     /**
@@ -74,7 +74,7 @@ class ControllerMakeCommand extends GeneratorCommand
      *
      * Remove the base controller import if we are already in base namespace.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return string
      */
     protected function buildClass($name)
@@ -107,7 +107,7 @@ class ControllerMakeCommand extends GeneratorCommand
     {
         $parentModelClass = $this->parseModel($this->option('parent'));
 
-        if (! class_exists($parentModelClass)) {
+        if (!class_exists($parentModelClass)) {
             if ($this->confirm("A {$parentModelClass} model does not exist. Do you want to generate it?", true)) {
                 $this->call('make:model', ['name' => $parentModelClass]);
             }
@@ -121,32 +121,9 @@ class ControllerMakeCommand extends GeneratorCommand
     }
 
     /**
-     * Build the model replacement values.
-     *
-     * @param  array  $replace
-     * @return array
-     */
-    protected function buildModelReplacements(array $replace)
-    {
-        $modelClass = $this->parseModel($this->option('model'));
-
-        if (! class_exists($modelClass)) {
-            if ($this->confirm("A {$modelClass} model does not exist. Do you want to generate it?", true)) {
-                $this->call('make:model', ['name' => $modelClass]);
-            }
-        }
-
-        return array_merge($replace, [
-            'DummyFullModelClass' => $modelClass,
-            'DummyModelClass' => class_basename($modelClass),
-            'DummyModelVariable' => lcfirst(class_basename($modelClass)),
-        ]);
-    }
-
-    /**
      * Get the fully-qualified model class name.
      *
-     * @param  string  $model
+     * @param  string $model
      * @return string
      */
     protected function parseModel($model)
@@ -157,11 +134,34 @@ class ControllerMakeCommand extends GeneratorCommand
 
         $model = trim(str_replace('/', '\\', $model), '\\');
 
-        if (! Str::startsWith($model, $rootNamespace = $this->laravel->getNamespace())) {
-            $model = $rootNamespace.$model;
+        if (!Str::startsWith($model, $rootNamespace = $this->laravel->getNamespace())) {
+            $model = $rootNamespace . $model;
         }
 
         return $model;
+    }
+
+    /**
+     * Build the model replacement values.
+     *
+     * @param  array $replace
+     * @return array
+     */
+    protected function buildModelReplacements(array $replace)
+    {
+        $modelClass = $this->parseModel($this->option('model'));
+
+        if (!class_exists($modelClass)) {
+            if ($this->confirm("A {$modelClass} model does not exist. Do you want to generate it?", true)) {
+                $this->call('make:model', ['name' => $modelClass]);
+            }
+        }
+
+        return array_merge($replace, [
+            'DummyFullModelClass' => $modelClass,
+            'DummyModelClass' => class_basename($modelClass),
+            'DummyModelVariable' => lcfirst(class_basename($modelClass)),
+        ]);
     }
 
     /**

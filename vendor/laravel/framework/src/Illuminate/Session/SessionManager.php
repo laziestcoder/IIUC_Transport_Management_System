@@ -7,14 +7,73 @@ use Illuminate\Support\Manager;
 class SessionManager extends Manager
 {
     /**
+     * Get the session configuration.
+     *
+     * @return array
+     */
+    public function getSessionConfig()
+    {
+        return $this->app['config']['session'];
+    }
+
+    /**
+     * Get the default session driver name.
+     *
+     * @return string
+     */
+    public function getDefaultDriver()
+    {
+        return $this->app['config']['session.driver'];
+    }
+
+    /**
+     * Set the default session driver name.
+     *
+     * @param  string $name
+     * @return void
+     */
+    public function setDefaultDriver($name)
+    {
+        $this->app['config']['session.driver'] = $name;
+    }
+
+    /**
      * Call a custom driver creator.
      *
-     * @param  string  $driver
+     * @param  string $driver
      * @return mixed
      */
     protected function callCustomCreator($driver)
     {
         return $this->buildSession(parent::callCustomCreator($driver));
+    }
+
+    /**
+     * Build the session instance.
+     *
+     * @param  \SessionHandlerInterface $handler
+     * @return \Illuminate\Session\Store
+     */
+    protected function buildSession($handler)
+    {
+        if ($this->app['config']['session.encrypt']) {
+            return $this->buildEncryptedSession($handler);
+        }
+
+        return new Store($this->app['config']['session.cookie'], $handler);
+    }
+
+    /**
+     * Build the encrypted session instance.
+     *
+     * @param  \SessionHandlerInterface $handler
+     * @return \Illuminate\Session\EncryptedStore
+     */
+    protected function buildEncryptedSession($handler)
+    {
+        return new EncryptedStore(
+            $this->app['config']['session.cookie'], $handler, $this->app['encrypter']
+        );
     }
 
     /**
@@ -102,6 +161,33 @@ class SessionManager extends Manager
     }
 
     /**
+     * Create an instance of a cache driven driver.
+     *
+     * @param  string $driver
+     * @return \Illuminate\Session\Store
+     */
+    protected function createCacheBased($driver)
+    {
+        return $this->buildSession($this->createCacheHandler($driver));
+    }
+
+    /**
+     * Create the cache based session handler instance.
+     *
+     * @param  string $driver
+     * @return \Illuminate\Session\CacheBasedSessionHandler
+     */
+    protected function createCacheHandler($driver)
+    {
+        $store = $this->app['config']->get('session.store') ?: $driver;
+
+        return new CacheBasedSessionHandler(
+            clone $this->app['cache']->store($store),
+            $this->app['config']['session.lifetime']
+        );
+    }
+
+    /**
      * Create an instance of the Memcached session driver.
      *
      * @return \Illuminate\Session\Store
@@ -125,91 +211,5 @@ class SessionManager extends Manager
         );
 
         return $this->buildSession($handler);
-    }
-
-    /**
-     * Create an instance of a cache driven driver.
-     *
-     * @param  string  $driver
-     * @return \Illuminate\Session\Store
-     */
-    protected function createCacheBased($driver)
-    {
-        return $this->buildSession($this->createCacheHandler($driver));
-    }
-
-    /**
-     * Create the cache based session handler instance.
-     *
-     * @param  string  $driver
-     * @return \Illuminate\Session\CacheBasedSessionHandler
-     */
-    protected function createCacheHandler($driver)
-    {
-        $store = $this->app['config']->get('session.store') ?: $driver;
-
-        return new CacheBasedSessionHandler(
-            clone $this->app['cache']->store($store),
-            $this->app['config']['session.lifetime']
-        );
-    }
-
-    /**
-     * Build the session instance.
-     *
-     * @param  \SessionHandlerInterface  $handler
-     * @return \Illuminate\Session\Store
-     */
-    protected function buildSession($handler)
-    {
-        if ($this->app['config']['session.encrypt']) {
-            return $this->buildEncryptedSession($handler);
-        }
-
-        return new Store($this->app['config']['session.cookie'], $handler);
-    }
-
-    /**
-     * Build the encrypted session instance.
-     *
-     * @param  \SessionHandlerInterface  $handler
-     * @return \Illuminate\Session\EncryptedStore
-     */
-    protected function buildEncryptedSession($handler)
-    {
-        return new EncryptedStore(
-            $this->app['config']['session.cookie'], $handler, $this->app['encrypter']
-        );
-    }
-
-    /**
-     * Get the session configuration.
-     *
-     * @return array
-     */
-    public function getSessionConfig()
-    {
-        return $this->app['config']['session'];
-    }
-
-    /**
-     * Get the default session driver name.
-     *
-     * @return string
-     */
-    public function getDefaultDriver()
-    {
-        return $this->app['config']['session.driver'];
-    }
-
-    /**
-     * Set the default session driver name.
-     *
-     * @param  string  $name
-     * @return void
-     */
-    public function setDefaultDriver($name)
-    {
-        $this->app['config']['session.driver'] = $name;
     }
 }

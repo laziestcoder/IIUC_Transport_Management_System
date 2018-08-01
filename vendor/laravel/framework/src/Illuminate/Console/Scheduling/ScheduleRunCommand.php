@@ -2,8 +2,8 @@
 
 namespace Illuminate\Console\Scheduling;
 
-use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 
 class ScheduleRunCommand extends Command
 {
@@ -45,7 +45,7 @@ class ScheduleRunCommand extends Command
     /**
      * Create a new command instance.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
      * @return void
      */
     public function __construct(Schedule $schedule)
@@ -65,7 +65,7 @@ class ScheduleRunCommand extends Command
     public function handle()
     {
         foreach ($this->schedule->dueEvents($this->laravel) as $event) {
-            if (! $event->filtersPass($this->laravel)) {
+            if (!$event->filtersPass($this->laravel)) {
                 continue;
             }
 
@@ -78,7 +78,7 @@ class ScheduleRunCommand extends Command
             $this->eventsRan = true;
         }
 
-        if (! $this->eventsRan) {
+        if (!$this->eventsRan) {
             $this->info('No scheduled commands are ready to run.');
         }
     }
@@ -86,7 +86,7 @@ class ScheduleRunCommand extends Command
     /**
      * Run the given single server event.
      *
-     * @param  \Illuminate\Console\Scheduling\Event  $event
+     * @param  \Illuminate\Console\Scheduling\Event $event
      * @return void
      */
     protected function runSingleServerEvent($event)
@@ -94,19 +94,19 @@ class ScheduleRunCommand extends Command
         if ($this->schedule->serverShouldRun($event, $this->startedAt)) {
             $this->runEvent($event);
         } else {
-            $this->line('<info>Skipping command (has already run on another server):</info> '.$event->getSummaryForDisplay());
+            $this->line('<info>Skipping command (has already run on another server):</info> ' . $event->getSummaryForDisplay());
         }
     }
 
     /**
      * Run the given event.
      *
-     * @param  \Illuminate\Console\Scheduling\Event  $event
+     * @param  \Illuminate\Console\Scheduling\Event $event
      * @return void
      */
     protected function runEvent($event)
     {
-        $this->line('<info>Running scheduled command:</info> '.$event->getSummaryForDisplay());
+        $this->line('<info>Running scheduled command:</info> ' . $event->getSummaryForDisplay());
 
         $event->run($this->laravel);
 

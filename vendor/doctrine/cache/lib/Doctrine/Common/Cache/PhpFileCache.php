@@ -66,6 +66,29 @@ class PhpFileCache extends FileCache
     }
 
     /**
+     * @param string $id
+     *
+     * @return array|null
+     */
+    private function includeFileForId(string $id): ?array
+    {
+        $fileName = $this->getFilename($id);
+
+        // note: error suppression is still faster than `file_exists`, `is_file` and `is_readable`
+        set_error_handler(self::$emptyErrorHandler);
+
+        $value = include $fileName;
+
+        restore_error_handler();
+
+        if (!isset($value['lifetime'])) {
+            return null;
+        }
+
+        return $value;
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function doContains($id)
@@ -88,44 +111,21 @@ class PhpFileCache extends FileCache
             $lifeTime = time() + $lifeTime;
         }
 
-        $filename  = $this->getFilename($id);
+        $filename = $this->getFilename($id);
 
         $value = [
-            'lifetime'  => $lifeTime,
-            'data'      => $data
+            'lifetime' => $lifeTime,
+            'data' => $data
         ];
 
         if (is_object($data) && method_exists($data, '__set_state')) {
-            $value  = var_export($value, true);
-            $code   = sprintf('<?php return %s;', $value);
+            $value = var_export($value, true);
+            $code = sprintf('<?php return %s;', $value);
         } else {
-            $value  = var_export(serialize($value), true);
-            $code   = sprintf('<?php return unserialize(%s);', $value);
+            $value = var_export(serialize($value), true);
+            $code = sprintf('<?php return unserialize(%s);', $value);
         }
 
         return $this->writeFile($filename, $code);
-    }
-
-    /**
-     * @param string $id
-     *
-     * @return array|null
-     */
-    private function includeFileForId(string $id) : ?array
-    {
-        $fileName = $this->getFilename($id);
-
-        // note: error suppression is still faster than `file_exists`, `is_file` and `is_readable`
-        set_error_handler(self::$emptyErrorHandler);
-
-        $value = include $fileName;
-
-        restore_error_handler();
-
-        if (! isset($value['lifetime'])) {
-            return null;
-        }
-
-        return $value;
     }
 }

@@ -23,8 +23,8 @@ use Doctrine\DBAL\Tools\Dumper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use function is_numeric;
 use function stripos;
 
@@ -47,17 +47,17 @@ class RunSqlCommand extends Command
     protected function configure()
     {
         $this
-        ->setName('dbal:run-sql')
-        ->setDescription('Executes arbitrary SQL directly from the command line.')
-        ->setDefinition([
-            new InputArgument('sql', InputArgument::REQUIRED, 'The SQL statement to execute.'),
-            new InputOption('depth', null, InputOption::VALUE_REQUIRED, 'Dumping depth of result set.', 7),
-            new InputOption('force-fetch', null, InputOption::VALUE_NONE, 'Forces fetching the result.'),
-        ])
-        ->setHelp(<<<EOT
+            ->setName('dbal:run-sql')
+            ->setDescription('Executes arbitrary SQL directly from the command line.')
+            ->setDefinition([
+                new InputArgument('sql', InputArgument::REQUIRED, 'The SQL statement to execute.'),
+                new InputOption('depth', null, InputOption::VALUE_REQUIRED, 'Dumping depth of result set.', 7),
+                new InputOption('force-fetch', null, InputOption::VALUE_NONE, 'Forces fetching the result.'),
+            ])
+            ->setHelp(<<<EOT
 Executes arbitrary SQL directly from the command line.
 EOT
-        );
+            );
     }
 
     /**
@@ -73,7 +73,7 @@ EOT
 
         $depth = $input->getOption('depth');
 
-        if ( ! is_numeric($depth)) {
+        if (!is_numeric($depth)) {
             throw new \LogicException("Option 'depth' must contains an integer value");
         }
 
@@ -83,6 +83,6 @@ EOT
             $resultSet = $conn->executeUpdate($sql);
         }
 
-        $output->write(Dumper::dump($resultSet, (int) $depth));
+        $output->write(Dumper::dump($resultSet, (int)$depth));
     }
 }

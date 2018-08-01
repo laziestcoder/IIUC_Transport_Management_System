@@ -16,7 +16,7 @@ class HtmlString implements Htmlable
     /**
      * Create a new HTML string instance.
      *
-     * @param  string  $html
+     * @param  string $html
      * @return void
      */
     public function __construct($html)
@@ -29,9 +29,9 @@ class HtmlString implements Htmlable
      *
      * @return string
      */
-    public function toHtml()
+    public function __toString()
     {
-        return $this->html;
+        return $this->toHtml();
     }
 
     /**
@@ -39,8 +39,8 @@ class HtmlString implements Htmlable
      *
      * @return string
      */
-    public function __toString()
+    public function toHtml()
     {
-        return $this->toHtml();
+        return $this->html;
     }
 }

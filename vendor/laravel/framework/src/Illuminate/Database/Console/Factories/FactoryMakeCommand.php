@@ -35,20 +35,20 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/stubs/factory.stub';
+        return __DIR__ . '/stubs/factory.stub';
     }
 
     /**
      * Build the class with the given name.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return string
      */
     protected function buildClass($name)
     {
         $model = $this->option('model')
-                        ? $this->qualifyClass($this->option('model'))
-                        : 'Model';
+            ? $this->qualifyClass($this->option('model'))
+            : 'Model';
 
         return str_replace(
             'DummyModel', $model, parent::buildClass($name)
@@ -58,7 +58,7 @@ class FactoryMakeCommand extends GeneratorCommand
     /**
      * Get the destination class path.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return string
      */
     protected function getPath($name)
@@ -67,7 +67,7 @@ class FactoryMakeCommand extends GeneratorCommand
             ['\\', '/'], '', $this->argument('name')
         );
 
-        return $this->laravel->databasePath()."/factories/{$name}.php";
+        return $this->laravel->databasePath() . "/factories/{$name}.php";
     }
 
     /**

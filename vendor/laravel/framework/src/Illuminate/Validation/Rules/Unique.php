@@ -25,8 +25,8 @@ class Unique
     /**
      * Ignore the given ID during the unique check.
      *
-     * @param  mixed  $id
-     * @param  string|null  $idColumn
+     * @param  mixed $id
+     * @param  string|null $idColumn
      * @return $this
      */
     public function ignore($id, $idColumn = null)
@@ -44,8 +44,8 @@ class Unique
     /**
      * Ignore the given model during the unique check.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @param  string|null  $idColumn
+     * @param  \Illuminate\Database\Eloquent\Model $model
+     * @param  string|null $idColumn
      * @return $this
      */
     public function ignoreModel($model, $idColumn = null)
@@ -66,7 +66,7 @@ class Unique
         return rtrim(sprintf('unique:%s,%s,%s,%s,%s',
             $this->table,
             $this->column,
-            $this->ignore ? '"'.$this->ignore.'"' : 'NULL',
+            $this->ignore ? '"' . $this->ignore . '"' : 'NULL',
             $this->idColumn,
             $this->formatWheres()
         ), ',');

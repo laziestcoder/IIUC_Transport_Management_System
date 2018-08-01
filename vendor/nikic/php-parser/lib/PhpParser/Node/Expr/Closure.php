@@ -24,7 +24,7 @@ class Closure extends Expr implements FunctionLike
     /**
      * Constructs a lambda function node.
      *
-     * @param array $subNodes   Array of the following optional subnodes:
+     * @param array $subNodes Array of the following optional subnodes:
      *                          'static'     => false  : Whether the closure is static
      *                          'byRef'      => false  : Whether to return by reference
      *                          'params'     => array(): Parameters
@@ -33,7 +33,8 @@ class Closure extends Expr implements FunctionLike
      *                          'stmts'      => array(): Statements
      * @param array $attributes Additional attributes
      */
-    public function __construct(array $subNodes = [], array $attributes = []) {
+    public function __construct(array $subNodes = [], array $attributes = [])
+    {
         parent::__construct($attributes);
         $this->static = $subNodes['static'] ?? false;
         $this->byRef = $subNodes['byRef'] ?? false;
@@ -44,28 +45,34 @@ class Closure extends Expr implements FunctionLike
         $this->stmts = $subNodes['stmts'] ?? [];
     }
 
-    public function getSubNodeNames() : array {
+    public function getSubNodeNames(): array
+    {
         return ['static', 'byRef', 'params', 'uses', 'returnType', 'stmts'];
     }
 
-    public function returnsByRef() : bool {
+    public function returnsByRef(): bool
+    {
         return $this->byRef;
     }
 
-    public function getParams() : array {
+    public function getParams(): array
+    {
         return $this->params;
     }
 
-    public function getReturnType() {
+    public function getReturnType()
+    {
         return $this->returnType;
     }
 
     /** @return Node\Stmt[] */
-    public function getStmts() : array {
+    public function getStmts(): array
+    {
         return $this->stmts;
     }
-    
-    public function getType() : string {
+
+    public function getType(): string
+    {
         return 'Expr_Closure';
     }
 }

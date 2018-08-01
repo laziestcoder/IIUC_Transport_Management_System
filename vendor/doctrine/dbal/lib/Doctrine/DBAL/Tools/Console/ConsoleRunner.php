@@ -50,7 +50,7 @@ class ConsoleRunner
     /**
      * Runs console with the given helperset.
      *
-     * @param \Symfony\Component\Console\Helper\HelperSet  $helperSet
+     * @param \Symfony\Component\Console\Helper\HelperSet $helperSet
      * @param \Symfony\Component\Console\Command\Command[] $commands
      *
      * @return void

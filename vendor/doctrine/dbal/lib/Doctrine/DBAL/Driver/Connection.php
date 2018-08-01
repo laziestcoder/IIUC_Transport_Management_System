@@ -51,7 +51,7 @@ interface Connection
      * Quotes a string for use in a query.
      *
      * @param mixed $input
-     * @param int   $type
+     * @param int $type
      *
      * @return mixed
      */

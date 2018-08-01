@@ -95,24 +95,10 @@ class Swift_StreamFilters_ByteArrayReplacementFilter implements Swift_StreamFilt
     }
 
     /**
-     * Returns true if based on the buffer passed more bytes should be buffered.
-     *
-     * @param array $buffer
-     *
-     * @return bool
-     */
-    public function shouldBuffer($buffer)
-    {
-        $endOfBuffer = end($buffer);
-
-        return isset($this->index[$endOfBuffer]);
-    }
-
-    /**
      * Perform the actual replacements on $buffer and return the result.
      *
      * @param array $buffer
-     * @param int   $minReplaces
+     * @param int $minReplaces
      *
      * @return array
      */
@@ -139,8 +125,7 @@ class Swift_StreamFilters_ByteArrayReplacementFilter implements Swift_StreamFilt
                         $last_found = $search_pos[-1];
                         $last_size = $search_pos[-2];
                     }
-                }
-                // We got a complete pattern
+                } // We got a complete pattern
                 elseif ($last_found !== PHP_INT_MAX) {
                     // Adding replacement datas to output buffer
                     $rep_size = $this->repSize[$last_found];
@@ -166,5 +151,19 @@ class Swift_StreamFilters_ByteArrayReplacementFilter implements Swift_StreamFilt
         }
 
         return $newBuffer;
+    }
+
+    /**
+     * Returns true if based on the buffer passed more bytes should be buffered.
+     *
+     * @param array $buffer
+     *
+     * @return bool
+     */
+    public function shouldBuffer($buffer)
+    {
+        $endOfBuffer = end($buffer);
+
+        return isset($this->index[$endOfBuffer]);
     }
 }

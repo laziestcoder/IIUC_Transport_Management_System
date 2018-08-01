@@ -46,7 +46,7 @@ class Swift_Plugins_PopBeforeSmtpPlugin implements Swift_Events_TransportChangeL
      * Create a new PopBeforeSmtpPlugin for $host and $port.
      *
      * @param string $host
-     * @param int    $port
+     * @param int $port
      * @param string $crypto as "tls" or "ssl"
      */
     public function __construct($host, $port = 110, $crypto = null)
@@ -89,7 +89,7 @@ class Swift_Plugins_PopBeforeSmtpPlugin implements Swift_Events_TransportChangeL
      */
     public function setTimeout($timeout)
     {
-        $this->timeout = (int) $timeout;
+        $this->timeout = (int)$timeout;
 
         return $this;
     }
@@ -120,6 +120,23 @@ class Swift_Plugins_PopBeforeSmtpPlugin implements Swift_Events_TransportChangeL
         $this->password = $password;
 
         return $this;
+    }
+
+    /**
+     * Invoked just before a Transport is started.
+     *
+     * @param Swift_Events_TransportChangeEvent $evt
+     */
+    public function beforeTransportStarted(Swift_Events_TransportChangeEvent $evt)
+    {
+        if (isset($this->transport)) {
+            if ($this->transport !== $evt->getTransport()) {
+                return;
+            }
+        }
+
+        $this->connect();
+        $this->disconnect();
     }
 
     /**
@@ -157,60 +174,29 @@ class Swift_Plugins_PopBeforeSmtpPlugin implements Swift_Events_TransportChangeL
         }
     }
 
-    /**
-     * Disconnect from the POP3 host.
-     */
-    public function disconnect()
+    private function getHostString()
     {
-        if (isset($this->connection)) {
-            $this->connection->disconnect();
-        } else {
-            $this->command("QUIT\r\n");
-            if (!fclose($this->socket)) {
-                throw new Swift_Plugins_Pop_Pop3Exception(
-                    sprintf('POP3 host [%s] connection could not be stopped', $this->host)
-                );
-            }
-            $this->socket = null;
-        }
-    }
+        $host = $this->host;
+        switch (strtolower($this->crypto)) {
+            case 'ssl':
+                $host = 'ssl://' . $host;
+                break;
 
-    /**
-     * Invoked just before a Transport is started.
-     *
-     * @param Swift_Events_TransportChangeEvent $evt
-     */
-    public function beforeTransportStarted(Swift_Events_TransportChangeEvent $evt)
-    {
-        if (isset($this->transport)) {
-            if ($this->transport !== $evt->getTransport()) {
-                return;
-            }
+            case 'tls':
+                $host = 'tls://' . $host;
+                break;
         }
 
-        $this->connect();
-        $this->disconnect();
+        return $host;
     }
 
-    /**
-     * Not used.
-     */
-    public function transportStarted(Swift_Events_TransportChangeEvent $evt)
+    private function assertOk($response)
     {
-    }
-
-    /**
-     * Not used.
-     */
-    public function beforeTransportStopped(Swift_Events_TransportChangeEvent $evt)
-    {
-    }
-
-    /**
-     * Not used.
-     */
-    public function transportStopped(Swift_Events_TransportChangeEvent $evt)
-    {
+        if (substr($response, 0, 3) != '+OK') {
+            throw new Swift_Plugins_Pop_Pop3Exception(
+                sprintf('POP3 command failed [%s]', trim($response))
+            );
+        }
     }
 
     private function command($command)
@@ -232,28 +218,42 @@ class Swift_Plugins_PopBeforeSmtpPlugin implements Swift_Events_TransportChangeL
         return $response;
     }
 
-    private function assertOk($response)
+    /**
+     * Disconnect from the POP3 host.
+     */
+    public function disconnect()
     {
-        if (substr($response, 0, 3) != '+OK') {
-            throw new Swift_Plugins_Pop_Pop3Exception(
-                sprintf('POP3 command failed [%s]', trim($response))
-            );
+        if (isset($this->connection)) {
+            $this->connection->disconnect();
+        } else {
+            $this->command("QUIT\r\n");
+            if (!fclose($this->socket)) {
+                throw new Swift_Plugins_Pop_Pop3Exception(
+                    sprintf('POP3 host [%s] connection could not be stopped', $this->host)
+                );
+            }
+            $this->socket = null;
         }
     }
 
-    private function getHostString()
+    /**
+     * Not used.
+     */
+    public function transportStarted(Swift_Events_TransportChangeEvent $evt)
     {
-        $host = $this->host;
-        switch (strtolower($this->crypto)) {
-            case 'ssl':
-                $host = 'ssl://'.$host;
-                break;
+    }
 
-            case 'tls':
-                $host = 'tls://'.$host;
-                break;
-        }
+    /**
+     * Not used.
+     */
+    public function beforeTransportStopped(Swift_Events_TransportChangeEvent $evt)
+    {
+    }
 
-        return $host;
+    /**
+     * Not used.
+     */
+    public function transportStopped(Swift_Events_TransportChangeEvent $evt)
+    {
     }
 }

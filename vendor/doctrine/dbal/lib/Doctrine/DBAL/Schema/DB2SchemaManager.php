@@ -44,11 +44,25 @@ class DB2SchemaManager extends AbstractSchemaManager
     public function listTableNames()
     {
         $sql = $this->_platform->getListTablesSQL();
-        $sql .= " AND CREATOR = UPPER('".$this->_conn->getUsername()."')";
+        $sql .= " AND CREATOR = UPPER('" . $this->_conn->getUsername() . "')";
 
         $tables = $this->_conn->fetchAll($sql);
 
         return $this->filterAssetNames($this->_getPortableTablesList($tables));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _getPortableTablesList($tables)
+    {
+        $tableNames = [];
+        foreach ($tables as $tableRow) {
+            $tableRow = array_change_key_case($tableRow, \CASE_LOWER);
+            $tableNames[] = $tableRow['name'];
+        }
+
+        return $tableNames;
     }
 
     /**
@@ -98,15 +112,15 @@ class DB2SchemaManager extends AbstractSchemaManager
         }
 
         $options = [
-            'length'        => $length,
-            'unsigned'      => (bool) $unsigned,
-            'fixed'         => (bool) $fixed,
-            'default'       => $default,
-            'autoincrement' => (boolean) $tableColumn['autoincrement'],
-            'notnull'       => (bool) ($tableColumn['nulls'] == 'N'),
-            'scale'         => null,
-            'precision'     => null,
-            'comment'       => isset($tableColumn['comment']) && $tableColumn['comment'] !== ''
+            'length' => $length,
+            'unsigned' => (bool)$unsigned,
+            'fixed' => (bool)$fixed,
+            'default' => $default,
+            'autoincrement' => (boolean)$tableColumn['autoincrement'],
+            'notnull' => (bool)($tableColumn['nulls'] == 'N'),
+            'scale' => null,
+            'precision' => null,
+            'comment' => isset($tableColumn['comment']) && $tableColumn['comment'] !== ''
                 ? $tableColumn['comment']
                 : null,
             'platformOptions' => [],
@@ -123,25 +137,11 @@ class DB2SchemaManager extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
-    protected function _getPortableTablesList($tables)
-    {
-        $tableNames = [];
-        foreach ($tables as $tableRow) {
-            $tableRow = array_change_key_case($tableRow, \CASE_LOWER);
-            $tableNames[] = $tableRow['name'];
-        }
-
-        return $tableNames;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function _getPortableTableIndexesList($tableIndexRows, $tableName = null)
     {
         foreach ($tableIndexRows as &$tableIndexRow) {
             $tableIndexRow = array_change_key_case($tableIndexRow, \CASE_LOWER);
-            $tableIndexRow['primary'] = (boolean) $tableIndexRow['primary'];
+            $tableIndexRow['primary'] = (boolean)$tableIndexRow['primary'];
         }
 
         return parent::_getPortableTableIndexesList($tableIndexRows, $tableName);
@@ -173,11 +173,11 @@ class DB2SchemaManager extends AbstractSchemaManager
 
             if (!isset($foreignKeys[$tableForeignKey['index_name']])) {
                 $foreignKeys[$tableForeignKey['index_name']] = [
-                    'local_columns'   => [$tableForeignKey['local_column']],
-                    'foreign_table'   => $tableForeignKey['foreign_table'],
+                    'local_columns' => [$tableForeignKey['local_column']],
+                    'foreign_table' => $tableForeignKey['foreign_table'],
                     'foreign_columns' => [$tableForeignKey['foreign_column']],
-                    'name'            => $tableForeignKey['index_name'],
-                    'options'         => [
+                    'name' => $tableForeignKey['index_name'],
+                    'options' => [
                         'onUpdate' => $tableForeignKey['on_update'],
                         'onDelete' => $tableForeignKey['on_delete'],
                     ]
@@ -215,7 +215,7 @@ class DB2SchemaManager extends AbstractSchemaManager
         //$view['text'] = (is_resource($view['text']) ? stream_get_contents($view['text']) : $view['text']);
         if (!is_resource($view['text'])) {
             $pos = strpos($view['text'], ' AS ');
-            $sql = substr($view['text'], $pos+4);
+            $sql = substr($view['text'], $pos + 4);
         } else {
             $sql = '';
         }

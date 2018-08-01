@@ -12,8 +12,8 @@
 namespace Symfony\Component\HttpFoundation\Tests\File\MimeType;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
 use Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser;
+use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
 
 /**
  * @requires extension fileinfo
@@ -22,39 +22,48 @@ class MimeTypeTest extends TestCase
 {
     protected $path;
 
+    public static function tearDownAfterClass()
+    {
+        $path = __DIR__ . '/../Fixtures/to_delete';
+        if (file_exists($path)) {
+            @chmod($path, 0666);
+            @unlink($path);
+        }
+    }
+
     public function testGuessImageWithoutExtension()
     {
-        $this->assertEquals('image/gif', MimeTypeGuesser::getInstance()->guess(__DIR__.'/../Fixtures/test'));
+        $this->assertEquals('image/gif', MimeTypeGuesser::getInstance()->guess(__DIR__ . '/../Fixtures/test'));
     }
 
     public function testGuessImageWithDirectory()
     {
         $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}('Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException');
 
-        MimeTypeGuesser::getInstance()->guess(__DIR__.'/../Fixtures/directory');
+        MimeTypeGuesser::getInstance()->guess(__DIR__ . '/../Fixtures/directory');
     }
 
     public function testGuessImageWithFileBinaryMimeTypeGuesser()
     {
         $guesser = MimeTypeGuesser::getInstance();
         $guesser->register(new FileBinaryMimeTypeGuesser());
-        $this->assertEquals('image/gif', MimeTypeGuesser::getInstance()->guess(__DIR__.'/../Fixtures/test'));
+        $this->assertEquals('image/gif', MimeTypeGuesser::getInstance()->guess(__DIR__ . '/../Fixtures/test'));
     }
 
     public function testGuessImageWithKnownExtension()
     {
-        $this->assertEquals('image/gif', MimeTypeGuesser::getInstance()->guess(__DIR__.'/../Fixtures/test.gif'));
+        $this->assertEquals('image/gif', MimeTypeGuesser::getInstance()->guess(__DIR__ . '/../Fixtures/test.gif'));
     }
 
     public function testGuessFileWithUnknownExtension()
     {
-        $this->assertEquals('application/octet-stream', MimeTypeGuesser::getInstance()->guess(__DIR__.'/../Fixtures/.unknownextension'));
+        $this->assertEquals('application/octet-stream', MimeTypeGuesser::getInstance()->guess(__DIR__ . '/../Fixtures/.unknownextension'));
     }
 
     public function testGuessWithIncorrectPath()
     {
         $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}('Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException');
-        MimeTypeGuesser::getInstance()->guess(__DIR__.'/../Fixtures/not_here');
+        MimeTypeGuesser::getInstance()->guess(__DIR__ . '/../Fixtures/not_here');
     }
 
     public function testGuessWithNonReadablePath()
@@ -67,7 +76,7 @@ class MimeTypeTest extends TestCase
             $this->markTestSkipped('This test will fail if run under superuser');
         }
 
-        $path = __DIR__.'/../Fixtures/to_delete';
+        $path = __DIR__ . '/../Fixtures/to_delete';
         touch($path);
         @chmod($path, 0333);
 
@@ -76,15 +85,6 @@ class MimeTypeTest extends TestCase
             MimeTypeGuesser::getInstance()->guess($path);
         } else {
             $this->markTestSkipped('Can not verify chmod operations, change of file permissions failed');
-        }
-    }
-
-    public static function tearDownAfterClass()
-    {
-        $path = __DIR__.'/../Fixtures/to_delete';
-        if (file_exists($path)) {
-            @chmod($path, 0666);
-            @unlink($path);
         }
     }
 }

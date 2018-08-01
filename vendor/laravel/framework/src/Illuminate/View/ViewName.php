@@ -7,7 +7,7 @@ class ViewName
     /**
      * Normalize the given event name.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return string
      */
     public static function normalize($name)
@@ -20,6 +20,6 @@ class ViewName
 
         list($namespace, $name) = explode($delimiter, $name);
 
-        return $namespace.$delimiter.str_replace('/', '.', $name);
+        return $namespace . $delimiter . str_replace('/', '.', $name);
     }
 }

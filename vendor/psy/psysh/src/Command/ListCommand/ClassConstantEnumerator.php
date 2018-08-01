@@ -55,10 +55,35 @@ class ClassConstantEnumerator extends Enumerator
     }
 
     /**
+     * Prepare formatted constant array.
+     *
+     * @param array $constants
+     *
+     * @return array
+     */
+    protected function prepareConstants(array $constants)
+    {
+        // My kingdom for a generator.
+        $ret = [];
+
+        foreach ($constants as $name => $constant) {
+            if ($this->showItem($name)) {
+                $ret[$name] = [
+                    'name' => $name,
+                    'style' => self::IS_CONSTANT,
+                    'value' => $this->presentRef($constant->getValue()),
+                ];
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
      * Get defined constants for the given class or object Reflector.
      *
      * @param \Reflector $reflector
-     * @param bool       $noInherit Exclude inherited constants
+     * @param bool $noInherit Exclude inherited constants
      *
      * @return array
      */
@@ -80,31 +105,6 @@ class ClassConstantEnumerator extends Enumerator
         ksort($constants, SORT_NATURAL | SORT_FLAG_CASE);
 
         return $constants;
-    }
-
-    /**
-     * Prepare formatted constant array.
-     *
-     * @param array $constants
-     *
-     * @return array
-     */
-    protected function prepareConstants(array $constants)
-    {
-        // My kingdom for a generator.
-        $ret = [];
-
-        foreach ($constants as $name => $constant) {
-            if ($this->showItem($name)) {
-                $ret[$name] = [
-                    'name'  => $name,
-                    'style' => self::IS_CONSTANT,
-                    'value' => $this->presentRef($constant->getValue()),
-                ];
-            }
-        }
-
-        return $ret;
     }
 
     /**

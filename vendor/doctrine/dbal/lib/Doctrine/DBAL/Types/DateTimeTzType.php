@@ -49,14 +49,6 @@ class DateTimeTzType extends Type implements PhpDateTimeMappingType
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return Type::DATETIMETZ;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
         return $platform->getDateTimeTzTypeDeclarationSQL($fieldDeclaration);
@@ -81,6 +73,14 @@ class DateTimeTzType extends Type implements PhpDateTimeMappingType
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return Type::DATETIMETZ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         if ($value === null || $value instanceof \DateTimeInterface) {
@@ -88,7 +88,7 @@ class DateTimeTzType extends Type implements PhpDateTimeMappingType
         }
 
         $val = \DateTime::createFromFormat($platform->getDateTimeTzFormatString(), $value);
-        if ( ! $val) {
+        if (!$val) {
             throw ConversionException::conversionFailedFormat($value, $this->getName(), $platform->getDateTimeTzFormatString());
         }
 

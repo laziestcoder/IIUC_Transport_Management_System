@@ -11,8 +11,8 @@
 
 namespace Monolog\Handler;
 
-use Monolog\TestCase;
 use Monolog\Logger;
+use Monolog\TestCase;
 
 /**
  * @author Haralan Dobrev <hkdobrev@gmail.com>

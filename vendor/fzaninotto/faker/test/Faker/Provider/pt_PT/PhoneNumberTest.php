@@ -18,6 +18,7 @@ class PhoneNumberTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertRegExp('/^(9[1,2,3,6][0-9]{7})|(2[0-9]{8})|(\+351 [2][0-9]{8})|(\+351 9[1,2,3,6][0-9]{7})/', $this->faker->phoneNumber());
     }
+
     public function testMobileNumberReturnsMobileNumberWithOrWithoutPrefix()
     {
         $this->assertRegExp('/^(9[1,2,3,6][0-9]{7})/', $this->faker->mobileNumber());

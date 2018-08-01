@@ -11,10 +11,10 @@
 
 namespace Monolog\Handler;
 
-use Monolog\TestCase;
-use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\Slack\SlackRecord;
+use Monolog\Logger;
+use Monolog\TestCase;
 
 /**
  * @author Greg Kedzierski <greg@gregkedzierski.com>
@@ -47,6 +47,33 @@ class SlackHandlerTest extends TestCase
         $content = fread($this->res, 1024);
 
         $this->assertRegexp('/POST \/api\/chat.postMessage HTTP\/1.1\\r\\nHost: slack.com\\r\\nContent-Type: application\/x-www-form-urlencoded\\r\\nContent-Length: \d{2,4}\\r\\n\\r\\n/', $content);
+    }
+
+    private function createHandler($token = 'myToken', $channel = 'channel1', $username = 'Monolog', $useAttachment = true, $iconEmoji = null, $useShortAttachment = false, $includeExtra = false)
+    {
+        $constructorArgs = array($token, $channel, $username, $useAttachment, $iconEmoji, Logger::DEBUG, true, $useShortAttachment, $includeExtra);
+        $this->res = fopen('php://memory', 'a');
+        $this->handler = $this->getMock(
+            '\Monolog\Handler\SlackHandler',
+            array('fsockopen', 'streamSetTimeout', 'closeSocket'),
+            $constructorArgs
+        );
+
+        $reflectionProperty = new \ReflectionProperty('\Monolog\Handler\SocketHandler', 'connectionString');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($this->handler, 'localhost:1234');
+
+        $this->handler->expects($this->any())
+            ->method('fsockopen')
+            ->will($this->returnValue($this->res));
+        $this->handler->expects($this->any())
+            ->method('streamSetTimeout')
+            ->will($this->returnValue(true));
+        $this->handler->expects($this->any())
+            ->method('closeSocket')
+            ->will($this->returnValue(true));
+
+        $this->handler->setFormatter($this->getIdentityFormatter());
     }
 
     public function testWriteContent()
@@ -99,7 +126,7 @@ class SlackHandlerTest extends TestCase
         fseek($this->res, 0);
         $content = fread($this->res, 1024);
 
-        $this->assertRegexp('/%22color%22%3A%22'.$expectedColor.'/', $content);
+        $this->assertRegexp('/%22color%22%3A%22' . $expectedColor . '/', $content);
     }
 
     public function testWriteContentWithPlainTextMessage()
@@ -115,41 +142,14 @@ class SlackHandlerTest extends TestCase
     public function provideLevelColors()
     {
         return array(
-            array(Logger::DEBUG,    urlencode(SlackRecord::COLOR_DEFAULT)),
-            array(Logger::INFO,     SlackRecord::COLOR_GOOD),
-            array(Logger::NOTICE,   SlackRecord::COLOR_GOOD),
-            array(Logger::WARNING,  SlackRecord::COLOR_WARNING),
-            array(Logger::ERROR,    SlackRecord::COLOR_DANGER),
+            array(Logger::DEBUG, urlencode(SlackRecord::COLOR_DEFAULT)),
+            array(Logger::INFO, SlackRecord::COLOR_GOOD),
+            array(Logger::NOTICE, SlackRecord::COLOR_GOOD),
+            array(Logger::WARNING, SlackRecord::COLOR_WARNING),
+            array(Logger::ERROR, SlackRecord::COLOR_DANGER),
             array(Logger::CRITICAL, SlackRecord::COLOR_DANGER),
-            array(Logger::ALERT,    SlackRecord::COLOR_DANGER),
-            array(Logger::EMERGENCY,SlackRecord::COLOR_DANGER),
+            array(Logger::ALERT, SlackRecord::COLOR_DANGER),
+            array(Logger::EMERGENCY, SlackRecord::COLOR_DANGER),
         );
-    }
-
-    private function createHandler($token = 'myToken', $channel = 'channel1', $username = 'Monolog', $useAttachment = true, $iconEmoji = null, $useShortAttachment = false, $includeExtra = false)
-    {
-        $constructorArgs = array($token, $channel, $username, $useAttachment, $iconEmoji, Logger::DEBUG, true, $useShortAttachment, $includeExtra);
-        $this->res = fopen('php://memory', 'a');
-        $this->handler = $this->getMock(
-            '\Monolog\Handler\SlackHandler',
-            array('fsockopen', 'streamSetTimeout', 'closeSocket'),
-            $constructorArgs
-        );
-
-        $reflectionProperty = new \ReflectionProperty('\Monolog\Handler\SocketHandler', 'connectionString');
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($this->handler, 'localhost:1234');
-
-        $this->handler->expects($this->any())
-            ->method('fsockopen')
-            ->will($this->returnValue($this->res));
-        $this->handler->expects($this->any())
-            ->method('streamSetTimeout')
-            ->will($this->returnValue(true));
-        $this->handler->expects($this->any())
-            ->method('closeSocket')
-            ->will($this->returnValue(true));
-
-        $this->handler->setFormatter($this->getIdentityFormatter());
     }
 }

@@ -40,7 +40,7 @@ final class Tests
 
         $node->setAttribute('name', $test);
         $node->setAttribute('size', $result['size']);
-        $node->setAttribute('result', (int) $result['status']);
-        $node->setAttribute('status', $this->codeMap[(int) $result['status']]);
+        $node->setAttribute('result', (int)$result['status']);
+        $node->setAttribute('status', $this->codeMap[(int)$result['status']]);
     }
 }

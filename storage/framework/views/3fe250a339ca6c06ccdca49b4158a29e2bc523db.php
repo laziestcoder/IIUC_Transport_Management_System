@@ -1,5 +1,5 @@
-<?php if ($errors->hasBag('exception')): ?>
-    <?php $error = $errors->getBag('exception'); ?>
+<?php if($errors->hasBag('exception')): ?>
+    <?php $error = $errors->getBag('exception');?>
     <div class="alert alert-warning alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
         <h4>
@@ -9,6 +9,7 @@
             In <i title="<?php echo e($error->get('file')[0]); ?> line <?php echo e($error->get('line')[0]); ?>"
                   style="border-bottom: 1px dotted #fff;cursor: pointer;"
                   ondblclick="var f=this.innerHTML;this.innerHTML=this.title;this.title=f;"><?php echo e(basename($error->get('file')[0])); ?>
+
                 line <?php echo e($error->get('line')[0]); ?></i> :
         </h4>
         <p><?php echo $error->get('message')[0]; ?></p>

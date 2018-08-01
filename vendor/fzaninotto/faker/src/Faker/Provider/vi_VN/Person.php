@@ -19,8 +19,8 @@ class Person extends \Faker\Provider\Person
     );
 
     protected static $middleNameFormat = array(
-      '{{firstNameMale}}',
-      '{{firstNameFemale}}',
+        '{{firstNameMale}}',
+        '{{firstNameFemale}}',
     );
 
     /**

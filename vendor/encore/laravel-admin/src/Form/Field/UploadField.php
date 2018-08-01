@@ -44,62 +44,6 @@ trait UploadField
     protected $removable = false;
 
     /**
-     * Initialize the storage instance.
-     *
-     * @return void.
-     */
-    protected function initStorage()
-    {
-        $this->disk(config('admin.upload.disk'));
-    }
-
-    /**
-     * Set default options form image field.
-     *
-     * @return void
-     */
-    protected function setupDefaultOptions()
-    {
-        $defaultOptions = [
-            'overwriteInitial'     => false,
-            'initialPreviewAsData' => true,
-            'browseLabel'          => trans('admin.browse'),
-            'showRemove'           => false,
-            'showUpload'           => false,
-//            'initialCaption'       => $this->initialCaption($this->value),
-            'deleteExtraData' => [
-                $this->formatName($this->column) => static::FILE_DELETE_FLAG,
-                static::FILE_DELETE_FLAG         => '',
-                '_token'                         => csrf_token(),
-                '_method'                        => 'PUT',
-            ],
-        ];
-
-        if ($this->form instanceof Form) {
-            $defaultOptions['deleteUrl'] = $this->form->resource().'/'.$this->form->model()->getKey();
-        }
-
-        $this->options($defaultOptions);
-    }
-
-    /**
-     * Set preview options form image field.
-     *
-     * @return void
-     */
-    protected function setupPreviewOptions()
-    {
-        if (!$this->removable) {
-            return;
-        }
-
-        $this->options([
-            //'initialPreview'        => $this->preview(),
-            'initialPreviewConfig' => $this->initialPreviewConfig(),
-        ]);
-    }
-
-    /**
      * Allow use to remove file.
      *
      * @return $this
@@ -112,46 +56,9 @@ trait UploadField
     }
 
     /**
-     * Set options for file-upload plugin.
-     *
-     * @param array $options
-     *
-     * @return $this
-     */
-    public function options($options = [])
-    {
-        $this->options = array_merge($options, $this->options);
-
-        return $this;
-    }
-
-    /**
-     * Set disk for storage.
-     *
-     * @param string $disk Disks defined in `config/filesystems.php`.
-     *
-     * @return $this
-     */
-    public function disk($disk)
-    {
-        if (!array_key_exists($disk, config('filesystems.disks'))) {
-            $error = new MessageBag([
-                'title'   => 'Config error.',
-                'message' => "Disk [$disk] not configured, please add a disk config in `config/filesystems.php`.",
-            ]);
-
-            return session()->flash('error', $error);
-        }
-
-        $this->storage = Storage::disk($disk);
-
-        return $this;
-    }
-
-    /**
      * Specify the directory and name for upload file.
      *
-     * @param string      $directory
+     * @param string $directory
      * @param null|string $name
      *
      * @return $this
@@ -210,6 +117,131 @@ trait UploadField
     }
 
     /**
+     * Get file visit url.
+     *
+     * @param $path
+     *
+     * @return string
+     */
+    public function objectUrl($path)
+    {
+        if (URL::isValidUrl($path)) {
+            return $path;
+        }
+
+        if ($this->storage) {
+            return $this->storage->url($path);
+        }
+
+        return Storage::disk(config('admin.upload.disk'))->url($path);
+    }
+
+    /**
+     * Destroy original files.
+     *
+     * @return void.
+     */
+    public function destroy()
+    {
+        if ($this->storage->exists($this->original)) {
+            $this->storage->delete($this->original);
+        }
+    }
+
+    /**
+     * Initialize the storage instance.
+     *
+     * @return void.
+     */
+    protected function initStorage()
+    {
+        $this->disk(config('admin.upload.disk'));
+    }
+
+    /**
+     * Set disk for storage.
+     *
+     * @param string $disk Disks defined in `config/filesystems.php`.
+     *
+     * @return $this
+     */
+    public function disk($disk)
+    {
+        if (!array_key_exists($disk, config('filesystems.disks'))) {
+            $error = new MessageBag([
+                'title' => 'Config error.',
+                'message' => "Disk [$disk] not configured, please add a disk config in `config/filesystems.php`.",
+            ]);
+
+            return session()->flash('error', $error);
+        }
+
+        $this->storage = Storage::disk($disk);
+
+        return $this;
+    }
+
+    /**
+     * Set default options form image field.
+     *
+     * @return void
+     */
+    protected function setupDefaultOptions()
+    {
+        $defaultOptions = [
+            'overwriteInitial' => false,
+            'initialPreviewAsData' => true,
+            'browseLabel' => trans('admin.browse'),
+            'showRemove' => false,
+            'showUpload' => false,
+//            'initialCaption'       => $this->initialCaption($this->value),
+            'deleteExtraData' => [
+                $this->formatName($this->column) => static::FILE_DELETE_FLAG,
+                static::FILE_DELETE_FLAG => '',
+                '_token' => csrf_token(),
+                '_method' => 'PUT',
+            ],
+        ];
+
+        if ($this->form instanceof Form) {
+            $defaultOptions['deleteUrl'] = $this->form->resource() . '/' . $this->form->model()->getKey();
+        }
+
+        $this->options($defaultOptions);
+    }
+
+    /**
+     * Set options for file-upload plugin.
+     *
+     * @param array $options
+     *
+     * @return $this
+     */
+    public function options($options = [])
+    {
+        $this->options = array_merge($options, $this->options);
+
+        return $this;
+    }
+
+    /**
+     * Set preview options form image field.
+     *
+     * @return void
+     */
+    protected function setupPreviewOptions()
+    {
+        if (!$this->removable) {
+            return;
+        }
+
+        $this->options([
+            //'initialPreview'        => $this->preview(),
+            'initialPreviewConfig' => $this->initialPreviewConfig(),
+        ]);
+    }
+
+    /**
      * Get store name of upload file.
      *
      * @param UploadedFile $file
@@ -234,17 +266,15 @@ trait UploadField
     }
 
     /**
-     * Get directory for store file.
+     * Generate a unique name for uploaded file.
      *
-     * @return mixed|string
+     * @param UploadedFile $file
+     *
+     * @return string
      */
-    public function getDirectory()
+    protected function generateUniqueName(UploadedFile $file)
     {
-        if ($this->directory instanceof \Closure) {
-            return call_user_func($this->directory, $this->form);
-        }
-
-        return $this->directory ?: $this->defaultDirectory();
+        return md5(uniqid()) . '.' . $file->getClientOriginalExtension();
     }
 
     /**
@@ -276,46 +306,16 @@ trait UploadField
     }
 
     /**
-     * Get file visit url.
+     * Get directory for store file.
      *
-     * @param $path
-     *
-     * @return string
+     * @return mixed|string
      */
-    public function objectUrl($path)
+    public function getDirectory()
     {
-        if (URL::isValidUrl($path)) {
-            return $path;
+        if ($this->directory instanceof \Closure) {
+            return call_user_func($this->directory, $this->form);
         }
 
-        if ($this->storage) {
-            return $this->storage->url($path);
-        }
-
-        return Storage::disk(config('admin.upload.disk'))->url($path);
-    }
-
-    /**
-     * Generate a unique name for uploaded file.
-     *
-     * @param UploadedFile $file
-     *
-     * @return string
-     */
-    protected function generateUniqueName(UploadedFile $file)
-    {
-        return md5(uniqid()).'.'.$file->getClientOriginalExtension();
-    }
-
-    /**
-     * Destroy original files.
-     *
-     * @return void.
-     */
-    public function destroy()
-    {
-        if ($this->storage->exists($this->original)) {
-            $this->storage->delete($this->original);
-        }
+        return $this->directory ?: $this->defaultDirectory();
     }
 }

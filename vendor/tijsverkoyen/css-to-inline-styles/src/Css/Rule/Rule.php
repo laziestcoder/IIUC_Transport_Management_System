@@ -29,10 +29,10 @@ final class Rule
     /**
      * Rule constructor.
      *
-     * @param string      $selector
-     * @param Property[]  $properties
+     * @param string $selector
+     * @param Property[] $properties
      * @param Specificity $specificity
-     * @param int         $order
+     * @param int $order
      */
     public function __construct($selector, array $properties, Specificity $specificity, $order)
     {

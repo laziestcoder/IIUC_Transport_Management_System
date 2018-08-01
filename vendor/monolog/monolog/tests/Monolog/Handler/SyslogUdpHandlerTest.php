@@ -45,14 +45,19 @@ class SyslogUdpHandlerTest extends TestCase
         $socket = $this->getMock('\Monolog\Handler\SyslogUdp\UdpSocket', array('write'), array('lol', 'lol'));
         $socket->expects($this->at(0))
             ->method('write')
-            ->with("lol", "<".(LOG_AUTHPRIV + LOG_WARNING).">1 $time $host php $pid - - ");
+            ->with("lol", "<" . (LOG_AUTHPRIV + LOG_WARNING) . ">1 $time $host php $pid - - ");
         $socket->expects($this->at(1))
             ->method('write')
-            ->with("hej", "<".(LOG_AUTHPRIV + LOG_WARNING).">1 $time $host php $pid - - ");
+            ->with("hej", "<" . (LOG_AUTHPRIV + LOG_WARNING) . ">1 $time $host php $pid - - ");
 
         $handler->setSocket($socket);
 
         $handler->handle($this->getRecordWithMessage("hej\nlol"));
+    }
+
+    protected function getRecordWithMessage($msg)
+    {
+        return array('message' => $msg, 'level' => \Monolog\Logger::WARNING, 'context' => null, 'extra' => array(), 'channel' => 'lol');
     }
 
     public function testSplitWorksOnEmptyMsg()
@@ -67,10 +72,5 @@ class SyslogUdpHandlerTest extends TestCase
         $handler->setSocket($socket);
 
         $handler->handle($this->getRecordWithMessage(null));
-    }
-
-    protected function getRecordWithMessage($msg)
-    {
-        return array('message' => $msg, 'level' => \Monolog\Logger::WARNING, 'context' => null, 'extra' => array(), 'channel' => 'lol');
     }
 }

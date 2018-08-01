@@ -11,10 +11,10 @@
 
 namespace Prophecy\Promise;
 
-use Prophecy\Prophecy\ObjectProphecy;
-use Prophecy\Prophecy\MethodProphecy;
-use Prophecy\Exception\InvalidArgumentException;
 use Closure;
+use Prophecy\Exception\InvalidArgumentException;
+use Prophecy\Prophecy\MethodProphecy;
+use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * Callback promise.
@@ -47,7 +47,7 @@ class CallbackPromise implements PromiseInterface
     /**
      * Evaluates promise callback.
      *
-     * @param array          $args
+     * @param array $args
      * @param ObjectProphecy $object
      * @param MethodProphecy $method
      *

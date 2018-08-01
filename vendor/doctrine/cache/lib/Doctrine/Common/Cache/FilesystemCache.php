@@ -42,18 +42,18 @@ class FilesystemCache extends FileCache
      */
     protected function doFetch($id)
     {
-        $data     = '';
+        $data = '';
         $lifetime = -1;
         $filename = $this->getFilename($id);
 
-        if ( ! is_file($filename)) {
+        if (!is_file($filename)) {
             return false;
         }
 
         $resource = fopen($filename, "r");
 
         if (false !== ($line = fgets($resource))) {
-            $lifetime = (int) $line;
+            $lifetime = (int)$line;
         }
 
         if ($lifetime !== 0 && $lifetime < time()) {
@@ -79,14 +79,14 @@ class FilesystemCache extends FileCache
         $lifetime = -1;
         $filename = $this->getFilename($id);
 
-        if ( ! is_file($filename)) {
+        if (!is_file($filename)) {
             return false;
         }
 
         $resource = fopen($filename, "r");
 
         if (false !== ($line = fgets($resource))) {
-            $lifetime = (int) $line;
+            $lifetime = (int)$line;
         }
 
         fclose($resource);
@@ -103,8 +103,8 @@ class FilesystemCache extends FileCache
             $lifeTime = time() + $lifeTime;
         }
 
-        $data      = serialize($data);
-        $filename  = $this->getFilename($id);
+        $data = serialize($data);
+        $filename = $this->getFilename($id);
 
         return $this->writeFile($filename, $lifeTime . PHP_EOL . $data);
     }

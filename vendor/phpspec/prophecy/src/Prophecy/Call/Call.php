@@ -30,20 +30,20 @@ class Call
     /**
      * Initializes call.
      *
-     * @param string      $methodName
-     * @param array       $arguments
-     * @param mixed       $returnValue
-     * @param Exception   $exception
+     * @param string $methodName
+     * @param array $arguments
+     * @param mixed $returnValue
+     * @param Exception $exception
      * @param null|string $file
-     * @param null|int    $line
+     * @param null|int $line
      */
     public function __construct($methodName, array $arguments, $returnValue,
                                 Exception $exception = null, $file, $line)
     {
-        $this->methodName  = $methodName;
-        $this->arguments   = $arguments;
+        $this->methodName = $methodName;
+        $this->arguments = $arguments;
         $this->returnValue = $returnValue;
-        $this->exception   = $exception;
+        $this->exception = $exception;
 
         if ($file) {
             $this->file = $file;

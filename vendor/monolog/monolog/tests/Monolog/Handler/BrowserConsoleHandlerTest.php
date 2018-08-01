@@ -11,27 +11,14 @@
 
 namespace Monolog\Handler;
 
-use Monolog\TestCase;
 use Monolog\Logger;
+use Monolog\TestCase;
 
 /**
  * @covers Monolog\Handler\BrowserConsoleHandlerTest
  */
 class BrowserConsoleHandlerTest extends TestCase
 {
-    protected function setUp()
-    {
-        BrowserConsoleHandler::reset();
-    }
-
-    protected function generateScript()
-    {
-        $reflMethod = new \ReflectionMethod('Monolog\Handler\BrowserConsoleHandler', 'generateScript');
-        $reflMethod->setAccessible(true);
-
-        return $reflMethod->invoke(null);
-    }
-
     public function testStyling()
     {
         $handler = new BrowserConsoleHandler();
@@ -46,6 +33,14 @@ c.log("%cfoo%cbar%c", "font-weight: normal", "color: red", "font-weight: normal"
 EOF;
 
         $this->assertEquals($expected, $this->generateScript());
+    }
+
+    protected function generateScript()
+    {
+        $reflMethod = new \ReflectionMethod('Monolog\Handler\BrowserConsoleHandler', 'generateScript');
+        $reflMethod->setAccessible(true);
+
+        return $reflMethod->invoke(null);
     }
 
     public function testEscaping()
@@ -126,5 +121,10 @@ c.log("%ctest4", "font-weight: normal");
 EOF;
 
         $this->assertEquals($expected, $this->generateScript());
+    }
+
+    protected function setUp()
+    {
+        BrowserConsoleHandler::reset();
     }
 }

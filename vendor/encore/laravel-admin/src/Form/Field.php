@@ -686,6 +686,42 @@ class Field implements Renderable
     }
 
     /**
+     * Format the name of the field.
+     *
+     * @param string $column
+     *
+     * @return array|mixed|string
+     */
+    protected function formatName($column)
+    {
+        if (is_string($column)) {
+            $name = explode('.', $column);
+
+            if (count($name) == 1) {
+                return $name[0];
+            }
+
+            $html = array_shift($name);
+            foreach ($name as $piece) {
+                $html .= "[$piece]";
+            }
+
+            return $html;
+        }
+
+        if (is_array($this->column)) {
+            $names = [];
+            foreach ($this->column as $key => $name) {
+                $names[$key] = $this->formatName($name);
+            }
+
+            return $names;
+        }
+
+        return '';
+    }
+
+    /**
      * Get element class string.
      *
      * @return mixed
@@ -705,6 +741,36 @@ class Field implements Renderable
         }
 
         return implode(' ', $elementClass);
+    }
+
+    /**
+     * Get element class.
+     *
+     * @return array
+     */
+    protected function getElementClass()
+    {
+        if (!$this->elementClass) {
+            $name = $this->elementName ?: $this->formatName($this->column);
+
+            $this->elementClass = (array)str_replace(['[', ']'], '_', $name);
+        }
+
+        return $this->elementClass;
+    }
+
+    /**
+     * Set form element class.
+     *
+     * @param string|array $class
+     *
+     * @return $this
+     */
+    public function setElementClass($class)
+    {
+        $this->elementClass = (array)$class;
+
+        return $this;
     }
 
     /**
@@ -837,71 +903,5 @@ class Field implements Renderable
         }
 
         return '.' . implode('.', $elementClass);
-    }
-
-    /**
-     * Get element class.
-     *
-     * @return array
-     */
-    protected function getElementClass()
-    {
-        if (!$this->elementClass) {
-            $name = $this->elementName ?: $this->formatName($this->column);
-
-            $this->elementClass = (array)str_replace(['[', ']'], '_', $name);
-        }
-
-        return $this->elementClass;
-    }
-
-    /**
-     * Set form element class.
-     *
-     * @param string|array $class
-     *
-     * @return $this
-     */
-    public function setElementClass($class)
-    {
-        $this->elementClass = (array)$class;
-
-        return $this;
-    }
-
-    /**
-     * Format the name of the field.
-     *
-     * @param string $column
-     *
-     * @return array|mixed|string
-     */
-    protected function formatName($column)
-    {
-        if (is_string($column)) {
-            $name = explode('.', $column);
-
-            if (count($name) == 1) {
-                return $name[0];
-            }
-
-            $html = array_shift($name);
-            foreach ($name as $piece) {
-                $html .= "[$piece]";
-            }
-
-            return $html;
-        }
-
-        if (is_array($this->column)) {
-            $names = [];
-            foreach ($this->column as $key => $name) {
-                $names[$key] = $this->formatName($name);
-            }
-
-            return $names;
-        }
-
-        return '';
     }
 }

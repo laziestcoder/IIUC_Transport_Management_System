@@ -9,8 +9,7 @@
 
     <link href="<?php echo e(asset('/vendor/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
 
-    <link href="<?php echo e(asset('vendor/font-awesome/css/font-awesome.min.css')); ?>" rel="stylesheet"
-          type="text/css">
+    <link href="<?php echo e(asset ('vendor/font-awesome/css/font-awesome.min.css')); ?>" rel="stylesheet" type="text/css">
     <!-- <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css"> -->
     <!-- <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'> -->
     <!-- <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'> -->
@@ -24,7 +23,7 @@
 
     <!-- Styles -->
     <link href="<?php echo e(asset('css/app.css')); ?>" rel="stylesheet">
-    <!-- <?php echo $__env->yieldContent('index'); ?> -->
+<!-- <?php echo $__env->yieldContent('index'); ?> -->
     <link href="<?php echo e(asset('css/agency.min.css')); ?>" rel="stylesheet">
     <link href="<?php echo e(asset('css/agency.css')); ?>" rel="stylesheet">
     <link href="<?php echo e(asset('css/style.css')); ?>" rel="stylesheet">
@@ -34,14 +33,14 @@
 <body>
 <div id="app">
 
-    <?php echo $__env->make('common.nav', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php echo $__env->make('common.nav', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 
-    <!-- <div class="container"> -->
-    <?php echo $__env->make('inc.messages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<!-- <div class="container"> -->
+<?php echo $__env->make('inc.messages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 
-    <!-- <div id="main" class="row"> -->
-    <?php echo $__env->yieldContent('content'); ?>
-    <!-- </div> -->
+<!-- <div id="main" class="row"> -->
+<?php echo $__env->yieldContent('content'); ?>
+<!-- </div> -->
 
     <footer class="row">
         <?php echo $__env->make('common.footer', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

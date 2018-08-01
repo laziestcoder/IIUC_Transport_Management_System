@@ -1,4 +1,5 @@
 <?php
+
 namespace Faker\Test\Provider\kk_KZ;
 
 use Faker\Generator;
@@ -19,9 +20,9 @@ class CompanyTest extends \PHPUnit_Framework_TestCase
 
     public function testBusinessIdentificationNumberIsValid()
     {
-        $registrationDate             = new \DateTime('now');
+        $registrationDate = new \DateTime('now');
         $businessIdentificationNumber = $this->faker->businessIdentificationNumber($registrationDate);
-        $registrationDateAsString     = $registrationDate->format('ym');
+        $registrationDateAsString = $registrationDate->format('ym');
 
         $this->assertRegExp(
             "/^(" . $registrationDateAsString . ")([4-6]{1})([0-3]{1})(\\d{6})$/",

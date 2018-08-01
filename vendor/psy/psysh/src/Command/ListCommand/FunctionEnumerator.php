@@ -41,13 +41,13 @@ class FunctionEnumerator extends Enumerator
         }
 
         if ($input->getOption('user')) {
-            $label     = 'User Functions';
+            $label = 'User Functions';
             $functions = $this->getFunctions('user');
         } elseif ($input->getOption('internal')) {
-            $label     = 'Internal Functions';
+            $label = 'Internal Functions';
             $functions = $this->getFunctions('internal');
         } else {
-            $label     = 'Functions';
+            $label = 'Functions';
             $functions = $this->getFunctions();
         }
 
@@ -100,7 +100,7 @@ class FunctionEnumerator extends Enumerator
         foreach ($functions as $name) {
             if ($this->showItem($name)) {
                 $ret[$name] = [
-                    'name'  => $name,
+                    'name' => $name,
                     'style' => self::IS_FUNCTION,
                     'value' => $this->presentSignature($name),
                 ];

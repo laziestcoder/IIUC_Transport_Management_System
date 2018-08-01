@@ -18,30 +18,6 @@ class ExportButton extends AbstractTool
     }
 
     /**
-     * Set up script for export button.
-     */
-    protected function setUpScripts()
-    {
-        $script = <<<'SCRIPT'
-
-$('.export-selected').click(function (e) {
-    e.preventDefault();
-    
-    var rows = selectedRows().join(',');
-    if (!rows) {
-        return false;
-    }
-    
-    var href = $(this).attr('href').replace('__rows__', rows);
-    location.href = href;
-});
-
-SCRIPT;
-
-        Admin::script($script);
-    }
-
-    /**
      * Render Export button.
      *
      * @return string
@@ -78,5 +54,29 @@ SCRIPT;
 &nbsp;&nbsp;
 
 EOT;
+    }
+
+    /**
+     * Set up script for export button.
+     */
+    protected function setUpScripts()
+    {
+        $script = <<<'SCRIPT'
+
+$('.export-selected').click(function (e) {
+    e.preventDefault();
+    
+    var rows = selectedRows().join(',');
+    if (!rows) {
+        return false;
+    }
+    
+    var href = $(this).attr('href').replace('__rows__', rows);
+    location.href = href;
+});
+
+SCRIPT;
+
+        Admin::script($script);
     }
 }

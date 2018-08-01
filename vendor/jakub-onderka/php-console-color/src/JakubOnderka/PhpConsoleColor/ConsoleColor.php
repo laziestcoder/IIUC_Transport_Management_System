@@ -1,4 +1,5 @@
 <?php
+
 namespace JakubOnderka\PhpConsoleColor;
 
 class ConsoleColor
@@ -75,6 +76,18 @@ class ConsoleColor
     }
 
     /**
+     * @return bool
+     */
+    public function isSupported()
+    {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            return getenv('ANSICON') !== false || getenv('ConEmuANSI') === 'ON';
+        }
+
+        return function_exists('posix_isatty') && @posix_isatty(STDOUT);
+    }
+
+    /**
      * @param string|array $style
      * @param string $text
      * @return string
@@ -118,109 +131,11 @@ class ConsoleColor
     }
 
     /**
-     * @param bool $forceStyle
-     */
-    public function setForceStyle($forceStyle)
-    {
-        $this->forceStyle = (bool) $forceStyle;
-    }
-
-    /**
      * @return bool
      */
     public function isStyleForced()
     {
         return $this->forceStyle;
-    }
-
-    /**
-     * @param array $themes
-     * @throws InvalidStyleException
-     * @throws \InvalidArgumentException
-     */
-    public function setThemes(array $themes)
-    {
-        $this->themes = array();
-        foreach ($themes as $name => $styles) {
-            $this->addTheme($name, $styles);
-        }
-    }
-
-    /**
-     * @param string $name
-     * @param array|string $styles
-     * @throws \InvalidArgumentException
-     * @throws InvalidStyleException
-     */
-    public function addTheme($name, $styles)
-    {
-        if (is_string($styles)) {
-            $styles = array($styles);
-        }
-        if (!is_array($styles)) {
-            throw new \InvalidArgumentException("Style must be string or array.");
-        }
-
-        foreach ($styles as $style) {
-            if (!$this->isValidStyle($style)) {
-                throw new InvalidStyleException($style);
-            }
-        }
-
-        $this->themes[$name] = $styles;
-    }
-
-    /**
-     * @return array
-     */
-    public function getThemes()
-    {
-        return $this->themes;
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function hasTheme($name)
-    {
-        return isset($this->themes[$name]);
-    }
-
-    /**
-     * @param string $name
-     */
-    public function removeTheme($name)
-    {
-        unset($this->themes[$name]);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isSupported()
-    {
-        if (DIRECTORY_SEPARATOR === '\\') {
-            return getenv('ANSICON') !== false || getenv('ConEmuANSI') === 'ON';
-        }
-
-        return function_exists('posix_isatty') && @posix_isatty(STDOUT);
-    }
-
-    /**
-     * @return bool
-     */
-    public function are256ColorsSupported()
-    {
-        return DIRECTORY_SEPARATOR === '/' && strpos(getenv('TERM'), '256color') !== false;
-    }
-
-    /**
-     * @return array
-     */
-    public function getPossibleStyles()
-    {
-        return array_keys($this->styles);
     }
 
     /**
@@ -261,6 +176,14 @@ class ConsoleColor
     }
 
     /**
+     * @return bool
+     */
+    public function are256ColorsSupported()
+    {
+        return DIRECTORY_SEPARATOR === '/' && strpos(getenv('TERM'), '256color') !== false;
+    }
+
+    /**
      * @param string $style
      * @return bool
      */
@@ -276,5 +199,83 @@ class ConsoleColor
     private function escSequence($value)
     {
         return "\033[{$value}m";
+    }
+
+    /**
+     * @param bool $forceStyle
+     */
+    public function setForceStyle($forceStyle)
+    {
+        $this->forceStyle = (bool)$forceStyle;
+    }
+
+    /**
+     * @return array
+     */
+    public function getThemes()
+    {
+        return $this->themes;
+    }
+
+    /**
+     * @param array $themes
+     * @throws InvalidStyleException
+     * @throws \InvalidArgumentException
+     */
+    public function setThemes(array $themes)
+    {
+        $this->themes = array();
+        foreach ($themes as $name => $styles) {
+            $this->addTheme($name, $styles);
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param array|string $styles
+     * @throws \InvalidArgumentException
+     * @throws InvalidStyleException
+     */
+    public function addTheme($name, $styles)
+    {
+        if (is_string($styles)) {
+            $styles = array($styles);
+        }
+        if (!is_array($styles)) {
+            throw new \InvalidArgumentException("Style must be string or array.");
+        }
+
+        foreach ($styles as $style) {
+            if (!$this->isValidStyle($style)) {
+                throw new InvalidStyleException($style);
+            }
+        }
+
+        $this->themes[$name] = $styles;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasTheme($name)
+    {
+        return isset($this->themes[$name]);
+    }
+
+    /**
+     * @param string $name
+     */
+    public function removeTheme($name)
+    {
+        unset($this->themes[$name]);
+    }
+
+    /**
+     * @return array
+     */
+    public function getPossibleStyles()
+    {
+        return array_keys($this->styles);
     }
 }

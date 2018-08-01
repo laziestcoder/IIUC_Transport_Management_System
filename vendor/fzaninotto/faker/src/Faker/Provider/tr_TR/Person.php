@@ -74,7 +74,10 @@ class Person extends \Faker\Provider\Person
 
     protected static $title = array('Doç. Dr.', 'Dr.', 'Prof. Dr.');
 
-    public function title($gender = null)
+    /**
+     * replaced by specific unisex Turkish title
+     */
+    public static function titleFemale()
     {
         return static::titleMale();
     }
@@ -87,10 +90,7 @@ class Person extends \Faker\Provider\Person
         return static::randomElement(static::$title);
     }
 
-    /**
-     * replaced by specific unisex Turkish title
-     */
-    public static function titleFemale()
+    public function title($gender = null)
     {
         return static::titleMale();
     }

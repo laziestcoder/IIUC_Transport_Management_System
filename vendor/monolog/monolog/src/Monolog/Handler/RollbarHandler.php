@@ -11,9 +11,9 @@
 
 namespace Monolog\Handler;
 
-use RollbarNotifier;
 use Exception;
 use Monolog\Logger;
+use RollbarNotifier;
 
 /**
  * Sends errors to Rollbar
@@ -41,16 +41,16 @@ class RollbarHandler extends AbstractProcessingHandler
     protected $rollbarNotifier;
 
     protected $levelMap = array(
-        Logger::DEBUG     => 'debug',
-        Logger::INFO      => 'info',
-        Logger::NOTICE    => 'info',
-        Logger::WARNING   => 'warning',
-        Logger::ERROR     => 'error',
-        Logger::CRITICAL  => 'critical',
-        Logger::ALERT     => 'critical',
+        Logger::DEBUG => 'debug',
+        Logger::INFO => 'info',
+        Logger::NOTICE => 'info',
+        Logger::WARNING => 'warning',
+        Logger::ERROR => 'error',
+        Logger::CRITICAL => 'critical',
+        Logger::ALERT => 'critical',
         Logger::EMERGENCY => 'critical',
     );
-
+    protected $initialized = false;
     /**
      * Records whether any log records have been added since the last flush of the rollbar notifier
      *
@@ -58,18 +58,32 @@ class RollbarHandler extends AbstractProcessingHandler
      */
     private $hasRecords = false;
 
-    protected $initialized = false;
-
     /**
      * @param RollbarNotifier $rollbarNotifier RollbarNotifier object constructed with valid token
-     * @param int             $level           The minimum logging level at which this handler will be triggered
-     * @param bool            $bubble          Whether the messages that are handled can bubble up the stack or not
+     * @param int $level The minimum logging level at which this handler will be triggered
+     * @param bool $bubble Whether the messages that are handled can bubble up the stack or not
      */
     public function __construct(RollbarNotifier $rollbarNotifier, $level = Logger::ERROR, $bubble = true)
     {
         $this->rollbarNotifier = $rollbarNotifier;
 
         parent::__construct($level, $bubble);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function close()
+    {
+        $this->flush();
+    }
+
+    public function flush()
+    {
+        if ($this->hasRecords) {
+            $this->rollbarNotifier->flush();
+            $this->hasRecords = false;
+        }
     }
 
     /**
@@ -112,21 +126,5 @@ class RollbarHandler extends AbstractProcessingHandler
         }
 
         $this->hasRecords = true;
-    }
-
-    public function flush()
-    {
-        if ($this->hasRecords) {
-            $this->rollbarNotifier->flush();
-            $this->hasRecords = false;
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function close()
-    {
-        $this->flush();
     }
 }

@@ -34,54 +34,6 @@ class DrizzleSchemaManager extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
-    protected function _getPortableTableColumnDefinition($tableColumn)
-    {
-        $dbType = strtolower($tableColumn['DATA_TYPE']);
-
-        $type = $this->_platform->getDoctrineTypeMapping($dbType);
-        $type = $this->extractDoctrineTypeFromComment($tableColumn['COLUMN_COMMENT'], $type);
-        $tableColumn['COLUMN_COMMENT'] = $this->removeDoctrineTypeFromComment($tableColumn['COLUMN_COMMENT'], $type);
-
-        $options = [
-            'notnull' => !(bool) $tableColumn['IS_NULLABLE'],
-            'length' => (int) $tableColumn['CHARACTER_MAXIMUM_LENGTH'],
-            'default' => $tableColumn['COLUMN_DEFAULT'] ?? null,
-            'autoincrement' => (bool) $tableColumn['IS_AUTO_INCREMENT'],
-            'scale' => (int) $tableColumn['NUMERIC_SCALE'],
-            'precision' => (int) $tableColumn['NUMERIC_PRECISION'],
-            'comment' => isset($tableColumn['COLUMN_COMMENT']) && '' !== $tableColumn['COLUMN_COMMENT']
-                ? $tableColumn['COLUMN_COMMENT']
-                : null,
-        ];
-
-        $column = new Column($tableColumn['COLUMN_NAME'], Type::getType($type), $options);
-
-        if ( ! empty($tableColumn['COLLATION_NAME'])) {
-            $column->setPlatformOption('collation', $tableColumn['COLLATION_NAME']);
-        }
-
-        return $column;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getPortableDatabaseDefinition($database)
-    {
-        return $database['SCHEMA_NAME'];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getPortableTableDefinition($table)
-    {
-        return $table['TABLE_NAME'];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function _getPortableTableForeignKeyDefinition($tableForeignKey)
     {
         $columns = [];
@@ -109,11 +61,59 @@ class DrizzleSchemaManager extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
+    protected function _getPortableTableColumnDefinition($tableColumn)
+    {
+        $dbType = strtolower($tableColumn['DATA_TYPE']);
+
+        $type = $this->_platform->getDoctrineTypeMapping($dbType);
+        $type = $this->extractDoctrineTypeFromComment($tableColumn['COLUMN_COMMENT'], $type);
+        $tableColumn['COLUMN_COMMENT'] = $this->removeDoctrineTypeFromComment($tableColumn['COLUMN_COMMENT'], $type);
+
+        $options = [
+            'notnull' => !(bool)$tableColumn['IS_NULLABLE'],
+            'length' => (int)$tableColumn['CHARACTER_MAXIMUM_LENGTH'],
+            'default' => $tableColumn['COLUMN_DEFAULT'] ?? null,
+            'autoincrement' => (bool)$tableColumn['IS_AUTO_INCREMENT'],
+            'scale' => (int)$tableColumn['NUMERIC_SCALE'],
+            'precision' => (int)$tableColumn['NUMERIC_PRECISION'],
+            'comment' => isset($tableColumn['COLUMN_COMMENT']) && '' !== $tableColumn['COLUMN_COMMENT']
+                ? $tableColumn['COLUMN_COMMENT']
+                : null,
+        ];
+
+        $column = new Column($tableColumn['COLUMN_NAME'], Type::getType($type), $options);
+
+        if (!empty($tableColumn['COLLATION_NAME'])) {
+            $column->setPlatformOption('collation', $tableColumn['COLLATION_NAME']);
+        }
+
+        return $column;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _getPortableDatabaseDefinition($database)
+    {
+        return $database['SCHEMA_NAME'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _getPortableTableDefinition($table)
+    {
+        return $table['TABLE_NAME'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function _getPortableTableIndexesList($tableIndexes, $tableName = null)
     {
         $indexes = [];
         foreach ($tableIndexes as $k) {
-            $k['primary'] = (boolean) $k['primary'];
+            $k['primary'] = (boolean)$k['primary'];
             $indexes[] = $k;
         }
 

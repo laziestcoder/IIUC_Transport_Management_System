@@ -14,7 +14,7 @@ class PersonTest extends \PHPUnit_Framework_TestCase
         $faker->addProvider(new Person($faker));
         $faker->addProvider(new Miscellaneous($faker));
 
-        for ($i = 0; $i < 1000; $i++) { 
+        for ($i = 0; $i < 1000; $i++) {
             $birthNumber = $faker->birthNumber();
             $birthNumber = str_replace('/', '', $birthNumber);
 

@@ -54,15 +54,23 @@ class SchemaIndexDefinitionEventArgs extends SchemaEventArgs
     private $_connection;
 
     /**
-     * @param array                     $tableIndex
-     * @param string                    $table
+     * @param array $tableIndex
+     * @param string $table
      * @param \Doctrine\DBAL\Connection $connection
      */
     public function __construct(array $tableIndex, $table, Connection $connection)
     {
         $this->_tableIndex = $tableIndex;
-        $this->_table      = $table;
+        $this->_table = $table;
         $this->_connection = $connection;
+    }
+
+    /**
+     * @return \Doctrine\DBAL\Schema\Index|null
+     */
+    public function getIndex()
+    {
+        return $this->_index;
     }
 
     /**
@@ -77,14 +85,6 @@ class SchemaIndexDefinitionEventArgs extends SchemaEventArgs
         $this->_index = $index;
 
         return $this;
-    }
-
-    /**
-     * @return \Doctrine\DBAL\Schema\Index|null
-     */
-    public function getIndex()
-    {
-        return $this->_index;
     }
 
     /**

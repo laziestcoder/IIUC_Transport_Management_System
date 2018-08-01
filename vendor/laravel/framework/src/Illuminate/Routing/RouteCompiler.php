@@ -16,7 +16,7 @@ class RouteCompiler
     /**
      * Create a new Route compiler instance.
      *
-     * @param  \Illuminate\Routing\Route  $route
+     * @param  \Illuminate\Routing\Route $route
      * @return void
      */
     public function __construct($route)
@@ -36,7 +36,7 @@ class RouteCompiler
         $uri = preg_replace('/\{(\w+?)\?\}/', '{$1}', $this->route->uri());
 
         return (
-            new SymfonyRoute($uri, $optionals, $this->route->wheres, ['utf8' => true], $this->route->getDomain() ?: '')
+        new SymfonyRoute($uri, $optionals, $this->route->wheres, ['utf8' => true], $this->route->getDomain() ?: '')
         )->compile();
     }
 

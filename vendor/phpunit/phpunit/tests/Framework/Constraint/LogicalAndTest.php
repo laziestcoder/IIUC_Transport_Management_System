@@ -136,6 +136,16 @@ EOF;
         $this->fail();
     }
 
+    private function stringify(array $constraints): string
+    {
+        return \implode(
+            ' and ',
+            \array_map(function (Constraint $constraint) {
+                return $constraint->toString();
+            }, $constraints)
+        );
+    }
+
     /**
      * @dataProvider providerFailingConstraints
      *
@@ -143,7 +153,7 @@ EOF;
      */
     public function testEvaluateThrowsExceptionWithCustomMessageIfAnyOfTheComposedConstraintsEvaluateToFalse(array $constraints): void
     {
-        $other             = 'whatever';
+        $other = 'whatever';
         $customDescription = 'Not very happy about the results at this point in time, I have to admit!';
 
         $constraint = new LogicalAnd();
@@ -224,15 +234,5 @@ EOF;
                 $constraints,
             ];
         }
-    }
-
-    private function stringify(array $constraints): string
-    {
-        return \implode(
-            ' and ',
-            \array_map(function (Constraint $constraint) {
-                return $constraint->toString();
-            }, $constraints)
-        );
     }
 }

@@ -11,8 +11,8 @@
 
 namespace Monolog\Handler;
 
-use Monolog\TestCase;
 use Monolog\Logger;
+use Monolog\TestCase;
 
 class StreamHandlerTest extends TestCase
 {
@@ -103,7 +103,7 @@ class StreamHandlerTest extends TestCase
     /**
      * @dataProvider invalidArgumentProvider
      * @expectedException InvalidArgumentException
-     * @covers Monolog\Handler\StreamHandler::__construct
+     * @covers       Monolog\Handler\StreamHandler::__construct
      */
     public function testWriteInvalidArgument($invalidArgument)
     {
@@ -128,7 +128,7 @@ class StreamHandlerTest extends TestCase
      */
     public function testWriteNonExistingResource()
     {
-        $handler = new StreamHandler('ftp://foo/bar/baz/'.rand(0, 10000));
+        $handler = new StreamHandler('ftp://foo/bar/baz/' . rand(0, 10000));
         $handler->handle($this->getRecord());
     }
 
@@ -138,7 +138,7 @@ class StreamHandlerTest extends TestCase
      */
     public function testWriteNonExistingPath()
     {
-        $handler = new StreamHandler(sys_get_temp_dir().'/bar/'.rand(0, 10000).DIRECTORY_SEPARATOR.rand(0, 10000));
+        $handler = new StreamHandler(sys_get_temp_dir() . '/bar/' . rand(0, 10000) . DIRECTORY_SEPARATOR . rand(0, 10000));
         $handler->handle($this->getRecord());
     }
 
@@ -148,7 +148,7 @@ class StreamHandlerTest extends TestCase
      */
     public function testWriteNonExistingFileResource()
     {
-        $handler = new StreamHandler('file://'.sys_get_temp_dir().'/bar/'.rand(0, 10000).DIRECTORY_SEPARATOR.rand(0, 10000));
+        $handler = new StreamHandler('file://' . sys_get_temp_dir() . '/bar/' . rand(0, 10000) . DIRECTORY_SEPARATOR . rand(0, 10000));
         $handler->handle($this->getRecord());
     }
 
@@ -163,7 +163,7 @@ class StreamHandlerTest extends TestCase
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
             $this->markTestSkipped('Permissions checks can not run on windows');
         }
-        $handler = new StreamHandler('/foo/bar/'.rand(0, 10000).DIRECTORY_SEPARATOR.rand(0, 10000));
+        $handler = new StreamHandler('/foo/bar/' . rand(0, 10000) . DIRECTORY_SEPARATOR . rand(0, 10000));
         $handler->handle($this->getRecord());
     }
 
@@ -178,7 +178,7 @@ class StreamHandlerTest extends TestCase
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
             $this->markTestSkipped('Permissions checks can not run on windows');
         }
-        $handler = new StreamHandler('file:///foo/bar/'.rand(0, 10000).DIRECTORY_SEPARATOR.rand(0, 10000));
+        $handler = new StreamHandler('file:///foo/bar/' . rand(0, 10000) . DIRECTORY_SEPARATOR . rand(0, 10000));
         $handler->handle($this->getRecord());
     }
 }

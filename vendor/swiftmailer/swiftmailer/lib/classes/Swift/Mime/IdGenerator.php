@@ -48,6 +48,6 @@ class Swift_Mime_IdGenerator implements Swift_IdGenerator
     {
         $idLeft = bin2hex(random_bytes(16)); // set 32 hex values
 
-        return $idLeft.'@'.$this->idRight;
+        return $idLeft . '@' . $this->idRight;
     }
 }

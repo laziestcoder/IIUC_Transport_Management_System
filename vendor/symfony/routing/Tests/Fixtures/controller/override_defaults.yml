@@ -1,5 +1,5 @@
 app_blog:
-    path: /blog
-    controller: AppBundle:Homepage:show
-    defaults:
-        _controller: AppBundle:Blog:index
+  path: /blog
+  controller: AppBundle:Homepage:show
+  defaults:
+    _controller: AppBundle:Blog:index

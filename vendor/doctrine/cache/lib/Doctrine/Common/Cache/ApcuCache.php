@@ -58,7 +58,7 @@ class ApcuCache extends CacheProvider
     protected function doDelete($id)
     {
         // apcu_delete returns false if the id does not exist
-        return apcu_delete($id) || ! apcu_exists($id);
+        return apcu_delete($id) || !apcu_exists($id);
     }
 
     /**
@@ -103,13 +103,13 @@ class ApcuCache extends CacheProvider
     protected function doGetStats()
     {
         $info = apcu_cache_info(true);
-        $sma  = apcu_sma_info();
+        $sma = apcu_sma_info();
 
         return [
-            Cache::STATS_HITS             => $info['num_hits'],
-            Cache::STATS_MISSES           => $info['num_misses'],
-            Cache::STATS_UPTIME           => $info['start_time'],
-            Cache::STATS_MEMORY_USAGE     => $info['mem_size'],
+            Cache::STATS_HITS => $info['num_hits'],
+            Cache::STATS_MISSES => $info['num_misses'],
+            Cache::STATS_UPTIME => $info['start_time'],
+            Cache::STATS_MEMORY_USAGE => $info['mem_size'],
             Cache::STATS_MEMORY_AVAILABLE => $sma['avail_mem'],
         ];
     }

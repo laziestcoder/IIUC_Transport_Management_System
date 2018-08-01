@@ -28,21 +28,6 @@ class MetadataBagTest extends TestCase
 
     protected $array = array();
 
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->bag = new MetadataBag();
-        $this->array = array(MetadataBag::CREATED => 1234567, MetadataBag::UPDATED => 12345678, MetadataBag::LIFETIME => 0);
-        $this->bag->initialize($this->array);
-    }
-
-    protected function tearDown()
-    {
-        $this->array = array();
-        $this->bag = null;
-        parent::tearDown();
-    }
-
     public function testInitialize()
     {
         $sessionMetadata = array();
@@ -135,5 +120,20 @@ class MetadataBagTest extends TestCase
         $bag->initialize($sessionMetadata);
 
         $this->assertEquals($timeStamp, $sessionMetadata[MetadataBag::UPDATED]);
+    }
+
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->bag = new MetadataBag();
+        $this->array = array(MetadataBag::CREATED => 1234567, MetadataBag::UPDATED => 12345678, MetadataBag::LIFETIME => 0);
+        $this->bag->initialize($this->array);
+    }
+
+    protected function tearDown()
+    {
+        $this->array = array();
+        $this->bag = null;
+        parent::tearDown();
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Hamcrest\Text;
 
 class StringContainsTest extends \Hamcrest\AbstractMatcherTest
@@ -11,11 +12,6 @@ class StringContainsTest extends \Hamcrest\AbstractMatcherTest
     public function setUp()
     {
         $this->_stringContains = \Hamcrest\Text\StringContains::containsString(self::EXCERPT);
-    }
-
-    protected function createMatcher()
-    {
-        return $this->_stringContains;
     }
 
     public function testEvaluatesToTrueIfArgumentContainsSubstring()
@@ -82,5 +78,10 @@ class StringContainsTest extends \Hamcrest\AbstractMatcherTest
             . self::EXCERPT . '"',
             $this->_stringContains
         );
+    }
+
+    protected function createMatcher()
+    {
+        return $this->_stringContains;
     }
 }

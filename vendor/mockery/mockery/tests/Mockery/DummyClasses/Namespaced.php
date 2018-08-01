@@ -19,15 +19,13 @@
  * @license    http://github.com/padraic/mockery/blob/master/LICENSE New BSD License
  */
 
-namespace Nature
-{
+namespace Nature {
     class Plant
     {
     }
 }
 
-namespace
-{
+namespace {
     abstract class Gardener
     {
         abstract public function water(Nature\Plant $plant);

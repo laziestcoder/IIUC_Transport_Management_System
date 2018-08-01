@@ -3,10 +3,31 @@
 namespace TijsVerkoyen\CssToInlineStyles\Css\Rule;
 
 use Symfony\Component\CssSelector\Node\Specificity;
-use \TijsVerkoyen\CssToInlineStyles\Css\Property\Processor as PropertyProcessor;
+use TijsVerkoyen\CssToInlineStyles\Css\Property\Processor as PropertyProcessor;
 
 class Processor
 {
+    /**
+     * Sort an array on the specificity element in an ascending way
+     * Lower specificity will be sorted to the beginning of the array
+     *
+     * @return int
+     * @param  Rule $e1 The first element.
+     * @param  Rule $e2 The second element.
+     */
+    public static function sortOnSpecificity(Rule $e1, Rule $e2)
+    {
+        $e1Specificity = $e1->getSpecificity();
+        $value = $e1Specificity->compareTo($e2->getSpecificity());
+
+        // if the specificity is the same, use the order in which the element appeared
+        if ($value === 0) {
+            $value = $e1->getOrder() - $e2->getOrder();
+        }
+
+        return $value;
+    }
+
     /**
      * Split a string into seperate rules
      *
@@ -17,7 +38,7 @@ class Processor
     {
         $rulesString = $this->cleanup($rulesString);
 
-        return (array) explode('}', $rulesString);
+        return (array)explode('}', $rulesString);
     }
 
     /**
@@ -39,10 +60,25 @@ class Processor
     }
 
     /**
+     * @param array $rules
+     * @return Rule[]
+     */
+    public function convertArrayToObjects(array $rules, array $objects = array())
+    {
+        $order = 1;
+        foreach ($rules as $rule) {
+            $objects = array_merge($objects, $this->convertToObjects($rule, $order));
+            $order++;
+        }
+
+        return $objects;
+    }
+
+    /**
      * Convert a rule-string into an object
      *
      * @param string $rule
-     * @param int    $originalOrder
+     * @param int $originalOrder
      * @return array
      */
     public function convertToObjects($rule, $originalOrder)
@@ -55,7 +91,7 @@ class Processor
         }
         $propertiesProcessor = new PropertyProcessor();
         $rules = array();
-        $selectors = (array) explode(',', trim($chunks[0]));
+        $selectors = (array)explode(',', trim($chunks[0]));
         $properties = $propertiesProcessor->splitIntoSeparateProperties($chunks[1]);
 
         foreach ($selectors as $selector) {
@@ -115,41 +151,5 @@ class Processor
             preg_match_all("/{$classAttributesPseudoClassesSelectorsPattern}/ix", $selector, $matches),
             preg_match_all("/{$typePseudoElementsSelectorPattern}/ix", $selector, $matches)
         );
-    }
-
-    /**
-     * @param array $rules
-     * @return Rule[]
-     */
-    public function convertArrayToObjects(array $rules, array $objects = array())
-    {
-        $order = 1;
-        foreach ($rules as $rule) {
-            $objects = array_merge($objects, $this->convertToObjects($rule, $order));
-            $order++;
-        }
-
-        return $objects;
-    }
-
-    /**
-     * Sort an array on the specificity element in an ascending way
-     * Lower specificity will be sorted to the beginning of the array
-     *
-     * @return int
-     * @param  Rule $e1 The first element.
-     * @param  Rule $e2 The second element.
-     */
-    public static function sortOnSpecificity(Rule $e1, Rule $e2)
-    {
-        $e1Specificity = $e1->getSpecificity();
-        $value = $e1Specificity->compareTo($e2->getSpecificity());
-
-        // if the specificity is the same, use the order in which the element appeared
-        if ($value === 0) {
-            $value = $e1->getOrder() - $e2->getOrder();
-        }
-
-        return $value;
     }
 }

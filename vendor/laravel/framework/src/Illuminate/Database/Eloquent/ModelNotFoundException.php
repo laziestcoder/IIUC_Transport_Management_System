@@ -2,8 +2,8 @@
 
 namespace Illuminate\Database\Eloquent;
 
-use RuntimeException;
 use Illuminate\Support\Arr;
+use RuntimeException;
 
 class ModelNotFoundException extends RuntimeException
 {
@@ -22,10 +22,20 @@ class ModelNotFoundException extends RuntimeException
     protected $ids;
 
     /**
+     * Get the affected Eloquent model.
+     *
+     * @return string
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
      * Set the affected Eloquent model and instance ids.
      *
-     * @param  string  $model
-     * @param  int|array  $ids
+     * @param  string $model
+     * @param  int|array $ids
      * @return $this
      */
     public function setModel($model, $ids = [])
@@ -36,22 +46,12 @@ class ModelNotFoundException extends RuntimeException
         $this->message = "No query results for model [{$model}]";
 
         if (count($this->ids) > 0) {
-            $this->message .= ' '.implode(', ', $this->ids);
+            $this->message .= ' ' . implode(', ', $this->ids);
         } else {
             $this->message .= '.';
         }
 
         return $this;
-    }
-
-    /**
-     * Get the affected Eloquent model.
-     *
-     * @return string
-     */
-    public function getModel()
-    {
-        return $this->model;
     }
 
     /**

@@ -45,17 +45,6 @@ final class BuildInformation
         }
     }
 
-    public function setBuildTime(\DateTime $date): void
-    {
-        $this->contextNode->setAttribute('time', $date->format('D M j G:i:s T Y'));
-    }
-
-    public function setGeneratorVersions(string $phpUnitVersion, string $coverageVersion): void
-    {
-        $this->contextNode->setAttribute('phpunit', $phpUnitVersion);
-        $this->contextNode->setAttribute('coverage', $coverageVersion);
-    }
-
     private function getNodeByName(string $name): \DOMElement
     {
         $node = $this->contextNode->getElementsByTagNameNS(
@@ -73,5 +62,16 @@ final class BuildInformation
         }
 
         return $node;
+    }
+
+    public function setBuildTime(\DateTime $date): void
+    {
+        $this->contextNode->setAttribute('time', $date->format('D M j G:i:s T Y'));
+    }
+
+    public function setGeneratorVersions(string $phpUnitVersion, string $coverageVersion): void
+    {
+        $this->contextNode->setAttribute('phpunit', $phpUnitVersion);
+        $this->contextNode->setAttribute('coverage', $coverageVersion);
     }
 }

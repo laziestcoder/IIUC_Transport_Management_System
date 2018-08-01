@@ -92,6 +92,43 @@ class ExtMongoDBCache extends CacheProvider
     }
 
     /**
+     * Check if the document is expired.
+     *
+     * @param BSONDocument $document
+     *
+     * @return bool
+     */
+    private function isExpired(BSONDocument $document): bool
+    {
+        return isset($document[MongoDBCache::EXPIRATION_FIELD]) &&
+            $document[MongoDBCache::EXPIRATION_FIELD] instanceof UTCDateTime &&
+            $document[MongoDBCache::EXPIRATION_FIELD]->toDateTime() < new \DateTime();
+    }
+
+    private function createExpirationIndex(): void
+    {
+        if ($this->expirationIndexCreated) {
+            return;
+        }
+
+        $this->collection->createIndex([MongoDBCache::EXPIRATION_FIELD => 1], ['background' => true, 'expireAfterSeconds' => 0]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doDelete($id)
+    {
+        try {
+            $this->collection->deleteOne(['_id' => $id]);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function doContains($id)
@@ -120,25 +157,11 @@ class ExtMongoDBCache extends CacheProvider
             $this->collection->updateOne(
                 ['_id' => $id],
                 ['$set' => [
-                    MongoDBCache::EXPIRATION_FIELD => ($lifeTime > 0 ? new UTCDateTime((time() + $lifeTime) * 1000): null),
+                    MongoDBCache::EXPIRATION_FIELD => ($lifeTime > 0 ? new UTCDateTime((time() + $lifeTime) * 1000) : null),
                     MongoDBCache::DATA_FIELD => new Binary(serialize($data), Binary::TYPE_GENERIC),
                 ]],
                 ['upsert' => true]
             );
-        } catch (Exception $e) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function doDelete($id)
-    {
-        try {
-            $this->collection->deleteOne(['_id' => $id]);
         } catch (Exception $e) {
             return false;
         }
@@ -192,30 +215,7 @@ class ExtMongoDBCache extends CacheProvider
             Cache::STATS_MISSES => null,
             Cache::STATS_UPTIME => $uptime,
             Cache::STATS_MEMORY_USAGE => $memoryUsage,
-            Cache::STATS_MEMORY_AVAILABLE  => null,
+            Cache::STATS_MEMORY_AVAILABLE => null,
         ];
-    }
-
-    /**
-     * Check if the document is expired.
-     *
-     * @param BSONDocument $document
-     *
-     * @return bool
-     */
-    private function isExpired(BSONDocument $document): bool
-    {
-        return isset($document[MongoDBCache::EXPIRATION_FIELD]) &&
-            $document[MongoDBCache::EXPIRATION_FIELD] instanceof UTCDateTime &&
-            $document[MongoDBCache::EXPIRATION_FIELD]->toDateTime() < new \DateTime();
-    }
-
-    private function createExpirationIndex(): void
-    {
-        if ($this->expirationIndexCreated) {
-            return;
-        }
-
-        $this->collection->createIndex([MongoDBCache::EXPIRATION_FIELD => 1], ['background' => true, 'expireAfterSeconds' => 0]);
     }
 }

@@ -41,6 +41,20 @@ class FlowdockFormatter implements FormatterInterface
     /**
      * {@inheritdoc}
      */
+    public function formatBatch(array $records)
+    {
+        $formatted = array();
+
+        foreach ($records as $record) {
+            $formatted[] = $this->format($record);
+        }
+
+        return $formatted;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function format(array $record)
     {
         $tags = array(
@@ -70,20 +84,6 @@ class FlowdockFormatter implements FormatterInterface
         );
 
         return $record;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function formatBatch(array $records)
-    {
-        $formatted = array();
-
-        foreach ($records as $record) {
-            $formatted[] = $this->format($record);
-        }
-
-        return $formatted;
     }
 
     /**

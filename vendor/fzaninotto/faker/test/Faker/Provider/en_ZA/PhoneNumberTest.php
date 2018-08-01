@@ -24,7 +24,7 @@ class PhoneNumberTest extends \PHPUnit_Framework_TestCase
             $digits = array_values(array_filter(str_split($number), 'ctype_digit'));
 
             // 10 digits
-            if($digits[0] = 2 && $digits[1] == 7) {
+            if ($digits[0] = 2 && $digits[1] == 7) {
                 $this->assertLessThanOrEqual(11, count($digits));
             } else {
                 $this->assertGreaterThanOrEqual(10, count($digits));
@@ -53,7 +53,7 @@ class PhoneNumberTest extends \PHPUnit_Framework_TestCase
             $number = $this->faker->mobileNumber;
             $digits = array_values(array_filter(str_split($number), 'ctype_digit'));
 
-            if($digits[0] = 2 && $digits[1] == 7) {
+            if ($digits[0] = 2 && $digits[1] == 7) {
                 $this->assertLessThanOrEqual(11, count($digits));
             } else {
                 $this->assertGreaterThanOrEqual(10, count($digits));

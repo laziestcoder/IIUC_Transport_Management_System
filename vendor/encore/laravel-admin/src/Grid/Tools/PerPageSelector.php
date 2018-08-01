@@ -38,24 +38,10 @@ class PerPageSelector extends AbstractTool
     {
         $this->perPageName = $this->grid->model()->getPerPageName();
 
-        $this->perPage = (int) app('request')->input(
+        $this->perPage = (int)app('request')->input(
             $this->perPageName,
             $this->grid->perPage
         );
-    }
-
-    /**
-     * Get options for selector.
-     *
-     * @return static
-     */
-    public function getOptions()
-    {
-        return collect($this->grid->perPages)
-            ->push($this->grid->perPage)
-            ->push($this->perPage)
-            ->unique()
-            ->sort();
     }
 
     /**
@@ -105,5 +91,19 @@ $('.grid-per-pager').on("change", function(e) {
 });
 
 EOT;
+    }
+
+    /**
+     * Get options for selector.
+     *
+     * @return static
+     */
+    public function getOptions()
+    {
+        return collect($this->grid->perPages)
+            ->push($this->grid->perPage)
+            ->push($this->perPage)
+            ->unique()
+            ->sort();
     }
 }

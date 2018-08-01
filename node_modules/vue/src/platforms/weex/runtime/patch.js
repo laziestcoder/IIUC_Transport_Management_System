@@ -1,7 +1,7 @@
 /* @flow */
 
 import * as nodeOps from 'weex/runtime/node-ops'
-import { createPatchFunction } from 'core/vdom/patch'
+import {createPatchFunction} from 'core/vdom/patch'
 import baseModules from 'core/vdom/modules/index'
 import platformModules from 'weex/runtime/modules/index'
 
@@ -10,7 +10,7 @@ import platformModules from 'weex/runtime/modules/index'
 const modules = platformModules.concat(baseModules)
 
 export const patch: Function = createPatchFunction({
-  nodeOps,
-  modules,
-  LONG_LIST_THRESHOLD: 10
+    nodeOps,
+    modules,
+    LONG_LIST_THRESHOLD: 10
 })

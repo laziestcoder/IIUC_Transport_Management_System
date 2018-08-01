@@ -24,9 +24,9 @@ class Address extends \Faker\Provider\Address
     protected static $postcode = array("####", "####", "####", "0###");
 
     /**
-    * @var array Norwegian city names
-    * @link https://no.wikipedia.org/wiki/Liste_over_norske_byer
-    */
+     * @var array Norwegian city names
+     * @link https://no.wikipedia.org/wiki/Liste_over_norske_byer
+     */
     protected static $cityNames = array(
         "Alta", "Arendal", "Askim", "Bergen", "Bodø", "Brekstad", "Brevik", "Brumunddal", "Bryne", "Brønnøysund",
         "Drammen", "Drøbak", "Egersund", "Elverum", "Fagernes", "Farsund", "Fauske", "Finnsnes", "Flekkefjord", "Florø",
@@ -34,7 +34,7 @@ class Address extends \Faker\Provider\Address
         "Haugesund", "Hokksund", "Holmestrand", "Honningsvåg", "Horten", "Hønefoss", "Jessheim", "Jørpeland",
         "Kirkenes", "Kolvereid", "Kongsberg", "Kongsvinger", "Kopervik", "Kragerø", "Kristiansand", "Kristiansund",
         "Langesund", "Larvik", "Leknes", "Levanger", "Lillehammer", "Lillesand", "Lillestrøm", "Lyngdal", "Mandal",
-        "Mo i Rana",  "Moelv", "Molde", "Mosjøen", "Moss", "Mysen", "Måløy", "Namsos", "Narvik", "Notodden", "Odda",
+        "Mo i Rana", "Moelv", "Molde", "Mosjøen", "Moss", "Mysen", "Måløy", "Namsos", "Narvik", "Notodden", "Odda",
         "Orkanger", "Oslo", "Otta", "Porsgrunn", "Risør", "Rjukan", "Røros", "Sandefjord", "Sandnes", "Sandnessjøen",
         "Sandvika", "Sarpsborg", "Sauda", "Ski", "Skien", "Skudeneshavn", "Sortland", "Stathelle", "Stavanger",
         "Stavern", "Steinkjer", "Stjørdalshalsen", "Stokmarknes", "Stord", "Svelvik", "Svolvær", "Tromsø", "Trondheim",
@@ -47,9 +47,9 @@ class Address extends \Faker\Provider\Address
     );
 
     /**
-    * @var array Norwegian municipality names
-    * @link https://no.wikipedia.org/wiki/Norges_kommuner
-    */
+     * @var array Norwegian municipality names
+     * @link https://no.wikipedia.org/wiki/Norges_kommuner
+     */
     protected static $kommuneNames = array(
         "Halden", "Moss", "Sarpsborg", "Fredrikstad", "Hvaler", "Aremark", "Marker", "Rømskog", "Trøgstad", "Spydeberg",
         "Askim", "Eidsberg", "Skiptvet", "Rakkestad", "Råde", "Rygge", "Våler", "Hobøl", "Vestby", "Ski", "Ås", "Frogn",
@@ -98,9 +98,9 @@ class Address extends \Faker\Provider\Address
 
 
     /**
-    * @var array Norwegian county names
-    * @link https://no.wikipedia.org/wiki/Norges_fylker
-    */
+     * @var array Norwegian county names
+     * @link https://no.wikipedia.org/wiki/Norges_fylker
+     */
     protected static $countyNames = array(
         "Østfold", "Akershus", "Oslo", "Hedmark", "Oppland", "Buskerud", "Vestfold", "Telemark", "Aust-Agder",
         "Vest-Agder", "Rogaland", "Hordaland", "Sogn og Fjordane", "Møre og Romsdal", "Sør-Trøndelag", "Nord-Trøndelag",
@@ -135,8 +135,8 @@ class Address extends \Faker\Provider\Address
     );
 
     /**
-    * @var array Norwegian street name formats
-    */
+     * @var array Norwegian street name formats
+     */
     protected static $streetNameFormats = array(
         '{{lastName}}{{streetSuffix}}',
         '{{lastName}}{{streetSuffix}}',
@@ -150,24 +150,24 @@ class Address extends \Faker\Provider\Address
     );
 
     /**
-    * @var array Norwegian street address formats
-    */
+     * @var array Norwegian street address formats
+     */
     protected static $streetAddressFormats = array(
         '{{streetName}} {{buildingNumber}}'
     );
 
     /**
-    * @var array Norwegian address formats
-    */
+     * @var array Norwegian address formats
+     */
     protected static $addressFormats = array(
         "{{streetAddress}}\n{{postcode}} {{city}}"
     );
 
     /**
-    * Randomly return a real city name
-    *
-    * @return string
-    */
+     * Randomly return a real city name
+     *
+     * @return string
+     */
     public static function cityName()
     {
         return static::randomElement(static::$cityNames);
@@ -184,10 +184,10 @@ class Address extends \Faker\Provider\Address
     }
 
     /**
-    * Randomly return a building number.
-    *
-    * @return string
-    */
+     * Randomly return a building number.
+     *
+     * @return string
+     */
     public static function buildingNumber()
     {
         return static::toUpper(static::bothify(static::randomElement(static::$buildingNumber)));

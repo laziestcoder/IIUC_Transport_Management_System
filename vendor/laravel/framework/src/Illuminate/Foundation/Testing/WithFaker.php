@@ -24,24 +24,24 @@ trait WithFaker
     }
 
     /**
-     * Get the default Faker instance for a given locale.
-     *
-     * @param  string  $locale
-     * @return \Faker\Generator
-     */
-    protected function faker($locale = null)
-    {
-        return is_null($locale) ? $this->faker : $this->makeFaker($locale);
-    }
-
-    /**
      * Create a Faker instance for the given locale.
      *
-     * @param  string  $locale
+     * @param  string $locale
      * @return \Faker\Generator
      */
     protected function makeFaker($locale = null)
     {
         return Factory::create($locale ?? Factory::DEFAULT_LOCALE);
+    }
+
+    /**
+     * Get the default Faker instance for a given locale.
+     *
+     * @param  string $locale
+     * @return \Faker\Generator
+     */
+    protected function faker($locale = null)
+    {
+        return is_null($locale) ? $this->faker : $this->makeFaker($locale);
     }
 }

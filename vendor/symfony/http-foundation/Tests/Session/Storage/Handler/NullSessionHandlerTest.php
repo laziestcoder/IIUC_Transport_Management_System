@@ -12,9 +12,9 @@
 namespace Symfony\Component\HttpFoundation\Tests\Session\Storage\Handler;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Test class for NullSessionHandler.
@@ -30,6 +30,11 @@ class NullSessionHandlerTest extends TestCase
     {
         $storage = $this->getStorage();
         $this->assertEquals('user', ini_get('session.save_handler'));
+    }
+
+    public function getStorage()
+    {
+        return new NativeSessionStorage(array(), new NullSessionHandler());
     }
 
     public function testSession()
@@ -50,10 +55,5 @@ class NullSessionHandlerTest extends TestCase
         $session->start();
         $this->assertEquals('nullsessionstorage', $session->getId());
         $this->assertNull($session->get('something'));
-    }
-
-    public function getStorage()
-    {
-        return new NativeSessionStorage(array(), new NullSessionHandler());
     }
 }

@@ -19,12 +19,12 @@
 
 namespace Doctrine\DBAL\Id;
 
-use Doctrine\DBAL\Schema\Table;
-use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
-use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\Index;
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\Sequence;
+use Doctrine\DBAL\Schema\Table;
 
 class TableGeneratorSchemaVisitor implements \Doctrine\DBAL\Schema\Visitor\Visitor
 {

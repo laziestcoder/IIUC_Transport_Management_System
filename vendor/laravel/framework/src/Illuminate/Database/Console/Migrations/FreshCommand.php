@@ -31,7 +31,7 @@ class FreshCommand extends Command
      */
     public function handle()
     {
-        if (! $this->confirmToProceed()) {
+        if (!$this->confirmToProceed()) {
             return;
         }
 
@@ -55,14 +55,14 @@ class FreshCommand extends Command
     /**
      * Drop all of the database tables.
      *
-     * @param  string  $database
+     * @param  string $database
      * @return void
      */
     protected function dropAllTables($database)
     {
         $this->laravel['db']->connection($database)
-                    ->getSchemaBuilder()
-                    ->dropAllTables();
+            ->getSchemaBuilder()
+            ->dropAllTables();
     }
 
     /**
@@ -78,7 +78,7 @@ class FreshCommand extends Command
     /**
      * Run the database seeder command.
      *
-     * @param  string  $database
+     * @param  string $database
      * @return void
      */
     protected function runSeeder($database)

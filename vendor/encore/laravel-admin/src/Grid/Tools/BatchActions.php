@@ -38,21 +38,9 @@ class BatchActions extends AbstractTool
     }
 
     /**
-     * Disable delete.
-     *
-     * @return $this
-     */
-    public function disableDelete()
-    {
-        $this->enableDelete = false;
-
-        return $this;
-    }
-
-    /**
      * Add a batch action.
      *
-     * @param string      $title
+     * @param string $title
      * @param BatchAction $abstract
      *
      * @return $this
@@ -66,6 +54,38 @@ class BatchActions extends AbstractTool
         $this->actions->push(compact('id', 'title', 'abstract'));
 
         return $this;
+    }
+
+    /**
+     * Disable delete.
+     *
+     * @return $this
+     */
+    public function disableDelete()
+    {
+        $this->enableDelete = false;
+
+        return $this;
+    }
+
+    /**
+     * Render BatchActions button groups.
+     *
+     * @return string
+     */
+    public function render()
+    {
+        if (!$this->enableDelete) {
+            $this->actions->shift();
+        }
+
+        if ($this->actions->isEmpty()) {
+            return '';
+        }
+
+        $this->setUpScripts();
+
+        return view('admin::grid.batch-actions', ['actions' => $this->actions])->render();
     }
 
     /**
@@ -105,25 +125,5 @@ $('.grid-select-all').on('ifChanged', function(event) {
 });
 
 EOT;
-    }
-
-    /**
-     * Render BatchActions button groups.
-     *
-     * @return string
-     */
-    public function render()
-    {
-        if (!$this->enableDelete) {
-            $this->actions->shift();
-        }
-
-        if ($this->actions->isEmpty()) {
-            return '';
-        }
-
-        $this->setUpScripts();
-
-        return view('admin::grid.batch-actions', ['actions' => $this->actions])->render();
     }
 }

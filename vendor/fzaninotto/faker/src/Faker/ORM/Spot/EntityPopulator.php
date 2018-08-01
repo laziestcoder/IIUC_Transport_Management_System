@@ -65,14 +65,6 @@ class EntityPopulator
     }
 
     /**
-     * @param $columnFormatters
-     */
-    public function setColumnFormatters($columnFormatters)
-    {
-        $this->columnFormatters = $columnFormatters;
-    }
-
-    /**
      * @return array
      */
     public function getColumnFormatters()
@@ -83,25 +75,17 @@ class EntityPopulator
     /**
      * @param $columnFormatters
      */
+    public function setColumnFormatters($columnFormatters)
+    {
+        $this->columnFormatters = $columnFormatters;
+    }
+
+    /**
+     * @param $columnFormatters
+     */
     public function mergeColumnFormattersWith($columnFormatters)
     {
         $this->columnFormatters = array_merge($this->columnFormatters, $columnFormatters);
-    }
-
-    /**
-     * @param array $modifiers
-     */
-    public function setModifiers(array $modifiers)
-    {
-        $this->modifiers = $modifiers;
-    }
-
-    /**
-     * @return array
-     */
-    public function getModifiers()
-    {
-        return $this->modifiers;
     }
 
     /**
@@ -218,5 +202,21 @@ class EntityPopulator
         foreach ($this->getModifiers() as $modifier) {
             $modifier($obj, $insertedEntities);
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getModifiers()
+    {
+        return $this->modifiers;
+    }
+
+    /**
+     * @param array $modifiers
+     */
+    public function setModifiers(array $modifiers)
+    {
+        $this->modifiers = $modifiers;
     }
 }

@@ -14,22 +14,12 @@ class Response
     /**
      * Create a new response.
      *
-     * @param  string|null  $message
+     * @param  string|null $message
      * @return void
      */
     public function __construct($message = null)
     {
         $this->message = $message;
-    }
-
-    /**
-     * Get the response message.
-     *
-     * @return string|null
-     */
-    public function message()
-    {
-        return $this->message;
     }
 
     /**
@@ -40,5 +30,15 @@ class Response
     public function __toString()
     {
         return $this->message();
+    }
+
+    /**
+     * Get the response message.
+     *
+     * @return string|null
+     */
+    public function message()
+    {
+        return $this->message;
     }
 }

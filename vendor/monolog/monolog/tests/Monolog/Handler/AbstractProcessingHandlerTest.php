@@ -11,9 +11,9 @@
 
 namespace Monolog\Handler;
 
-use Monolog\TestCase;
 use Monolog\Logger;
 use Monolog\Processor\WebProcessor;
+use Monolog\TestCase;
 
 class AbstractProcessingHandlerTest extends TestCase
 {
@@ -72,8 +72,7 @@ class AbstractProcessingHandlerTest extends TestCase
             ->method('write')
             ->will($this->returnCallback(function ($record) use (&$handledRecord) {
                 $handledRecord = $record;
-            }))
-        ;
+            }));
         $handler->handle($this->getRecord());
         $this->assertEquals(6, count($handledRecord['extra']));
     }

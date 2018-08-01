@@ -11,10 +11,10 @@
 
 namespace Monolog\Handler;
 
-use Monolog\TestCase;
-use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\Slack\SlackRecord;
+use Monolog\Logger;
+use Monolog\TestCase;
 
 /**
  * @author Haralan Dobrev <hkdobrev@gmail.com>

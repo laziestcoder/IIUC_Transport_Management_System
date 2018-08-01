@@ -3,8 +3,8 @@
 namespace Faker\Test\Provider\en_ZA;
 
 use Faker\Generator;
-use Faker\Provider\en_ZA\Person;
 use Faker\Provider\DateTime;
+use Faker\Provider\en_ZA\Person;
 
 class PersonTest extends \PHPUnit_Framework_TestCase
 {

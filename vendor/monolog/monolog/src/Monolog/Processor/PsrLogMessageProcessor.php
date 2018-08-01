@@ -33,11 +33,11 @@ class PsrLogMessageProcessor
         $replacements = array();
         foreach ($record['context'] as $key => $val) {
             if (is_null($val) || is_scalar($val) || (is_object($val) && method_exists($val, "__toString"))) {
-                $replacements['{'.$key.'}'] = $val;
+                $replacements['{' . $key . '}'] = $val;
             } elseif (is_object($val)) {
-                $replacements['{'.$key.'}'] = '[object '.get_class($val).']';
+                $replacements['{' . $key . '}'] = '[object ' . get_class($val) . ']';
             } else {
-                $replacements['{'.$key.'}'] = '['.gettype($val).']';
+                $replacements['{' . $key . '}'] = '[' . gettype($val) . ']';
             }
         }
 

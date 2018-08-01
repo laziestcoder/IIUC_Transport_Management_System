@@ -30,7 +30,7 @@ final class Link extends BaseTag implements Factory\StaticMethod
     /**
      * Initializes a link to a URL.
      *
-     * @param string      $link
+     * @param string $link
      * @param Description $description
      */
     public function __construct($link, Description $description = null)
@@ -56,10 +56,10 @@ final class Link extends BaseTag implements Factory\StaticMethod
     }
 
     /**
-    * Gets the link
-    *
-    * @return string
-    */
+     * Gets the link
+     *
+     * @return string
+     */
     public function getLink()
     {
         return $this->link;

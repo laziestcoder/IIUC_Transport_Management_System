@@ -12,15 +12,11 @@ use PHPUnit\Framework\TestCase;
 
 class FunctionTest extends TestCase
 {
-    public function createFunctionBuilder($name) {
-        return new Function_($name);
-    }
-
-    public function testReturnByRef() {
+    public function testReturnByRef()
+    {
         $node = $this->createFunctionBuilder('test')
             ->makeReturnByRef()
-            ->getNode()
-        ;
+            ->getNode();
 
         $this->assertEquals(
             new Stmt\Function_('test', [
@@ -30,7 +26,13 @@ class FunctionTest extends TestCase
         );
     }
 
-    public function testParams() {
+    public function createFunctionBuilder($name)
+    {
+        return new Function_($name);
+    }
+
+    public function testParams()
+    {
         $param1 = new Node\Param(new Variable('test1'));
         $param2 = new Node\Param(new Variable('test2'));
         $param3 = new Node\Param(new Variable('test3'));
@@ -38,8 +40,7 @@ class FunctionTest extends TestCase
         $node = $this->createFunctionBuilder('test')
             ->addParam($param1)
             ->addParams([$param2, $param3])
-            ->getNode()
-        ;
+            ->getNode();
 
         $this->assertEquals(
             new Stmt\Function_('test', [
@@ -49,7 +50,8 @@ class FunctionTest extends TestCase
         );
     }
 
-    public function testStmts() {
+    public function testStmts()
+    {
         $stmt1 = new Print_(new String_('test1'));
         $stmt2 = new Print_(new String_('test2'));
         $stmt3 = new Print_(new String_('test3'));
@@ -57,8 +59,7 @@ class FunctionTest extends TestCase
         $node = $this->createFunctionBuilder('test')
             ->addStmt($stmt1)
             ->addStmts([$stmt2, $stmt3])
-            ->getNode()
-        ;
+            ->getNode();
 
         $this->assertEquals(
             new Stmt\Function_('test', [
@@ -72,7 +73,8 @@ class FunctionTest extends TestCase
         );
     }
 
-    public function testDocComment() {
+    public function testDocComment()
+    {
         $node = $this->createFunctionBuilder('test')
             ->setDocComment('/** Test */')
             ->getNode();
@@ -82,7 +84,8 @@ class FunctionTest extends TestCase
         ]), $node);
     }
 
-    public function testReturnType() {
+    public function testReturnType()
+    {
         $node = $this->createFunctionBuilder('test')
             ->setReturnType('void')
             ->getNode();
@@ -96,7 +99,8 @@ class FunctionTest extends TestCase
      * @expectedException \LogicException
      * @expectedExceptionMessage void type cannot be nullable
      */
-    public function testInvalidNullableVoidType() {
+    public function testInvalidNullableVoidType()
+    {
         $this->createFunctionBuilder('test')->setReturnType('?void');
     }
 
@@ -104,17 +108,18 @@ class FunctionTest extends TestCase
      * @expectedException \LogicException
      * @expectedExceptionMessage Expected parameter node, got "Name"
      */
-    public function testInvalidParamError() {
+    public function testInvalidParamError()
+    {
         $this->createFunctionBuilder('test')
-            ->addParam(new Node\Name('foo'))
-        ;
+            ->addParam(new Node\Name('foo'));
     }
 
     /**
      * @expectedException \LogicException
      * @expectedExceptionMessage Expected statement or expression node
      */
-    public function testAddNonStmt() {
+    public function testAddNonStmt()
+    {
         $this->createFunctionBuilder('test')
             ->addStmt(new Node\Name('Test'));
     }

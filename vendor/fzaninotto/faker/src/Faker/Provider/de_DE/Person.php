@@ -27,9 +27,9 @@ class Person extends \Faker\Provider\Person
     );
 
     /**
-         * Top 500 Names from a phone directory (6. January 2005)
-         * {@link} From http://de.wiktionary.org/wiki/Verzeichnis:Deutsch/Liste_der_h%C3%A4ufigsten_m%C3%A4nnlichen_Vornamen_Deutschlands
-         **/
+     * Top 500 Names from a phone directory (6. January 2005)
+     * {@link} From http://de.wiktionary.org/wiki/Verzeichnis:Deutsch/Liste_der_h%C3%A4ufigsten_m%C3%A4nnlichen_Vornamen_Deutschlands
+     **/
     protected static $firstNameMale = array(
         'Achim', 'Adalbert', 'Adam', 'Adolf', 'Adrian', 'Ahmed', 'Ahmet', 'Albert', 'Albin', 'Albrecht', 'Alex', 'Alexander', 'Alfons', 'Alfred', 'Ali', 'Alois', 'Aloys', 'Alwin', 'Anatoli', 'Andre', 'Andreas', 'Andree', 'Andrej', 'Andrzej', 'André', 'Andy', 'Angelo', 'Ansgar', 'Anton', 'Antonio', 'Antonius', 'Armin', 'Arnd', 'Arndt', 'Arne', 'Arno', 'Arnold', 'Arnulf', 'Arthur', 'Artur', 'August', 'Axel',
         'Bastian', 'Benedikt', 'Benjamin', 'Benno', 'Bernard', 'Bernd', 'Berndt', 'Bernhard', 'Bert', 'Berthold', 'Bertram', 'Björn', 'Bodo', 'Bogdan', 'Boris', 'Bruno', 'Burghard', 'Burkhard',
@@ -86,9 +86,9 @@ class Person extends \Faker\Provider\Person
     );
 
     /**
-         * Top 500 Names from a phone directory (6. January 2005)
-         * {@link} https://de.wiktionary.org/wiki/Verzeichnis:Deutsch/Liste_der_h%C3%A4ufigsten_Nachnamen_Deutschlands
-         **/
+     * Top 500 Names from a phone directory (6. January 2005)
+     * {@link} https://de.wiktionary.org/wiki/Verzeichnis:Deutsch/Liste_der_h%C3%A4ufigsten_Nachnamen_Deutschlands
+     **/
     protected static $lastName = array(
         'Ackermann', 'Adam', 'Adler', 'Ahrens', 'Albers', 'Albert', 'Albrecht', 'Altmann', 'Anders', 'Appel', 'Arndt', 'Arnold', 'Auer',
         'Bach', 'Bachmann', 'Bader', 'Baier', 'Bartels', 'Barth', 'Barthel', 'Bartsch', 'Bauer', 'Baum', 'Baumann', 'Baumgartner', 'Baur', 'Bayer', 'Beck', 'Becker', 'Beckmann', 'Beer', 'Behrendt', 'Behrens', 'Beier', 'Bender', 'Benz', 'Berg', 'Berger', 'Bergmann', 'Berndt', 'Bernhardt', 'Bertram', 'Betz', 'Beyer', 'Binder', 'Bischoff', 'Bittner', 'Blank', 'Block', 'Blum', 'Bock', 'Bode', 'Born', 'Brand', 'Brandl', 'Brandt', 'Braun', 'Brenner', 'Breuer', 'Brinkmann', 'Brunner', 'Bruns', 'Brückner', 'Buchholz', 'Buck', 'Burger', 'Burkhardt', 'Busch', 'Busse', 'Bär', 'Böhm', 'Böhme', 'Böttcher', 'Bühler', 'Büttner',

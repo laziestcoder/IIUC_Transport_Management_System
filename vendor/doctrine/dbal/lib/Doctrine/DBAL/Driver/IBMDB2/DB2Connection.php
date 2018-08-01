@@ -23,8 +23,6 @@ use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\ServerInfoAwareConnection;
 use Doctrine\DBAL\ParameterType;
 use stdClass;
-use const DB2_AUTOCOMMIT_OFF;
-use const DB2_AUTOCOMMIT_ON;
 use function db2_autocommit;
 use function db2_commit;
 use function db2_conn_error;
@@ -40,6 +38,8 @@ use function db2_rollback;
 use function db2_server_info;
 use function db2_stmt_errormsg;
 use function func_get_args;
+use const DB2_AUTOCOMMIT_OFF;
+use const DB2_AUTOCOMMIT_ON;
 
 class DB2Connection implements Connection, ServerInfoAwareConnection
 {
@@ -49,10 +49,10 @@ class DB2Connection implements Connection, ServerInfoAwareConnection
     private $_conn = null;
 
     /**
-     * @param array  $params
+     * @param array $params
      * @param string $username
      * @param string $password
-     * @param array  $driverOptions
+     * @param array $driverOptions
      *
      * @throws \Doctrine\DBAL\Driver\IBMDB2\DB2Exception
      */
@@ -65,7 +65,7 @@ class DB2Connection implements Connection, ServerInfoAwareConnection
         } else {
             $this->_conn = db2_connect($params['dbname'], $username, $password, $driverOptions);
         }
-        if ( ! $this->_conn) {
+        if (!$this->_conn) {
             throw new DB2Exception(db2_conn_errormsg());
         }
     }
@@ -92,19 +92,6 @@ class DB2Connection implements Connection, ServerInfoAwareConnection
     /**
      * {@inheritdoc}
      */
-    public function prepare($sql)
-    {
-        $stmt = @db2_prepare($this->_conn, $sql);
-        if ( ! $stmt) {
-            throw new DB2Exception(db2_stmt_errormsg());
-        }
-
-        return new DB2Statement($stmt);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function query()
     {
         $args = func_get_args();
@@ -118,6 +105,19 @@ class DB2Connection implements Connection, ServerInfoAwareConnection
     /**
      * {@inheritdoc}
      */
+    public function prepare($sql)
+    {
+        $stmt = @db2_prepare($this->_conn, $sql);
+        if (!$stmt) {
+            throw new DB2Exception(db2_stmt_errormsg());
+        }
+
+        return new DB2Statement($stmt);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function quote($input, $type = ParameterType::STRING)
     {
         $input = db2_escape_string($input);
@@ -126,7 +126,7 @@ class DB2Connection implements Connection, ServerInfoAwareConnection
             return $input;
         }
 
-        return "'".$input."'";
+        return "'" . $input . "'";
     }
 
     /**
@@ -184,19 +184,19 @@ class DB2Connection implements Connection, ServerInfoAwareConnection
     /**
      * {@inheritdoc}
      */
-    public function errorCode()
-    {
-        return db2_conn_error($this->_conn);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function errorInfo()
     {
         return [
             0 => db2_conn_errormsg($this->_conn),
             1 => $this->errorCode(),
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function errorCode()
+    {
+        return db2_conn_error($this->_conn);
     }
 }

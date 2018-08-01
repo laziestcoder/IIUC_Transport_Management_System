@@ -1,4 +1,5 @@
 <?php
+
 namespace Hamcrest\Text;
 
 class IsEqualIgnoringWhiteSpaceTest extends \Hamcrest\AbstractMatcherTest
@@ -11,11 +12,6 @@ class IsEqualIgnoringWhiteSpaceTest extends \Hamcrest\AbstractMatcherTest
         $this->_matcher = \Hamcrest\Text\IsEqualIgnoringWhiteSpace::equalToIgnoringWhiteSpace(
             "Hello World   how\n are we? "
         );
-    }
-
-    protected function createMatcher()
-    {
-        return $this->_matcher;
     }
 
     public function testPassesIfWordsAreSameButWhitespaceDiffers()
@@ -47,5 +43,10 @@ class IsEqualIgnoringWhiteSpaceTest extends \Hamcrest\AbstractMatcherTest
             "equalToIgnoringWhiteSpace(\"Hello World   how\\n are we? \")",
             $this->_matcher
         );
+    }
+
+    protected function createMatcher()
+    {
+        return $this->_matcher;
     }
 }

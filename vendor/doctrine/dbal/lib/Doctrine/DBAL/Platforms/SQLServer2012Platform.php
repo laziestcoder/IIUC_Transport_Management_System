@@ -20,10 +20,10 @@
 namespace Doctrine\DBAL\Platforms;
 
 use Doctrine\DBAL\Schema\Sequence;
-use const PREG_OFFSET_CAPTURE;
 use function preg_match;
 use function preg_match_all;
 use function substr_count;
+use const PREG_OFFSET_CAPTURE;
 
 /**
  * Platform to ensure compatibility of Doctrine with Microsoft SQL Server 2012 version.
@@ -41,7 +41,7 @@ class SQLServer2012Platform extends SQLServer2008Platform
     public function getAlterSequenceSQL(Sequence $sequence)
     {
         return 'ALTER SEQUENCE ' . $sequence->getQuotedName($this) .
-               ' INCREMENT BY ' . $sequence->getAllocationSize();
+            ' INCREMENT BY ' . $sequence->getAllocationSize();
     }
 
     /**
@@ -50,9 +50,9 @@ class SQLServer2012Platform extends SQLServer2008Platform
     public function getCreateSequenceSQL(Sequence $sequence)
     {
         return 'CREATE SEQUENCE ' . $sequence->getQuotedName($this) .
-               ' START WITH ' . $sequence->getInitialValue() .
-               ' INCREMENT BY ' . $sequence->getAllocationSize() .
-               ' MINVALUE ' . $sequence->getInitialValue();
+            ' START WITH ' . $sequence->getInitialValue() .
+            ' INCREMENT BY ' . $sequence->getAllocationSize() .
+            ' MINVALUE ' . $sequence->getInitialValue();
     }
 
     /**
@@ -151,10 +151,10 @@ class SQLServer2012Platform extends SQLServer2008Platform
         // This looks somewhat like MYSQL, but limit/offset are in inverse positions
         // Supposedly SQL:2008 core standard.
         // Per TSQL spec, FETCH NEXT n ROWS ONLY is not valid without OFFSET n ROWS.
-        $query .= " OFFSET " . (int) $offset . " ROWS";
+        $query .= " OFFSET " . (int)$offset . " ROWS";
 
         if ($limit !== null) {
-            $query .= " FETCH NEXT " . (int) $limit . " ROWS ONLY";
+            $query .= " FETCH NEXT " . (int)$limit . " ROWS ONLY";
         }
 
         return $query;

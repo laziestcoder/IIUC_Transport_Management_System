@@ -4,7 +4,7 @@
         <div class="box-tools pull-right">
             @foreach($tools as $tool)
                 {!! $tool !!}
-                @endforeach
+            @endforeach
         </div><!-- /.box-tools -->
     </div><!-- /.box-header -->
     <div class="box-body" style="display: block;">

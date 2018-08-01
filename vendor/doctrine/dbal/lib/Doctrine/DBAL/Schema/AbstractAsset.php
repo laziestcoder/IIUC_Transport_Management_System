@@ -61,27 +61,6 @@ abstract class AbstractAsset
     protected $_quoted = false;
 
     /**
-     * Sets the name of this asset.
-     *
-     * @param string $name
-     *
-     * @return void
-     */
-    protected function _setName($name)
-    {
-        if ($this->isIdentifierQuoted($name)) {
-            $this->_quoted = true;
-            $name = $this->trimQuotes($name);
-        }
-        if (strpos($name, ".") !== false) {
-            $parts = explode(".", $name);
-            $this->_namespace = $parts[0];
-            $name = $parts[1];
-        }
-        $this->_name = $name;
-    }
-
-    /**
      * Is this asset in the default namespace?
      *
      * @param string $defaultNamespaceName
@@ -124,36 +103,38 @@ abstract class AbstractAsset
     }
 
     /**
-     * The normalized name is full-qualified and lowerspaced. Lowerspacing is
-     * actually wrong, but we have to do it to keep our sanity. If you are
-     * using database objects that only differentiate in the casing (FOO vs
-     * Foo) then you will NOT be able to use Doctrine Schema abstraction.
-     *
-     * Every non-namespaced element is prefixed with the default namespace
-     * name which is passed as argument to this method.
-     *
-     * @param string $defaultNamespaceName
+     * Returns the name of this schema asset.
      *
      * @return string
      */
-    public function getFullQualifiedName($defaultNamespaceName)
+    public function getName()
     {
-        $name = $this->getName();
-        if ( ! $this->_namespace) {
-            $name = $defaultNamespaceName . "." . $name;
+        if ($this->_namespace) {
+            return $this->_namespace . "." . $this->_name;
         }
 
-        return strtolower($name);
+        return $this->_name;
     }
 
     /**
-     * Checks if this asset's name is quoted.
+     * Sets the name of this asset.
      *
-     * @return bool
+     * @param string $name
+     *
+     * @return void
      */
-    public function isQuoted()
+    protected function _setName($name)
     {
-        return $this->_quoted;
+        if ($this->isIdentifierQuoted($name)) {
+            $this->_quoted = true;
+            $name = $this->trimQuotes($name);
+        }
+        if (strpos($name, ".") !== false) {
+            $parts = explode(".", $name);
+            $this->_namespace = $parts[0];
+            $name = $parts[1];
+        }
+        $this->_name = $name;
     }
 
     /**
@@ -181,17 +162,36 @@ abstract class AbstractAsset
     }
 
     /**
-     * Returns the name of this schema asset.
+     * The normalized name is full-qualified and lowerspaced. Lowerspacing is
+     * actually wrong, but we have to do it to keep our sanity. If you are
+     * using database objects that only differentiate in the casing (FOO vs
+     * Foo) then you will NOT be able to use Doctrine Schema abstraction.
+     *
+     * Every non-namespaced element is prefixed with the default namespace
+     * name which is passed as argument to this method.
+     *
+     * @param string $defaultNamespaceName
      *
      * @return string
      */
-    public function getName()
+    public function getFullQualifiedName($defaultNamespaceName)
     {
-        if ($this->_namespace) {
-            return $this->_namespace . "." . $this->_name;
+        $name = $this->getName();
+        if (!$this->_namespace) {
+            $name = $defaultNamespaceName . "." . $name;
         }
 
-        return $this->_name;
+        return strtolower($name);
+    }
+
+    /**
+     * Checks if this asset's name is quoted.
+     *
+     * @return bool
+     */
+    public function isQuoted()
+    {
+        return $this->_quoted;
     }
 
     /**
@@ -220,13 +220,13 @@ abstract class AbstractAsset
      * however building idents automatically for foreign keys, composite keys or such can easily create
      * very long names.
      *
-     * @param array  $columnNames
+     * @param array $columnNames
      * @param string $prefix
-     * @param int    $maxSize
+     * @param int $maxSize
      *
      * @return string
      */
-    protected function _generateIdentifierName($columnNames, $prefix='', $maxSize=30)
+    protected function _generateIdentifierName($columnNames, $prefix = '', $maxSize = 30)
     {
         $hash = implode("", array_map(function ($column) {
             return dechex(crc32($column));

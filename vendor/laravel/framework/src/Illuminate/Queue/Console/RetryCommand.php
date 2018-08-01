@@ -2,8 +2,8 @@
 
 namespace Illuminate\Queue\Console;
 
-use Illuminate\Support\Arr;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 
 class RetryCommand extends Command
 {
@@ -50,7 +50,7 @@ class RetryCommand extends Command
      */
     protected function getJobIds()
     {
-        $ids = (array) $this->argument('id');
+        $ids = (array)$this->argument('id');
 
         if (count($ids) === 1 && $ids[0] === 'all') {
             $ids = Arr::pluck($this->laravel['queue.failer']->all(), 'id');
@@ -62,7 +62,7 @@ class RetryCommand extends Command
     /**
      * Retry the queue job.
      *
-     * @param  \stdClass  $job
+     * @param  \stdClass $job
      * @return void
      */
     protected function retryJob($job)
@@ -77,7 +77,7 @@ class RetryCommand extends Command
      *
      * Applicable to Redis jobs which store attempts in their payload.
      *
-     * @param  string  $payload
+     * @param  string $payload
      * @return string
      */
     protected function resetAttempts($payload)

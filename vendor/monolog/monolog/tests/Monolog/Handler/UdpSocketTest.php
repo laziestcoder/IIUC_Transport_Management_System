@@ -11,8 +11,8 @@
 
 namespace Monolog\Handler;
 
-use Monolog\TestCase;
 use Monolog\Handler\SyslogUdp\UdpSocket;
+use Monolog\TestCase;
 
 /**
  * @requires extension sockets
@@ -34,7 +34,7 @@ class UdpSocketTest extends TestCase
     {
         $socket = $this->getMock('\Monolog\Handler\SyslogUdp\UdpSocket', array('send'), array('lol', 'lol'));
 
-        $truncatedString = str_repeat("derp", 16254).'d';
+        $truncatedString = str_repeat("derp", 16254) . 'd';
 
         $socket->expects($this->exactly(1))
             ->method('send')

@@ -125,18 +125,18 @@ class TableDiff
     /**
      * Constructs an TableDiff object.
      *
-     * @param string                             $tableName
-     * @param \Doctrine\DBAL\Schema\Column[]     $addedColumns
+     * @param string $tableName
+     * @param \Doctrine\DBAL\Schema\Column[] $addedColumns
      * @param \Doctrine\DBAL\Schema\ColumnDiff[] $changedColumns
-     * @param \Doctrine\DBAL\Schema\Column[]     $removedColumns
-     * @param \Doctrine\DBAL\Schema\Index[]      $addedIndexes
-     * @param \Doctrine\DBAL\Schema\Index[]      $changedIndexes
-     * @param \Doctrine\DBAL\Schema\Index[]      $removedIndexes
-     * @param \Doctrine\DBAL\Schema\Table|null   $fromTable
+     * @param \Doctrine\DBAL\Schema\Column[] $removedColumns
+     * @param \Doctrine\DBAL\Schema\Index[] $addedIndexes
+     * @param \Doctrine\DBAL\Schema\Index[] $changedIndexes
+     * @param \Doctrine\DBAL\Schema\Index[] $removedIndexes
+     * @param \Doctrine\DBAL\Schema\Table|null $fromTable
      */
     public function __construct($tableName, $addedColumns = [],
-        $changedColumns = [], $removedColumns = [], $addedIndexes = [],
-        $changedIndexes = [], $removedIndexes = [], Table $fromTable = null)
+                                $changedColumns = [], $removedColumns = [], $addedIndexes = [],
+                                $changedIndexes = [], $removedIndexes = [], Table $fromTable = null)
     {
         $this->name = $tableName;
         $this->addedColumns = $addedColumns;

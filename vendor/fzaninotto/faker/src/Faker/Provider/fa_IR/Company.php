@@ -47,9 +47,9 @@ class Company extends \Faker\Provider\Company
     }
 
     /**
-    * @example 'تمام وقت'
-    * @return string
-    */
+     * @example 'تمام وقت'
+     * @return string
+     */
     public function contract()
     {
         return static::randomElement(static::$contract);

@@ -39,9 +39,9 @@ class MethodEnumerator extends Enumerator
             return;
         }
 
-        $showAll   = $input->getOption('all');
+        $showAll = $input->getOption('all');
         $noInherit = $input->getOption('no-inherit');
-        $methods   = $this->prepareMethods($this->getMethods($showAll, $reflector, $noInherit));
+        $methods = $this->prepareMethods($this->getMethods($showAll, $reflector, $noInherit));
 
         if (empty($methods)) {
             return;
@@ -54,11 +54,54 @@ class MethodEnumerator extends Enumerator
     }
 
     /**
+     * Prepare formatted method array.
+     *
+     * @param array $methods
+     *
+     * @return array
+     */
+    protected function prepareMethods(array $methods)
+    {
+        // My kingdom for a generator.
+        $ret = [];
+
+        foreach ($methods as $name => $method) {
+            if ($this->showItem($name)) {
+                $ret[$name] = [
+                    'name' => $name,
+                    'style' => $this->getVisibilityStyle($method),
+                    'value' => $this->presentSignature($method),
+                ];
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Get output style for the given method's visibility.
+     *
+     * @param \ReflectionMethod $method
+     *
+     * @return string
+     */
+    private function getVisibilityStyle(\ReflectionMethod $method)
+    {
+        if ($method->isPublic()) {
+            return self::IS_PUBLIC;
+        } elseif ($method->isProtected()) {
+            return self::IS_PROTECTED;
+        } else {
+            return self::IS_PRIVATE;
+        }
+    }
+
+    /**
      * Get defined methods for the given class or object Reflector.
      *
-     * @param bool       $showAll   Include private and protected methods
+     * @param bool $showAll Include private and protected methods
      * @param \Reflector $reflector
-     * @param bool       $noInherit Exclude inherited methods
+     * @param bool $noInherit Exclude inherited methods
      *
      * @return array
      */
@@ -83,31 +126,6 @@ class MethodEnumerator extends Enumerator
     }
 
     /**
-     * Prepare formatted method array.
-     *
-     * @param array $methods
-     *
-     * @return array
-     */
-    protected function prepareMethods(array $methods)
-    {
-        // My kingdom for a generator.
-        $ret = [];
-
-        foreach ($methods as $name => $method) {
-            if ($this->showItem($name)) {
-                $ret[$name] = [
-                    'name'  => $name,
-                    'style' => $this->getVisibilityStyle($method),
-                    'value' => $this->presentSignature($method),
-                ];
-            }
-        }
-
-        return $ret;
-    }
-
-    /**
      * Get a label for the particular kind of "class" represented.
      *
      * @param \ReflectionClass $reflector
@@ -122,24 +140,6 @@ class MethodEnumerator extends Enumerator
             return 'Trait Methods';
         } else {
             return 'Class Methods';
-        }
-    }
-
-    /**
-     * Get output style for the given method's visibility.
-     *
-     * @param \ReflectionMethod $method
-     *
-     * @return string
-     */
-    private function getVisibilityStyle(\ReflectionMethod $method)
-    {
-        if ($method->isPublic()) {
-            return self::IS_PUBLIC;
-        } elseif ($method->isProtected()) {
-            return self::IS_PROTECTED;
-        } else {
-            return self::IS_PRIVATE;
         }
     }
 }

@@ -1,38 +1,11 @@
 <?php
+
 namespace JakubOnderka\PhpConsoleHighlighter;
 
 class HighlighterTest extends \PHPUnit_Framework_TestCase
 {
     /** @var Highlighter */
     private $uut;
-
-    protected function getConsoleColorMock()
-    {
-        $mock = $this->getMock('\JakubOnderka\PhpConsoleColor\ConsoleColor');
-
-        $mock->expects($this->any())
-            ->method('apply')
-            ->will($this->returnCallback(function ($style, $text) {
-                return "<$style>$text</$style>";
-            }));
-
-        $mock->expects($this->any())
-            ->method('hasTheme')
-            ->will($this->returnValue(true));
-
-        return $mock;
-    }
-
-    protected function setUp()
-    {
-        $this->uut = new Highlighter($this->getConsoleColorMock());
-    }
-
-    protected function compare($original, $expected)
-    {
-        $output = $this->uut->getWholeFile($original);
-        $this->assertEquals($expected, $output);
-    }
 
     public function testVariable()
     {
@@ -47,6 +20,12 @@ EOL
 <token_keyword>echo </token_keyword><token_default>\$a</token_default><token_keyword>;</token_keyword>
 EOL
         );
+    }
+
+    protected function compare($original, $expected)
+    {
+        $output = $this->uut->getWholeFile($original);
+        $this->assertEquals($expected, $output);
     }
 
     public function testInteger()
@@ -158,9 +137,6 @@ EOL
         );
     }
 
-    /*
-     * Constants
-     */
     public function testConstant()
     {
         $constants = array(
@@ -189,9 +165,6 @@ EOL
         }
     }
 
-    /*
-     * Comments
-     */
     public function testComment()
     {
         $this->compare(
@@ -207,6 +180,10 @@ EOL
         );
     }
 
+    /*
+     * Constants
+     */
+
     public function testDocComment()
     {
         $this->compare(
@@ -221,6 +198,10 @@ EOL
 EOL
         );
     }
+
+    /*
+     * Comments
+     */
 
     public function testInlineComment()
     {
@@ -259,5 +240,27 @@ EOL
             ,
             ''
         );
+    }
+
+    protected function setUp()
+    {
+        $this->uut = new Highlighter($this->getConsoleColorMock());
+    }
+
+    protected function getConsoleColorMock()
+    {
+        $mock = $this->getMock('\JakubOnderka\PhpConsoleColor\ConsoleColor');
+
+        $mock->expects($this->any())
+            ->method('apply')
+            ->will($this->returnCallback(function ($style, $text) {
+                return "<$style>$text</$style>";
+            }));
+
+        $mock->expects($this->any())
+            ->method('hasTheme')
+            ->will($this->returnValue(true));
+
+        return $mock;
     }
 }

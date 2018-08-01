@@ -3,7 +3,7 @@
 namespace Illuminate\Support\Facades;
 
 /**
- * @method static mixed guard(string|null $name = null)
+ * @method static mixed guard(string | null $name = null)
  * @method static void shouldUse(string $name);
  * @method static bool check()
  * @method static bool guest()
@@ -27,16 +27,6 @@ namespace Illuminate\Support\Facades;
 class Auth extends Facade
 {
     /**
-     * Get the registered name of the component.
-     *
-     * @return string
-     */
-    protected static function getFacadeAccessor()
-    {
-        return 'auth';
-    }
-
-    /**
      * Register the typical authentication routes for an application.
      *
      * @return void
@@ -44,5 +34,15 @@ class Auth extends Facade
     public static function routes()
     {
         static::$app->make('router')->auth();
+    }
+
+    /**
+     * Get the registered name of the component.
+     *
+     * @return string
+     */
+    protected static function getFacadeAccessor()
+    {
+        return 'auth';
     }
 }

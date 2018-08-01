@@ -48,7 +48,7 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Tests\Fixtures\Redirec
 
         // a_wildcard
         if (preg_match('#^/(?P<param>[^/]++)$#sD', $pathinfo, $matches)) {
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'a_wildcard')), array ());
+            return $this->mergeDefaults(array_replace($matches, array('_route' => 'a_wildcard')), array());
         }
 
         if (0 === strpos($pathinfo, '/a')) {
@@ -60,7 +60,7 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Tests\Fixtures\Redirec
                 } elseif ('GET' !== $canonicalMethod) {
                     goto not_a_fourth;
                 } else {
-                    return array_replace($ret, $this->redirect($rawPathinfo.'/', 'a_fourth'));
+                    return array_replace($ret, $this->redirect($rawPathinfo . '/', 'a_fourth'));
                 }
 
                 return $ret;
@@ -75,7 +75,7 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Tests\Fixtures\Redirec
                 } elseif ('GET' !== $canonicalMethod) {
                     goto not_a_fifth;
                 } else {
-                    return array_replace($ret, $this->redirect($rawPathinfo.'/', 'a_fifth'));
+                    return array_replace($ret, $this->redirect($rawPathinfo . '/', 'a_fifth'));
                 }
 
                 return $ret;
@@ -90,7 +90,7 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Tests\Fixtures\Redirec
                 } elseif ('GET' !== $canonicalMethod) {
                     goto not_a_sixth;
                 } else {
-                    return array_replace($ret, $this->redirect($rawPathinfo.'/', 'a_sixth'));
+                    return array_replace($ret, $this->redirect($rawPathinfo . '/', 'a_sixth'));
                 }
 
                 return $ret;
@@ -101,7 +101,7 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Tests\Fixtures\Redirec
 
         // nested_wildcard
         if (0 === strpos($pathinfo, '/nested') && preg_match('#^/nested/(?P<param>[^/]++)$#sD', $pathinfo, $matches)) {
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'nested_wildcard')), array ());
+            return $this->mergeDefaults(array_replace($matches, array('_route' => 'nested_wildcard')), array());
         }
 
         if (0 === strpos($pathinfo, '/nested/group')) {
@@ -113,7 +113,7 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Tests\Fixtures\Redirec
                 } elseif ('GET' !== $canonicalMethod) {
                     goto not_nested_a;
                 } else {
-                    return array_replace($ret, $this->redirect($rawPathinfo.'/', 'nested_a'));
+                    return array_replace($ret, $this->redirect($rawPathinfo . '/', 'nested_a'));
                 }
 
                 return $ret;
@@ -128,7 +128,7 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Tests\Fixtures\Redirec
                 } elseif ('GET' !== $canonicalMethod) {
                     goto not_nested_b;
                 } else {
-                    return array_replace($ret, $this->redirect($rawPathinfo.'/', 'nested_b'));
+                    return array_replace($ret, $this->redirect($rawPathinfo . '/', 'nested_b'));
                 }
 
                 return $ret;
@@ -143,16 +143,14 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Tests\Fixtures\Redirec
                 } elseif ('GET' !== $canonicalMethod) {
                     goto not_nested_c;
                 } else {
-                    return array_replace($ret, $this->redirect($rawPathinfo.'/', 'nested_c'));
+                    return array_replace($ret, $this->redirect($rawPathinfo . '/', 'nested_c'));
                 }
 
                 return $ret;
             }
             not_nested_c:
 
-        }
-
-        elseif (0 === strpos($pathinfo, '/slashed/group')) {
+        } elseif (0 === strpos($pathinfo, '/slashed/group')) {
             // slashed_a
             if ('/slashed/group' === $trimmedPathinfo) {
                 $ret = array('_route' => 'slashed_a');
@@ -161,7 +159,7 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Tests\Fixtures\Redirec
                 } elseif ('GET' !== $canonicalMethod) {
                     goto not_slashed_a;
                 } else {
-                    return array_replace($ret, $this->redirect($rawPathinfo.'/', 'slashed_a'));
+                    return array_replace($ret, $this->redirect($rawPathinfo . '/', 'slashed_a'));
                 }
 
                 return $ret;
@@ -176,7 +174,7 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Tests\Fixtures\Redirec
                 } elseif ('GET' !== $canonicalMethod) {
                     goto not_slashed_b;
                 } else {
-                    return array_replace($ret, $this->redirect($rawPathinfo.'/', 'slashed_b'));
+                    return array_replace($ret, $this->redirect($rawPathinfo . '/', 'slashed_b'));
                 }
 
                 return $ret;
@@ -191,7 +189,7 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Tests\Fixtures\Redirec
                 } elseif ('GET' !== $canonicalMethod) {
                     goto not_slashed_c;
                 } else {
-                    return array_replace($ret, $this->redirect($rawPathinfo.'/', 'slashed_c'));
+                    return array_replace($ret, $this->redirect($rawPathinfo . '/', 'slashed_c'));
                 }
 
                 return $ret;

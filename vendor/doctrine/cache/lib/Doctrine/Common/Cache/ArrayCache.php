@@ -65,7 +65,7 @@ class ArrayCache extends CacheProvider
      */
     protected function doFetch($id)
     {
-        if (! $this->doContains($id)) {
+        if (!$this->doContains($id)) {
             $this->missesCount += 1;
 
             return false;
@@ -81,7 +81,7 @@ class ArrayCache extends CacheProvider
      */
     protected function doContains($id)
     {
-        if (! isset($this->data[$id])) {
+        if (!isset($this->data[$id])) {
             return false;
         }
 
@@ -99,9 +99,9 @@ class ArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doSave($id, $data, $lifeTime = 0)
+    protected function doDelete($id)
     {
-        $this->data[$id] = [$data, $lifeTime ? time() + $lifeTime : false];
+        unset($this->data[$id]);
 
         return true;
     }
@@ -109,9 +109,9 @@ class ArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doDelete($id)
+    protected function doSave($id, $data, $lifeTime = 0)
     {
-        unset($this->data[$id]);
+        $this->data[$id] = [$data, $lifeTime ? time() + $lifeTime : false];
 
         return true;
     }
@@ -132,10 +132,10 @@ class ArrayCache extends CacheProvider
     protected function doGetStats()
     {
         return [
-            Cache::STATS_HITS             => $this->hitsCount,
-            Cache::STATS_MISSES           => $this->missesCount,
-            Cache::STATS_UPTIME           => $this->upTime,
-            Cache::STATS_MEMORY_USAGE     => null,
+            Cache::STATS_HITS => $this->hitsCount,
+            Cache::STATS_MISSES => $this->missesCount,
+            Cache::STATS_UPTIME => $this->upTime,
+            Cache::STATS_MEMORY_USAGE => null,
             Cache::STATS_MEMORY_AVAILABLE => null,
         ];
     }

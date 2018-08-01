@@ -11,19 +11,24 @@
 
 namespace Monolog\Handler;
 
-use Monolog\TestCase;
 use Monolog\Logger;
+use Monolog\TestCase;
 
 class DeduplicationHandlerTest extends TestCase
 {
+    public static function tearDownAfterClass()
+    {
+        @unlink(sys_get_temp_dir() . '/monolog_dedup.log');
+    }
+
     /**
      * @covers Monolog\Handler\DeduplicationHandler::flush
      */
     public function testFlushPassthruIfAllRecordsUnderTrigger()
     {
         $test = new TestHandler();
-        @unlink(sys_get_temp_dir().'/monolog_dedup.log');
-        $handler = new DeduplicationHandler($test, sys_get_temp_dir().'/monolog_dedup.log', 0);
+        @unlink(sys_get_temp_dir() . '/monolog_dedup.log');
+        $handler = new DeduplicationHandler($test, sys_get_temp_dir() . '/monolog_dedup.log', 0);
 
         $handler->handle($this->getRecord(Logger::DEBUG));
         $handler->handle($this->getRecord(Logger::INFO));
@@ -42,8 +47,8 @@ class DeduplicationHandlerTest extends TestCase
     public function testFlushPassthruIfEmptyLog()
     {
         $test = new TestHandler();
-        @unlink(sys_get_temp_dir().'/monolog_dedup.log');
-        $handler = new DeduplicationHandler($test, sys_get_temp_dir().'/monolog_dedup.log', 0);
+        @unlink(sys_get_temp_dir() . '/monolog_dedup.log');
+        $handler = new DeduplicationHandler($test, sys_get_temp_dir() . '/monolog_dedup.log', 0);
 
         $handler->handle($this->getRecord(Logger::ERROR, 'Foo:bar'));
         $handler->handle($this->getRecord(Logger::CRITICAL, "Foo\nbar"));
@@ -56,15 +61,15 @@ class DeduplicationHandlerTest extends TestCase
     }
 
     /**
-     * @covers Monolog\Handler\DeduplicationHandler::flush
-     * @covers Monolog\Handler\DeduplicationHandler::appendRecord
-     * @covers Monolog\Handler\DeduplicationHandler::isDuplicate
+     * @covers  Monolog\Handler\DeduplicationHandler::flush
+     * @covers  Monolog\Handler\DeduplicationHandler::appendRecord
+     * @covers  Monolog\Handler\DeduplicationHandler::isDuplicate
      * @depends testFlushPassthruIfEmptyLog
      */
     public function testFlushSkipsIfLogExists()
     {
         $test = new TestHandler();
-        $handler = new DeduplicationHandler($test, sys_get_temp_dir().'/monolog_dedup.log', 0);
+        $handler = new DeduplicationHandler($test, sys_get_temp_dir() . '/monolog_dedup.log', 0);
 
         $handler->handle($this->getRecord(Logger::ERROR, 'Foo:bar'));
         $handler->handle($this->getRecord(Logger::CRITICAL, "Foo\nbar"));
@@ -77,15 +82,15 @@ class DeduplicationHandlerTest extends TestCase
     }
 
     /**
-     * @covers Monolog\Handler\DeduplicationHandler::flush
-     * @covers Monolog\Handler\DeduplicationHandler::appendRecord
-     * @covers Monolog\Handler\DeduplicationHandler::isDuplicate
+     * @covers  Monolog\Handler\DeduplicationHandler::flush
+     * @covers  Monolog\Handler\DeduplicationHandler::appendRecord
+     * @covers  Monolog\Handler\DeduplicationHandler::isDuplicate
      * @depends testFlushPassthruIfEmptyLog
      */
     public function testFlushPassthruIfLogTooOld()
     {
         $test = new TestHandler();
-        $handler = new DeduplicationHandler($test, sys_get_temp_dir().'/monolog_dedup.log', 0);
+        $handler = new DeduplicationHandler($test, sys_get_temp_dir() . '/monolog_dedup.log', 0);
 
         $record = $this->getRecord(Logger::ERROR);
         $record['datetime']->modify('+62seconds');
@@ -110,8 +115,8 @@ class DeduplicationHandlerTest extends TestCase
     public function testGcOldLogs()
     {
         $test = new TestHandler();
-        @unlink(sys_get_temp_dir().'/monolog_dedup.log');
-        $handler = new DeduplicationHandler($test, sys_get_temp_dir().'/monolog_dedup.log', 0);
+        @unlink(sys_get_temp_dir() . '/monolog_dedup.log');
+        $handler = new DeduplicationHandler($test, sys_get_temp_dir() . '/monolog_dedup.log', 0);
 
         // handle two records from yesterday, and one recent
         $record = $this->getRecord(Logger::ERROR);
@@ -156,10 +161,5 @@ class DeduplicationHandlerTest extends TestCase
         $this->assertTrue($test->hasErrorRecords());
         $this->assertTrue($test->hasCriticalRecords());
         $this->assertFalse($test->hasWarningRecords());
-    }
-
-    public static function tearDownAfterClass()
-    {
-        @unlink(sys_get_temp_dir().'/monolog_dedup.log');
     }
 }

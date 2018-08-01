@@ -19,9 +19,9 @@
 
 namespace Doctrine\DBAL\Cache;
 
-use Doctrine\DBAL\Driver\Statement;
-use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\DBAL\Driver\ResultStatement;
+use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\FetchMode;
 use function array_merge;
 use function array_values;
@@ -87,10 +87,10 @@ class ResultCacheStatement implements \IteratorAggregate, ResultStatement
 
     /**
      * @param \Doctrine\DBAL\Driver\Statement $stmt
-     * @param \Doctrine\Common\Cache\Cache    $resultCache
-     * @param string                          $cacheKey
-     * @param string                          $realKey
-     * @param int                             $lifetime
+     * @param \Doctrine\Common\Cache\Cache $resultCache
+     * @param string $cacheKey
+     * @param string $realKey
+     * @param int $lifetime
      */
     public function __construct(Statement $stmt, Cache $resultCache, $cacheKey, $realKey, $lifetime)
     {
@@ -109,7 +109,7 @@ class ResultCacheStatement implements \IteratorAggregate, ResultStatement
         $this->statement->closeCursor();
         if ($this->emptied && $this->data !== null) {
             $data = $this->resultCache->fetch($this->cacheKey);
-            if ( ! $data) {
+            if (!$data) {
                 $data = [];
             }
             $data[$this->realKey] = $this->data;
@@ -150,6 +150,19 @@ class ResultCacheStatement implements \IteratorAggregate, ResultStatement
     /**
      * {@inheritdoc}
      */
+    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
+    {
+        $rows = [];
+        while ($row = $this->fetch($fetchMode)) {
+            $rows[] = $row;
+        }
+
+        return $rows;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function fetch($fetchMode = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
         if ($this->data === null) {
@@ -185,19 +198,6 @@ class ResultCacheStatement implements \IteratorAggregate, ResultStatement
         $this->emptied = true;
 
         return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
-    {
-        $rows = [];
-        while ($row = $this->fetch($fetchMode)) {
-            $rows[] = $row;
-        }
-
-        return $rows;
     }
 
     /**

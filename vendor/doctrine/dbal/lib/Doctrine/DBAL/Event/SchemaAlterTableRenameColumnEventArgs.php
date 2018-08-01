@@ -60,17 +60,17 @@ class SchemaAlterTableRenameColumnEventArgs extends SchemaEventArgs
     private $_sql = [];
 
     /**
-     * @param string                                    $oldColumnName
-     * @param \Doctrine\DBAL\Schema\Column              $column
-     * @param \Doctrine\DBAL\Schema\TableDiff           $tableDiff
+     * @param string $oldColumnName
+     * @param \Doctrine\DBAL\Schema\Column $column
+     * @param \Doctrine\DBAL\Schema\TableDiff $tableDiff
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      */
     public function __construct($oldColumnName, Column $column, TableDiff $tableDiff, AbstractPlatform $platform)
     {
         $this->_oldColumnName = $oldColumnName;
-        $this->_column        = $column;
-        $this->_tableDiff     = $tableDiff;
-        $this->_platform      = $platform;
+        $this->_column = $column;
+        $this->_tableDiff = $tableDiff;
+        $this->_platform = $platform;
     }
 
     /**

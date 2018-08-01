@@ -19,7 +19,7 @@ class Person extends \Faker\Provider\Person
     );
 
     protected static $firstNameMale = array(
-         'Aleksi', 'Anssi', 'Antero', 'Antti', 'Ari', 'Arttu', 'Daniel', 'Eero', 'Eetu', 'Elias', 'Elmo', 'Emil', 'Erkki',
+        'Aleksi', 'Anssi', 'Antero', 'Antti', 'Ari', 'Arttu', 'Daniel', 'Eero', 'Eetu', 'Elias', 'Elmo', 'Emil', 'Erkki',
         'Hampus', 'Hannu', 'Harri', 'Heikki', 'Helmi', 'Henri', 'Hermanni', 'Ilja', 'Jaakko', 'Jake', 'Jani', 'Janne',
         'Jari', 'Jarno', 'Jere', 'Jeremy', 'Jesper', 'Jesse', 'Jimi', 'Joakim', 'Joel', 'Joona', 'Joonas', 'Juha',
         'Juho', 'Jukka', 'Julius', 'Jussi', 'Justus', 'Juuso', 'Kalle', 'Kasperi', 'Konsta', 'Kristian', 'Lassi', 'Leevi',
@@ -85,8 +85,8 @@ class Person extends \Faker\Provider\Person
     protected static $titleMale = array('Hra.', 'Tri.');
 
     protected static $titleFemale = array('Rva.', 'Nti.', 'Tri.');
-    
-     /**
+
+    /**
      * National Personal Identity Number (Henkilötunnus)
      * @link http://www.finlex.fi/fi/laki/ajantasa/2010/20100128
      * @param \DateTime $birthdate
@@ -102,7 +102,7 @@ class Person extends \Faker\Provider\Person
         }
         $datePart = $birthdate->format('dmy');
 
-        switch ((int)($birthdate->format('Y')/100)) {
+        switch ((int)($birthdate->format('Y') / 100)) {
             case 18:
                 $centurySign = '+';
                 break;
@@ -119,15 +119,15 @@ class Person extends \Faker\Provider\Person
         $randomDigits = self::numberBetween(0, 89);
         if ($gender && $gender == static::GENDER_MALE) {
             if ($randomDigits === 0) {
-                $randomDigits .= static::randomElement(array(3,5,7,9));
+                $randomDigits .= static::randomElement(array(3, 5, 7, 9));
             } else {
-                $randomDigits .= static::randomElement(array(1,3,5,7,9));
+                $randomDigits .= static::randomElement(array(1, 3, 5, 7, 9));
             }
         } elseif ($gender && $gender == static::GENDER_FEMALE) {
             if ($randomDigits === 0) {
-                $randomDigits .= static::randomElement(array(2,4,6,8));
+                $randomDigits .= static::randomElement(array(2, 4, 6, 8));
             } else {
-                $randomDigits .= static::randomElement(array(0,2,4,6,8));
+                $randomDigits .= static::randomElement(array(0, 2, 4, 6, 8));
             }
         } else {
             if ($randomDigits === 0) {

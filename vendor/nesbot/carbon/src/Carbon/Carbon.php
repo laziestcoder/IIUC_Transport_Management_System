@@ -457,6 +457,23 @@ class Carbon extends DateTime
     ///////////////////////////////////////////////////////////////////
 
     /**
+     * Create a carbon instance from a string.
+     *
+     * This is an alias for the constructor that allows better fluent syntax
+     * as it allows you to do Carbon::parse('Monday next week')->fn() rather
+     * than (new Carbon('Monday next week'))->fn().
+     *
+     * @param string|null $time
+     * @param \DateTimeZone|string|null $tz
+     *
+     * @return static
+     */
+    public static function parse($time = null, $tz = null)
+    {
+        return new static($time, $tz);
+    }
+
+    /**
      * Add microseconds to now on PHP < 7.1 and 7.1.3 if set to true,
      * let microseconds to 0 on those PHP versions if false.
      *
@@ -550,23 +567,6 @@ class Carbon extends DateTime
     public static function today($tz = null)
     {
         return static::parse('today', $tz);
-    }
-
-    /**
-     * Create a carbon instance from a string.
-     *
-     * This is an alias for the constructor that allows better fluent syntax
-     * as it allows you to do Carbon::parse('Monday next week')->fn() rather
-     * than (new Carbon('Monday next week'))->fn().
-     *
-     * @param string|null $time
-     * @param \DateTimeZone|string|null $tz
-     *
-     * @return static
-     */
-    public static function parse($time = null, $tz = null)
-    {
-        return new static($time, $tz);
     }
 
     /**

@@ -11,12 +11,9 @@
                 </small>
             </h1>
 
-            <?php if (count($notices) > 0): ?>
+            <?php if(count($notices) > 0): ?>
                 <?php $count = 0; ?>
-                <?php $__currentLoopData = $notices;
-                $__env->addLoop($__currentLoopData);
-                foreach ($__currentLoopData as $notice): $__env->incrementLoopIndices();
-                    $loop = $__env->getLastLoop(); ?>
+                <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <?php $count = $count + 1; ?>
                     <div class="well">
                         <div class="row">
@@ -44,9 +41,7 @@
                             </div>
                         </div>
                     </div>
-                <?php endforeach;
-                $__env->popLoop();
-                $loop = $__env->getLastLoop(); ?>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 <?php echo $notices->links(); ?>
 
             <?php else: ?>
@@ -59,7 +54,8 @@
         </div>
     </section>
     <section class="content">
-
+        
+        
 
     </section>
 <?php $__env->stopSection(); ?>

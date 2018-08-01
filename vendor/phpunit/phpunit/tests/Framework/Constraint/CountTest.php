@@ -21,9 +21,9 @@ class CountTest extends ConstraintTestCase
         $this->assertTrue($countConstraint->evaluate([], '', true));
 
         $countConstraint = new Count(2);
-        $it              = new \TestIterator([1, 2]);
-        $ia              = new \TestIteratorAggregate($it);
-        $ia2             = new \TestIteratorAggregate2($ia);
+        $it = new \TestIterator([1, 2]);
+        $ia = new \TestIteratorAggregate($it);
+        $ia2 = new \TestIteratorAggregate2($ia);
 
         $this->assertTrue($countConstraint->evaluate($it, '', true));
         $this->assertTrue($countConstraint->evaluate($ia, '', true));
@@ -80,8 +80,8 @@ class CountTest extends ConstraintTestCase
         $this->assertFalse($it->valid());
 
         // test with nested IteratorAggregate
-        $it  = new \TestIterator([1, 2]);
-        $ia  = new \TestIteratorAggregate($it);
+        $it = new \TestIterator([1, 2]);
+        $ia = new \TestIteratorAggregate($it);
         $ia2 = new \TestIteratorAggregate2($ia);
 
         $countConstraint = new Count(2);

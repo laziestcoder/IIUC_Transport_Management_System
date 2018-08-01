@@ -24,6 +24,11 @@ final class Method
         $this->setName($name);
     }
 
+    private function setName(string $name): void
+    {
+        $this->contextNode->setAttribute('name', $name);
+    }
+
     public function setSignature(string $signature): void
     {
         $this->contextNode->setAttribute('signature', $signature);
@@ -48,10 +53,5 @@ final class Method
     public function setCrap(string $crap): void
     {
         $this->contextNode->setAttribute('crap', $crap);
-    }
-
-    private function setName(string $name): void
-    {
-        $this->contextNode->setAttribute('name', $name);
     }
 }

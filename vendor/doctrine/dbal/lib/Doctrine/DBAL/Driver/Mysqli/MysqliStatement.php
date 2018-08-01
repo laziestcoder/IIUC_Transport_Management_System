@@ -38,11 +38,11 @@ class MysqliStatement implements \IteratorAggregate, Statement
      * @var array
      */
     protected static $_paramTypeMap = [
-        ParameterType::STRING       => 's',
-        ParameterType::BINARY       => 's',
-        ParameterType::BOOLEAN      => 'i',
-        ParameterType::NULL         => 's',
-        ParameterType::INTEGER      => 'i',
+        ParameterType::STRING => 's',
+        ParameterType::BINARY => 's',
+        ParameterType::BOOLEAN => 'i',
+        ParameterType::NULL => 's',
+        ParameterType::INTEGER => 'i',
 
         // TODO Support LOB bigger then max package size
         ParameterType::LARGE_OBJECT => 's',
@@ -99,7 +99,7 @@ class MysqliStatement implements \IteratorAggregate, Statement
 
     /**
      * @param \mysqli $conn
-     * @param string  $prepareString
+     * @param string $prepareString
      *
      * @throws \Doctrine\DBAL\Driver\Mysqli\MysqliException
      */
@@ -168,7 +168,7 @@ class MysqliStatement implements \IteratorAggregate, Statement
     {
         if (null !== $this->_bindedValues) {
             if (null !== $params) {
-                if ( ! $this->_bindValues($params)) {
+                if (!$this->_bindValues($params)) {
                     throw new MysqliException($this->_stmt->error, $this->_stmt->errno);
                 }
             } else {
@@ -178,7 +178,7 @@ class MysqliStatement implements \IteratorAggregate, Statement
             }
         }
 
-        if ( ! $this->_stmt->execute()) {
+        if (!$this->_stmt->execute()) {
             throw new MysqliException($this->_stmt->error, $this->_stmt->sqlstate, $this->_stmt->errno);
         }
 
@@ -252,22 +252,39 @@ class MysqliStatement implements \IteratorAggregate, Statement
     }
 
     /**
-     * @return mixed[]|false
+     * {@inheritdoc}
      */
-    private function _fetch()
+    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
     {
-        $ret = $this->_stmt->fetch();
+        $fetchMode = $fetchMode ?: $this->_defaultFetchMode;
 
-        if (true === $ret) {
-            $values = [];
-            foreach ($this->_rowBindedValues as $v) {
-                $values[] = $v;
+        $rows = [];
+
+        if ($fetchMode === FetchMode::COLUMN) {
+            while (($row = $this->fetchColumn()) !== false) {
+                $rows[] = $row;
             }
-
-            return $values;
+        } else {
+            while (($row = $this->fetch($fetchMode)) !== false) {
+                $rows[] = $row;
+            }
         }
 
-        return $ret;
+        return $rows;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fetchColumn($columnIndex = 0)
+    {
+        $row = $this->fetch(FetchMode::NUMERIC);
+
+        if (false === $row) {
+            return false;
+        }
+
+        return $row[$columnIndex] ?? null;
     }
 
     /**
@@ -325,39 +342,22 @@ class MysqliStatement implements \IteratorAggregate, Statement
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed[]|false
      */
-    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
+    private function _fetch()
     {
-        $fetchMode = $fetchMode ?: $this->_defaultFetchMode;
+        $ret = $this->_stmt->fetch();
 
-        $rows = [];
+        if (true === $ret) {
+            $values = [];
+            foreach ($this->_rowBindedValues as $v) {
+                $values[] = $v;
+            }
 
-        if ($fetchMode === FetchMode::COLUMN) {
-            while (($row = $this->fetchColumn()) !== false) {
-                $rows[] = $row;
-            }
-        } else {
-            while (($row = $this->fetch($fetchMode)) !== false) {
-                $rows[] = $row;
-            }
+            return $values;
         }
 
-        return $rows;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fetchColumn($columnIndex = 0)
-    {
-        $row = $this->fetch(FetchMode::NUMERIC);
-
-        if (false === $row) {
-            return false;
-        }
-
-        return $row[$columnIndex] ?? null;
+        return $ret;
     }
 
     /**

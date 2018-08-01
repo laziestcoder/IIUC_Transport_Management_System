@@ -97,16 +97,6 @@ abstract class AbstractFilter
     }
 
     /**
-     * Setup default presenter.
-     *
-     * @return void
-     */
-    protected function setupDefaultPresenter()
-    {
-        $this->setPresenter(new Text($this->label));
-    }
-
-    /**
      * Format label.
      *
      * @param string $label
@@ -118,29 +108,6 @@ abstract class AbstractFilter
         $label = $label ?: ucfirst($this->column);
 
         return str_replace(['.', '_'], ' ', $label);
-    }
-
-    /**
-     * Format name.
-     *
-     * @param string $column
-     *
-     * @return string
-     */
-    protected function formatName($column)
-    {
-        $columns = explode('.', $column);
-
-        if (count($columns) == 1) {
-            return $columns[0];
-        }
-
-        $name = array_shift($columns);
-        foreach ($columns as $column) {
-            $name .= "[$column]";
-        }
-
-        return $name;
     }
 
     /**
@@ -156,11 +123,49 @@ abstract class AbstractFilter
     }
 
     /**
+     * Setup default presenter.
+     *
+     * @return void
+     */
+    protected function setupDefaultPresenter()
+    {
+        $this->setPresenter(new Text($this->label));
+    }
+
+    /**
+     * Set presenter object of filter.
+     *
+     * @param Presenter $presenter
+     *
+     * @return mixed
+     */
+    protected function setPresenter(Presenter $presenter)
+    {
+        $presenter->setParent($this);
+
+        return $this->presenter = $presenter;
+    }
+
+    /**
      * @param Filter $filter
      */
     public function setParent(Filter $filter)
     {
         $this->parent = $filter;
+    }
+
+    /**
+     * Get previous filter.
+     *
+     * @param int $step
+     *
+     * @return AbstractFilter[]|mixed
+     */
+    public function previous($step = 1)
+    {
+        return $this->siblings(
+            array_search($this, $this->parent->filters()) - $step
+        );
     }
 
     /**
@@ -177,20 +182,6 @@ abstract class AbstractFilter
         }
 
         return $this->parent->filters();
-    }
-
-    /**
-     * Get previous filter.
-     *
-     * @param int $step
-     *
-     * @return AbstractFilter[]|mixed
-     */
-    public function previous($step = 1)
-    {
-        return $this->siblings(
-            array_search($this, $this->parent->filters()) - $step
-        );
     }
 
     /**
@@ -225,6 +216,38 @@ abstract class AbstractFilter
         $this->value = $value;
 
         return $this->buildCondition($this->column, $this->value);
+    }
+
+    /**
+     * Build conditions of filter.
+     *
+     * @return mixed
+     */
+    protected function buildCondition()
+    {
+        $column = explode('.', $this->column);
+
+        if (count($column) == 1) {
+            return [$this->query => func_get_args()];
+        }
+
+        return $this->buildRelationQuery(...func_get_args());
+    }
+
+    /**
+     * Build query condition of model relation.
+     *
+     * @return array
+     */
+    protected function buildRelationQuery()
+    {
+        $args = func_get_args();
+
+        list($relation, $args[0]) = explode('.', $this->column);
+
+        return ['whereHas' => [$relation, function ($relation) use ($args) {
+            call_user_func_array([$relation, $this->query], $args);
+        }]];
     }
 
     /**
@@ -270,6 +293,16 @@ abstract class AbstractFilter
     }
 
     /**
+     * Date filter.
+     *
+     * @return DateTime
+     */
+    public function date()
+    {
+        return $this->datetime(['format' => 'YYYY-MM-DD']);
+    }
+
+    /**
      * Datetime filter.
      *
      * @param array $options
@@ -279,16 +312,6 @@ abstract class AbstractFilter
     public function datetime($options = [])
     {
         return $this->setPresenter(new DateTime($options));
-    }
-
-    /**
-     * Date filter.
-     *
-     * @return DateTime
-     */
-    public function date()
-    {
-        return $this->datetime(['format' => 'YYYY-MM-DD']);
     }
 
     /**
@@ -329,30 +352,6 @@ abstract class AbstractFilter
     public function year()
     {
         return $this->datetime(['format' => 'YYYY']);
-    }
-
-    /**
-     * Set presenter object of filter.
-     *
-     * @param Presenter $presenter
-     *
-     * @return mixed
-     */
-    protected function setPresenter(Presenter $presenter)
-    {
-        $presenter->setParent($this);
-
-        return $this->presenter = $presenter;
-    }
-
-    /**
-     * Get presenter object of filter.
-     *
-     * @return Presenter
-     */
-    protected function presenter()
-    {
-        return $this->presenter;
     }
 
     /**
@@ -402,51 +401,13 @@ abstract class AbstractFilter
     }
 
     /**
-     * Build conditions of filter.
+     * Render this filter.
      *
-     * @return mixed
+     * @return \Illuminate\View\View|string
      */
-    protected function buildCondition()
+    public function __toString()
     {
-        $column = explode('.', $this->column);
-
-        if (count($column) == 1) {
-            return [$this->query => func_get_args()];
-        }
-
-        return $this->buildRelationQuery(...func_get_args());
-    }
-
-    /**
-     * Build query condition of model relation.
-     *
-     * @return array
-     */
-    protected function buildRelationQuery()
-    {
-        $args = func_get_args();
-
-        list($relation, $args[0]) = explode('.', $this->column);
-
-        return ['whereHas' => [$relation, function ($relation) use ($args) {
-            call_user_func_array([$relation, $this->query], $args);
-        }]];
-    }
-
-    /**
-     * Variables for filter view.
-     *
-     * @return array
-     */
-    protected function variables()
-    {
-        return array_merge([
-            'id'        => $this->id,
-            'name'      => $this->formatName($this->column),
-            'label'     => $this->label,
-            'value'     => $this->value ?: $this->defaultValue,
-            'presenter' => $this->presenter(),
-        ], $this->presenter()->variables());
+        return $this->render();
     }
 
     /**
@@ -460,13 +421,52 @@ abstract class AbstractFilter
     }
 
     /**
-     * Render this filter.
+     * Variables for filter view.
      *
-     * @return \Illuminate\View\View|string
+     * @return array
      */
-    public function __toString()
+    protected function variables()
     {
-        return $this->render();
+        return array_merge([
+            'id' => $this->id,
+            'name' => $this->formatName($this->column),
+            'label' => $this->label,
+            'value' => $this->value ?: $this->defaultValue,
+            'presenter' => $this->presenter(),
+        ], $this->presenter()->variables());
+    }
+
+    /**
+     * Format name.
+     *
+     * @param string $column
+     *
+     * @return string
+     */
+    protected function formatName($column)
+    {
+        $columns = explode('.', $column);
+
+        if (count($columns) == 1) {
+            return $columns[0];
+        }
+
+        $name = array_shift($columns);
+        foreach ($columns as $column) {
+            $name .= "[$column]";
+        }
+
+        return $name;
+    }
+
+    /**
+     * Get presenter object of filter.
+     *
+     * @return Presenter
+     */
+    protected function presenter()
+    {
+        return $this->presenter;
     }
 
     /**
@@ -483,6 +483,6 @@ abstract class AbstractFilter
             return $this->presenter()->{$method}(...$params);
         }
 
-        throw new \Exception('Method "'.$method.'" not exists.');
+        throw new \Exception('Method "' . $method . '" not exists.');
     }
 }

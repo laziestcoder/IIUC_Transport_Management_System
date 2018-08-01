@@ -12,16 +12,13 @@ class DNumber extends Scalar
     /**
      * Constructs a float number scalar node.
      *
-     * @param float $value      Value of the number
+     * @param float $value Value of the number
      * @param array $attributes Additional attributes
      */
-    public function __construct(float $value, array $attributes = []) {
+    public function __construct(float $value, array $attributes = [])
+    {
         parent::__construct($attributes);
         $this->value = $value;
-    }
-
-    public function getSubNodeNames() : array {
-        return ['value'];
     }
 
     /**
@@ -33,10 +30,11 @@ class DNumber extends Scalar
      *
      * @return float The parsed number
      */
-    public static function parse(string $str) : float {
+    public static function parse(string $str): float
+    {
         // if string contains any of .eE just cast it to float
         if (false !== strpbrk($str, '.eE')) {
-            return (float) $str;
+            return (float)$str;
         }
 
         // otherwise it's an integer notation that overflowed into a float
@@ -59,10 +57,16 @@ class DNumber extends Scalar
         }
 
         // dec
-        return (float) $str;
+        return (float)$str;
     }
-    
-    public function getType() : string {
+
+    public function getSubNodeNames(): array
+    {
+        return ['value'];
+    }
+
+    public function getType(): string
+    {
         return 'Scalar_DNumber';
     }
 }

@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Util\TestDox;
 
 use PHPUnit\Framework\AssertionFailedError;
@@ -77,7 +78,7 @@ class CliTestDoxPrinter extends ResultPrinter
 
             $testMethod .= \substr($test->getDataSetAsString(false), 5);
         } elseif ($test instanceof PhptTestCase) {
-            $className  = $class;
+            $className = $class;
             $testMethod = $test->getName();
         }
 
@@ -115,7 +116,7 @@ class CliTestDoxPrinter extends ResultPrinter
     {
         $this->currentTestResult->fail(
             $this->formatWithColor('fg-yellow', '✘'),
-            (string) $t
+            (string)$t
         );
     }
 
@@ -123,7 +124,7 @@ class CliTestDoxPrinter extends ResultPrinter
     {
         $this->currentTestResult->fail(
             $this->formatWithColor('fg-yellow', '✘'),
-            (string) $e
+            (string)$e
         );
     }
 
@@ -131,7 +132,7 @@ class CliTestDoxPrinter extends ResultPrinter
     {
         $this->currentTestResult->fail(
             $this->formatWithColor('fg-red', '✘'),
-            (string) $e
+            (string)$e
         );
     }
 
@@ -139,7 +140,7 @@ class CliTestDoxPrinter extends ResultPrinter
     {
         $this->currentTestResult->fail(
             $this->formatWithColor('fg-yellow', '∅'),
-            (string) $t,
+            (string)$t,
             true
         );
     }
@@ -148,7 +149,7 @@ class CliTestDoxPrinter extends ResultPrinter
     {
         $this->currentTestResult->fail(
             $this->formatWithColor('fg-yellow', '☢'),
-            (string) $t,
+            (string)$t,
             true
         );
     }
@@ -157,7 +158,7 @@ class CliTestDoxPrinter extends ResultPrinter
     {
         $this->currentTestResult->fail(
             $this->formatWithColor('fg-yellow', '→'),
-            (string) $t,
+            (string)$t,
             true
         );
     }

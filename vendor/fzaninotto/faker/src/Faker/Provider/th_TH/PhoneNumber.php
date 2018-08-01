@@ -18,10 +18,10 @@ class PhoneNumber extends \Faker\Provider\PhoneNumber
      * @var array Thai mobile phone number formats
      */
     protected static $mobileFormats = array(
-      '08# ### ####',
-      '08 #### ####',
-      '09# ### ####',
-      '09 #### ####',
+        '08# ### ####',
+        '08 #### ####',
+        '09# ### ####',
+        '09 #### ####',
     );
 
     /**

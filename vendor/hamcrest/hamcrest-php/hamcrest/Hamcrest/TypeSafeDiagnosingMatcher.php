@@ -6,7 +6,6 @@ namespace Hamcrest;
  * Convenient base class for Matchers that require a value of a specific type.
  * This simply checks the type and then casts.
  */
-
 abstract class TypeSafeDiagnosingMatcher extends TypeSafeMatcher
 {
 

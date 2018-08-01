@@ -8,13 +8,13 @@ class Person extends Base
     const GENDER_FEMALE = 'female';
 
     protected static $titleFormat = array(
-      '{{titleMale}}',
-      '{{titleFemale}}',
+        '{{titleMale}}',
+        '{{titleFemale}}',
     );
 
     protected static $firstNameFormat = array(
-      '{{firstNameMale}}',
-      '{{firstNameFemale}}',
+        '{{firstNameMale}}',
+        '{{firstNameFemale}}',
     );
 
     protected static $maleNameFormats = array(

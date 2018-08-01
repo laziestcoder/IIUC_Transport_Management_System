@@ -23,13 +23,13 @@ use Symfony\Component\Console\Input\InputInterface;
 abstract class Enumerator
 {
     // Output styles
-    const IS_PUBLIC    = 'public';
+    const IS_PUBLIC = 'public';
     const IS_PROTECTED = 'protected';
-    const IS_PRIVATE   = 'private';
-    const IS_GLOBAL    = 'global';
-    const IS_CONSTANT  = 'const';
-    const IS_CLASS     = 'class';
-    const IS_FUNCTION  = 'function';
+    const IS_PRIVATE = 'private';
+    const IS_GLOBAL = 'global';
+    const IS_CONSTANT = 'const';
+    const IS_CLASS = 'class';
+    const IS_FUNCTION = 'function';
 
     private $filter;
     private $presenter;
@@ -49,8 +49,8 @@ abstract class Enumerator
      * Return a list of categorized things with the given input options and target.
      *
      * @param InputInterface $input
-     * @param \Reflector     $reflector
-     * @param mixed          $target
+     * @param \Reflector $reflector
+     * @param mixed $target
      *
      * @return array
      */
@@ -77,8 +77,8 @@ abstract class Enumerator
      *     ]
      *
      * @param InputInterface $input
-     * @param \Reflector     $reflector
-     * @param mixed          $target
+     * @param \Reflector $reflector
+     * @param mixed $target
      *
      * @return array
      */

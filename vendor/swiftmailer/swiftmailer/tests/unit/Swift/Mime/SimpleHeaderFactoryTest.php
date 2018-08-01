@@ -6,11 +6,6 @@ class Swift_Mime_SimpleHeaderFactoryTest extends \PHPUnit\Framework\TestCase
 {
     private $factory;
 
-    protected function setUp()
-    {
-        $this->factory = $this->createFactory();
-    }
-
     public function testMailboxHeaderIsCorrectType()
     {
         $header = $this->factory->createMailboxHeader('X-Foo');
@@ -27,7 +22,7 @@ class Swift_Mime_SimpleHeaderFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $header = $this->factory->createMailboxHeader('X-Foo',
             array('foo@bar' => 'FooBar')
-            );
+        );
         $this->assertEquals(array('foo@bar' => 'FooBar'), $header->getFieldBodyModel());
     }
 
@@ -90,7 +85,7 @@ class Swift_Mime_SimpleHeaderFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $header = $this->factory->createParameterizedHeader('X-Foo', 'bar',
             array('zip' => 'button')
-            );
+        );
         $this->assertEquals(array('zip' => 'button'), $header->getParameters());
     }
 
@@ -134,27 +129,16 @@ class Swift_Mime_SimpleHeaderFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $encoder = $this->createHeaderEncoder();
         $encoder->expects($this->once())
-                ->method('charsetChanged')
-                ->with('utf-8');
+            ->method('charsetChanged')
+            ->with('utf-8');
         $paramEncoder = $this->createParamEncoder();
         $paramEncoder->expects($this->once())
-                     ->method('charsetChanged')
-                     ->with('utf-8');
+            ->method('charsetChanged')
+            ->with('utf-8');
 
         $factory = $this->createFactory($encoder, $paramEncoder);
 
         $factory->charsetChanged('utf-8');
-    }
-
-    private function createFactory($encoder = null, $paramEncoder = null)
-    {
-        return new Swift_Mime_SimpleHeaderFactory(
-            $encoder
-                ? $encoder : $this->createHeaderEncoder(),
-            $paramEncoder
-                ? $paramEncoder : $this->createParamEncoder(),
-            new EmailValidator()
-            );
     }
 
     private function createHeaderEncoder()
@@ -165,5 +149,21 @@ class Swift_Mime_SimpleHeaderFactoryTest extends \PHPUnit\Framework\TestCase
     private function createParamEncoder()
     {
         return $this->getMockBuilder('Swift_Encoder')->getMock();
+    }
+
+    private function createFactory($encoder = null, $paramEncoder = null)
+    {
+        return new Swift_Mime_SimpleHeaderFactory(
+            $encoder
+                ? $encoder : $this->createHeaderEncoder(),
+            $paramEncoder
+                ? $paramEncoder : $this->createParamEncoder(),
+            new EmailValidator()
+        );
+    }
+
+    protected function setUp()
+    {
+        $this->factory = $this->createFactory();
     }
 }

@@ -73,9 +73,9 @@ class Address extends \Faker\Provider\Address
         array('87' => 'Haute-Vienne'), array('88' => 'Vosges'), array('89' => 'Yonne'), array('90' => 'Territoire de Belfort'), array('91' => 'Essonne'),
         array('92' => 'Hauts-de-Seine'), array('93' => 'Seine-Saint-Denis'), array('94' => 'Val-de-Marne'), array('95' => "Val-d'Oise"),
         array('971' => 'Guadeloupe'), array('972' => 'Martinique'), array('973' => 'Guyane'), array('974' => 'La Réunion'), array('976' => 'Mayotte')
-     );
+    );
 
-     /**
+    /**
      * @example 'rue'
      */
     public static function streetPrefix()
@@ -96,18 +96,6 @@ class Address extends \Faker\Provider\Address
     }
 
     /**
-     * Randomly returns a french department ('departmentNumber' => 'departmentName').
-     *
-     * @example array('2B' => 'Haute-Corse')
-     *
-     * @return array
-     */
-    public static function department()
-    {
-        return static::randomElement(static::$departments);
-    }
-
-    /**
      * Randomly returns a french department name.
      *
      * @example 'Ardèche'
@@ -119,6 +107,18 @@ class Address extends \Faker\Provider\Address
         $randomDepartmentName = array_values(static::department());
 
         return $randomDepartmentName[0];
+    }
+
+    /**
+     * Randomly returns a french department ('departmentNumber' => 'departmentName').
+     *
+     * @example array('2B' => 'Haute-Corse')
+     *
+     * @return array
+     */
+    public static function department()
+    {
+        return static::randomElement(static::$departments);
     }
 
     /**

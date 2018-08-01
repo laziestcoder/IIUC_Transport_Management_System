@@ -7,14 +7,8 @@
         <span class="sr-only">Toggle Dropdown</span>
     </button>
     <ul class="dropdown-menu" role="menu">
-        <?php $__currentLoopData = $actions;
-        $__env->addLoop($__currentLoopData);
-        foreach ($__currentLoopData as $action): $__env->incrementLoopIndices();
-            $loop = $__env->getLastLoop(); ?>
-            <li><a href="#" class="grid-batch-<?php echo e($action['id']); ?>"><?php echo e($action['title']); ?></a>
-            </li>
-        <?php endforeach;
-        $__env->popLoop();
-        $loop = $__env->getLastLoop(); ?>
+        <?php $__currentLoopData = $actions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $action): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <li><a href="#" class="grid-batch-<?php echo e($action['id']); ?>"><?php echo e($action['title']); ?></a></li>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </ul>
 </div>

@@ -45,8 +45,8 @@ class Address extends \Faker\Provider\Address
         'Kurzemes', 'Latgales', 'Rīgas', 'Vidzemes', 'Zemgales'
     );
 
-    protected static $city = array('Aizkraukle' ,'Aluksne','Balvi', 'Bauska','Cesis',
-        'Daugavpils', 'Dobele','Gulbene', 'Jekabpils', 'Jelgava', 'Kraslava', 'Kuldiga', 'Liepaja',
+    protected static $city = array('Aizkraukle', 'Aluksne', 'Balvi', 'Bauska', 'Cesis',
+        'Daugavpils', 'Dobele', 'Gulbene', 'Jekabpils', 'Jelgava', 'Kraslava', 'Kuldiga', 'Liepaja',
         'Limbazi', 'Ludza', 'Madona', 'Mobile Phones', 'Ogre', 'Preili', 'Rezekne', 'Rīga', 'Ventspils'
     );
 
@@ -63,13 +63,6 @@ class Address extends \Faker\Provider\Address
     public static function buildingNumber()
     {
         return static::numerify(static::randomElement(static::$buildingNumber));
-    }
-
-    public function address()
-    {
-        $format = static::randomElement(static::$addressFormats);
-
-        return $this->generator->parse($format);
     }
 
     public static function country()
@@ -97,11 +90,6 @@ class Address extends \Faker\Provider\Address
         return static::randomElement(static::$cityPrefix);
     }
 
-    public function city()
-    {
-        return static::randomElement(static::$city);
-    }
-
     public static function streetPrefix()
     {
         return static::randomElement(static::$streetPrefix);
@@ -110,5 +98,17 @@ class Address extends \Faker\Provider\Address
     public static function street()
     {
         return static::randomElement(static::$street);
+    }
+
+    public function address()
+    {
+        $format = static::randomElement(static::$addressFormats);
+
+        return $this->generator->parse($format);
+    }
+
+    public function city()
+    {
+        return static::randomElement(static::$city);
     }
 }

@@ -35,7 +35,7 @@ class WildfireFormatterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '125|[{"Type":"ERROR","File":"","Line":"","Label":"meh"},'
-                .'{"message":"log","context":{"from":"logger"},"extra":{"ip":"127.0.0.1"}}]|',
+            . '{"message":"log","context":{"from":"logger"},"extra":{"ip":"127.0.0.1"}}]|',
             $message
         );
     }
@@ -60,7 +60,7 @@ class WildfireFormatterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '129|[{"Type":"ERROR","File":"test","Line":14,"Label":"meh"},'
-                .'{"message":"log","context":{"from":"logger"},"extra":{"ip":"127.0.0.1"}}]|',
+            . '{"message":"log","context":{"from":"logger"},"extra":{"ip":"127.0.0.1"}}]|',
             $message
         );
     }
@@ -120,7 +120,7 @@ class WildfireFormatterTest extends \PHPUnit_Framework_TestCase
             'level_name' => 'ERROR',
             'channel' => 'table-channel',
             'context' => array(
-            WildfireFormatter::TABLE => array(
+                WildfireFormatter::TABLE => array(
                     array('col1', 'col2', 'col3'),
                     array('val1', 'val2', 'val3'),
                     array('foo1', 'foo2', 'foo3'),

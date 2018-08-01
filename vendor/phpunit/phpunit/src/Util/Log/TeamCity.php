@@ -52,23 +52,6 @@ class TeamCity extends ResultPrinter
     }
 
     /**
-     * An error occurred.
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function addError(Test $test, \Throwable $t, float $time): void
-    {
-        $this->printEvent(
-            'testFailed',
-            [
-                'name'    => $test->getName(),
-                'message' => self::getMessage($t),
-                'details' => self::getDetails($t),
-            ]
-        );
-    }
-
-    /**
      * A warning occurred.
      *
      * @throws \InvalidArgumentException
@@ -78,11 +61,85 @@ class TeamCity extends ResultPrinter
         $this->printEvent(
             'testFailed',
             [
-                'name'    => $test->getName(),
+                'name' => $test->getName(),
                 'message' => self::getMessage($e),
                 'details' => self::getDetails($e)
             ]
         );
+    }
+
+    /**
+     * @param string $eventName
+     * @param array $params
+     */
+    private function printEvent($eventName, $params = []): void
+    {
+        $this->write("\n##teamcity[$eventName");
+
+        if ($this->flowId) {
+            $params['flowId'] = $this->flowId;
+        }
+
+        foreach ($params as $key => $value) {
+            $escapedValue = self::escapeValue($value);
+            $this->write(" $key='$escapedValue'");
+        }
+
+        $this->write("]\n");
+    }
+
+    /**
+     * @param string $text
+     */
+    private static function escapeValue(string $text): string
+    {
+        return \str_replace(
+            ['|', "'", "\n", "\r", ']', '['],
+            ['||', "|'", '|n', '|r', '|]', '|['],
+            $text
+        );
+    }
+
+    /**
+     * @param \Throwable $t
+     */
+    private static function getMessage(\Throwable $t): string
+    {
+        $message = '';
+
+        if ($t instanceof ExceptionWrapper) {
+            if ($t->getClassName() !== '') {
+                $message .= $t->getClassName();
+            }
+
+            if ($message !== '' && $t->getMessage() !== '') {
+                $message .= ' : ';
+            }
+        }
+
+        return $message . $t->getMessage();
+    }
+
+    /**
+     * @param \Throwable $t
+     *
+     * @throws \InvalidArgumentException
+     */
+    private static function getDetails(\Throwable $t): string
+    {
+        $stackTrace = Filter::getFilteredStacktrace($t);
+        $previous = $t instanceof ExceptionWrapper ? $t->getPreviousWrapped() : $t->getPrevious();
+
+        while ($previous) {
+            $stackTrace .= "\nCaused by\n" .
+                TestFailure::exceptionToString($previous) . "\n" .
+                Filter::getFilteredStacktrace($previous);
+
+            $previous = $previous instanceof ExceptionWrapper ?
+                $previous->getPreviousWrapped() : $previous->getPrevious();
+        }
+
+        return ' ' . \str_replace("\n", "\n ", $stackTrace);
     }
 
     /**
@@ -93,7 +150,7 @@ class TeamCity extends ResultPrinter
     public function addFailure(Test $test, AssertionFailedError $e, float $time): void
     {
         $parameters = [
-            'name'    => $test->getName(),
+            'name' => $test->getName(),
             'message' => self::getMessage($e),
             'details' => self::getDetails($e),
         ];
@@ -115,14 +172,34 @@ class TeamCity extends ResultPrinter
                 }
 
                 if ($actualString !== null && $expectedString !== null) {
-                    $parameters['type']     = 'comparisonFailure';
-                    $parameters['actual']   = $actualString;
+                    $parameters['type'] = 'comparisonFailure';
+                    $parameters['actual'] = $actualString;
                     $parameters['expected'] = $expectedString;
                 }
             }
         }
 
         $this->printEvent('testFailed', $parameters);
+    }
+
+    /**
+     * @param mixed $value
+     */
+    private static function getPrimitiveValueAsString($value): ?string
+    {
+        if ($value === null) {
+            return 'null';
+        }
+
+        if (\is_bool($value)) {
+            return $value === true ? 'true' : 'false';
+        }
+
+        if (\is_scalar($value)) {
+            return \print_r($value, true);
+        }
+
+        return null;
     }
 
     /**
@@ -133,6 +210,18 @@ class TeamCity extends ResultPrinter
         $this->printIgnoredTest($test->getName(), $t);
     }
 
+    public function printIgnoredTest($testName, \Throwable $t): void
+    {
+        $this->printEvent(
+            'testIgnored',
+            [
+                'name' => $testName,
+                'message' => self::getMessage($t),
+                'details' => self::getDetails($t),
+            ]
+        );
+    }
+
     /**
      * Risky test.
      *
@@ -141,6 +230,23 @@ class TeamCity extends ResultPrinter
     public function addRiskyTest(Test $test, \Throwable $t, float $time): void
     {
         $this->addError($test, $t, $time);
+    }
+
+    /**
+     * An error occurred.
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function addError(Test $test, \Throwable $t, float $time): void
+    {
+        $this->printEvent(
+            'testFailed',
+            [
+                'name' => $test->getName(),
+                'message' => self::getMessage($t),
+                'details' => self::getDetails($t),
+            ]
+        );
     }
 
     /**
@@ -161,14 +267,53 @@ class TeamCity extends ResultPrinter
         }
     }
 
-    public function printIgnoredTest($testName, \Throwable $t): void
+    /**
+     * A test started.
+     *
+     * @throws \ReflectionException
+     */
+    public function startTest(Test $test): void
     {
+        $testName = $test->getName();
+        $this->startedTestName = $testName;
+        $params = ['name' => $testName];
+
+        if ($test instanceof TestCase) {
+            $className = \get_class($test);
+            $fileName = self::getFileName($className);
+            $params['locationHint'] = "php_qn://$fileName::\\$className::$testName";
+        }
+
+        $this->printEvent('testStarted', $params);
+    }
+
+    /**
+     * @param string $className
+     *
+     * @throws \ReflectionException
+     */
+    private static function getFileName($className): string
+    {
+        $reflectionClass = new ReflectionClass($className);
+
+        return $reflectionClass->getFileName();
+    }
+
+    /**
+     * A test ended.
+     *
+     * @param Test $test
+     * @param float $time
+     */
+    public function endTest(Test $test, float $time): void
+    {
+        parent::endTest($test, $time);
+
         $this->printEvent(
-            'testIgnored',
+            'testFinished',
             [
-                'name'    => $testName,
-                'message' => self::getMessage($t),
-                'details' => self::getDetails($t),
+                'name' => $test->getName(),
+                'duration' => (int)(\round($time, 2) * 1000)
             ]
         );
     }
@@ -204,15 +349,15 @@ class TeamCity extends ResultPrinter
         $parameters = ['name' => $suiteName];
 
         if (\class_exists($suiteName, false)) {
-            $fileName                   = self::getFileName($suiteName);
+            $fileName = self::getFileName($suiteName);
             $parameters['locationHint'] = "php_qn://$fileName::\\$suiteName";
         } else {
             $split = \explode('::', $suiteName);
 
             if (\count($split) === 2 && \method_exists($split[0], $split[1])) {
-                $fileName                   = self::getFileName($split[0]);
+                $fileName = self::getFileName($split[0]);
                 $parameters['locationHint'] = "php_qn://$fileName::\\$suiteName";
-                $parameters['name']         = $split[1];
+                $parameters['name'] = $split[1];
             }
         }
 
@@ -243,152 +388,7 @@ class TeamCity extends ResultPrinter
         $this->printEvent('testSuiteFinished', $parameters);
     }
 
-    /**
-     * A test started.
-     *
-     * @throws \ReflectionException
-     */
-    public function startTest(Test $test): void
-    {
-        $testName              = $test->getName();
-        $this->startedTestName = $testName;
-        $params                = ['name' => $testName];
-
-        if ($test instanceof TestCase) {
-            $className              = \get_class($test);
-            $fileName               = self::getFileName($className);
-            $params['locationHint'] = "php_qn://$fileName::\\$className::$testName";
-        }
-
-        $this->printEvent('testStarted', $params);
-    }
-
-    /**
-     * A test ended.
-     *
-     * @param Test  $test
-     * @param float $time
-     */
-    public function endTest(Test $test, float $time): void
-    {
-        parent::endTest($test, $time);
-
-        $this->printEvent(
-            'testFinished',
-            [
-                'name'     => $test->getName(),
-                'duration' => (int) (\round($time, 2) * 1000)
-            ]
-        );
-    }
-
     protected function writeProgress(string $progress): void
     {
-    }
-
-    /**
-     * @param string $eventName
-     * @param array  $params
-     */
-    private function printEvent($eventName, $params = []): void
-    {
-        $this->write("\n##teamcity[$eventName");
-
-        if ($this->flowId) {
-            $params['flowId'] = $this->flowId;
-        }
-
-        foreach ($params as $key => $value) {
-            $escapedValue = self::escapeValue($value);
-            $this->write(" $key='$escapedValue'");
-        }
-
-        $this->write("]\n");
-    }
-
-    /**
-     * @param \Throwable $t
-     */
-    private static function getMessage(\Throwable $t): string
-    {
-        $message = '';
-
-        if ($t instanceof ExceptionWrapper) {
-            if ($t->getClassName() !== '') {
-                $message .= $t->getClassName();
-            }
-
-            if ($message !== '' && $t->getMessage() !== '') {
-                $message .= ' : ';
-            }
-        }
-
-        return $message . $t->getMessage();
-    }
-
-    /**
-     * @param \Throwable $t
-     *
-     * @throws \InvalidArgumentException
-     */
-    private static function getDetails(\Throwable $t): string
-    {
-        $stackTrace = Filter::getFilteredStacktrace($t);
-        $previous   = $t instanceof ExceptionWrapper ? $t->getPreviousWrapped() : $t->getPrevious();
-
-        while ($previous) {
-            $stackTrace .= "\nCaused by\n" .
-                TestFailure::exceptionToString($previous) . "\n" .
-                Filter::getFilteredStacktrace($previous);
-
-            $previous = $previous instanceof ExceptionWrapper ?
-                $previous->getPreviousWrapped() : $previous->getPrevious();
-        }
-
-        return ' ' . \str_replace("\n", "\n ", $stackTrace);
-    }
-
-    /**
-     * @param mixed $value
-     */
-    private static function getPrimitiveValueAsString($value): ?string
-    {
-        if ($value === null) {
-            return 'null';
-        }
-
-        if (\is_bool($value)) {
-            return $value === true ? 'true' : 'false';
-        }
-
-        if (\is_scalar($value)) {
-            return \print_r($value, true);
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $text
-     */
-    private static function escapeValue(string $text): string
-    {
-        return \str_replace(
-            ['|', "'", "\n", "\r", ']', '['],
-            ['||', "|'", '|n', '|r', '|]', '|['],
-            $text
-        );
-    }
-
-    /**
-     * @param string $className
-     *
-     * @throws \ReflectionException
-     */
-    private static function getFileName($className): string
-    {
-        $reflectionClass = new ReflectionClass($className);
-
-        return $reflectionClass->getFileName();
     }
 }

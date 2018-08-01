@@ -56,17 +56,17 @@ class DeduplicationHandler extends BufferHandler
     private $gc = false;
 
     /**
-     * @param HandlerInterface $handler            Handler.
-     * @param string           $deduplicationStore The file/path where the deduplication log should be kept
-     * @param int              $deduplicationLevel The minimum logging level for log records to be looked at for deduplication purposes
-     * @param int              $time               The period (in seconds) during which duplicate entries should be suppressed after a given log is sent through
-     * @param Boolean          $bubble             Whether the messages that are handled can bubble up the stack or not
+     * @param HandlerInterface $handler Handler.
+     * @param string $deduplicationStore The file/path where the deduplication log should be kept
+     * @param int $deduplicationLevel The minimum logging level for log records to be looked at for deduplication purposes
+     * @param int $time The period (in seconds) during which duplicate entries should be suppressed after a given log is sent through
+     * @param Boolean $bubble Whether the messages that are handled can bubble up the stack or not
      */
     public function __construct(HandlerInterface $handler, $deduplicationStore = null, $deduplicationLevel = Logger::ERROR, $time = 60, $bubble = true)
     {
         parent::__construct($handler, 0, Logger::DEBUG, $bubble, false);
 
-        $this->deduplicationStore = $deduplicationStore === null ? sys_get_temp_dir() . '/monolog-dedup-' . substr(md5(__FILE__), 0, 20) .'.log' : $deduplicationStore;
+        $this->deduplicationStore = $deduplicationStore === null ? sys_get_temp_dir() . '/monolog-dedup-' . substr(md5(__FILE__), 0, 20) . '.log' : $deduplicationStore;
         $this->deduplicationLevel = Logger::toMonologLevel($deduplicationLevel);
         $this->time = $time;
     }
@@ -131,6 +131,11 @@ class DeduplicationHandler extends BufferHandler
         return false;
     }
 
+    private function appendRecord(array $record)
+    {
+        file_put_contents($this->deduplicationStore, $record['datetime']->getTimestamp() . ':' . $record['level_name'] . ':' . preg_replace('{[\r\n].*}', '', $record['message']) . "\n", FILE_APPEND);
+    }
+
     private function collectLogs()
     {
         if (!file_exists($this->deduplicationStore)) {
@@ -160,10 +165,5 @@ class DeduplicationHandler extends BufferHandler
         fclose($handle);
 
         $this->gc = false;
-    }
-
-    private function appendRecord(array $record)
-    {
-        file_put_contents($this->deduplicationStore, $record['datetime']->getTimestamp() . ':' . $record['level_name'] . ':' . preg_replace('{[\r\n].*}', '', $record['message']) . "\n", FILE_APPEND);
     }
 }

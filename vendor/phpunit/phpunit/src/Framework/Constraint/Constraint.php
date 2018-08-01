@@ -38,9 +38,9 @@ abstract class Constraint implements Countable, SelfDescribing
      * a boolean value instead: true in case of success, false in case of a
      * failure.
      *
-     * @param mixed  $other        value or object to evaluate
-     * @param string $description  Additional information about the test
-     * @param bool   $returnResult Whether to return a result or throw an exception
+     * @param mixed $other value or object to evaluate
+     * @param string $description Additional information about the test
+     * @param bool $returnResult Whether to return a result or throw an exception
      *
      * @throws ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -65,14 +65,6 @@ abstract class Constraint implements Countable, SelfDescribing
     }
 
     /**
-     * Counts the number of constraint elements.
-     */
-    public function count(): int
-    {
-        return 1;
-    }
-
-    /**
      * Evaluates the constraint for parameter $other. Returns true if the
      * constraint is met, false otherwise.
      *
@@ -88,8 +80,8 @@ abstract class Constraint implements Countable, SelfDescribing
     /**
      * Throws an exception for the given compared value and test description
      *
-     * @param mixed             $other             evaluated value or object
-     * @param string            $description       Additional information about the test
+     * @param mixed $other evaluated value or object
+     * @param string $description Additional information about the test
      * @param ComparisonFailure $comparisonFailure
      *
      * @throws ExpectationFailedException
@@ -119,19 +111,6 @@ abstract class Constraint implements Countable, SelfDescribing
     }
 
     /**
-     * Return additional failure description where needed
-     *
-     * The function can be overridden to provide additional failure
-     * information like a diff
-     *
-     * @param mixed $other evaluated value or object
-     */
-    protected function additionalFailureDescription($other): string
-    {
-        return '';
-    }
-
-    /**
      * Returns the description of the failure
      *
      * The beginning of failure messages is "Failed asserting that" in most
@@ -147,5 +126,26 @@ abstract class Constraint implements Countable, SelfDescribing
     protected function failureDescription($other): string
     {
         return $this->exporter->export($other) . ' ' . $this->toString();
+    }
+
+    /**
+     * Return additional failure description where needed
+     *
+     * The function can be overridden to provide additional failure
+     * information like a diff
+     *
+     * @param mixed $other evaluated value or object
+     */
+    protected function additionalFailureDescription($other): string
+    {
+        return '';
+    }
+
+    /**
+     * Counts the number of constraint elements.
+     */
+    public function count(): int
+    {
+        return 1;
     }
 }

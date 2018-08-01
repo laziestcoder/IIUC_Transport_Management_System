@@ -32,14 +32,6 @@ class TimeImmutableType extends TimeType
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return Type::TIME_IMMUTABLE;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         if (null === $value) {
@@ -60,6 +52,14 @@ class TimeImmutableType extends TimeType
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return Type::TIME_IMMUTABLE;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         if ($value === null || $value instanceof \DateTimeImmutable) {
@@ -68,7 +68,7 @@ class TimeImmutableType extends TimeType
 
         $dateTime = \DateTimeImmutable::createFromFormat('!' . $platform->getTimeFormatString(), $value);
 
-        if (! $dateTime) {
+        if (!$dateTime) {
             throw ConversionException::conversionFailedFormat(
                 $value,
                 $this->getName(),

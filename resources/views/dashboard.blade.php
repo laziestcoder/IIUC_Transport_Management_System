@@ -20,13 +20,13 @@
                     <tr>
                         <td>
                             Name: {{Auth::user()->name}}
-                        </td>                        
+                        </td>
                     </tr>
                     <tr>
                         <td>
                             ID: {{Auth::user()->id}}
                         </td>
-                        
+
                     </tr>
                     <tr>
                         <td>

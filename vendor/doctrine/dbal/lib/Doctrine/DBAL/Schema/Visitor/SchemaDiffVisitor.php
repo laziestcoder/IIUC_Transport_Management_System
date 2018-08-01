@@ -19,10 +19,10 @@
 
 namespace Doctrine\DBAL\Schema\Visitor;
 
-use Doctrine\DBAL\Schema\Table;
-use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Sequence;
+use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\TableDiff;
 
 /**
  * Visit a SchemaDiff.
@@ -65,7 +65,7 @@ interface SchemaDiffVisitor
     function visitNewTable(Table $table);
 
     /**
-     * @param \Doctrine\DBAL\Schema\Table                $table
+     * @param \Doctrine\DBAL\Schema\Table $table
      * @param \Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey
      */
     function visitNewTableForeignKey(Table $table, ForeignKeyConstraint $foreignKey);

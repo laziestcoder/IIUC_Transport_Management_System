@@ -15,14 +15,6 @@ class DateIntervalType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return Type::DATEINTERVAL;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
         $fieldDeclaration['length'] = 255;
@@ -49,6 +41,14 @@ class DateIntervalType extends Type
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return Type::DATEINTERVAL;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         if ($value === null || $value instanceof \DateInterval) {
@@ -59,7 +59,7 @@ class DateIntervalType extends Type
 
         if (isset($value[0]) && ($value[0] === '+' || $value[0] === '-')) {
             $negative = $value[0] === '-';
-            $value    = substr($value, 1);
+            $value = substr($value, 1);
         }
 
         try {

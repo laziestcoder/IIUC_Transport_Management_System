@@ -5,9 +5,9 @@ import append from './append'
 import recycleList from './recycle-list/index'
 
 export default [
-  recycleList,
-  klass,
-  style,
-  props,
-  append
+    recycleList,
+    klass,
+    style,
+    props,
+    append
 ]

@@ -26,21 +26,21 @@ class ZendMonitorHandler extends AbstractProcessingHandler
      * @var array
      */
     protected $levelMap = array(
-        Logger::DEBUG     => 1,
-        Logger::INFO      => 2,
-        Logger::NOTICE    => 3,
-        Logger::WARNING   => 4,
-        Logger::ERROR     => 5,
-        Logger::CRITICAL  => 6,
-        Logger::ALERT     => 7,
+        Logger::DEBUG => 1,
+        Logger::INFO => 2,
+        Logger::NOTICE => 3,
+        Logger::WARNING => 4,
+        Logger::ERROR => 5,
+        Logger::CRITICAL => 6,
+        Logger::ALERT => 7,
         Logger::EMERGENCY => 0,
     );
 
     /**
      * Construct
      *
-     * @param  int                       $level
-     * @param  bool                      $bubble
+     * @param  int $level
+     * @param  bool $bubble
      * @throws MissingExtensionException
      */
     public function __construct($level = Logger::DEBUG, $bubble = true)
@@ -49,30 +49,6 @@ class ZendMonitorHandler extends AbstractProcessingHandler
             throw new MissingExtensionException('You must have Zend Server installed in order to use this handler');
         }
         parent::__construct($level, $bubble);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function write(array $record)
-    {
-        $this->writeZendMonitorCustomEvent(
-            $this->levelMap[$record['level']],
-            $record['message'],
-            $record['formatted']
-        );
-    }
-
-    /**
-     * Write a record to Zend Monitor
-     *
-     * @param int    $level
-     * @param string $message
-     * @param array  $formatted
-     */
-    protected function writeZendMonitorCustomEvent($level, $message, $formatted)
-    {
-        zend_monitor_custom_event($level, $message, $formatted);
     }
 
     /**
@@ -91,5 +67,29 @@ class ZendMonitorHandler extends AbstractProcessingHandler
     public function getLevelMap()
     {
         return $this->levelMap;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function write(array $record)
+    {
+        $this->writeZendMonitorCustomEvent(
+            $this->levelMap[$record['level']],
+            $record['message'],
+            $record['formatted']
+        );
+    }
+
+    /**
+     * Write a record to Zend Monitor
+     *
+     * @param int $level
+     * @param string $message
+     * @param array $formatted
+     */
+    protected function writeZendMonitorCustomEvent($level, $message, $formatted)
+    {
+        zend_monitor_custom_event($level, $message, $formatted);
     }
 }

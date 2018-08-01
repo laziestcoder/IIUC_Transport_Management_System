@@ -68,8 +68,8 @@ class Swift_MemorySpool implements Swift_Spool
     /**
      * Sends messages using the given transport instance.
      *
-     * @param Swift_Transport $transport        A transport instance
-     * @param string[]        $failedRecipients An array of failures by-reference
+     * @param Swift_Transport $transport A transport instance
+     * @param string[] $failedRecipients An array of failures by-reference
      *
      * @return int The number of sent emails
      */

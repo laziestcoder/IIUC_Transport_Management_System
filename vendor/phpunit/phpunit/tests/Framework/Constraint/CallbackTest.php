@@ -41,11 +41,11 @@ class CallbackTest extends ConstraintTestCase
         $this->assertTrue($constraint->evaluate(true, '', true));
         $this->assertFalse($constraint->evaluate(false, '', true));
 
-        $callback   = [$this, 'callbackReturningTrue'];
+        $callback = [$this, 'callbackReturningTrue'];
         $constraint = new Callback($callback);
         $this->assertTrue($constraint->evaluate(false, '', true));
 
-        $callback   = [self::class, 'staticCallbackReturningTrue'];
+        $callback = [self::class, 'staticCallbackReturningTrue'];
         $constraint = new Callback($callback);
         $this->assertTrue($constraint->evaluate(null, '', true));
 

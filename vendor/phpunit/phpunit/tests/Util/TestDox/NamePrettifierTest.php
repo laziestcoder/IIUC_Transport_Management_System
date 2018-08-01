@@ -19,16 +19,6 @@ class NamePrettifierTest extends TestCase
      */
     private $namePrettifier;
 
-    protected function setUp(): void
-    {
-        $this->namePrettifier = new NamePrettifier;
-    }
-
-    protected function tearDown(): void
-    {
-        $this->namePrettifier = null;
-    }
-
     public function testTitleHasSensibleDefaults(): void
     {
         $this->assertEquals('Foo', $this->namePrettifier->prettifyTestClass('FooTest'));
@@ -57,5 +47,15 @@ class NamePrettifierTest extends TestCase
     {
         $this->assertEquals('Sets redirect header on 301', $this->namePrettifier->prettifyTestMethod('testSetsRedirectHeaderOn301'));
         $this->assertEquals('Sets redirect header on 302', $this->namePrettifier->prettifyTestMethod('testSetsRedirectHeaderOn302'));
+    }
+
+    protected function setUp(): void
+    {
+        $this->namePrettifier = new NamePrettifier;
+    }
+
+    protected function tearDown(): void
+    {
+        $this->namePrettifier = null;
     }
 }

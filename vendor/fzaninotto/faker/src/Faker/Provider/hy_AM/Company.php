@@ -16,15 +16,11 @@ class Company extends \Faker\Provider\Company
         '{{lastName}} եղբայրներ',
     );
 
-    protected static $catchPhraseWords = array(
+    protected static $catchPhraseWords = array();
 
-    );
+    protected static $bsWords = array();
 
-    protected static $bsWords = array(
-
-    );
-
-    protected static $companySuffix = array('ՍՊԸ','և որդիներ','ՓԲԸ','ԲԲԸ');
+    protected static $companySuffix = array('ՍՊԸ', 'և որդիներ', 'ՓԲԸ', 'ԲԲԸ');
 
     /**
      * @example 'Robust full-range hub'

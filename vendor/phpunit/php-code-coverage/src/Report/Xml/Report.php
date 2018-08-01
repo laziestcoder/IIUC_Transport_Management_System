@@ -27,6 +27,12 @@ final class Report extends File
         $this->setName($name);
     }
 
+    private function setName($name): void
+    {
+        $this->getContextNode()->setAttribute('name', \basename($name));
+        $this->getContextNode()->setAttribute('path', \dirname($name));
+    }
+
     public function asDom(): \DOMDocument
     {
         return $this->getDomDocument();
@@ -47,6 +53,18 @@ final class Report extends File
     public function getClassObject($name): Unit
     {
         return $this->getUnitObject('class', $name);
+    }
+
+    private function getUnitObject($tagName, $name): Unit
+    {
+        $node = $this->getContextNode()->appendChild(
+            $this->getDomDocument()->createElementNS(
+                'https://schema.phpunit.de/coverage/1.0',
+                $tagName
+            )
+        );
+
+        return new Unit($node, $name);
     }
 
     public function getTraitObject($name): Unit
@@ -71,23 +89,5 @@ final class Report extends File
         }
 
         return new Source($source);
-    }
-
-    private function setName($name): void
-    {
-        $this->getContextNode()->setAttribute('name', \basename($name));
-        $this->getContextNode()->setAttribute('path', \dirname($name));
-    }
-
-    private function getUnitObject($tagName, $name): Unit
-    {
-        $node = $this->getContextNode()->appendChild(
-            $this->getDomDocument()->createElementNS(
-                'https://schema.phpunit.de/coverage/1.0',
-                $tagName
-            )
-        );
-
-        return new Unit($node, $name);
     }
 }

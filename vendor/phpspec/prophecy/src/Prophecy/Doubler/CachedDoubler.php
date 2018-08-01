@@ -47,7 +47,7 @@ class CachedDoubler extends Doubler
     }
 
     /**
-     * @param ReflectionClass   $class
+     * @param ReflectionClass $class
      * @param ReflectionClass[] $interfaces
      *
      * @return string

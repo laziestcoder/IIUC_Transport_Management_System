@@ -46,17 +46,17 @@ trait FileHelpers
     /**
      * Get a filename for the file.
      *
-     * @param  string  $path
+     * @param  string $path
      * @return string
      */
     public function hashName($path = null)
     {
         if ($path) {
-            $path = rtrim($path, '/').'/';
+            $path = rtrim($path, '/') . '/';
         }
 
         $hash = $this->hashName ?: $this->hashName = Str::random(40);
 
-        return $path.$hash.'.'.$this->guessExtension();
+        return $path . $hash . '.' . $this->guessExtension();
     }
 }

@@ -11,15 +11,15 @@
 
 namespace Monolog\Handler;
 
-use Gelf\MessagePublisher;
 use Gelf\Message;
+use Gelf\MessagePublisher;
 
 class GelfMockMessagePublisher extends MessagePublisher
 {
+    public $lastMessage = null;
+
     public function publish(Message $message)
     {
         $this->lastMessage = $message;
     }
-
-    public $lastMessage = null;
 }

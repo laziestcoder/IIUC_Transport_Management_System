@@ -221,12 +221,6 @@ class Company extends \Faker\Provider\Company
         return static::randomElement(static::$companyEnSuffix);
     }
 
-    public function companyEn()
-    {
-        $format = static::randomElement(static::$companyEnFormats);
-        return $this->generator->parse($format);
-    }
-
     public static function companyModifier()
     {
         return static::randomElement(static::$companyModifier);
@@ -235,6 +229,12 @@ class Company extends \Faker\Provider\Company
     public static function companyPrefix()
     {
         return static::randomElement(static::$companyPrefix);
+    }
+
+    public function companyEn()
+    {
+        $format = static::randomElement(static::$companyEnFormats);
+        return $this->generator->parse($format);
     }
 
     public function catchPhrase()

@@ -13,22 +13,6 @@ class Map extends Field
      */
     protected $column = [];
 
-    /**
-     * Get assets required by this field.
-     *
-     * @return array
-     */
-    public static function getAssets()
-    {
-        if (config('app.locale') == 'zh-CN') {
-            $js = '//map.qq.com/api/js?v=2.exp';
-        } else {
-            $js = '//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key='.env('GOOGLE_API_KEY');
-        }
-
-        return compact('js');
-    }
-
     public function __construct($column, $arguments)
     {
         $this->column['lat'] = $column;
@@ -48,44 +32,6 @@ class Map extends Field
         } else {
             $this->useGoogleMap();
         }
-    }
-
-    public function useGoogleMap()
-    {
-        $this->script = <<<EOT
-        function initGoogleMap(name) {
-            var lat = $('#{$this->id['lat']}');
-            var lng = $('#{$this->id['lng']}');
-
-            var LatLng = new google.maps.LatLng(lat.val(), lng.val());
-
-            var options = {
-                zoom: 13,
-                center: LatLng,
-                panControl: false,
-                zoomControl: true,
-                scaleControl: true,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            }
-
-            var container = document.getElementById("map_"+name);
-            var map = new google.maps.Map(container, options);
-
-            var marker = new google.maps.Marker({
-                position: LatLng,
-                map: map,
-                title: 'Drag Me!',
-                draggable: true
-            });
-
-            google.maps.event.addListener(marker, 'dragend', function (event) {
-                lat.val(event.latLng.lat());
-                lng.val(event.latLng.lng());
-            });
-        }
-
-        initGoogleMap('{$this->id['lat']}{$this->id['lng']}');
-EOT;
     }
 
     public function useTencentMap()
@@ -133,5 +79,59 @@ EOT;
 
         initTencentMap('{$this->id['lat']}{$this->id['lng']}');
 EOT;
+    }
+
+    public function useGoogleMap()
+    {
+        $this->script = <<<EOT
+        function initGoogleMap(name) {
+            var lat = $('#{$this->id['lat']}');
+            var lng = $('#{$this->id['lng']}');
+
+            var LatLng = new google.maps.LatLng(lat.val(), lng.val());
+
+            var options = {
+                zoom: 13,
+                center: LatLng,
+                panControl: false,
+                zoomControl: true,
+                scaleControl: true,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            }
+
+            var container = document.getElementById("map_"+name);
+            var map = new google.maps.Map(container, options);
+
+            var marker = new google.maps.Marker({
+                position: LatLng,
+                map: map,
+                title: 'Drag Me!',
+                draggable: true
+            });
+
+            google.maps.event.addListener(marker, 'dragend', function (event) {
+                lat.val(event.latLng.lat());
+                lng.val(event.latLng.lng());
+            });
+        }
+
+        initGoogleMap('{$this->id['lat']}{$this->id['lng']}');
+EOT;
+    }
+
+    /**
+     * Get assets required by this field.
+     *
+     * @return array
+     */
+    public static function getAssets()
+    {
+        if (config('app.locale') == 'zh-CN') {
+            $js = '//map.qq.com/api/js?v=2.exp';
+        } else {
+            $js = '//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=' . env('GOOGLE_API_KEY');
+        }
+
+        return compact('js');
     }
 }

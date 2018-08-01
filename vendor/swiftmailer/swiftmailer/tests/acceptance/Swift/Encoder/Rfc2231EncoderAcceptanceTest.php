@@ -5,12 +5,6 @@ class Swift_Encoder_Rfc2231EncoderAcceptanceTest extends \PHPUnit\Framework\Test
     private $samplesDir;
     private $factory;
 
-    protected function setUp()
-    {
-        $this->samplesDir = realpath(__DIR__.'/../../../_samples/charsets');
-        $this->factory = new Swift_CharacterReaderFactory_SimpleCharacterReaderFactory();
-    }
-
     public function testEncodingAndDecodingSamples()
     {
         $sampleFp = opendir($this->samplesDir);
@@ -24,7 +18,7 @@ class Swift_Encoder_Rfc2231EncoderAcceptanceTest extends \PHPUnit\Framework\Test
                 $this->factory, $encoding);
             $encoder = new Swift_Encoder_Rfc2231Encoder($charStream);
 
-            $sampleDir = $this->samplesDir.'/'.$encodingDir;
+            $sampleDir = $this->samplesDir . '/' . $encodingDir;
 
             if (is_dir($sampleDir)) {
                 $fileFp = opendir($sampleDir);
@@ -33,18 +27,24 @@ class Swift_Encoder_Rfc2231EncoderAcceptanceTest extends \PHPUnit\Framework\Test
                         continue;
                     }
 
-                    $text = file_get_contents($sampleDir.'/'.$sampleFile);
+                    $text = file_get_contents($sampleDir . '/' . $sampleFile);
                     $encodedText = $encoder->encodeString($text);
 
                     $this->assertEquals(
                         urldecode(implode('', explode("\r\n", $encodedText))), $text,
-                        '%s: Encoded string should decode back to original string for sample '.
-                        $sampleDir.'/'.$sampleFile
-                        );
+                        '%s: Encoded string should decode back to original string for sample ' .
+                        $sampleDir . '/' . $sampleFile
+                    );
                 }
                 closedir($fileFp);
             }
         }
         closedir($sampleFp);
+    }
+
+    protected function setUp()
+    {
+        $this->samplesDir = realpath(__DIR__ . '/../../../_samples/charsets');
+        $this->factory = new Swift_CharacterReaderFactory_SimpleCharacterReaderFactory();
     }
 }

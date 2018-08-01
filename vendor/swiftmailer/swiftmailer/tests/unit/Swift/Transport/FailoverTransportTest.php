@@ -11,25 +11,25 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
         $connectionState = false;
 
         $t1->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState) {
-               return $connectionState;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState) {
+                return $connectionState;
+            });
         $t1->shouldReceive('start')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState) {
-               if (!$connectionState) {
-                   $connectionState = true;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState) {
+                if (!$connectionState) {
+                    $connectionState = true;
+                }
+            });
         $t1->shouldReceive('send')
-           ->twice()
-           ->with(\Mockery::anyOf($message1, $message2), \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState) {
-               if ($connectionState) {
-                   return 1;
-               }
-           });
+            ->twice()
+            ->with(\Mockery::anyOf($message1, $message2), \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState) {
+                if ($connectionState) {
+                    return 1;
+                }
+            });
         $t2->shouldReceive('start')->never();
         $t2->shouldReceive('send')->never();
 
@@ -37,6 +37,14 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
         $transport->start();
         $this->assertEquals(1, $transport->send($message1));
         $this->assertEquals(1, $transport->send($message2));
+    }
+
+    private function getTransport(array $transports)
+    {
+        $transport = new Swift_Transport_FailoverTransport();
+        $transport->setTransports($transports);
+
+        return $transport;
     }
 
     public function testMessageCanBeTriedOnNextTransportIfExceptionThrown()
@@ -50,46 +58,46 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
         $connectionState2 = false;
 
         $t1->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               return $connectionState1;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                return $connectionState1;
+            });
         $t1->shouldReceive('start')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               if (!$connectionState1) {
-                   $connectionState1 = true;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                if (!$connectionState1) {
+                    $connectionState1 = true;
+                }
+            });
         $t1->shouldReceive('send')
-           ->once()
-           ->with($message, \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState1, $e) {
-               if ($connectionState1) {
-                   throw $e;
-               }
-           });
+            ->once()
+            ->with($message, \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState1, $e) {
+                if ($connectionState1) {
+                    throw $e;
+                }
+            });
 
         $t2->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               return $connectionState2;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                return $connectionState2;
+            });
         $t2->shouldReceive('start')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               if (!$connectionState2) {
-                   $connectionState2 = true;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                if (!$connectionState2) {
+                    $connectionState2 = true;
+                }
+            });
         $t2->shouldReceive('send')
-           ->once()
-           ->with($message, \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState2, $e) {
-               if ($connectionState2) {
-                   return 1;
-               }
-           });
+            ->once()
+            ->with($message, \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState2, $e) {
+                if ($connectionState2) {
+                    return 1;
+                }
+            });
 
         $transport = $this->getTransport(array($t1, $t2));
         $transport->start();
@@ -103,28 +111,28 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
 
         $connectionState = false;
         $t1->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState) {
-               return $connectionState;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState) {
+                return $connectionState;
+            });
         $t1->shouldReceive('start')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState) {
-               if (!$connectionState) {
-                   $connectionState = true;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState) {
+                if (!$connectionState) {
+                    $connectionState = true;
+                }
+            });
         $testCase = $this;
         $t1->shouldReceive('send')
-           ->once()
-           ->with($message, \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState, $testCase) {
-               if (!$connectionState) {
-                   $testCase->fail();
-               }
+            ->once()
+            ->with($message, \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState, $testCase) {
+                if (!$connectionState) {
+                    $testCase->fail();
+                }
 
-               return 0;
-           });
+                return 0;
+            });
 
         $transport = $this->getTransport(array($t1));
         $transport->start();
@@ -145,55 +153,55 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
         $connectionState2 = false;
 
         $t1->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               return $connectionState1;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                return $connectionState1;
+            });
         $t1->shouldReceive('start')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               if (!$connectionState1) {
-                   $connectionState1 = true;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                if (!$connectionState1) {
+                    $connectionState1 = true;
+                }
+            });
         $t1->shouldReceive('send')
-           ->once()
-           ->with($message1, \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState1, $e) {
-               if ($connectionState1) {
-                   throw $e;
-               }
-           });
+            ->once()
+            ->with($message1, \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState1, $e) {
+                if ($connectionState1) {
+                    throw $e;
+                }
+            });
         $t1->shouldReceive('send')
-           ->never()
-           ->with($message2, \Mockery::any());
+            ->never()
+            ->with($message2, \Mockery::any());
         $t1->shouldReceive('send')
-           ->never()
-           ->with($message3, \Mockery::any());
+            ->never()
+            ->with($message3, \Mockery::any());
         $t1->shouldReceive('send')
-           ->never()
-           ->with($message4, \Mockery::any());
+            ->never()
+            ->with($message4, \Mockery::any());
 
         $t2->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               return $connectionState2;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                return $connectionState2;
+            });
         $t2->shouldReceive('start')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               if (!$connectionState2) {
-                   $connectionState2 = true;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                if (!$connectionState2) {
+                    $connectionState2 = true;
+                }
+            });
         $t2->shouldReceive('send')
-           ->times(4)
-           ->with(\Mockery::anyOf($message1, $message2, $message3, $message4), \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState2, $e) {
-               if ($connectionState2) {
-                   return 1;
-               }
-           });
+            ->times(4)
+            ->with(\Mockery::anyOf($message1, $message2, $message3, $message4), \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState2, $e) {
+                if ($connectionState2) {
+                    return 1;
+                }
+            });
 
         $transport = $this->getTransport(array($t1, $t2));
         $transport->start();
@@ -214,46 +222,46 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
         $connectionState2 = false;
 
         $t1->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               return $connectionState1;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                return $connectionState1;
+            });
         $t1->shouldReceive('start')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               if (!$connectionState1) {
-                   $connectionState1 = true;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                if (!$connectionState1) {
+                    $connectionState1 = true;
+                }
+            });
         $t1->shouldReceive('send')
-           ->once()
-           ->with($message, \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState1, $e) {
-               if ($connectionState1) {
-                   throw $e;
-               }
-           });
+            ->once()
+            ->with($message, \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState1, $e) {
+                if ($connectionState1) {
+                    throw $e;
+                }
+            });
 
         $t2->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               return $connectionState2;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                return $connectionState2;
+            });
         $t2->shouldReceive('start')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               if (!$connectionState2) {
-                   $connectionState2 = true;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                if (!$connectionState2) {
+                    $connectionState2 = true;
+                }
+            });
         $t2->shouldReceive('send')
-           ->once()
-           ->with($message, \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState2, $e) {
-               if ($connectionState2) {
-                   throw $e;
-               }
-           });
+            ->once()
+            ->with($message, \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState2, $e) {
+                if ($connectionState2) {
+                    throw $e;
+                }
+            });
 
         $transport = $this->getTransport(array($t1, $t2));
         $transport->start();
@@ -273,30 +281,30 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
         $connectionState2 = true;
 
         $t1->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               return $connectionState1;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                return $connectionState1;
+            });
         $t1->shouldReceive('stop')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               if ($connectionState1) {
-                   $connectionState1 = false;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                if ($connectionState1) {
+                    $connectionState1 = false;
+                }
+            });
 
         $t2->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               return $connectionState2;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                return $connectionState2;
+            });
         $t2->shouldReceive('stop')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               if ($connectionState2) {
-                   $connectionState2 = false;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                if ($connectionState2) {
+                    $connectionState2 = false;
+                }
+            });
 
         $transport = $this->getTransport(array($t1, $t2));
         $transport->start();
@@ -315,48 +323,48 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
         $connectionState2 = false;
 
         $t1->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               return $connectionState1;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                return $connectionState1;
+            });
         $t1->shouldReceive('start')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               if (!$connectionState1) {
-                   $connectionState1 = true;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                if (!$connectionState1) {
+                    $connectionState1 = true;
+                }
+            });
         $t1->shouldReceive('send')
-           ->once()
-           ->with($message, \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState1, $e) {
-               if ($connectionState1) {
-                   $connectionState1 = false;
-                   throw $e;
-               }
-           });
+            ->once()
+            ->with($message, \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState1, $e) {
+                if ($connectionState1) {
+                    $connectionState1 = false;
+                    throw $e;
+                }
+            });
 
         $t2->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               return $connectionState2;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                return $connectionState2;
+            });
         $t2->shouldReceive('start')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               if (!$connectionState2) {
-                   $connectionState2 = true;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                if (!$connectionState2) {
+                    $connectionState2 = true;
+                }
+            });
         $t2->shouldReceive('send')
-           ->once()
-           ->with($message, \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState2, $e) {
-               if ($connectionState2) {
-                   $connectionState2 = false;
-                   throw $e;
-               }
-           });
+            ->once()
+            ->with($message, \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState2, $e) {
+                if ($connectionState2) {
+                    $connectionState2 = false;
+                    throw $e;
+                }
+            });
 
         $transport = $this->getTransport(array($t1, $t2));
         $transport->start();
@@ -382,59 +390,59 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
         $connectionState2 = false;
 
         $t1->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               return $connectionState1;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                return $connectionState1;
+            });
         $t1->shouldReceive('start')
-           ->twice()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               if (!$connectionState1) {
-                   $connectionState1 = true;
-               }
-           });
+            ->twice()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                if (!$connectionState1) {
+                    $connectionState1 = true;
+                }
+            });
         $t1->shouldReceive('send')
-           ->once()
-           ->with($message1, \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState1, $e) {
-               if ($connectionState1) {
-                   $connectionState1 = false;
-                   throw $e;
-               }
-           });
+            ->once()
+            ->with($message1, \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState1, $e) {
+                if ($connectionState1) {
+                    $connectionState1 = false;
+                    throw $e;
+                }
+            });
         $t1->shouldReceive('send')
-           ->once()
-           ->with($message2, \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState1) {
-               if ($connectionState1) {
-                   return 10;
-               }
-           });
+            ->once()
+            ->with($message2, \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState1) {
+                if ($connectionState1) {
+                    return 10;
+                }
+            });
 
         $t2->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               return $connectionState2;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                return $connectionState2;
+            });
         $t2->shouldReceive('start')
-           ->once()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               if (!$connectionState2) {
-                   $connectionState2 = true;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                if (!$connectionState2) {
+                    $connectionState2 = true;
+                }
+            });
         $t2->shouldReceive('send')
-           ->once()
-           ->with($message1, \Mockery::any())
-           ->andReturnUsing(function () use (&$connectionState2, $e) {
-               if ($connectionState2) {
-                   $connectionState2 = false;
-                   throw $e;
-               }
-           });
+            ->once()
+            ->with($message1, \Mockery::any())
+            ->andReturnUsing(function () use (&$connectionState2, $e) {
+                if ($connectionState2) {
+                    $connectionState2 = false;
+                    throw $e;
+                }
+            });
         $t2->shouldReceive('send')
-           ->never()
-           ->with($message2, \Mockery::any());
+            ->never()
+            ->with($message2, \Mockery::any());
 
         $transport = $this->getTransport(array($t1, $t2));
         $transport->start();
@@ -461,25 +469,25 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
         $connectionState = false;
 
         $t1->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use ($connectionState) {
-               return $connectionState;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use ($connectionState) {
+                return $connectionState;
+            });
         $t1->shouldReceive('start')
-           ->once()
-           ->andReturnUsing(function () use ($connectionState) {
-               if (!$connectionState) {
-                   $connectionState = true;
-               }
-           });
+            ->once()
+            ->andReturnUsing(function () use ($connectionState) {
+                if (!$connectionState) {
+                    $connectionState = true;
+                }
+            });
         $t1->shouldReceive('send')
-           ->once()
-           ->with($message, $failures)
-           ->andReturnUsing(function () use ($connectionState) {
-               if ($connectionState) {
-                   return 1;
-               }
-           });
+            ->once()
+            ->with($message, $failures)
+            ->andReturnUsing(function () use ($connectionState) {
+                if ($connectionState) {
+                    return 1;
+                }
+            });
 
         $transport = $this->getTransport(array($t1));
         $transport->start();
@@ -493,14 +501,19 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
         $t1 = $this->getMockery('Swift_Transport');
         $t2 = $this->getMockery('Swift_Transport');
         $t1->shouldReceive('registerPlugin')
-           ->once()
-           ->with($plugin);
+            ->once()
+            ->with($plugin);
         $t2->shouldReceive('registerPlugin')
-           ->once()
-           ->with($plugin);
+            ->once()
+            ->with($plugin);
 
         $transport = $this->getTransport(array($t1, $t2));
         $transport->registerPlugin($plugin);
+    }
+
+    private function createPlugin()
+    {
+        return $this->getMockery('Swift_Events_EventListener');
     }
 
     public function testEachDelegateIsPinged()
@@ -512,13 +525,13 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
 
         $testCase = $this;
         $t1->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               return $connectionState1;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                return $connectionState1;
+            });
         $t1->shouldReceive('ping')
-           ->once()
-           ->andReturn(true);
+            ->once()
+            ->andReturn(true);
 
         $transport = $this->getTransport(array($t1, $t2));
         $this->assertTrue($transport->isStarted());
@@ -532,22 +545,22 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
 
         $testCase = $this;
         $t1->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               return $connectionState1;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                return $connectionState1;
+            });
         $t1->shouldReceive('ping')
-           ->once()
-           ->andReturn(false);
+            ->once()
+            ->andReturn(false);
 
         $t2->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               return $connectionState2;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                return $connectionState2;
+            });
         $t2->shouldReceive('ping')
-           ->twice()
-           ->andReturn(true);
+            ->twice()
+            ->andReturn(true);
 
         $transport = $this->getTransport(array($t1, $t2));
         $this->assertTrue($transport->ping());
@@ -562,39 +575,26 @@ class Swift_Transport_FailoverTransportTest extends \SwiftMailerTestCase
 
         $testCase = $this;
         $t1->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState1) {
-               return $connectionState1;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState1) {
+                return $connectionState1;
+            });
         $t1->shouldReceive('ping')
-           ->once()
-           ->andReturn(false);
+            ->once()
+            ->andReturn(false);
 
         $t2->shouldReceive('isStarted')
-           ->zeroOrMoreTimes()
-           ->andReturnUsing(function () use (&$connectionState2) {
-               return $connectionState2;
-           });
+            ->zeroOrMoreTimes()
+            ->andReturnUsing(function () use (&$connectionState2) {
+                return $connectionState2;
+            });
         $t2->shouldReceive('ping')
-           ->once()
-           ->andReturn(false);
+            ->once()
+            ->andReturn(false);
 
         $transport = $this->getTransport(array($t1, $t2));
         $this->assertFalse($transport->ping());
         $this->assertFalse($transport->isStarted());
         $this->assertFalse($transport->ping());
-    }
-
-    private function getTransport(array $transports)
-    {
-        $transport = new Swift_Transport_FailoverTransport();
-        $transport->setTransports($transports);
-
-        return $transport;
-    }
-
-    private function createPlugin()
-    {
-        return $this->getMockery('Swift_Events_EventListener');
     }
 }

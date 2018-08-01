@@ -19,8 +19,8 @@
 
 namespace Doctrine\DBAL;
 
-use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\DBAL\Logging\SQLLogger;
 
 /**
  * Configuration container for the Doctrine DBAL.
@@ -125,7 +125,7 @@ class Configuration
      */
     public function setAutoCommit($autoCommit)
     {
-        $this->_attributes['autoCommit'] = (boolean) $autoCommit;
+        $this->_attributes['autoCommit'] = (boolean)$autoCommit;
     }
 
     /**

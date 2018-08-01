@@ -1,4 +1,5 @@
 <?php
+
 namespace JakubOnderka\PhpConsoleColor;
 
 class InvalidStyleException extends \Exception

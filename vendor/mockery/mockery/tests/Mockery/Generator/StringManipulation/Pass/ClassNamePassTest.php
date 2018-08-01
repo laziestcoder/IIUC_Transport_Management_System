@@ -21,9 +21,7 @@
 
 namespace Mockery\Generator\StringManipulation\Pass;
 
-use Mockery as m;
 use Mockery\Generator\MockConfiguration;
-use Mockery\Generator\StringManipulation\Pass\ClassNamePass;
 use PHPUnit\Framework\TestCase;
 
 class ClassNamePassTest extends TestCase
