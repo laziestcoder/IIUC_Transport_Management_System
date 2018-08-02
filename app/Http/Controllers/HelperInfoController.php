@@ -14,7 +14,7 @@ class HelperInfoController extends Controller
      */
     public function index()
     {
-        //
+        return(view("helperinfo.index"));
     }
 
     /**

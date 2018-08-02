@@ -15,6 +15,16 @@ class CreateHelperinfoTable extends Migration
     {
         Schema::create('helperinfo', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('name');
+            $table->string('nid')->unique();
+            $table->string('helperid')->unique();
+            $table->string('licensepic')->nullable();
+            $table->string('license')->unique()->nullable();
+            $table->string('contactno')->unique();
+            $table->string('busno');
+            $table->mediumText('address');
+            $table->boolean('gender')->default(false);
+            $table->string('image')->nullable()->default('defaultAdmin.png');
             $table->timestamps();
         });
     }

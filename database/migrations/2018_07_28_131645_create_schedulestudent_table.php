@@ -15,7 +15,13 @@ class CreateSchedulestudentTable extends Migration
     {
         Schema::create('schedulestudent', function (Blueprint $table) {
             $table->increments('id')->unique();
-            $table->integer('dayid');
+            $table->integer('day');
+            $table->integer('pickpoint');
+            $table->integer('picktime');
+            $table->integer('droppoint');
+            $table->integer('droptime');
+            $table->integer('user_id');
+            $table->date('entrydate');
             $table->timestamps();
         });
     }

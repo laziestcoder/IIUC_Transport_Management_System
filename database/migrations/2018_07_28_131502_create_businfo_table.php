@@ -15,6 +15,12 @@ class CreateBusinfoTable extends Migration
     {
         Schema::create('businfo', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('busid')->unique();
+            $table->string('registration')->unique();
+            $table->string('license')->unique();
+            $table->integer('seat');
+            $table->boolean('availability')->default(true);
+            $table->integer('user_id');
             $table->timestamps();
         });
     }

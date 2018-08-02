@@ -15,6 +15,16 @@ class CreateDriverinfoTable extends Migration
     {
         Schema::create('driverinfo', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('name');
+            $table->string('nid')->unique();
+            $table->string('driverid')->unique();
+            $table->string('licensepic')->nullable();
+            $table->string('license')->unique();
+            $table->string('contactno')->unique();
+            $table->string('busno');
+            $table->mediumText('address');
+            $table->boolean('gender')->default(false);
+            $table->string('image')->nullable()->default('defaultAdmin.png');
             $table->timestamps();
         });
     }

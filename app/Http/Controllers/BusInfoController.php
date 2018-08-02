@@ -8,13 +8,24 @@ use Illuminate\Http\Request;
 class BusInfoController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        //$this->middleware('admin', ['except' => ['index','show'] ]);
+        $this->middleware('admin');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
+        return(view("businfo.index"));
     }
 
     /**

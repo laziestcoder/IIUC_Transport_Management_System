@@ -73,8 +73,16 @@ Route::resource('/management', 'ManagementController');
 
 
 //Admin::routes();
+
 Route::resource('/admin/auth/routes', 'BusRoutesController');
 Route::resource('/admin/auth/points', 'BusPointsController');
 Route::resource('/admin/auth/notices', 'NoticesController');
-/* Route::get('/admin/auth/notices/create','NoticesController@create');
-Route::get('/admin/auth/notices/create','NoticesController@store'); */
+Route::resource('/admin/auth/bus', 'BusInfoController');
+Route::resource('/admin/auth/driver', 'DriverInfoController');
+Route::resource('/admin/auth/helper', 'HelperInfoController');
+Route::resource('/admin/auth/addtime', 'TimeController');
+Route::resource('/admin/auth/schedule', 'ScheduleController');
+
+//Route::resource('/admin/auth/schedule/addtime', 'ScheduleController@create');
+//Route::get('/admin/auth/notices/create','NoticesController@create');
+//Route::get('/admin/auth/notices/create','NoticesController@store');

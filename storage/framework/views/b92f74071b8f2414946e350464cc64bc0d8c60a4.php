@@ -288,16 +288,16 @@
                                     class="fa fa-th"></i></a>
                     </div>
 
-
+                    
                     <div class="input-group input-group-sm pull-right goto-url" style="width: 250px;">
                         <input type="text" name="path" class="form-control pull-right"
-                               value="<?php echo e('/' . trim($url['path'], '/')); ?>">
+                               value="<?php echo e('/'.trim($url['path'], '/')); ?>">
 
                         <div class="input-group-btn">
                             <button type="submit" class="btn btn-default"><i class="fa fa-arrow-right"></i></button>
                         </div>
                     </div>
-
+                    
 
                 </div>
 
@@ -309,24 +309,16 @@
 
                     <li><a href="<?php echo e(route('media-index')); ?>"><i class="fa fa-th-large"></i> </a></li>
 
-                    <?php $__currentLoopData = $nav;
-                    $__env->addLoop($__currentLoopData);
-                    foreach ($__currentLoopData as $item): $__env->incrementLoopIndices();
-                        $loop = $__env->getLastLoop(); ?>
+                    <?php $__currentLoopData = $nav; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <li><a href="<?php echo e($item['url']); ?>"> <?php echo e($item['name']); ?></a></li>
-                    <?php endforeach;
-                    $__env->popLoop();
-                    $loop = $__env->getLastLoop(); ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </ol>
                 <ul class="files clearfix">
 
-                    <?php if (empty($list)): ?>
+                    <?php if(empty($list)): ?>
                         <li style="height: 200px;border: none;"></li>
                     <?php else: ?>
-                        <?php $__currentLoopData = $list;
-                        $__env->addLoop($__currentLoopData);
-                        foreach ($__currentLoopData as $item): $__env->incrementLoopIndices();
-                            $loop = $__env->getLastLoop(); ?>
+                        <?php $__currentLoopData = $list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <li>
                             <span class="file-select">
                                 <input type="checkbox" value="<?php echo e($item['name']); ?>"/>
@@ -336,10 +328,9 @@
 
 
                                 <div class="file-info">
-                                    <a <?php if (!$item['isDir']): ?>target="_blank"<?php endif; ?>
-                                       href="<?php echo e($item['link']); ?>" class="file-name"
-                                       title="<?php echo e($item['name']); ?>">
-                                        <?php echo e($item['icon']); ?><?php echo e(basename($item['name'])); ?>
+                                    <a <?php if(!$item['isDir']): ?>target="_blank" <?php endif; ?> href="<?php echo e($item['link']); ?>"
+                                       class="file-name" title="<?php echo e($item['name']); ?>">
+                                        <?php echo e($item['icon']); ?> <?php echo e(basename($item['name'])); ?>
 
                                     </a>
                                     <span class="file-size">
@@ -354,10 +345,10 @@
                                     <ul class="dropdown-menu" role="menu">
                                         <li><a href="#" class="file-rename" data-toggle="modal" data-target="#moveModal"
                                                data-name="<?php echo e($item['name']); ?>">Rename & Move</a></li>
-                                        <li><a href="#" class="file-delete" data-path="<?php echo e($item['name']); ?>">Delete</a></li>
-                                        <?php if (!($item['isDir'])): ?>
-                                            <li><a target="_blank"
-                                                   href="<?php echo e($item['download']); ?>">Download</a></li>
+                                        <li><a href="#" class="file-delete"
+                                               data-path="<?php echo e($item['name']); ?>">Delete</a></li>
+                                        <?php if (! ($item['isDir'])): ?>
+                                            <li><a target="_blank" href="<?php echo e($item['download']); ?>">Download</a></li>
                                         <?php endif; ?>
                                         <li class="divider"></li>
                                         <li><a href="#" data-toggle="modal" data-target="#urlModal"
@@ -367,9 +358,7 @@
                             </span>
                                 </div>
                             </li>
-                        <?php endforeach;
-                        $__env->popLoop();
-                        $loop = $__env->getLastLoop(); ?>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     <?php endif; ?>
                 </ul>
             </div>

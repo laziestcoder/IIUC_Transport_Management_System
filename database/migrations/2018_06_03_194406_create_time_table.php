@@ -15,7 +15,10 @@ class CreateTimeTable extends Migration
     {
         Schema::create('time', function (Blueprint $table) {
             $table->increments('id');
-            $table->time('time');
+            $table->time('time')->nullable();
+            $table->boolean('toiiuc')->default(false)->nullable();
+            $table->boolean('fromiiuc')->default(false)->nullable();
+            $table->integer('user_id');
             $table->timestamps();
         });
     }

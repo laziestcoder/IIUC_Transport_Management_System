@@ -14,7 +14,7 @@ class DriverInfoController extends Controller
      */
     public function index()
     {
-        //
+        return(view("driverinfo.index"));
     }
 
     /**
