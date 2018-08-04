@@ -12,13 +12,13 @@
 
 
 
-<?php if (isset($subcopy)): ?>
-    <?php $__env->slot('subcopy'); ?>
-    <?php $__env->startComponent('mail::subcopy'); ?>
-    <?php echo e($subcopy); ?>
+<?php if(isset($subcopy)): ?>
+<?php $__env->slot('subcopy'); ?>
+<?php $__env->startComponent('mail::subcopy'); ?>
+<?php echo e($subcopy); ?>
 
-    <?php echo $__env->renderComponent(); ?>
-    <?php $__env->endSlot(); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php $__env->endSlot(); ?>
 <?php endif; ?>
 
 

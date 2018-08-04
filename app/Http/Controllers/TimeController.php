@@ -6,6 +6,7 @@ use App\Time;
 use DB;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class TimeController extends Controller
 {
@@ -29,11 +30,11 @@ class TimeController extends Controller
     {
         $data = array(
             'title' => 'Bus Time Information',
-            'titleinfo' => 'Available Bus Times',
-            'addtime' => 'Add Bus Times',
-            'times' => Time::orderBy('time')->paginate(10),
+            'titleinfo' => 'Available Bus Time',
+            'addtime' => 'Add Bus Time',
+            'times' => Time::orderBy('time')->paginate(20),
         );
-        return view('schedule.addtime')->with($data);
+        return view('schedule.time')->with($data);
     }
 
     /**
@@ -127,7 +128,7 @@ class TimeController extends Controller
 
         // Check other Tables if the time is used
         $points = null;
-        $name = $time->time;
+        $name =Carbon::parse($time->time)->format('g:i A');
         if ($points) {
             if ($points->routeid == $id) {
                 return redirect('/admin/auth/addtime')->with('error', '"' . $name . '" => This Bus Route has assigned one or more bus stop point. Delete all bus stop point related to the route. Then delete the route.');

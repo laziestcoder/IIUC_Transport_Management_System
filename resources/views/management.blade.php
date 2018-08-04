@@ -31,7 +31,7 @@
                     </tr>
                     <tr>
                         <td>
-                            ID: {{Auth::user()->id}}
+                            ID: {{Auth::user()->jobid}}
                         </td>
 
                     </tr>

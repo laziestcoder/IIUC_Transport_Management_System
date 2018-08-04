@@ -56,24 +56,24 @@
         <h1>{{$titleinfo}}</h1>
         @if(count($BusPoints) > 0)
             <table class="table table-hover">
-                <thead>
+                <thead class="table">
                 <tr>
                     <th>ID</th>
-                    <th>Route Name</th>
                     <th>Point Name</th>
+                    <th>Route Name</th>
                     <th>Added By</th>
                     <th>Added On</th>
                     <th>Action</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="table">
                 <?php $flag = 0;
                 ?>
                 @foreach($BusPoints as $point)
                     <tr>    <?php $routename = DB::table('routes')->where('id', $point->routeid)->first(); ?>
                         <td>{{$flag+=1}}</td>
+                        <td>{{$point->pointname}}</td>
                         <td><a href="/admin/auth/routes/{{$point->routeid}}">{{ $routename->routename }}</a></td>
-                        <td><a href="/admin/auth/points/{{$point->id}}">{{$point->pointname}}</a></td>
                         <td>{{DB::table('admin_users')->where('id', $point->user_id)->first()->name}}</td>
                         <td>{{$point->created_at}}</td>
                         <td><a href="/admin/auth/points/{{$point->id}}/edit" class="btn btn-default">Edit</a>

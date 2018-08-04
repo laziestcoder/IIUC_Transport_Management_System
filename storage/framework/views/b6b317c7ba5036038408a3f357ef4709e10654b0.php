@@ -3,8 +3,8 @@
         <div class="alert alert-danger">
             <?php echo $error; ?>
 
-        </div>
-    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </div>
+<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 <?php endif; ?> -->
 
 <?php if(session('success')): ?>
@@ -27,5 +27,5 @@
             <?php echo session('error'); ?>
 
         </div>
-    <?php endif; ?> 
+    <?php endif; ?>
 <?php endif; ?>

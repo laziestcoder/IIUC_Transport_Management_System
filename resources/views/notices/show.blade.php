@@ -17,7 +17,8 @@
         //     console.log("2");
         //     return confirm("Do you want to delete this item?");
         // });
-
+        </script>
+    <script>
         $(document).ready(function () {
             $('[data-toggle=confirmation]').confirmation({
                 rootSelector: '[data-toggle=confirmation]',
@@ -63,7 +64,7 @@
                 </div>
             </div>
             @if(Admin::user())
-                @if(Admin::user()->id == $notice->user_id)
+                @if((Admin::user()->id == $notice->user_id)||(DB::table('admin_role_users')->where('user_id',(Admin::user()->id))->first()->role_id <= 4))
                     <a href="/admin/auth/notices/{{$notice->id}}/edit" class="btn btn-default">Edit</a>
                     {{--{!! Form::open(['action' => ['NoticesController@destroy', $notice->id], 'method' => 'POST','id' =>'delete', 'class' => 'pull','style'=>'display:inline','onclick' => 'function(){console.log("3");return confirm("Do you want to delete this item?");}' ]) !!}--}}
                     {!! Form::open(['action' => ['NoticesController@destroy', $notice->id], 'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline'  ]) !!}

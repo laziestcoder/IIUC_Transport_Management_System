@@ -11,23 +11,24 @@
                     Please attach a picture of the registered notice
                 </small>
             </h1>
-            {!! Form :: open(['action' => 'NoticesController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data' ]) !!}
-            <div class="form-group">
-                {{Form :: label('title','Title')}}
-                {{Form :: text('title' , '', [ 'class' => 'form-control', 'placeholder' => 'Title', ])}}
+            <div class="container-fluid">
+                {!! Form :: open(['action' => 'NoticesController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data' ]) !!}
+                <div class="form-group">
+                    {{Form :: label('title','Title')}}
+                    {{Form :: text('title' , '', [ 'class' => 'form-control', 'placeholder' => 'Title', ])}}
+                </div>
+                <div class="form-group">
+                    {{Form :: label('body','Body')}}
+                    {{Form :: textarea('body' , '', ['id' => 'article-ckeditor','class' => 'form-control', 'placeholder' => 'Body Text', ])}}
+                </div>
+                <div class="form-group">
+                    {{Form::file('cover_image')}}
+                </div>
+                {{ Form :: submit('Submit',['class' => 'btn btn-primary']) }}
+                {!! Form::close() !!}
             </div>
-            <div class="form-group">
-                {{Form :: label('body','Body')}}
-                {{Form :: textarea('body' , '', ['id' => 'article-ckeditor','class' => 'form-control', 'placeholder' => 'Body Text', ])}}
-            </div>
-            <div class="form-group">
-                {{Form::file('cover_image')}}
-            </div>
-            {{ Form :: submit('Submit',['class' => 'btn btn-primary']) }}
-            {!! Form::close() !!}
         </div>
     </section>
-    <br>
     <section class="content">
         {{--
                 @include('admin::partials.error')
@@ -39,7 +40,7 @@
                 {!! $content !!}
         --}}
     </section>
-    <!-- <script src="{{ asset('/vendor/unisharp/laravel-ckeditor/ckeditor.js') }}"></script> -->
+    <script src="{{ asset('/vendor/unisharp/laravel-ckeditor/ckeditor.js') }}"></script>
     <script>
         CKEDITOR.replace('article-ckeditor');
     </script>

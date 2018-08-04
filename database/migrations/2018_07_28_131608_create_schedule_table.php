@@ -20,9 +20,9 @@ class CreateScheduleTable extends Migration
             $table->boolean('fromiiuc')->default(false);
             $table->boolean('male')->default(false);
             $table->boolean('female')->default(false);
-            $table->integer('time');
-            $table->integer('user')->length(1)->default(1);// 1 Student || 2 Faculty || 3 Officer/Staff
-            $table->boolean('route')->default(true); //ALL ROUTE -true or AK KHAN-false
+            $table->integer('time')->length(3);
+            $table->integer('user')->length(2)->default(1);// 1 Student || 2 Faculty || 3 Officer/Staff
+            $table->integer('route')->length(2);
             $table->integer('user_id');
             $table->timestamps();
         });

@@ -10,28 +10,50 @@
                     <div class="nextBus-info">
                         <table class="table table-responsive-lg">
                             <thead>
-                            <td colspan="4">
+                            <tr><td colspan="4">
                                 <div class="nextBus-title">
-                                    NEXT BUS
+                                    NEXT BUS ( Today :  {{\Carbon\Carbon::now()->format('l')}})
                                 </div>
-                            </td>
+                            </td></tr>
+
                             <tr>
-                                <td>Direction</td>
-                                <td>Male</td>
-                                <td>Female</td>
+                                <td>Station From</td>
+                                <td>Station To</td>
+                                <td>Time</td>
                             </tr>
                             </thead>
                             <tbody>
+                            <tr><td colspan="4">
+                                    <div class="nextBus-title" style="text-align: left;">
+                                        <i>MALE</i>
+                                    </div>
+                                </td></tr>
                             <tr>
-
-                                <td>Towards University</td>
-                                <td>12:30 PM</td>
-                                <td>01:30 pm</td>
+                                <td>{{$fromRouteM}}</td>
+                                <td>{{"IIUC CAMPUS"}}</td>
+                                <td>{{$toIIUCMale}}</td>
                             </tr>
+
                             <tr>
-                                <td>Towards City</td>
-                                <td>09:00 AM</td>
-                                <td>08:00 AM</td>
+                                <td>{{"IIUC CAMPUS"}}</td>
+                                <td>{{$toRouteM}}</td>
+                                <td>{{$toCityMale}}</td>
+                            </tr>
+                            <tr><td colspan="4">
+                                    <div class="nextBus-title" style="text-align: left;">
+                                        <i>FEMALE</i>
+                                    </div>
+                                </td></tr>
+                            <tr>
+                                <td>{{$fromRouteF}}</td>
+                                <td>{{"IIUC CAMPUS"}}</td>
+                                <td>{{$toIIUCFemale}}</td>
+                            </tr>
+
+                            <tr>
+                                <td>{{"IIUC CAMPUS"}}</td>
+                                <td>{{$toRouteF}}</td>
+                                <td>{{$toCityFemale}}</td>
                             </tr>
                             </tbody>
 
@@ -72,67 +94,15 @@
                                 </div>
                             </div>
                         </li>
+
                         <li class="timeline-inverted">
                             <div class="timeline-image">
-                                <!-- <img class="rounded-circle img-fluid" src="/storage/img/about/2.jpg" alt=""> -->
-                                <h4>12:30 pm<br>AK KHAN<br>Male</h4>
-                            </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4>March 2011</h4>
-                                    <h4 class="subheading">An Agency is Born</h4>
-                                </div>
-                                <div class="timeline-body">
-                                    <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt
-                                        ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam,
-                                        recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium
-                                        consectetur!</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline-image">
-                                <!-- <img class="rounded-circle img-fluid" src="/storage/img/about/3.jpg" alt=""> -->
-                                <h4>12:30 pm<br>ALL ROUTE<br>Female</h4>
-                            </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4>December 2012</h4>
-                                    <h4 class="subheading">Transition to Full Service</h4>
-                                </div>
-                                <div class="timeline-body">
-                                    <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt
-                                        ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam,
-                                        recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium
-                                        consectetur!</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="timeline-inverted">
-                            <div class="timeline-image">
-                                <!-- <img class="rounded-circle img-fluid" src="/storage/img/about/4.jpg" alt=""> -->
-                                <h4>12:30 pm<br>ALL ROUTE<br>Male</h4>
-                            </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4>July 2014</h4>
-                                    <h4 class="subheading">Phase Two Expansion</h4>
-                                </div>
-                                <div class="timeline-body">
-                                    <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt
-                                        ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam,
-                                        recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium
-                                        consectetur!</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="timeline-inverted">
-                            <div class="timeline-image">
-                                <h4>Be Part
+                                <h4>Have a
                                     <br>
-                                    Of Our
+                                    Safe
                                     <br>
-                                    Story!
+                                    Journey<br>
+                                    :)
                                 </h4>
                             </div>
                         </li>
@@ -159,38 +129,40 @@
                     <?php $count = 0; ?>
                     @foreach($notices as $notice)
                         <?php $count = $count + 1; ?>
-                        @if($count<=12)
-                            <div class="col-md-3 col-md-3 portfolio-item">
-                                <a class="portfolio-link" data-toggle="modal" href="#portfolioModal{{$count}}">
-                                    <div class="portfolio-hover">
-                                        <div class="portfolio-hover-content">
-                                            <i class="fa fa-plus fa-3x"></i>
-                                        </div>
+                        {{--@if($count<=12)--}}
+                        <div class="col-md-3 col-md-3 portfolio-item">
+                            <a class="portfolio-link" data-toggle="modal" href="#portfolioModal{{$count}}">
+                                <div class="portfolio-hover">
+                                    <div class="portfolio-hover-content">
+                                        <i class="fa fa-plus fa-3x"></i>
                                     </div>
-                                    <img class="img-fluid" src="/storage/cover_images/{{$notice->cover_image}}"
-                                         alt="{{$notice->title}}"> </a>
-                                <div class="portfolio-caption">
-                                    <h4>{{$notice->title}}</h4>
-                                    <small>
-                                        <p class="text-muted">
-                                            Posted By:
-                                            <i>
-                                                {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}
-                                            </i><br>
-                                            Posted At: {{$notice->created_at}}
-                                        </p>
-                                    </small>
                                 </div>
+                                <img class="img-fluid" src="/storage/cover_images/{{$notice->cover_image}}"
+                                     alt="{{$notice->title}}"> </a>
+                            <div class="portfolio-caption">
+                                <h4>{{$notice->title}}</h4>
+                                <small>
+                                    <p class="text-muted">
+                                        Posted By:
+                                        <i>
+                                            {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}
+                                        </i><br>
+                                        Posted At: {{$notice->created_at}}
+                                    </p>
+                                </small>
                             </div>
+                        </div>
 
-                        @else
-                            @break
-                        @endif
+                        {{--@else--}}
+                        {{--@break--}}
+                        {{--@endif--}}
                     @endforeach
                 @else
                     <h4>No notices found</h4>
                 @endif
+
             </div>
+            {{$notices->links()}}
         </div>
     </section>
 
@@ -243,58 +215,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2 id="about" class="section-heading text-uppercase">Our Amazing Developers</h2>
-                    <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
+                    <h2 id="about" class="section-heading text-uppercase">Developed By</h2>
+                    <!-- <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3> -->
                 </div>
             </div>
-            <!-- <div class="col-sm-6">
-                <div class="team-member">
-                    <img class="mx-auto rounded-circle" src="/storage/img/team/3.jpg" alt=""></img>
-                    <h4>Mohammed Shamsul Alam </h4>
-                    <p class="text-muted">Supervisor</p>
-                    <ul class="list-inline social-buttons">
-                        <li class="list-inline-item">
-                            <a href="#">
-                                <i class="fa fa-twitter"></i>
-                            </a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="#">
-                                <i class="fa fa-facebook"></i>
-                            </a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="#">
-                                <i class="fa fa-linkedin"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="team-member">
-                    <img class="mx-auto rounded-circle" src="/storage/img/team/3.jpg" alt=""></img>
-                    <h4>Soyeb Chowdhury </h4>
-                    <p class="text-muted">Co-Supervisor</p>
-                    <ul class="list-inline social-buttons">
-                        <li class="list-inline-item">
-                            <a href="#">
-                                <i class="fa fa-twitter"></i>
-                            </a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="#">
-                                <i class="fa fa-facebook"></i>
-                            </a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="#">
-                                <i class="fa fa-linkedin"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div> -->
+
             <div class="col-sm-6">
                 <div class="team-member">
                     <img class="mx-auto rounded-circle" src="/storage/img/team/1.jpg" alt="Towfiqul Islam">
@@ -368,35 +293,6 @@
 
     </section>
 
-    <!-- Clients -->
-
-    <section class="py-5">
-        <!-- <div class="container">
-            <div class="row">
-                <div class="col-md-3 col-sm-6">
-                    <a href="#">
-                        <img class="img-fluid d-block mx-auto" src="/storage/img/logos/envato.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-md-3 col-sm-6">
-                    <a href="#">
-                        <img class="img-fluid d-block mx-auto" src="/storage/img/logos/designmodo.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-md-3 col-sm-6">
-                    <a href="#">
-                        <img class="img-fluid d-block mx-auto" src="/storage/img/logos/themeforest.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-md-3 col-sm-6">
-                    <a href="#">
-                        <img class="img-fluid d-block mx-auto" src="/storage/img/logos/creative-market.jpg" alt="">
-                    </a>
-                </div>
-            </div>
-        </div> -->
-    </section>
-
 
     <!-- Contact -->
 
@@ -459,56 +355,56 @@
         <?php $count = 0; ?>
         @foreach($notices as $notice)
             <?php $count = $count + 1; ?>
-            @if($count<=12)
-                <div class="portfolio-modal modal fade" id="portfolioModal{{$count}}" tabindex="-1" role="dialog"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="close-modal" data-dismiss="modal">
-                                <div class="lr">
-                                    <div class="rl"></div>
-                                </div>
+            {{--@if($count<=12)--}}
+            <div class="portfolio-modal modal fade" id="portfolioModal{{$count}}" tabindex="-1" role="dialog"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="close-modal" data-dismiss="modal">
+                            <div class="lr">
+                                <div class="rl"></div>
                             </div>
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-lg-8 mx-auto">
-                                        <div class="modal-body">
+                        </div>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8 mx-auto">
+                                    <div class="modal-body">
 
-                                            <!-- Project Details Go Here -->
+                                        <!-- Project Details Go Here -->
 
-                                            <h2 class="text-uppercase">{!! $notice->title !!}</h2>
-                                            <p class="item-intro text-muted">Posted
-                                                By: {!! DB::table('admin_users')->where('id', $notice->user_id)->first()->name !!}</p>
-                                            <img class="img-fluid d-block mx-auto"
-                                                 src="/storage/cover_images/{!! $notice->cover_image !!}"
-                                                 alt="{!! $notice->title !!}">
-                                            <div style="text-align:left;">
-                                                {!! $notice->body !!}
-                                            </div>
-                                            <br><br>
-                                            <ul class="list-inline" style="text-align:left;">
-                                                <li>
-                                                    <small>
-                                                        Date: {!! $notice->created_at !!}
-                                                    </small>
-                                                </li>
-                                                {{--<li>Client: Threads</li>--}}
-                                                {{--<li>Category: Illustration</li>--}}
-                                            </ul>
-                                            <button class="btn btn-primary" data-dismiss="modal" type="button">
-                                                <i class="fa fa-times"></i>
-                                                Close
-                                            </button>
+                                        <h2 class="text-uppercase">{!! $notice->title !!}</h2>
+                                        <p class="item-intro text-muted">Posted
+                                            By: {!! DB::table('admin_users')->where('id', $notice->user_id)->first()->name !!}</p>
+                                        <img class="img-fluid d-block mx-auto"
+                                             src="/storage/cover_images/{!! $notice->cover_image !!}"
+                                             alt="{!! $notice->title !!}">
+                                        <div style="text-align:left;">
+                                            {!! $notice->body !!}
                                         </div>
+                                        <br><br>
+                                        <ul class="list-inline" style="text-align:left;">
+                                            <li>
+                                                <small>
+                                                    Date: {!! $notice->created_at !!}
+                                                </small>
+                                            </li>
+                                            {{--<li>Client: Threads</li>--}}
+                                            {{--<li>Category: Illustration</li>--}}
+                                        </ul>
+                                        <button class="btn btn-primary" data-dismiss="modal" type="button">
+                                            <i class="fa fa-times"></i>
+                                            Close
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            @else
-                @break
-            @endif
+            </div>
+            {{--@else--}}
+            {{--@break--}}
+            {{--@endif--}}
         @endforeach
     @endif
 @endsection

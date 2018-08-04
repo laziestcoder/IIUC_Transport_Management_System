@@ -12,9 +12,9 @@
     <br><br>
     <section class="content">
         <h1>{{$titleinfo}}</h1>
-        @if(count($BusRoute) > 0)
+        @if(count($BusStudents) > 0)
             <table class="table table-hover">
-                <thead>
+                <thead class="table">
                 <tr>
                     <th>Serial No</th>
                     <th>Point Name</th>
@@ -23,17 +23,17 @@
                     <th>Bus No</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="table">
                 <?php $flag = 0; ?>
-                @foreach($BusRoute as $route)
+                @foreach($BusStudents as $BusStudent)
                     <tr> <?php $bus = 1; ?>
                         <td>{{$flag+=1}}</td>
                         <td>
-                            <a href="/../{{$route->pointid}}">{{DB::table('points')->where('id', $route->pointid)->first()->pointname}}</a>
+                            <a href="/../{{$BusStudent->pointid}}">{{App\BusPoint::where('id', $BusStudent->pointid)->first()->pointname? App\BusPoint::where('id', $BusStudent->pointid)->first()->pointname : 'Not Available' }}</a>
                         </td>
                         <td>{{DB::table('day')->where('id', $route->dayid)->first()->dayname}}</td>
                         <td>{{$studentSum = DB::table('bus_student_information')
-                            ->where('bus_student_information.routeid', '=', $route->routeid)
+                            ->where('bus_student_information.routeid', '=', $BusStudent->routeid)
                             ->sum('bus_student_information.studentno')}}</td>
                         <td>
                             @if($studentSum/60 > 1)
@@ -46,7 +46,7 @@
                 @endforeach
                 </tbody>
             </table>
-            {{$BusRoutes->links()}}
+            {{$BusStudent->links()}}
         @else
             <p>No information found</p>
         @endif

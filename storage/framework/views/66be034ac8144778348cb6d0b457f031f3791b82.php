@@ -51,24 +51,24 @@
         <h1><?php echo e($titleinfo); ?></h1>
         <?php if(count($BusPoints) > 0): ?>
             <table class="table table-hover">
-                <thead>
+                <thead class="table">
                 <tr>
                     <th>ID</th>
-                    <th>Route Name</th>
                     <th>Point Name</th>
+                    <th>Route Name</th>
                     <th>Added By</th>
                     <th>Added On</th>
                     <th>Action</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="table">
                 <?php $flag = 0;
                 ?>
                 <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>    <?php $routename = DB::table('routes')->where('id', $point->routeid)->first(); ?>
                         <td><?php echo e($flag+=1); ?></td>
+                        <td><?php echo e($point->pointname); ?></td>
                         <td><a href="/admin/auth/routes/<?php echo e($point->routeid); ?>"><?php echo e($routename->routename); ?></a></td>
-                        <td><a href="/admin/auth/points/<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></a></td>
                         <td><?php echo e(DB::table('admin_users')->where('id', $point->user_id)->first()->name); ?></td>
                         <td><?php echo e($point->created_at); ?></td>
                         <td><a href="/admin/auth/points/<?php echo e($point->id); ?>/edit" class="btn btn-default">Edit</a>

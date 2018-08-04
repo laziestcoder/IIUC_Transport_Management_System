@@ -15,7 +15,8 @@
 
             <small><?php echo e('Before you submit please change the time correctly.'); ?>
 
-            </small></h3>
+            </small>
+        </h3>
         
 
         <?php echo Form :: open(['action'=>'TimeController@store','method' => 'POST', 'enctype' => 'multipart/form-data' ]); ?>
@@ -55,7 +56,7 @@
         </h3>
         <?php if( count($times) > 0 ): ?>
             <table class="table table-hover">
-                <thead>
+                <thead class="table">
                 <tr>
                     <th>ID</th>
                     <th>Time</th>
@@ -65,7 +66,7 @@
                     <th>Action</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="table">
                 <?php $flag = 0; ?>
                 <?php $__currentLoopData = $times; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $time): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>

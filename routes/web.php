@@ -81,6 +81,7 @@ Route::resource('/admin/auth/bus', 'BusInfoController');
 Route::resource('/admin/auth/driver', 'DriverInfoController');
 Route::resource('/admin/auth/helper', 'HelperInfoController');
 Route::resource('/admin/auth/addtime', 'TimeController');
+Route::resource('/admin/auth/newday', 'DayController');
 Route::resource('/admin/auth/schedule', 'ScheduleController');
 
 //Route::resource('/admin/auth/schedule/addtime', 'ScheduleController@create');

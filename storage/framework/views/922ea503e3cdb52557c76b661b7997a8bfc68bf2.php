@@ -3,7 +3,7 @@
 
 <?php echo strip_tags($slot); ?>
 
-<?php if (isset($subcopy)): ?>
+<?php if(isset($subcopy)): ?>
 
     <?php echo strip_tags($subcopy); ?>
 

@@ -33,22 +33,24 @@
         <h1>{{$titleinfo}}</h1>
         @if(count($BusRoutes) > 0)
             <table class="table table-hover">
-                <thead>
+                <thead class="table">
                 <tr>
-                    <th>ID</th>
+                    <th>No.</th>
                     <th>Route Name</th>
+                    <th>Route ID</th>
                     <th>Added By</th>
                     <th>Added On</th>
                     <th>Action</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="table">
                 <?php $flag = 0; ?>
                 @foreach($BusRoutes as $route)
                     <tr>
                         <td>{{$flag+=1}}</td>
                         <td><a href="/admin/auth/routes/{{$route->id}}">{{$route->routename}}</a></td>
                         <td>{{$user = DB::table('admin_users')->where('id', $route->user_id)->first()->name}}</td>
+                        <td>{{$route->id}}</td>
                         <td>{{$route->created_at}}</td>
                         <td><a href="/admin/auth/routes/{{$route->id}}/edit" class="btn btn-default">Edit</a>
                             {{-- <a href="/notices/{{$route->id}}/edit" class="btn btn-default">Delete</a> --}}

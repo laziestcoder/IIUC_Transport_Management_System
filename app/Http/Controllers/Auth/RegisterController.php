@@ -57,7 +57,8 @@ class RegisterController extends Controller
             'password' => 'required|string|min:6|confirmed',
             'userrole' => 'required|integer',
             'gender' => 'required|boolean',
-            'image' => 'image|nullable|max:1999'
+            'image' => 'image|nullable|max:1999',
+            'jobid' => 'required|string|max:50|unique:users'
         ]);
     }
 
@@ -95,6 +96,7 @@ class RegisterController extends Controller
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'jobid' => $data['jobid'],
             'password' => bcrypt($data['password']),
             'userrole' => $data['userrole'],
             'gender' => $data['gender'],

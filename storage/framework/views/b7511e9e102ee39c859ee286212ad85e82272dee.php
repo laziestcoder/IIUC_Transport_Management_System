@@ -9,28 +9,50 @@
                     <div class="nextBus-info">
                         <table class="table table-responsive-lg">
                             <thead>
-                            <td colspan="4">
+                            <tr><td colspan="4">
                                 <div class="nextBus-title">
-                                    NEXT BUS
+                                    NEXT BUS ( Today :  <?php echo e(\Carbon\Carbon::now()->format('l')); ?>)
                                 </div>
-                            </td>
+                            </td></tr>
+
                             <tr>
-                                <td>Direction</td>
-                                <td>Male</td>
-                                <td>Female</td>
+                                <td>Station From</td>
+                                <td>Station To</td>
+                                <td>Time</td>
                             </tr>
                             </thead>
                             <tbody>
+                            <tr><td colspan="4">
+                                    <div class="nextBus-title" style="text-align: left;">
+                                        <i>MALE</i>
+                                    </div>
+                                </td></tr>
                             <tr>
-
-                                <td>Towards University</td>
-                                <td>12:30 PM</td>
-                                <td>01:30 pm</td>
+                                <td><?php echo e($fromRouteM); ?></td>
+                                <td><?php echo e("IIUC CAMPUS"); ?></td>
+                                <td><?php echo e($toIIUCMale); ?></td>
                             </tr>
+
                             <tr>
-                                <td>Towards City</td>
-                                <td>09:00 AM</td>
-                                <td>08:00 AM</td>
+                                <td><?php echo e("IIUC CAMPUS"); ?></td>
+                                <td><?php echo e($toRouteM); ?></td>
+                                <td><?php echo e($toCityMale); ?></td>
+                            </tr>
+                            <tr><td colspan="4">
+                                    <div class="nextBus-title" style="text-align: left;">
+                                        <i>FEMALE</i>
+                                    </div>
+                                </td></tr>
+                            <tr>
+                                <td><?php echo e($fromRouteF); ?></td>
+                                <td><?php echo e("IIUC CAMPUS"); ?></td>
+                                <td><?php echo e($toIIUCFemale); ?></td>
+                            </tr>
+
+                            <tr>
+                                <td><?php echo e("IIUC CAMPUS"); ?></td>
+                                <td><?php echo e($toRouteF); ?></td>
+                                <td><?php echo e($toCityFemale); ?></td>
                             </tr>
                             </tbody>
 
@@ -71,67 +93,15 @@
                                 </div>
                             </div>
                         </li>
+
                         <li class="timeline-inverted">
                             <div class="timeline-image">
-                                <!-- <img class="rounded-circle img-fluid" src="/storage/img/about/2.jpg" alt=""> -->
-                                <h4>12:30 pm<br>AK KHAN<br>Male</h4>
-                            </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4>March 2011</h4>
-                                    <h4 class="subheading">An Agency is Born</h4>
-                                </div>
-                                <div class="timeline-body">
-                                    <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt
-                                        ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam,
-                                        recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium
-                                        consectetur!</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline-image">
-                                <!-- <img class="rounded-circle img-fluid" src="/storage/img/about/3.jpg" alt=""> -->
-                                <h4>12:30 pm<br>ALL ROUTE<br>Female</h4>
-                            </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4>December 2012</h4>
-                                    <h4 class="subheading">Transition to Full Service</h4>
-                                </div>
-                                <div class="timeline-body">
-                                    <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt
-                                        ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam,
-                                        recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium
-                                        consectetur!</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="timeline-inverted">
-                            <div class="timeline-image">
-                                <!-- <img class="rounded-circle img-fluid" src="/storage/img/about/4.jpg" alt=""> -->
-                                <h4>12:30 pm<br>ALL ROUTE<br>Male</h4>
-                            </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4>July 2014</h4>
-                                    <h4 class="subheading">Phase Two Expansion</h4>
-                                </div>
-                                <div class="timeline-body">
-                                    <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt
-                                        ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam,
-                                        recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium
-                                        consectetur!</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="timeline-inverted">
-                            <div class="timeline-image">
-                                <h4>Be Part
+                                <h4>Have a
                                     <br>
-                                    Of Our
+                                    Safe
                                     <br>
-                                    Story!
+                                    Journey<br>
+                                    :)
                                 </h4>
                             </div>
                         </li>
@@ -154,51 +124,47 @@
             </div>
 
             <div class="row">
-                <?php if (count($notices) > 0): ?>
+                <?php if(count($notices) > 0): ?>
                     <?php $count = 0; ?>
-                    <?php $__currentLoopData = $notices;
-                    $__env->addLoop($__currentLoopData);
-                    foreach ($__currentLoopData as $notice): $__env->incrementLoopIndices();
-                        $loop = $__env->getLastLoop(); ?>
+                    <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <?php $count = $count + 1; ?>
-                        <?php if ($count <= 12): ?>
-                            <div class="col-md-3 col-md-3 portfolio-item">
-                                <a class="portfolio-link" data-toggle="modal"
-                                   href="#portfolioModal<?php echo e($count); ?>">
-                                    <div class="portfolio-hover">
-                                        <div class="portfolio-hover-content">
-                                            <i class="fa fa-plus fa-3x"></i>
-                                        </div>
+                        
+                        <div class="col-md-3 col-md-3 portfolio-item">
+                            <a class="portfolio-link" data-toggle="modal" href="#portfolioModal<?php echo e($count); ?>">
+                                <div class="portfolio-hover">
+                                    <div class="portfolio-hover-content">
+                                        <i class="fa fa-plus fa-3x"></i>
                                     </div>
-                                    <img class="img-fluid"
-                                         src="/storage/cover_images/<?php echo e($notice->cover_image); ?>"
-                                         alt="<?php echo e($notice->title); ?>"> </a>
-                                <div class="portfolio-caption">
-                                    <h4><?php echo e($notice->title); ?></h4>
-                                    <small>
-                                        <p class="text-muted">
-                                            Posted By:
-                                            <i>
-                                                <?php echo e(DB::table('admin_users')->where('id', $notice->user_id)->first()->name); ?>
-
-                                            </i><br>
-                                            Posted At: <?php echo e($notice->created_at); ?>
-
-                                        </p>
-                                    </small>
                                 </div>
-                            </div>
+                                <img class="img-fluid" src="/storage/cover_images/<?php echo e($notice->cover_image); ?>"
+                                     alt="<?php echo e($notice->title); ?>"> </a>
+                            <div class="portfolio-caption">
+                                <h4><?php echo e($notice->title); ?></h4>
+                                <small>
+                                    <p class="text-muted">
+                                        Posted By:
+                                        <i>
+                                            <?php echo e(DB::table('admin_users')->where('id', $notice->user_id)->first()->name); ?>
 
-                        <?php else: ?>
-                            <?php break; ?>
-                        <?php endif; ?>
-                    <?php endforeach;
-                    $__env->popLoop();
-                    $loop = $__env->getLastLoop(); ?>
+                                        </i><br>
+                                        Posted At: <?php echo e($notice->created_at); ?>
+
+                                    </p>
+                                </small>
+                            </div>
+                        </div>
+
+                        
+                        
+                        
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 <?php else: ?>
                     <h4>No notices found</h4>
                 <?php endif; ?>
+
             </div>
+            <?php echo e($notices->links()); ?>
+
         </div>
     </section>
 
@@ -246,62 +212,16 @@
     <!-- Team -->
 
 
+
     <section class="bg-light">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2 id="about" class="section-heading text-uppercase">Our Amazing Developers</h2>
-                    <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
+                    <h2 id="about" class="section-heading text-uppercase">Developed By</h2>
+                    <!-- <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3> -->
                 </div>
             </div>
-            <!-- <div class="col-sm-6">
-                <div class="team-member">
-                    <img class="mx-auto rounded-circle" src="/storage/img/team/3.jpg" alt=""></img>
-                    <h4>Mohammed Shamsul Alam </h4>
-                    <p class="text-muted">Supervisor</p>
-                    <ul class="list-inline social-buttons">
-                        <li class="list-inline-item">
-                            <a href="#">
-                                <i class="fa fa-twitter"></i>
-                            </a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="#">
-                                <i class="fa fa-facebook"></i>
-                            </a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="#">
-                                <i class="fa fa-linkedin"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="team-member">
-                    <img class="mx-auto rounded-circle" src="/storage/img/team/3.jpg" alt=""></img>
-                    <h4>Soyeb Chowdhury </h4>
-                    <p class="text-muted">Co-Supervisor</p>
-                    <ul class="list-inline social-buttons">
-                        <li class="list-inline-item">
-                            <a href="#">
-                                <i class="fa fa-twitter"></i>
-                            </a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="#">
-                                <i class="fa fa-facebook"></i>
-                            </a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="#">
-                                <i class="fa fa-linkedin"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div> -->
+
             <div class="col-sm-6">
                 <div class="team-member">
                     <img class="mx-auto rounded-circle" src="/storage/img/team/1.jpg" alt="Towfiqul Islam">
@@ -375,35 +295,6 @@
 
     </section>
 
-    <!-- Clients -->
-
-    <section class="py-5">
-        <!-- <div class="container">
-            <div class="row">
-                <div class="col-md-3 col-sm-6">
-                    <a href="#">
-                        <img class="img-fluid d-block mx-auto" src="/storage/img/logos/envato.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-md-3 col-sm-6">
-                    <a href="#">
-                        <img class="img-fluid d-block mx-auto" src="/storage/img/logos/designmodo.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-md-3 col-sm-6">
-                    <a href="#">
-                        <img class="img-fluid d-block mx-auto" src="/storage/img/logos/themeforest.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-md-3 col-sm-6">
-                    <a href="#">
-                        <img class="img-fluid d-block mx-auto" src="/storage/img/logos/creative-market.jpg" alt="">
-                    </a>
-                </div>
-            </div>
-        </div> -->
-    </section>
-
 
     <!-- Contact -->
 
@@ -458,19 +349,16 @@
     </section>
 
 
+
     <!-- Portfolio Modals -->
 
     <!-- Modal 1 -->
-<?php if (count($notices) > 0): ?>
-    <?php $count = 0; ?>
-    <?php $__currentLoopData = $notices;
-    $__env->addLoop($__currentLoopData);
-    foreach ($__currentLoopData as $notice): $__env->incrementLoopIndices();
-        $loop = $__env->getLastLoop(); ?>
-        <?php $count = $count + 1; ?>
-        <?php if ($count <= 12): ?>
-            <div class="portfolio-modal modal fade" id="portfolioModal<?php echo e($count); ?>" tabindex="-1"
-                 role="dialog"
+    <?php if(count($notices) > 0): ?>
+        <?php $count = 0; ?>
+        <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php $count = $count + 1; ?>
+            
+            <div class="portfolio-modal modal fade" id="portfolioModal<?php echo e($count); ?>" tabindex="-1" role="dialog"
                  aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -504,8 +392,8 @@
 
                                                 </small>
                                             </li>
-
-
+                                            
+                                            
                                         </ul>
                                         <button class="btn btn-primary" data-dismiss="modal" type="button">
                                             <i class="fa fa-times"></i>
@@ -518,13 +406,11 @@
                     </div>
                 </div>
             </div>
-        <?php else: ?>
-            <?php break; ?>
-        <?php endif; ?>
-    <?php endforeach;
-    $__env->popLoop();
-    $loop = $__env->getLastLoop(); ?>
-<?php endif; ?>
+            
+            
+            
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php endif; ?>
 <?php $__env->stopSection(); ?>
 
 

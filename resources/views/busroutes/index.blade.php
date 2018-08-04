@@ -14,7 +14,7 @@
         <h1>{{$titleinfo}}</h1>
         @if(count($BusRoutes) > 0)
             <table class="table table-hover">
-                <thead>
+                <thead class="table">
                 <tr>
                     <th>No</th>
                     <th>Route Name</th>
@@ -26,7 +26,7 @@
                     <th>Total Capacity</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="table">
                 <?php $flag = 0; ?>
                 @foreach($BusRoutes as $route)
                     <tr> <?php $bus = 0; $studentSum = 0; $seat = 0;?>

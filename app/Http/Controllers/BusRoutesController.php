@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\BusRoute;
+use App\BusStudentInfo;
 use DB;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
@@ -28,7 +29,7 @@ class BusRoutesController extends Controller
     public function index()
     {
         //$BusRoutes =  BusRoute::orderBy('routename')->paginate(20);
-        $BusRoutes = DB::table('bus_student_information')->paginate(25);
+        $BusRoutes = BusStudentInfo::orderBy('id')->paginate(15);
         $data = array(
             'title' => 'Bus Route Info',
             'titleinfo' => 'Route wise Bus and Student information',
@@ -44,7 +45,7 @@ class BusRoutesController extends Controller
      */
     public function create()
     {
-        $BusRoutes = BusRoute::orderBy('routename')->paginate(20);
+        $BusRoutes = BusRoute::orderBy('routename')->paginate(15);
         $data = array(
             'title' => 'Add Bus Route',
             'BusRoutes' => $BusRoutes,
@@ -87,14 +88,15 @@ class BusRoutesController extends Controller
      */
     public function show($id)
     {
-        $BusRoute = DB::table('bus_student_information')->where('routeid', $id)->paginate(20);
-        $name = DB::table('routes')->where('id', $id)->first()->routename;
+        $BusStudents = BusStudentInfo::where('routeid', $id)->paginate(15);
+        $routeName = BusRoute::where('id', $id)->first()->routename;
         $data = array(
             'title' => 'Bus Route Info',
-            'titleinfo' => 'Details Route Info for "' . $name . '"',
-            'BusRoute' => $BusRoute,
+            'titleinfo' => 'Details Route Info for "' . $routeName . '"',
+            'BusStudents' => $BusStudents,
+            'routeName' => $routeName,
         );
-        return view('busroutes.show')->with($data);
+        return redirect('/admin/auth/busroutes/show')->with($data);
     }
 
     /**
@@ -106,7 +108,7 @@ class BusRoutesController extends Controller
     public function edit($id)
     {
         $BusRoute = BusRoute::find($id);
-        $BusRoutes = BusRoute::orderBy('routename')->paginate(20);
+        $BusRoutes = BusRoute::orderBy('routename')->paginate(15);
         $data = array(
             'title' => 'Edit Bus Route',
             'titleinfo' => 'Available Bus Routes',
@@ -166,9 +168,9 @@ class BusRoutesController extends Controller
 
         //Check for correct user
 
-        if (Admin::user()->id !== $BusRoute->user_id) {
-            return redirect('/admin/auth/routes/create/')->with('error', 'Unauthorized Access Denied!');
-        }
+//        if (Admin::user()->id !== $BusRoute->user_id) {
+//            return redirect('/admin/auth/routes/create/')->with('error', 'Unauthorized Access Denied!');
+//        }
         /* if($BusRoute->cover_image != 'noimage.jpeg' ){
             //Delete Image From Windows Directory
             Storage::delete('public/cover_images/'.$BusRoute->cover_image);

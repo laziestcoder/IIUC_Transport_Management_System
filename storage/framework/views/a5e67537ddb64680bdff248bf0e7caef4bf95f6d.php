@@ -7,7 +7,7 @@
 </head>
 <body>
 <style>
-    @media only screen and (max-width: 600px) {
+    @media  only screen and (max-width: 600px) {
         .inner-body {
             width: 100% !important;
         }
@@ -17,7 +17,7 @@
         }
     }
 
-    @media only screen and (max-width: 500px) {
+    @media  only screen and (max-width: 500px) {
         .button {
             width: 100% !important;
         }
@@ -28,10 +28,10 @@
     <tr>
         <td align="center">
             <table class="content" width="100%" cellpadding="0" cellspacing="0">
-                <?php echo e($header ?? ''); ?>
+            <?php echo e($header ?? ''); ?>
 
 
-                <!-- Email Body -->
+            <!-- Email Body -->
                 <tr>
                     <td class="body" width="100%" cellpadding="0" cellspacing="0">
                         <table class="inner-body" align="center" width="570" cellpadding="0" cellspacing="0">

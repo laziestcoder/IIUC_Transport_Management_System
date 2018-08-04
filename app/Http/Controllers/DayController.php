@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Day;
+use Encore\Admin\Facades\Admin;
+use DB;
 
 class DayController extends Controller
 {
@@ -24,7 +27,13 @@ class DayController extends Controller
      */
     public function index()
     {
-        return(view("businfo.index"));
+        $data = array(
+            'title' => 'Bus Day Information',
+            'titleinfo' => 'Available Bus Day',
+            'newday' => 'Add Bus Day',
+            'days' => Day::orderBy('id')->paginate(15),
+        );
+        return view('schedule.day')->with($data);
     }
 
     /**
@@ -45,7 +54,23 @@ class DayController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'day' => 'required|string',
+        ]);
+
+        //Create BusRoute
+        $day = new Day;
+        $day->dayname = $request->input('day');
+//        $day->user_id = Admin::user()->id;
+        $day->save();
+        $name = $day->dayname;
+        $data = array(
+//            'newday' => 'Add Bus Day',
+            'success' => $name.' => Bus Day Added Successfully!'
+        );
+
+        return redirect('/admin/auth/newday')->with($data);
+        //return redirect('/admin/auth/routes/create')->with('success');
     }
 
     /**
@@ -90,6 +115,31 @@ class DayController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $day = Day::find($id);
+
+        //Check for correct user
+
+//        if (Admin::user()->id !== $day->user_id) {
+//            return redirect('/admin/auth/addtime')->with('error', 'Unauthorized Access Denied!');
+//        }
+        /* if($BusRoute->cover_image != 'noimage.jpeg' ){
+            //Delete Image From Windows Directory
+            Storage::delete('public/cover_images/'.$BusRoute->cover_image);
+        } */
+
+        // Check other Tables if the time is used
+        $points = null;
+        $name =$day->dayname;
+        if (!$points && $points) {
+            if ($points->routeid == $id) {
+                return redirect('/admin/auth/addtime')->with('error', '"' . $name . '" => This Bus Route has assigned one or more bus stop point. Delete all bus stop point related to the route. Then delete the route.');
+            } else {
+                return redirect('/admin/auth/addtime')->with('error', '"' . $name . '" => Something went worng!!');
+
+            }
+        } else {
+            $day->delete();
+            return redirect('/admin/auth/newday')->with('success', '" ' . $name . ' " => Bus Day Removed Successfully!');
+        }
     }
 }

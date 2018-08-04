@@ -35,8 +35,9 @@ class NoticesController extends Controller
         // $posts =  Post::orderBy('id','desc')->take(1)->get();
         // $posts =  Post::orderBy('id','desc')->get();
         $title = 'Notices';
-        $notices = Notice::orderBy('id', 'desc')->paginate(25);
-        $description = "";
+        $notices = Notice::orderBy('id', 'desc')->paginate(15);
+        $description = "Here you will be able to read and edit notices. You can also delete unnecessary notice. To publish new notice
+        click the button \"New Notice\"";
 
         $message = array(
             'title' => $title,
@@ -98,7 +99,7 @@ class NoticesController extends Controller
         }
 
         //Create notice
-        $notice = new notice;
+        $notice = new Notice;
         $notice->title = $request->input('title');
         $notice->body = $request->input('body');
         $notice->user_id = Admin::user()->id;
@@ -211,34 +212,35 @@ class NoticesController extends Controller
 
         //Check for correct user
 
-        if (Admin::user()->id !== $notice->user_id) {
+        if ((Admin::user()->id == $notice->user_id)||(DB::table('admin_role_users')->where('user_id',(Admin::user()->id))->first()->role_id <= 4)) {
+            if ($notice->cover_image != 'noimage.jpeg') {
+                //Delete Image From Windows Directory
+                Storage::delete('public/cover_images/' . $notice->cover_image);
+            }
+
+            $notice->delete();
             $message = array(
                 'title' => '',
                 'notices' => '',
                 'description' => '',
-                'error' => 'Unauthorized Access Denied!',
-                'message' => 'Unauthorized Access Denied!'
+                'success' => 'Notice Removed Successfully!',
+                //'message' => 'Notice Removed Successfully!'
 
             );
-            //return redirect('/admin/auth/notices')->with('error', 'Unauthorized Access Denied!');
+            //return redirect('/admin/auth/notices')->with('success', 'Notice Removed Successfully!');
             return redirect('/admin/auth/notices')->with($message);
-
-        }
-        if ($notice->cover_image != 'noimage.jpeg') {
-            //Delete Image From Windows Directory
-            Storage::delete('public/cover_images/' . $notice->cover_image);
         }
 
-        $notice->delete();
         $message = array(
             'title' => '',
             'notices' => '',
             'description' => '',
-            'success' => 'Notice Removed Successfully!',
-            'message' => 'Notice Removed Successfully!'
+            'error' => 'Unauthorized Access Denied!',
+            //'message' => 'Unauthorized Access Denied!'
 
         );
-        //return redirect('/admin/auth/notices')->with('success', 'Notice Removed Successfully!');
+        //return redirect('/admin/auth/notices')->with('error', 'Unauthorized Access Denied!');
         return redirect('/admin/auth/notices')->with($message);
+
     }
 }

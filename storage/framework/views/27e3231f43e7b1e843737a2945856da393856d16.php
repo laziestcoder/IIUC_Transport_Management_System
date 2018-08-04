@@ -23,7 +23,7 @@
                     </tr>
                     <tr>
                         <td>
-                            ID: <?php echo e(Auth::user()->id); ?>
+                            ID: <?php echo e(Auth::user()->jobid); ?>
 
                         </td>
 
