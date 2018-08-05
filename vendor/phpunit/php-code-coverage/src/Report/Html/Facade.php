@@ -41,10 +41,10 @@ final class Facade
 
     public function __construct(int $lowUpperBound = 50, int $highLowerBound = 90, string $generator = '')
     {
-        $this->generator = $generator;
+        $this->generator      = $generator;
         $this->highLowerBound = $highLowerBound;
-        $this->lowUpperBound = $lowUpperBound;
-        $this->templatePath = __DIR__ . '/Renderer/Template/';
+        $this->lowUpperBound  = $lowUpperBound;
+        $this->templatePath   = __DIR__ . '/Renderer/Template/';
     }
 
     /**
@@ -94,7 +94,7 @@ final class Facade
             $id = $node->getId();
 
             if ($node instanceof DirectoryNode) {
-                if (!@\mkdir($target . $id, 0777, true) && !\is_dir($target . $id)) {
+                if (!$this->createDirectory($target . $id)) {
                     throw new \RuntimeException(\sprintf('Directory "%s" was not created', $target . $id));
                 }
 
@@ -103,7 +103,7 @@ final class Facade
             } else {
                 $dir = \dirname($target . $id);
 
-                if (!@\mkdir($dir, 0777, true) && !\is_dir($dir)) {
+                if (!$this->createDirectory($dir)) {
                     throw new \RuntimeException(\sprintf('Directory "%s" was not created', $dir));
                 }
 
@@ -112,27 +112,6 @@ final class Facade
         }
 
         $this->copyFiles($target);
-    }
-
-    /**
-     * @throws RuntimeException
-     */
-    private function getDirectory(string $directory): string
-    {
-        if (\substr($directory, -1, 1) != DIRECTORY_SEPARATOR) {
-            $directory .= DIRECTORY_SEPARATOR;
-        }
-
-        if (!@\mkdir($directory, 0777, true) && !\is_dir($directory)) {
-            throw new RuntimeException(
-                \sprintf(
-                    'Directory "%s" does not exist.',
-                    $directory
-                )
-            );
-        }
-
-        return $directory;
     }
 
     /**
@@ -154,6 +133,7 @@ final class Facade
 
         \copy($this->templatePath . 'css/nv.d3.min.css', $dir . 'nv.d3.min.css');
         \copy($this->templatePath . 'css/style.css', $dir . 'style.css');
+        \copy($this->templatePath . 'css/custom.css', $dir . 'custom.css');
 
         $dir = $this->getDirectory($target . '.fonts');
         \copy($this->templatePath . 'fonts/glyphicons-halflings-regular.eot', $dir . 'glyphicons-halflings-regular.eot');
@@ -171,5 +151,31 @@ final class Facade
         \copy($this->templatePath . 'js/nv.d3.min.js', $dir . 'nv.d3.min.js');
         \copy($this->templatePath . 'js/respond.min.js', $dir . 'respond.min.js');
         \copy($this->templatePath . 'js/file.js', $dir . 'file.js');
+    }
+
+    /**
+     * @throws RuntimeException
+     */
+    private function getDirectory(string $directory): string
+    {
+        if (\substr($directory, -1, 1) != DIRECTORY_SEPARATOR) {
+            $directory .= DIRECTORY_SEPARATOR;
+        }
+
+        if (!$this->createDirectory($directory)) {
+            throw new RuntimeException(
+                \sprintf(
+                    'Directory "%s" does not exist.',
+                    $directory
+                )
+            );
+        }
+
+        return $directory;
+    }
+
+    private function createDirectory(string $directory): bool
+    {
+        return !(!\is_dir($directory) && !@\mkdir($directory, 0777, true) && !\is_dir($directory));
     }
 }

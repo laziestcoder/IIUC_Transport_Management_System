@@ -16,17 +16,7 @@ require_once __DIR__ . '/CodeTestAbstract.php';
 
 class PrettyPrinterTest extends CodeTestAbstract
 {
-    /**
-     * @dataProvider provideTestPrettyPrint
-     * @covers       \PhpParser\PrettyPrinter\Standard<extended>
-     */
-    public function testPrettyPrint($name, $code, $expected, $mode)
-    {
-        $this->doTestPrettyPrintMethod('prettyPrint', $name, $code, $expected, $mode);
-    }
-
-    protected function doTestPrettyPrintMethod($method, $name, $code, $expected, $modeLine)
-    {
+    protected function doTestPrettyPrintMethod($method, $name, $code, $expected, $modeLine) {
         $lexer = new Lexer\Emulative;
         $parser5 = new Parser\Php5($lexer);
         $parser7 = new Parser\Php7($lexer);
@@ -64,35 +54,31 @@ class PrettyPrinterTest extends CodeTestAbstract
         }
     }
 
-    private function parseModeLine($modeLine)
-    {
-        $parts = explode(' ', (string)$modeLine, 2);
-        $version = $parts[0] ?? 'both';
-        $options = isset($parts[1]) ? json_decode($parts[1], true) : [];
-        return [$version, $options];
+    /**
+     * @dataProvider provideTestPrettyPrint
+     * @covers \PhpParser\PrettyPrinter\Standard<extended>
+     */
+    public function testPrettyPrint($name, $code, $expected, $mode) {
+        $this->doTestPrettyPrintMethod('prettyPrint', $name, $code, $expected, $mode);
     }
 
     /**
      * @dataProvider provideTestPrettyPrintFile
-     * @covers       \PhpParser\PrettyPrinter\Standard<extended>
+     * @covers \PhpParser\PrettyPrinter\Standard<extended>
      */
-    public function testPrettyPrintFile($name, $code, $expected, $mode)
-    {
+    public function testPrettyPrintFile($name, $code, $expected, $mode) {
         $this->doTestPrettyPrintMethod('prettyPrintFile', $name, $code, $expected, $mode);
     }
 
-    public function provideTestPrettyPrint()
-    {
+    public function provideTestPrettyPrint() {
         return $this->getTests(__DIR__ . '/../code/prettyPrinter', 'test');
     }
 
-    public function provideTestPrettyPrintFile()
-    {
+    public function provideTestPrettyPrintFile() {
         return $this->getTests(__DIR__ . '/../code/prettyPrinter', 'file-test');
     }
 
-    public function testPrettyPrintExpr()
-    {
+    public function testPrettyPrintExpr() {
         $prettyPrinter = new Standard;
         $expr = new Expr\BinaryOp\Mul(
             new Expr\BinaryOp\Plus(new Expr\Variable('a'), new Expr\Variable('b')),
@@ -106,8 +92,7 @@ class PrettyPrinterTest extends CodeTestAbstract
         $this->assertEquals("function () {\n    return 'a\nb';\n}", $prettyPrinter->prettyPrintExpr($expr));
     }
 
-    public function testCommentBeforeInlineHTML()
-    {
+    public function testCommentBeforeInlineHTML() {
         $prettyPrinter = new PrettyPrinter\Standard;
         $comment = new Comment\Doc("/**\n * This is a comment\n */");
         $stmts = [new Stmt\InlineHTML('Hello World!', ['comments' => [$comment]])];
@@ -115,8 +100,14 @@ class PrettyPrinterTest extends CodeTestAbstract
         $this->assertSame($expected, $prettyPrinter->prettyPrintFile($stmts));
     }
 
-    public function testArraySyntaxDefault()
-    {
+    private function parseModeLine($modeLine) {
+        $parts = explode(' ', (string) $modeLine, 2);
+        $version = $parts[0] ?? 'both';
+        $options = isset($parts[1]) ? json_decode($parts[1], true) : [];
+        return [$version, $options];
+    }
+
+    public function testArraySyntaxDefault() {
         $prettyPrinter = new Standard(['shortArraySyntax' => true]);
         $expr = new Expr\Array_([
             new Expr\ArrayItem(new String_('val'), new String_('key'))
@@ -128,15 +119,13 @@ class PrettyPrinterTest extends CodeTestAbstract
     /**
      * @dataProvider provideTestKindAttributes
      */
-    public function testKindAttributes($node, $expected)
-    {
+    public function testKindAttributes($node, $expected) {
         $prttyPrinter = new PrettyPrinter\Standard;
         $result = $prttyPrinter->prettyPrintExpr($node);
         $this->assertSame($expected, $result);
     }
 
-    public function provideTestKindAttributes()
-    {
+    public function provideTestKindAttributes() {
         $nowdoc = ['kind' => String_::KIND_NOWDOC, 'docLabel' => 'STR'];
         $heredoc = ['kind' => String_::KIND_HEREDOC, 'docLabel' => 'STR'];
         return [
@@ -176,15 +165,13 @@ class PrettyPrinterTest extends CodeTestAbstract
     }
 
     /** @dataProvider provideTestUnnaturalLiterals */
-    public function testUnnaturalLiterals($node, $expected)
-    {
+    public function testUnnaturalLiterals($node, $expected) {
         $prttyPrinter = new PrettyPrinter\Standard;
         $result = $prttyPrinter->prettyPrintExpr($node);
         $this->assertSame($expected, $result);
     }
 
-    public function provideTestUnnaturalLiterals()
-    {
+    public function provideTestUnnaturalLiterals() {
         return [
             [new LNumber(-1), '-1'],
             [new LNumber(-PHP_INT_MAX - 1), '(-' . PHP_INT_MAX . '-1)'],
@@ -201,8 +188,7 @@ class PrettyPrinterTest extends CodeTestAbstract
      * @expectedException \LogicException
      * @expectedExceptionMessage Cannot pretty-print AST with Error nodes
      */
-    public function testPrettyPrintWithError()
-    {
+    public function testPrettyPrintWithError() {
         $stmts = [new Stmt\Expression(
             new Expr\PropertyFetch(new Expr\Variable('a'), new Expr\Error())
         )];
@@ -214,8 +200,7 @@ class PrettyPrinterTest extends CodeTestAbstract
      * @expectedException \LogicException
      * @expectedExceptionMessage Cannot pretty-print AST with Error nodes
      */
-    public function testPrettyPrintWithErrorInClassConstFetch()
-    {
+    public function testPrettyPrintWithErrorInClassConstFetch() {
         $stmts = [new Stmt\Expression(
             new Expr\ClassConstFetch(new Name('Foo'), new Expr\Error())
         )];
@@ -224,11 +209,20 @@ class PrettyPrinterTest extends CodeTestAbstract
     }
 
     /**
-     * @dataProvider provideTestFormatPreservingPrint
-     * @covers       \PhpParser\PrettyPrinter\Standard<extended>
+     * @expectedException \LogicException
+     * @expectedExceptionMessage Cannot directly print EncapsedStringPart
      */
-    public function testFormatPreservingPrint($name, $code, $modification, $expected, $modeLine)
-    {
+    public function testPrettyPrintEncapsedStringPart() {
+        $expr = new Node\Scalar\EncapsedStringPart('foo');
+        $prettyPrinter = new PrettyPrinter\Standard;
+        $prettyPrinter->prettyPrintExpr($expr);
+    }
+
+    /**
+     * @dataProvider provideTestFormatPreservingPrint
+     * @covers \PhpParser\PrettyPrinter\Standard<extended>
+     */
+    public function testFormatPreservingPrint($name, $code, $modification, $expected, $modeLine) {
         $lexer = new Lexer\Emulative([
             'usedAttributes' => [
                 'comments',
@@ -264,17 +258,15 @@ CODE
         $this->assertSame(canonicalize($expected), canonicalize($newCode), $name);
     }
 
-    public function provideTestFormatPreservingPrint()
-    {
+    public function provideTestFormatPreservingPrint() {
         return $this->getTests(__DIR__ . '/../code/formatPreservation', 'test', 3);
     }
 
     /**
      * @dataProvider provideTestRoundTripPrint
-     * @covers       \PhpParser\PrettyPrinter\Standard<extended>
+     * @covers \PhpParser\PrettyPrinter\Standard<extended>
      */
-    public function testRoundTripPrint($name, $code, $expected, $modeLine)
-    {
+    public function testRoundTripPrint($name, $code, $expected, $modeLine) {
         /**
          * This test makes sure that the format-preserving pretty printer round-trips for all
          * the pretty printer tests (i.e. returns the input if no changes occurred).
@@ -314,8 +306,7 @@ CODE
         $this->assertSame(canonicalize($code), canonicalize($newCode), $name);
     }
 
-    public function provideTestRoundTripPrint()
-    {
+    public function provideTestRoundTripPrint() {
         return array_merge(
             $this->getTests(__DIR__ . '/../code/prettyPrinter', 'test'),
             $this->getTests(__DIR__ . '/../code/parser', 'test')

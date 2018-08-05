@@ -29,6 +29,36 @@ class PermissionController extends Controller
     }
 
     /**
+     * Edit interface.
+     *
+     * @param $id
+     *
+     * @return Content
+     */
+    public function edit($id)
+    {
+        return Admin::content(function (Content $content) use ($id) {
+            $content->header(trans('admin.permissions'));
+            $content->description(trans('admin.edit'));
+            $content->body($this->form()->edit($id));
+        });
+    }
+
+    /**
+     * Create interface.
+     *
+     * @return Content
+     */
+    public function create()
+    {
+        return Admin::content(function (Content $content) {
+            $content->header(trans('admin.permissions'));
+            $content->description(trans('admin.create'));
+            $content->body($this->form());
+        });
+    }
+
+    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -55,7 +85,7 @@ class PermissionController extends Controller
                         return "<span class='label label-primary'>{$name}</span>";
                     })->implode('&nbsp;');
 
-                    $path = '/' . trim(config('admin.route.prefix'), '/') . $path;
+                    $path = '/'.trim(config('admin.route.prefix'), '/').$path;
 
                     return "<div style='margin-bottom: 5px;'>$method<code>$path</code></div>";
                 })->implode('');
@@ -69,22 +99,6 @@ class PermissionController extends Controller
                     $actions->disableDelete();
                 });
             });
-        });
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param $id
-     *
-     * @return Content
-     */
-    public function edit($id)
-    {
-        return Admin::content(function (Content $content) use ($id) {
-            $content->header(trans('admin.permissions'));
-            $content->description(trans('admin.edit'));
-            $content->body($this->form()->edit($id));
         });
     }
 
@@ -119,19 +133,5 @@ class PermissionController extends Controller
     protected function getHttpMethodsOptions()
     {
         return array_combine(Permission::$httpMethods, Permission::$httpMethods);
-    }
-
-    /**
-     * Create interface.
-     *
-     * @return Content
-     */
-    public function create()
-    {
-        return Admin::content(function (Content $content) {
-            $content->header(trans('admin.permissions'));
-            $content->description(trans('admin.create'));
-            $content->body($this->form());
-        });
     }
 }

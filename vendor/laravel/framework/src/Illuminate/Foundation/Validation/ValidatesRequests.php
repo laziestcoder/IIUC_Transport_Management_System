@@ -2,8 +2,8 @@
 
 namespace Illuminate\Foundation\Validation;
 
-use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Validation\ValidationException;
 
 trait ValidatesRequests
@@ -11,8 +11,8 @@ trait ValidatesRequests
     /**
      * Run the validation routine against the given validator.
      *
-     * @param  \Illuminate\Contracts\Validation\Validator|array $validator
-     * @param  \Illuminate\Http\Request|null $request
+     * @param  \Illuminate\Contracts\Validation\Validator|array  $validator
+     * @param  \Illuminate\Http\Request|null  $request
      * @return array
      */
     public function validateWith($validator, Request $request = null)
@@ -29,20 +29,29 @@ trait ValidatesRequests
     }
 
     /**
-     * Get a validation factory instance.
+     * Validate the given request with the given rules.
      *
-     * @return \Illuminate\Contracts\Validation\Factory
+     * @param  \Illuminate\Http\Request  $request
+     * @param  array  $rules
+     * @param  array  $messages
+     * @param  array  $customAttributes
+     * @return array
      */
-    protected function getValidationFactory()
+    public function validate(Request $request, array $rules,
+                             array $messages = [], array $customAttributes = [])
     {
-        return app(Factory::class);
+        $this->getValidationFactory()
+             ->make($request->all(), $rules, $messages, $customAttributes)
+             ->validate();
+
+        return $this->extractInputFromRules($request, $rules);
     }
 
     /**
      * Get the request input based on the given validation rules.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  array $rules
+     * @param  \Illuminate\Http\Request  $request
+     * @param  array  $rules
      * @return array
      */
     protected function extractInputFromRules(Request $request, array $rules)
@@ -55,11 +64,11 @@ trait ValidatesRequests
     /**
      * Validate the given request with the given rules.
      *
-     * @param  string $errorBag
-     * @param  \Illuminate\Http\Request $request
-     * @param  array $rules
-     * @param  array $messages
-     * @param  array $customAttributes
+     * @param  string  $errorBag
+     * @param  \Illuminate\Http\Request  $request
+     * @param  array  $rules
+     * @param  array  $messages
+     * @param  array  $customAttributes
      * @return array
      *
      * @throws \Illuminate\Validation\ValidationException
@@ -77,21 +86,12 @@ trait ValidatesRequests
     }
 
     /**
-     * Validate the given request with the given rules.
+     * Get a validation factory instance.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  array $rules
-     * @param  array $messages
-     * @param  array $customAttributes
-     * @return array
+     * @return \Illuminate\Contracts\Validation\Factory
      */
-    public function validate(Request $request, array $rules,
-                             array $messages = [], array $customAttributes = [])
+    protected function getValidationFactory()
     {
-        $this->getValidationFactory()
-            ->make($request->all(), $rules, $messages, $customAttributes)
-            ->validate();
-
-        return $this->extractInputFromRules($request, $rules);
+        return app(Factory::class);
     }
 }

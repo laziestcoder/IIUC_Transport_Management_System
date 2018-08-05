@@ -1,5 +1,4 @@
 <?php
-
 use PHPUnit\Framework\TestCase;
 
 class NamespaceCoveragePrivateTest extends TestCase

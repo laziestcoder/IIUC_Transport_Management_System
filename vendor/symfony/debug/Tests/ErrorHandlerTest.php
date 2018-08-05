@@ -122,7 +122,7 @@ class ErrorHandlerTest extends TestCase
     // dummy function to test trace in error handler.
     private static function triggerNotice($that)
     {
-        $that->assertSame('', $foo . $foo . $bar);
+        $that->assertSame('', $foo.$foo.$bar);
     }
 
     public function testConstruct()
@@ -231,7 +231,8 @@ class ErrorHandlerTest extends TestCase
             $logger
                 ->expects($this->once())
                 ->method('log')
-                ->will($this->returnCallback($warnArgCheck));
+                ->will($this->returnCallback($warnArgCheck))
+            ;
 
             $handler = ErrorHandler::register();
             $handler->setDefaultLogger($logger, E_USER_DEPRECATED);
@@ -258,7 +259,8 @@ class ErrorHandlerTest extends TestCase
             $logger
                 ->expects($this->once())
                 ->method('log')
-                ->will($this->returnCallback($logArgCheck));
+                ->will($this->returnCallback($logArgCheck))
+            ;
 
             $handler = ErrorHandler::register();
             $handler->setDefaultLogger($logger, E_NOTICE);
@@ -313,7 +315,8 @@ class ErrorHandlerTest extends TestCase
         $logger
             ->expects($this->once())
             ->method('log')
-            ->will($this->returnCallback($logArgCheck));
+            ->will($this->returnCallback($logArgCheck))
+        ;
 
         $handler = new ErrorHandler();
         $handler->setDefaultLogger($logger);
@@ -338,7 +341,8 @@ class ErrorHandlerTest extends TestCase
             $logger
                 ->expects($this->exactly(2))
                 ->method('log')
-                ->will($this->returnCallback($logArgCheck));
+                ->will($this->returnCallback($logArgCheck))
+            ;
 
             $handler->setDefaultLogger($logger, E_ERROR);
 
@@ -453,7 +457,8 @@ class ErrorHandlerTest extends TestCase
             $logger
                 ->expects($this->once())
                 ->method('log')
-                ->will($this->returnCallback($logArgCheck));
+                ->will($this->returnCallback($logArgCheck))
+            ;
 
             $handler->setDefaultLogger($logger, E_PARSE);
 
@@ -475,7 +480,7 @@ class ErrorHandlerTest extends TestCase
 
         $handler = new ErrorHandler();
         $handler->setExceptionHandler(function () use (&$args) {
-            $args = func_get_args();
+            $args = \func_get_args();
         });
 
         $handler->handleException($exception);

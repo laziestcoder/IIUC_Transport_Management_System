@@ -29,7 +29,7 @@ class Validator
     /**
      * Create a new validator instance.
      *
-     * @param array $variables
+     * @param array          $variables
      * @param \Dotenv\Loader $loader
      *
      * @return void
@@ -45,40 +45,6 @@ class Validator
             },
             'is missing'
         );
-    }
-
-    /**
-     * Assert that the callback returns true for each variable.
-     *
-     * @param callable $callback
-     * @param string $message
-     *
-     * @throws \Dotenv\Exception\InvalidCallbackException|\Dotenv\Exception\ValidationException
-     *
-     * @return \Dotenv\Validator
-     */
-    protected function assertCallback($callback, $message = 'failed callback assertion')
-    {
-        if (!is_callable($callback)) {
-            throw new InvalidCallbackException('The provided callback must be callable.');
-        }
-
-        $variablesFailingAssertion = array();
-        foreach ($this->variables as $variableName) {
-            $variableValue = $this->loader->getEnvironmentVariable($variableName);
-            if (call_user_func($callback, $variableValue) === false) {
-                $variablesFailingAssertion[] = $variableName . " $message";
-            }
-        }
-
-        if (count($variablesFailingAssertion) > 0) {
-            throw new ValidationException(sprintf(
-                'One or more environment variables failed assertions: %s.',
-                implode(', ', $variablesFailingAssertion)
-            ));
-        }
-
-        return $this;
     }
 
     /**
@@ -112,6 +78,25 @@ class Validator
     }
 
     /**
+     * Assert that each specified variable is a boolean.
+     *
+     * @return \Dotenv\Validator
+     */
+    public function isBoolean()
+    {
+        return $this->assertCallback(
+            function ($value) {
+                if ($value === '') {
+                    return false;
+                }
+
+                return (filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== NULL);
+            },
+            'is not a boolean'
+        );
+    }
+
+    /**
      * Assert that each variable is amongst the given choices.
      *
      * @param string[] $choices
@@ -126,5 +111,39 @@ class Validator
             },
             'is not an allowed value'
         );
+    }
+
+    /**
+     * Assert that the callback returns true for each variable.
+     *
+     * @param callable $callback
+     * @param string   $message
+     *
+     * @throws \Dotenv\Exception\InvalidCallbackException|\Dotenv\Exception\ValidationException
+     *
+     * @return \Dotenv\Validator
+     */
+    protected function assertCallback($callback, $message = 'failed callback assertion')
+    {
+        if (!is_callable($callback)) {
+            throw new InvalidCallbackException('The provided callback must be callable.');
+        }
+
+        $variablesFailingAssertion = array();
+        foreach ($this->variables as $variableName) {
+            $variableValue = $this->loader->getEnvironmentVariable($variableName);
+            if (call_user_func($callback, $variableValue) === false) {
+                $variablesFailingAssertion[] = $variableName." $message";
+            }
+        }
+
+        if (count($variablesFailingAssertion) > 0) {
+            throw new ValidationException(sprintf(
+                'One or more environment variables failed assertions: %s.',
+                implode(', ', $variablesFailingAssertion)
+            ));
+        }
+
+        return $this;
     }
 }

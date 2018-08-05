@@ -18,14 +18,14 @@ class BaseCommand extends Command
         // migrations may be run for any customized path from within the application.
         if ($this->input->hasOption('path') && $this->option('path')) {
             return collect($this->option('path'))->map(function ($path) {
-                return !$this->usingRealPath()
-                    ? $this->laravel->basePath() . '/' . $path
-                    : $path;
+                return ! $this->usingRealPath()
+                                ? $this->laravel->basePath().'/'.$path
+                                : $path;
             })->all();
         }
 
         return array_merge(
-            [$this->getMigrationPath()], $this->migrator->paths()
+            $this->migrator->paths(), [$this->getMigrationPath()]
         );
     }
 
@@ -46,6 +46,6 @@ class BaseCommand extends Command
      */
     protected function getMigrationPath()
     {
-        return $this->laravel->databasePath() . DIRECTORY_SEPARATOR . 'migrations';
+        return $this->laravel->databasePath().DIRECTORY_SEPARATOR.'migrations';
     }
 }

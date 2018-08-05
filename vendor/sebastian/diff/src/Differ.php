@@ -18,10 +18,10 @@ use SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
  */
 final class Differ
 {
-    public const OLD = 0;
-    public const ADDED = 1;
-    public const REMOVED = 2;
-    public const DIFF_LINE_END_WARNING = 3;
+    public const OLD                     = 0;
+    public const ADDED                   = 1;
+    public const REMOVED                 = 2;
+    public const DIFF_LINE_END_WARNING   = 3;
     public const NO_LINE_END_EOF_WARNING = 4;
 
     /**
@@ -58,8 +58,8 @@ final class Differ
     /**
      * Returns the diff between two arrays or strings as string.
      *
-     * @param array|string $from
-     * @param array|string $to
+     * @param array|string                            $from
+     * @param array|string                            $to
      * @param null|LongestCommonSubsequenceCalculator $lcs
      *
      * @return string
@@ -86,8 +86,8 @@ final class Differ
      * - 1: ADDED: $token was added to $from
      * - 0: OLD: $token is not changed in $to
      *
-     * @param array|string $from
-     * @param array|string $to
+     * @param array|string                       $from
+     * @param array|string                       $to
      * @param LongestCommonSubsequenceCalculator $lcs
      *
      * @return array
@@ -113,7 +113,7 @@ final class Differ
         }
 
         $common = $lcs->calculate(\array_values($from), \array_values($to));
-        $diff = [];
+        $diff   = [];
 
         foreach ($start as $token) {
             $diff[] = [$token, self::OLD];
@@ -157,6 +157,22 @@ final class Differ
     }
 
     /**
+     * Casts variable to string if it is not a string or array.
+     *
+     * @param mixed $input
+     *
+     * @return array|string
+     */
+    private function normalizeDiffInput($input)
+    {
+        if (!\is_array($input) && !\is_string($input)) {
+            return (string) $input;
+        }
+
+        return $input;
+    }
+
+    /**
      * Checks if input is string, if so it will split it line-by-line.
      *
      * @param string $input
@@ -166,46 +182,6 @@ final class Differ
     private function splitStringByLines(string $input): array
     {
         return \preg_split('/(.*\R)/', $input, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-    }
-
-    private static function getArrayDiffParted(array &$from, array &$to): array
-    {
-        $start = [];
-        $end = [];
-
-        \reset($to);
-
-        foreach ($from as $k => $v) {
-            $toK = \key($to);
-
-            if ($toK === $k && $v === $to[$k]) {
-                $start[$k] = $v;
-
-                unset($from[$k], $to[$k]);
-            } else {
-                break;
-            }
-        }
-
-        \end($from);
-        \end($to);
-
-        do {
-            $fromK = \key($from);
-            $toK = \key($to);
-
-            if (null === $fromK || null === $toK || \current($from) !== \current($to)) {
-                break;
-            }
-
-            \prev($from);
-            \prev($to);
-
-            $end = [$fromK => $from[$fromK]] + $end;
-            unset($from[$fromK], $to[$toK]);
-        } while (true);
-
-        return [$from, $to, $start, $end];
     }
 
     /**
@@ -258,7 +234,7 @@ final class Differ
 
         foreach ($diff as $entry) {
             if (self::OLD === $entry[1]) {
-                $ln = $this->getLinebreak($entry[0]);
+                $ln                 = $this->getLinebreak($entry[0]);
                 $oldLineBreaks[$ln] = true;
                 $newLineBreaks[$ln] = true;
             } elseif (self::ADDED === $entry[1]) {
@@ -296,6 +272,7 @@ final class Differ
         }
 
         $lc = \substr($line, -1);
+
         if ("\r" === $lc) {
             return "\r";
         }
@@ -311,19 +288,43 @@ final class Differ
         return "\n";
     }
 
-    /**
-     * Casts variable to string if it is not a string or array.
-     *
-     * @param mixed $input
-     *
-     * @return array|string
-     */
-    private function normalizeDiffInput($input)
+    private static function getArrayDiffParted(array &$from, array &$to): array
     {
-        if (!\is_array($input) && !\is_string($input)) {
-            return (string)$input;
+        $start = [];
+        $end   = [];
+
+        \reset($to);
+
+        foreach ($from as $k => $v) {
+            $toK = \key($to);
+
+            if ($toK === $k && $v === $to[$k]) {
+                $start[$k] = $v;
+
+                unset($from[$k], $to[$k]);
+            } else {
+                break;
+            }
         }
 
-        return $input;
+        \end($from);
+        \end($to);
+
+        do {
+            $fromK = \key($from);
+            $toK   = \key($to);
+
+            if (null === $fromK || null === $toK || \current($from) !== \current($to)) {
+                break;
+            }
+
+            \prev($from);
+            \prev($to);
+
+            $end = [$fromK => $from[$fromK]] + $end;
+            unset($from[$fromK], $to[$toK]);
+        } while (true);
+
+        return [$from, $to, $start, $end];
     }
 }

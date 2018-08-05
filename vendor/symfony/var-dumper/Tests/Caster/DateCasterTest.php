@@ -94,7 +94,7 @@ EODUMP;
      */
     public function testDumpInterval($intervalSpec, $ms, $invert, $expected)
     {
-        if ($ms && PHP_VERSION_ID >= 70200 && version_compare(PHP_VERSION, '7.2.0rc3', '<=')) {
+        if ($ms && \PHP_VERSION_ID >= 70200 && version_compare(PHP_VERSION, '7.2.0rc3', '<=')) {
             $this->markTestSkipped('Skipped on 7.2 before rc4 because of php bug #75354.');
         }
 
@@ -109,21 +109,12 @@ EODUMP;
         $this->assertDumpMatchesFormat($xDump, $interval);
     }
 
-    private function createInterval($intervalSpec, $ms, $invert)
-    {
-        $interval = new \DateInterval($intervalSpec);
-        $interval->f = $ms;
-        $interval->invert = $invert;
-
-        return $interval;
-    }
-
     /**
      * @dataProvider provideIntervals
      */
     public function testDumpIntervalExcludingVerbosity($intervalSpec, $ms, $invert, $expected)
     {
-        if ($ms && PHP_VERSION_ID >= 70200 && version_compare(PHP_VERSION, '7.2.0rc3', '<=')) {
+        if ($ms && \PHP_VERSION_ID >= 70200 && version_compare(PHP_VERSION, '7.2.0rc3', '<=')) {
             $this->markTestSkipped('Skipped on 7.2 before rc4 because of php bug #75354.');
         }
 
@@ -143,7 +134,7 @@ EODUMP;
      */
     public function testCastInterval($intervalSpec, $ms, $invert, $xInterval, $xSeconds)
     {
-        if ($ms && PHP_VERSION_ID >= 70200 && version_compare(PHP_VERSION, '7.2.0rc3', '<=')) {
+        if ($ms && \PHP_VERSION_ID >= 70200 && version_compare(PHP_VERSION, '7.2.0rc3', '<=')) {
             $this->markTestSkipped('Skipped on 7.2 before rc4 because of php bug #75354.');
         }
 
@@ -281,7 +272,7 @@ EODUMP;
 
     public function provideTimeZones()
     {
-        $xRegion = extension_loaded('intl') ? '%s' : '';
+        $xRegion = \extension_loaded('intl') ? '%s' : '';
 
         return array(
             // type 1 (UTC offset)
@@ -311,7 +302,7 @@ EODUMP;
      */
     public function testDumpPeriod($start, $interval, $end, $options, $expected)
     {
-        $p = new \DatePeriod(new \DateTime($start), new \DateInterval($interval), is_int($end) ? $end : new \DateTime($end), $options);
+        $p = new \DatePeriod(new \DateTime($start), new \DateInterval($interval), \is_int($end) ? $end : new \DateTime($end), $options);
 
         $xDump = <<<EODUMP
 DatePeriod {
@@ -327,7 +318,7 @@ EODUMP;
      */
     public function testCastPeriod($start, $interval, $end, $options, $xPeriod, $xDates)
     {
-        $p = new \DatePeriod(new \DateTime($start), new \DateInterval($interval), is_int($end) ? $end : new \DateTime($end), $options);
+        $p = new \DatePeriod(new \DateTime($start), new \DateInterval($interval), \is_int($end) ? $end : new \DateTime($end), $options);
         $stub = new Stub();
 
         $cast = DateCaster::castPeriod($p, array(), $stub, false, 0);
@@ -382,11 +373,18 @@ EODUMP;
         );
 
         if (\PHP_VERSION_ID < 70107) {
-            array_walk($periods, function (&$i) {
-                $i[5] = '';
-            });
+            array_walk($periods, function (&$i) { $i[5] = ''; });
         }
 
         return $periods;
+    }
+
+    private function createInterval($intervalSpec, $ms, $invert)
+    {
+        $interval = new \DateInterval($intervalSpec);
+        $interval->f = $ms;
+        $interval->invert = $invert;
+
+        return $interval;
     }
 }

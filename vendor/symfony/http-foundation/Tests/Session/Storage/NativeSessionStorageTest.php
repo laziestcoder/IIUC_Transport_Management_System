@@ -33,12 +33,24 @@ class NativeSessionStorageTest extends TestCase
 {
     private $savePath;
 
-    public function testBag()
+    protected function setUp()
     {
-        $storage = $this->getStorage();
-        $bag = new FlashBag();
-        $storage->registerBag($bag);
-        $this->assertSame($bag, $storage->getBag($bag->getName()));
+        $this->iniSet('session.save_handler', 'files');
+        $this->iniSet('session.save_path', $this->savePath = sys_get_temp_dir().'/sf2test');
+        if (!is_dir($this->savePath)) {
+            mkdir($this->savePath);
+        }
+    }
+
+    protected function tearDown()
+    {
+        session_write_close();
+        array_map('unlink', glob($this->savePath.'/*'));
+        if (is_dir($this->savePath)) {
+            rmdir($this->savePath);
+        }
+
+        $this->savePath = null;
     }
 
     /**
@@ -50,6 +62,14 @@ class NativeSessionStorageTest extends TestCase
         $storage->registerBag(new AttributeBag());
 
         return $storage;
+    }
+
+    public function testBag()
+    {
+        $storage = $this->getStorage();
+        $bag = new FlashBag();
+        $storage->registerBag($bag);
+        $this->assertSame($bag, $storage->getBag($bag->getName()));
     }
 
     /**
@@ -156,7 +176,7 @@ class NativeSessionStorageTest extends TestCase
         $gco = array();
 
         foreach ($temp as $key => $value) {
-            $gco['cookie_' . $key] = $value;
+            $gco['cookie_'.$key] = $value;
         }
 
         $this->assertEquals($options, $gco);
@@ -164,7 +184,7 @@ class NativeSessionStorageTest extends TestCase
 
     public function testSessionOptions()
     {
-        if (defined('HHVM_VERSION')) {
+        if (\defined('HHVM_VERSION')) {
             $this->markTestSkipped('HHVM is not handled in this test case.');
         }
 
@@ -270,25 +290,5 @@ class NativeSessionStorageTest extends TestCase
         $storage->registerBag($bag);
 
         $this->assertEquals($storage->getBag('flashes'), $bag);
-    }
-
-    protected function setUp()
-    {
-        $this->iniSet('session.save_handler', 'files');
-        $this->iniSet('session.save_path', $this->savePath = sys_get_temp_dir() . '/sf2test');
-        if (!is_dir($this->savePath)) {
-            mkdir($this->savePath);
-        }
-    }
-
-    protected function tearDown()
-    {
-        session_write_close();
-        array_map('unlink', glob($this->savePath . '/*'));
-        if (is_dir($this->savePath)) {
-            rmdir($this->savePath);
-        }
-
-        $this->savePath = null;
     }
 }

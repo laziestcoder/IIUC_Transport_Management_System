@@ -30,30 +30,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Get the guard to be used during authentication.
-     *
-     * @return \Illuminate\Contracts\Auth\StatefulGuard
-     */
-    protected function guard()
-    {
-        return Auth::guard('admin');
-    }
-
-    /**
-     * Get the post login redirect path.
-     *
-     * @return string
-     */
-    protected function redirectPath()
-    {
-        if (method_exists($this, 'redirectTo')) {
-            return $this->redirectTo();
-        }
-
-        return property_exists($this, 'redirectTo') ? $this->redirectTo : config('admin.route.prefix');
-    }
-
-    /**
      * Handle a login request.
      *
      * @param Request $request
@@ -66,8 +42,8 @@ class AuthController extends Controller
 
         /** @var \Illuminate\Validation\Validator $validator */
         $validator = Validator::make($credentials, [
-            $this->username() => 'required',
-            'password' => 'required',
+            $this->username()   => 'required',
+            'password'          => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -84,42 +60,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Get the login username to be used by the controller.
-     *
-     * @return string
-     */
-    protected function username()
-    {
-        return 'username';
-    }
-
-    /**
-     * Send the response after the user was authenticated.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\Response
-     */
-    protected function sendLoginResponse(Request $request)
-    {
-        admin_toastr(trans('admin.login_successful'));
-
-        $request->session()->regenerate();
-
-        return redirect()->intended($this->redirectPath());
-    }
-
-    /**
-     * @return string|\Symfony\Component\Translation\TranslatorInterface
-     */
-    protected function getFailedLoginMessage()
-    {
-        return Lang::has('auth.failed')
-            ? trans('auth.failed')
-            : 'These credentials do not match our records.';
-    }
-
-    /**
      * User logout.
      *
      * @return Redirect
@@ -130,9 +70,7 @@ class AuthController extends Controller
 
         $request->session()->invalidate();
 
-        //return redirect(config('admin.route.prefix')); // comented by ITMS Developer
-        config('admin.route.prefix'); //ITMS Developer Edited
-        return redirect('/'); // ITMS Developer Added
+        return redirect(config('admin.route.prefix'));
     }
 
     /**
@@ -153,6 +91,16 @@ class AuthController extends Controller
             );
             $content->body($form->edit(Admin::user()->id));
         });
+    }
+
+    /**
+     * Update user setting.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function putSetting()
+    {
+        return $this->settingForm()->update(Admin::user()->id);
     }
 
     /**
@@ -191,12 +139,62 @@ class AuthController extends Controller
     }
 
     /**
-     * Update user setting.
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return string|\Symfony\Component\Translation\TranslatorInterface
      */
-    public function putSetting()
+    protected function getFailedLoginMessage()
     {
-        return $this->settingForm()->update(Admin::user()->id);
+        return Lang::has('auth.failed')
+            ? trans('auth.failed')
+            : 'These credentials do not match our records.';
+    }
+
+    /**
+     * Get the post login redirect path.
+     *
+     * @return string
+     */
+    protected function redirectPath()
+    {
+        if (method_exists($this, 'redirectTo')) {
+            return $this->redirectTo();
+        }
+
+        return property_exists($this, 'redirectTo') ? $this->redirectTo : config('admin.route.prefix');
+    }
+
+    /**
+     * Send the response after the user was authenticated.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function sendLoginResponse(Request $request)
+    {
+        admin_toastr(trans('admin.login_successful'));
+
+        $request->session()->regenerate();
+
+        return redirect()->intended($this->redirectPath());
+    }
+
+    /**
+     * Get the login username to be used by the controller.
+     *
+     * @return string
+     */
+    protected function username()
+    {
+        return 'username';
+    }
+
+    /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+        return Auth::guard('admin');
     }
 }

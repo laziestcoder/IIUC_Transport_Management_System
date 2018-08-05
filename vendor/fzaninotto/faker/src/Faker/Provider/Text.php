@@ -7,9 +7,9 @@ abstract class Text extends Base
     protected static $baseText = '';
     protected static $separator = ' ';
     protected static $separatorLen = 1;
-    protected static $textStartsWithUppercase = true;
     protected $explodedText;
     protected $consecutiveWords = array();
+    protected static $textStartsWithUppercase = true;
 
     /**
      * Generate a text string by the Markov chain algorithm.
@@ -20,7 +20,7 @@ abstract class Text extends Base
      *
      * @example 'Alice, swallowing down her flamingo, and began by taking the little golden key'
      * @param integer $maxNbChars Maximum number of characters the text should contain (minimum: 10)
-     * @param integer $indexSize Determines how many words are considered for the generation of the next word.
+     * @param integer $indexSize  Determines how many words are considered for the generation of the next word.
      *                             The minimum is 1, and it produces the higher level of randomness, although the
      *                             generated text usually doesn't make sense. Higher index sizes (up to 5)
      *                             produce more correct text, at the price of less randomness.
@@ -120,6 +120,11 @@ abstract class Text extends Base
         return implode(static::$separator, $words);
     }
 
+    protected static function strlen($text)
+    {
+        return function_exists('mb_strlen') ? mb_strlen($text, 'UTF-8') : strlen($text);
+    }
+
     protected static function validStart($word)
     {
         $isValid = true;
@@ -129,13 +134,8 @@ abstract class Text extends Base
         return $isValid;
     }
 
-    protected static function strlen($text)
-    {
-        return function_exists('mb_strlen') ? mb_strlen($text, 'UTF-8') : strlen($text);
-    }
-
     protected static function appendEnd($text)
     {
-        return rtrim($text, ',— ') . '.';
+        return preg_replace("/([ ,-:;\x{2013}\x{2014}]+$)/us", '', $text).'.';
     }
 }

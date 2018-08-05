@@ -13,11 +13,11 @@ class CsvExporter extends AbstractExporter
      */
     public function export()
     {
-        $filename = $this->getTable() . '.csv';
+        $filename = $this->getTable().'.csv';
 
         $headers = [
-            'Content-Encoding' => 'UTF-8',
-            'Content-Type' => 'text/csv;charset=UTF-8',
+            'Content-Encoding'    => 'UTF-8',
+            'Content-Type'        => 'text/csv;charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"$filename\"",
         ];
 

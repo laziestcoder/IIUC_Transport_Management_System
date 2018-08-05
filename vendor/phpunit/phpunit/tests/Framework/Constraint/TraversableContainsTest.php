@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\ExpectationFailedException;
@@ -98,7 +97,7 @@ EOF
 
     public function testConstraintTraversableToStringMethodsWithStdClass(): void
     {
-        $object = new \stdClass;
+        $object     = new \stdClass;
         $constraint = new TraversableContains($object);
         $this->assertStringMatchesFormat('contains stdClass Object &%s ()', $constraint->toString());
     }
@@ -112,7 +111,7 @@ EOF
 
     public function testConstraintTraversableToStringMethodsWithSplObjectStorage(): void
     {
-        $object = new \stdClass;
+        $object     = new \stdClass;
         $constraint = new TraversableContains($object);
 
         $storage = new \SplObjectStorage;
@@ -124,7 +123,7 @@ EOF
 
     public function testConstraintTraversableStdClassForFailSplObjectStorage(): void
     {
-        $object = new \stdClass;
+        $object     = new \stdClass;
         $constraint = new TraversableContains($object);
 
         try {
@@ -147,7 +146,7 @@ EOF
 
     public function testConstraintTraversableStdClassForFailSplObjectStorageWithCustomMessage(): void
     {
-        $object = new \stdClass;
+        $object     = new \stdClass;
         $constraint = new TraversableContains($object);
 
         try {

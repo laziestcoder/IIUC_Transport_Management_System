@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 class IsJsonTest extends ConstraintTestCase
@@ -15,16 +14,13 @@ class IsJsonTest extends ConstraintTestCase
     public static function evaluateDataprovider()
     {
         return [
-            'valid JSON' => [true, '{}'],
+            'valid JSON'                                     => [true, '{}'],
             'empty string should be treated as invalid JSON' => [false, ''],
         ];
     }
 
     /**
      * @dataProvider evaluateDataprovider
-     *
-     * @param mixed $expected
-     * @param mixed $jsonOther
      *
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException

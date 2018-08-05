@@ -52,63 +52,6 @@ class Person extends \Faker\Provider\Person
     }
 
     /**
-     * Randomly return a icelandic Kennitala (Social Security number) format.
-     *
-     * @link http://en.wikipedia.org/wiki/Kennitala
-     *
-     * @return string
-     */
-    public static function ssn()
-    {
-        // random birth date
-        $birthdate = new \DateTime('@' . mt_rand(0, time()));
-
-        // last four buffer
-        $lastFour = null;
-
-        // security variable reference
-        $ref = '32765432';
-
-        // valid flag
-        $valid = false;
-
-        while (!$valid) {
-            // make two random numbers
-            $rand = static::randomDigit() . static::randomDigit();
-
-            // 8 char string with birth date and two random numbers
-            $tmp = $birthdate->format('dmy') . $rand;
-
-            // loop through temp string
-            for ($i = 7, $sum = 0; $i >= 0; $i--) {
-                // calculate security variable
-                $sum += ($tmp[$i] * $ref[$i]);
-            }
-
-            // subtract 11 if not 11
-            $chk = ($sum % 11 === 0) ? 0 : (11 - ($sum % 11));
-
-            if ($chk < 10) {
-                $lastFour = $rand . $chk . substr($birthdate->format('Y'), 1, 1);
-
-                $valid = true;
-            }
-        }
-
-        return sprintf('%s-%s', $birthdate->format('dmy'), $lastFour);
-    }
-
-    /**
-     * Randomly return a icelandic last name for woman.
-     *
-     * @return string
-     */
-    public function lastNameMale()
-    {
-        return $this->lastName() . 'son';
-    }
-
-    /**
      * Generate prepared last name for further processing
      *
      * @return string
@@ -129,12 +72,69 @@ class Person extends \Faker\Provider\Person
     }
 
     /**
+     * Randomly return a icelandic last name for woman.
+     *
+     * @return string
+     */
+    public function lastNameMale()
+    {
+        return $this->lastName().'son';
+    }
+
+    /**
      * Randomly return a icelandic last name for man.
      *
      * @return string
      */
     public function lastNameFemale()
     {
-        return $this->lastName() . 'dóttir';
+        return $this->lastName().'dóttir';
+    }
+
+    /**
+     * Randomly return a icelandic Kennitala (Social Security number) format.
+     *
+     * @link http://en.wikipedia.org/wiki/Kennitala
+     *
+     * @return string
+     */
+    public static function ssn()
+    {
+        // random birth date
+        $birthdate = new \DateTime('@' . mt_rand(0, time()));
+
+        // last four buffer
+        $lastFour = null;
+
+        // security variable reference
+        $ref = '32765432';
+
+        // valid flag
+        $valid = false;
+
+        while (! $valid) {
+            // make two random numbers
+            $rand = static::randomDigit().static::randomDigit();
+
+            // 8 char string with birth date and two random numbers
+            $tmp = $birthdate->format('dmy').$rand;
+
+            // loop through temp string
+            for ($i = 7, $sum = 0; $i >= 0; $i--) {
+                // calculate security variable
+                $sum += ($tmp[$i] * $ref[$i]);
+            }
+
+            // subtract 11 if not 11
+            $chk = ($sum % 11 === 0) ? 0 : (11 - ($sum % 11));
+
+            if ($chk < 10) {
+                $lastFour = $rand.$chk.substr($birthdate->format('Y'), 1, 1);
+
+                $valid = true;
+            }
+        }
+
+        return sprintf('%s-%s', $birthdate->format('dmy'), $lastFour);
     }
 }

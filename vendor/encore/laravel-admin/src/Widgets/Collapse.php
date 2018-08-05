@@ -21,7 +21,7 @@ class Collapse extends Widget implements Renderable
      */
     public function __construct()
     {
-        $this->id('accordion-' . uniqid());
+        $this->id('accordion-'.uniqid());
         $this->class('box-group');
         $this->style('margin-bottom: 20px');
     }
@@ -37,11 +37,20 @@ class Collapse extends Widget implements Renderable
     public function add($title, $content)
     {
         $this->items[] = [
-            'title' => $title,
+            'title'   => $title,
             'content' => $content,
         ];
 
         return $this;
+    }
+
+    protected function variables()
+    {
+        return [
+            'id'         => $this->id,
+            'items'      => $this->items,
+            'attributes' => $this->formatAttributes(),
+        ];
     }
 
     /**
@@ -52,14 +61,5 @@ class Collapse extends Widget implements Renderable
     public function render()
     {
         return view($this->view, $this->variables())->render();
-    }
-
-    protected function variables()
-    {
-        return [
-            'id' => $this->id,
-            'items' => $this->items,
-            'attributes' => $this->formatAttributes(),
-        ];
     }
 }

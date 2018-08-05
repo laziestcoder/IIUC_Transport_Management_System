@@ -27,6 +27,20 @@ class SymfonyStyleTest extends TestCase
     /** @var CommandTester */
     protected $tester;
 
+    protected function setUp()
+    {
+        putenv('COLUMNS=121');
+        $this->command = new Command('sfstyle');
+        $this->tester = new CommandTester($this->command);
+    }
+
+    protected function tearDown()
+    {
+        putenv('COLUMNS');
+        $this->command = null;
+        $this->tester = null;
+    }
+
     /**
      * @dataProvider inputCommandToOutputFilesProvider
      */
@@ -51,16 +65,16 @@ class SymfonyStyleTest extends TestCase
 
     public function inputInteractiveCommandToOutputFilesProvider()
     {
-        $baseDir = __DIR__ . '/../Fixtures/Style/SymfonyStyle';
+        $baseDir = __DIR__.'/../Fixtures/Style/SymfonyStyle';
 
-        return array_map(null, glob($baseDir . '/command/interactive_command_*.php'), glob($baseDir . '/output/interactive_output_*.txt'));
+        return array_map(null, glob($baseDir.'/command/interactive_command_*.php'), glob($baseDir.'/output/interactive_output_*.txt'));
     }
 
     public function inputCommandToOutputFilesProvider()
     {
-        $baseDir = __DIR__ . '/../Fixtures/Style/SymfonyStyle';
+        $baseDir = __DIR__.'/../Fixtures/Style/SymfonyStyle';
 
-        return array_map(null, glob($baseDir . '/command/command_*.php'), glob($baseDir . '/output/output_*.txt'));
+        return array_map(null, glob($baseDir.'/command/command_*.php'), glob($baseDir.'/output/output_*.txt'));
     }
 
     public function testGetErrorStyle()
@@ -98,19 +112,5 @@ class SymfonyStyleTest extends TestCase
         $style = new SymfonyStyle($this->getMockBuilder(InputInterface::class)->getMock(), $output);
 
         $this->assertInstanceOf(SymfonyStyle::class, $style->getErrorStyle());
-    }
-
-    protected function setUp()
-    {
-        putenv('COLUMNS=121');
-        $this->command = new Command('sfstyle');
-        $this->tester = new CommandTester($this->command);
-    }
-
-    protected function tearDown()
-    {
-        putenv('COLUMNS');
-        $this->command = null;
-        $this->tester = null;
     }
 }

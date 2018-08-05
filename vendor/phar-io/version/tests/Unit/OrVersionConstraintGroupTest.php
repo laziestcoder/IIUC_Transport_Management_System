@@ -13,12 +13,10 @@ namespace PharIo\Version;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers PharIo\Version\OrVersionConstraintGroup
+ * @covers \PharIo\Version\OrVersionConstraintGroup
  */
-class OrVersionConstraintGroupTest extends TestCase
-{
-    public function testReturnsTrueIfOneConstraintReturnsFalse()
-    {
+class OrVersionConstraintGroupTest extends TestCase {
+    public function testReturnsTrueIfOneConstraintReturnsFalse() {
         $firstConstraint = $this->createMock(VersionConstraint::class);
         $secondConstraint = $this->createMock(VersionConstraint::class);
 
@@ -35,8 +33,7 @@ class OrVersionConstraintGroupTest extends TestCase
         $this->assertTrue($group->complies(new Version('1.0.0')));
     }
 
-    public function testReturnsTrueIfAllConstraintsReturnsTrue()
-    {
+    public function testReturnsTrueIfAllConstraintsReturnsTrue() {
         $firstConstraint = $this->createMock(VersionConstraint::class);
         $secondConstraint = $this->createMock(VersionConstraint::class);
 
@@ -49,8 +46,7 @@ class OrVersionConstraintGroupTest extends TestCase
         $this->assertTrue($group->complies(new Version('1.0.0')));
     }
 
-    public function testReturnsFalseIfAllConstraintsReturnsFalse()
-    {
+    public function testReturnsFalseIfAllConstraintsReturnsFalse() {
         $firstConstraint = $this->createMock(VersionConstraint::class);
         $secondConstraint = $this->createMock(VersionConstraint::class);
 

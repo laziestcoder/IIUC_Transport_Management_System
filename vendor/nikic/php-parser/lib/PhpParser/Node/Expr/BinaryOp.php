@@ -12,21 +12,19 @@ abstract class BinaryOp extends Expr
     public $right;
 
     /**
-     * Constructs a bitwise and node.
+     * Constructs a binary operator node.
      *
-     * @param Expr $left The left hand side expression
-     * @param Expr $right The right hand side expression
+     * @param Expr  $left       The left hand side expression
+     * @param Expr  $right      The right hand side expression
      * @param array $attributes Additional attributes
      */
-    public function __construct(Expr $left, Expr $right, array $attributes = [])
-    {
+    public function __construct(Expr $left, Expr $right, array $attributes = []) {
         parent::__construct($attributes);
         $this->left = $left;
         $this->right = $right;
     }
 
-    public function getSubNodeNames(): array
-    {
+    public function getSubNodeNames() : array {
         return ['left', 'right'];
     }
 
@@ -38,5 +36,5 @@ abstract class BinaryOp extends Expr
      *
      * @return string
      */
-    abstract public function getOperatorSigil(): string;
+    abstract public function getOperatorSigil() : string;
 }

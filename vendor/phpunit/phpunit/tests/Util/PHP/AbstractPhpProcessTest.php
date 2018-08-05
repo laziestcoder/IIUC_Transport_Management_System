@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util\PHP;
 
 use PHPUnit\Framework\TestCase;
@@ -18,6 +17,16 @@ class AbstractPhpProcessTest extends TestCase
      * @var AbstractPhpProcess|\PHPUnit\Framework\MockObject\MockObject
      */
     private $phpProcess;
+
+    protected function setUp(): void
+    {
+        $this->phpProcess = $this->getMockForAbstractClass(AbstractPhpProcess::class);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->phpProcess = null;
+    }
 
     public function testShouldNotUseStderrRedirectionByDefault(): void
     {
@@ -46,8 +55,8 @@ class AbstractPhpProcessTest extends TestCase
             'display_errors=1',
         ];
 
-        $expectedCommandFormat = '%s -d %callow_url_fopen=1%c -d %cauto_append_file=%c -d %cdisplay_errors=1%c';
-        $actualCommand = $this->phpProcess->getCommand($settings);
+        $expectedCommandFormat  = '%s -d %callow_url_fopen=1%c -d %cauto_append_file=%c -d %cdisplay_errors=1%c%S';
+        $actualCommand          = $this->phpProcess->getCommand($settings);
 
         $this->assertStringMatchesFormat($expectedCommandFormat, $actualCommand);
     }
@@ -56,8 +65,8 @@ class AbstractPhpProcessTest extends TestCase
     {
         $this->phpProcess->setUseStderrRedirection(true);
 
-        $expectedCommandFormat = '%s 2>&1';
-        $actualCommand = $this->phpProcess->getCommand([]);
+        $expectedCommandFormat  = '%s 2>&1';
+        $actualCommand          = $this->phpProcess->getCommand([]);
 
         $this->assertStringMatchesFormat($expectedCommandFormat, $actualCommand);
     }
@@ -66,17 +75,16 @@ class AbstractPhpProcessTest extends TestCase
     {
         $this->phpProcess->setArgs('foo=bar');
 
-        $expectedCommandFormat = '%s -- foo=bar';
-        $actualCommand = $this->phpProcess->getCommand([]);
+        $expectedCommandFormat  = '%s foo=bar';
+        $actualCommand          = $this->phpProcess->getCommand([]);
 
         $this->assertStringMatchesFormat($expectedCommandFormat, $actualCommand);
     }
 
     public function testShouldHaveFileToCreateCommand(): void
     {
-        $argumentEscapingCharacter = DIRECTORY_SEPARATOR === '\\' ? '"' : '\'';
-        $expectedCommandFormat = \sprintf('%%s -%%c %1$sfile.php%1$s', $argumentEscapingCharacter);
-        $actualCommand = $this->phpProcess->getCommand([], 'file.php');
+        $expectedCommandFormat     = '%s %cfile.php%c';
+        $actualCommand             = $this->phpProcess->getCommand([], 'file.php');
 
         $this->assertStringMatchesFormat($expectedCommandFormat, $actualCommand);
     }
@@ -107,15 +115,5 @@ class AbstractPhpProcessTest extends TestCase
         $this->phpProcess->setTimeout(30);
 
         $this->assertEquals(30, $this->phpProcess->getTimeout());
-    }
-
-    protected function setUp(): void
-    {
-        $this->phpProcess = $this->getMockForAbstractClass(AbstractPhpProcess::class);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->phpProcess = null;
     }
 }

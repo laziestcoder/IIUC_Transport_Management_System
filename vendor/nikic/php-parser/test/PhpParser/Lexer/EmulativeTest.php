@@ -9,11 +9,14 @@ require_once __DIR__ . '/../LexerTest.php';
 
 class EmulativeTest extends LexerTest
 {
+    protected function getLexer(array $options = []) {
+        return new Emulative($options);
+    }
+
     /**
      * @dataProvider provideTestReplaceKeywords
      */
-    public function testReplaceKeywords($keyword, $expectedToken)
-    {
+    public function testReplaceKeywords($keyword, $expectedToken) {
         $lexer = $this->getLexer();
         $lexer->startLexing('<?php ' . $keyword);
 
@@ -21,16 +24,10 @@ class EmulativeTest extends LexerTest
         $this->assertSame(0, $lexer->getNextToken());
     }
 
-    protected function getLexer(array $options = [])
-    {
-        return new Emulative($options);
-    }
-
     /**
      * @dataProvider provideTestReplaceKeywords
      */
-    public function testNoReplaceKeywordsAfterObjectOperator($keyword)
-    {
+    public function testNoReplaceKeywordsAfterObjectOperator($keyword) {
         $lexer = $this->getLexer();
         $lexer->startLexing('<?php ->' . $keyword);
 
@@ -39,23 +36,22 @@ class EmulativeTest extends LexerTest
         $this->assertSame(0, $lexer->getNextToken());
     }
 
-    public function provideTestReplaceKeywords()
-    {
+    public function provideTestReplaceKeywords() {
         return [
             // PHP 5.5
-            ['finally', Tokens::T_FINALLY],
-            ['yield', Tokens::T_YIELD],
+            ['finally',       Tokens::T_FINALLY],
+            ['yield',         Tokens::T_YIELD],
 
             // PHP 5.4
-            ['callable', Tokens::T_CALLABLE],
-            ['insteadof', Tokens::T_INSTEADOF],
-            ['trait', Tokens::T_TRAIT],
-            ['__TRAIT__', Tokens::T_TRAIT_C],
+            ['callable',      Tokens::T_CALLABLE],
+            ['insteadof',     Tokens::T_INSTEADOF],
+            ['trait',         Tokens::T_TRAIT],
+            ['__TRAIT__',     Tokens::T_TRAIT_C],
 
             // PHP 5.3
-            ['__DIR__', Tokens::T_DIR],
-            ['goto', Tokens::T_GOTO],
-            ['namespace', Tokens::T_NAMESPACE],
+            ['__DIR__',       Tokens::T_DIR],
+            ['goto',          Tokens::T_GOTO],
+            ['namespace',     Tokens::T_NAMESPACE],
             ['__NAMESPACE__', Tokens::T_NS_C],
         ];
     }
@@ -63,8 +59,7 @@ class EmulativeTest extends LexerTest
     /**
      * @dataProvider provideTestLexNewFeatures
      */
-    public function testLexNewFeatures($code, array $expectedTokens)
-    {
+    public function testLexNewFeatures($code, array $expectedTokens) {
         $lexer = $this->getLexer();
         $lexer->startLexing('<?php ' . $code);
 
@@ -79,8 +74,7 @@ class EmulativeTest extends LexerTest
     /**
      * @dataProvider provideTestLexNewFeatures
      */
-    public function testLeaveStuffAloneInStrings($code)
-    {
+    public function testLeaveStuffAloneInStrings($code) {
         $stringifiedToken = '"' . addcslashes($code, '"\\') . '"';
 
         $lexer = $this->getLexer();
@@ -91,8 +85,7 @@ class EmulativeTest extends LexerTest
         $this->assertSame(0, $lexer->getNextToken());
     }
 
-    public function provideTestLexNewFeatures()
-    {
+    public function provideTestLexNewFeatures() {
         return [
             ['yield from', [
                 [Tokens::T_YIELD_FROM, 'yield from'],

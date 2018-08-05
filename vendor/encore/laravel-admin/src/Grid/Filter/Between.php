@@ -26,6 +26,30 @@ class Between extends AbstractFilter
     }
 
     /**
+     * Format two field names of this filter.
+     *
+     * @param string $column
+     *
+     * @return array
+     */
+    protected function formatName($column)
+    {
+        $columns = explode('.', $column);
+
+        if (count($columns) == 1) {
+            $name = $columns[0];
+        } else {
+            $name = array_shift($columns);
+
+            foreach ($columns as $column) {
+                $name .= "[$column]";
+            }
+        }
+
+        return ['start' => "{$name}[start]", 'end' => "{$name}[end]"];
+    }
+
+    /**
      * Get condition of this filter.
      *
      * @param array $inputs
@@ -98,29 +122,5 @@ class Between extends AbstractFilter
 EOT;
 
         Admin::script($script);
-    }
-
-    /**
-     * Format two field names of this filter.
-     *
-     * @param string $column
-     *
-     * @return array
-     */
-    protected function formatName($column)
-    {
-        $columns = explode('.', $column);
-
-        if (count($columns) == 1) {
-            $name = $columns[0];
-        } else {
-            $name = array_shift($columns);
-
-            foreach ($columns as $column) {
-                $name .= "[$column]";
-            }
-        }
-
-        return ['start' => "{$name}[start]", 'end' => "{$name}[end]"];
     }
 }

@@ -50,7 +50,7 @@ trait ImageField
      * Call intervention methods.
      *
      * @param string $method
-     * @param array $arguments
+     * @param array  $arguments
      *
      * @throws \Exception
      *
@@ -63,7 +63,7 @@ trait ImageField
         }
 
         $this->interventionCalls[] = [
-            'method' => $method,
+            'method'    => $method,
             'arguments' => $arguments,
         ];
 

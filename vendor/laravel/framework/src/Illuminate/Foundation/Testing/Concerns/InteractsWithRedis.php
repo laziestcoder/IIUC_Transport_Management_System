@@ -2,6 +2,7 @@
 
 namespace Illuminate\Foundation\Testing\Concerns;
 
+use Exception;
 use Illuminate\Redis\RedisManager;
 
 trait InteractsWithRedis
@@ -21,21 +22,6 @@ trait InteractsWithRedis
     private $redis;
 
     /**
-     * Run test if redis is available.
-     *
-     * @param  callable $callback
-     * @return void
-     */
-    public function ifRedisAvailable($callback)
-    {
-        $this->setUpRedis();
-
-        $callback();
-
-        $this->tearDownRedis();
-    }
-
-    /**
      * Setup redis connection.
      *
      * @return void
@@ -46,7 +32,7 @@ trait InteractsWithRedis
         $port = getenv('REDIS_PORT') ?: 6379;
 
         if (static::$connectionFailedOnceWithDefaultsSkip) {
-            $this->markTestSkipped('Trying default host/port failed, please set environment variable REDIS_HOST & REDIS_PORT to enable ' . __CLASS__);
+            $this->markTestSkipped('Trying default host/port failed, please set environment variable REDIS_HOST & REDIS_PORT to enable '.__CLASS__);
 
             return;
         }
@@ -65,13 +51,27 @@ trait InteractsWithRedis
 
         try {
             $this->redis['predis']->connection()->flushdb();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($host === '127.0.0.1' && $port === 6379 && getenv('REDIS_HOST') === false) {
-                $this->markTestSkipped('Trying default host/port failed, please set environment variable REDIS_HOST & REDIS_PORT to enable ' . __CLASS__);
+                $this->markTestSkipped('Trying default host/port failed, please set environment variable REDIS_HOST & REDIS_PORT to enable '.__CLASS__);
                 static::$connectionFailedOnceWithDefaultsSkip = true;
 
                 return;
             }
+        }
+    }
+
+    /**
+     * Teardown redis connection.
+     *
+     * @return void
+     */
+    public function tearDownRedis()
+    {
+        $this->redis['predis']->connection()->flushdb();
+
+        foreach ($this->redisDriverProvider() as $driver) {
+            $this->redis[$driver[0]]->connection()->disconnect();
         }
     }
 
@@ -94,16 +94,17 @@ trait InteractsWithRedis
     }
 
     /**
-     * Teardown redis connection.
+     * Run test if redis is available.
      *
+     * @param  callable  $callback
      * @return void
      */
-    public function tearDownRedis()
+    public function ifRedisAvailable($callback)
     {
-        $this->redis['predis']->connection()->flushdb();
+        $this->setUpRedis();
 
-        foreach ($this->redisDriverProvider() as $driver) {
-            $this->redis[$driver[0]]->connection()->disconnect();
-        }
+        $callback();
+
+        $this->tearDownRedis();
     }
 }

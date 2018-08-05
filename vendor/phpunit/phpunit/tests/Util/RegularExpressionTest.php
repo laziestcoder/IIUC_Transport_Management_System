@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util;
 
 use PHPUnit\Framework\TestCase;
@@ -36,10 +35,6 @@ class RegularExpressionTest extends TestCase
     /**
      * @dataProvider validRegexpProvider
      *
-     * @param mixed $pattern
-     * @param mixed $subject
-     * @param mixed $return
-     *
      * @throws \Exception
      * @throws \PHPUnit\Framework\ExpectationFailedException
      */
@@ -50,9 +45,6 @@ class RegularExpressionTest extends TestCase
 
     /**
      * @dataProvider invalidRegexpProvider
-     *
-     * @param mixed $pattern
-     * @param mixed $subject
      *
      * @throws \Exception
      * @throws \PHPUnit\Framework\ExpectationFailedException

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 use PHPUnit\Framework\Error\Error;
@@ -27,15 +26,47 @@ class TestFailure
      * @var Throwable
      */
     protected $thrownException;
+
     /**
      * @var string
      */
     private $testName;
 
     /**
+     * Returns a description for an exception.
+     *
+     * @throws \InvalidArgumentException
+     */
+    public static function exceptionToString(Throwable $e): string
+    {
+        if ($e instanceof SelfDescribing) {
+            $buffer = $e->toString();
+
+            if ($e instanceof ExpectationFailedException && $e->getComparisonFailure()) {
+                $buffer .= $e->getComparisonFailure()->getDiff();
+            }
+
+            if (!empty($buffer)) {
+                $buffer = \trim($buffer) . "\n";
+            }
+
+            return $buffer;
+        }
+
+        if ($e instanceof Error) {
+            return $e->getMessage() . "\n";
+        }
+
+        if ($e instanceof ExceptionWrapper) {
+            return $e->getClassName() . ': ' . $e->getMessage() . "\n";
+        }
+
+        return \get_class($e) . ': ' . $e->getMessage() . "\n";
+    }
+
+    /**
      * Constructs a TestFailure with the given test and exception.
      *
-     * @param Test $failedTest
      * @param Throwable $t
      */
     public function __construct(Test $failedTest, $t)
@@ -76,40 +107,6 @@ class TestFailure
     }
 
     /**
-     * Returns a description for an exception.
-     *
-     * @param Throwable $e
-     *
-     * @throws \InvalidArgumentException
-     */
-    public static function exceptionToString(Throwable $e): string
-    {
-        if ($e instanceof SelfDescribing) {
-            $buffer = $e->toString();
-
-            if ($e instanceof ExpectationFailedException && $e->getComparisonFailure()) {
-                $buffer .= $e->getComparisonFailure()->getDiff();
-            }
-
-            if (!empty($buffer)) {
-                $buffer = \trim($buffer) . "\n";
-            }
-
-            return $buffer;
-        }
-
-        if ($e instanceof Error) {
-            return $e->getMessage() . "\n";
-        }
-
-        if ($e instanceof ExceptionWrapper) {
-            return $e->getClassName() . ': ' . $e->getMessage() . "\n";
-        }
-
-        return \get_class($e) . ': ' . $e->getMessage() . "\n";
-    }
-
-    /**
      * Returns the name of the failing test (including data set, if any).
      */
     public function getTestName(): string
@@ -131,19 +128,19 @@ class TestFailure
     }
 
     /**
-     * Returns the exception's message.
-     */
-    public function exceptionMessage(): string
-    {
-        return $this->thrownException()->getMessage();
-    }
-
-    /**
      * Gets the thrown exception.
      */
     public function thrownException(): Throwable
     {
         return $this->thrownException;
+    }
+
+    /**
+     * Returns the exception's message.
+     */
+    public function exceptionMessage(): string
+    {
+        return $this->thrownException()->getMessage();
     }
 
     /**

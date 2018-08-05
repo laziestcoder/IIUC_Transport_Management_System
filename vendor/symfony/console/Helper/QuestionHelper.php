@@ -28,17 +28,9 @@ use Symfony\Component\Console\Question\Question;
  */
 class QuestionHelper extends Helper
 {
+    private $inputStream;
     private static $shell;
     private static $stty;
-    private $inputStream;
-
-    /**
-     * Prevents usage of stty.
-     */
-    public static function disableStty()
-    {
-        self::$stty = false;
-    }
 
     /**
      * Asks a question to the user.
@@ -79,6 +71,22 @@ class QuestionHelper extends Helper
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'question';
+    }
+
+    /**
+     * Prevents usage of stty.
+     */
+    public static function disableStty()
+    {
+        self::$stty = false;
+    }
+
+    /**
      * Asks the question to the user.
      *
      * @return bool|mixed|null|string
@@ -112,10 +120,10 @@ class QuestionHelper extends Helper
                 $ret = trim($ret);
             }
         } else {
-            $ret = trim($this->autocomplete($output, $question, $inputStream, is_array($autocomplete) ? $autocomplete : iterator_to_array($autocomplete, false)));
+            $ret = trim($this->autocomplete($output, $question, $inputStream, \is_array($autocomplete) ? $autocomplete : iterator_to_array($autocomplete, false)));
         }
 
-        $ret = strlen($ret) > 0 ? $ret : $question->getDefault();
+        $ret = \strlen($ret) > 0 ? $ret : $question->getDefault();
 
         if ($normalizer = $question->getNormalizer()) {
             return $normalizer($ret);
@@ -134,10 +142,10 @@ class QuestionHelper extends Helper
         if ($question instanceof ChoiceQuestion) {
             $maxWidth = max(array_map(array($this, 'strlen'), array_keys($question->getChoices())));
 
-            $messages = (array)$question->getQuestion();
+            $messages = (array) $question->getQuestion();
             foreach ($question->getChoices() as $key => $value) {
                 $width = $maxWidth - $this->strlen($key);
-                $messages[] = '  [<info>' . $key . str_repeat(' ', $width) . '</info>] ' . $value;
+                $messages[] = '  [<info>'.$key.str_repeat(' ', $width).'</info>] '.$value;
             }
 
             $output->writeln($messages);
@@ -149,35 +157,151 @@ class QuestionHelper extends Helper
     }
 
     /**
-     * Returns whether Stty is available or not.
+     * Outputs an error message.
      */
-    private function hasSttyAvailable(): bool
+    protected function writeError(OutputInterface $output, \Exception $error)
     {
-        if (null !== self::$stty) {
-            return self::$stty;
+        if (null !== $this->getHelperSet() && $this->getHelperSet()->has('formatter')) {
+            $message = $this->getHelperSet()->get('formatter')->formatBlock($error->getMessage(), 'error');
+        } else {
+            $message = '<error>'.$error->getMessage().'</error>';
         }
 
-        exec('stty 2>&1', $output, $exitcode);
+        $output->writeln($message);
+    }
 
-        return self::$stty = 0 === $exitcode;
+    /**
+     * Autocompletes a question.
+     *
+     * @param OutputInterface $output
+     * @param Question        $question
+     * @param resource        $inputStream
+     */
+    private function autocomplete(OutputInterface $output, Question $question, $inputStream, array $autocomplete): string
+    {
+        $ret = '';
+
+        $i = 0;
+        $ofs = -1;
+        $matches = $autocomplete;
+        $numMatches = \count($matches);
+
+        $sttyMode = shell_exec('stty -g');
+
+        // Disable icanon (so we can fread each keypress) and echo (we'll do echoing here instead)
+        shell_exec('stty -icanon -echo');
+
+        // Add highlighted text style
+        $output->getFormatter()->setStyle('hl', new OutputFormatterStyle('black', 'white'));
+
+        // Read a keypress
+        while (!feof($inputStream)) {
+            $c = fread($inputStream, 1);
+
+            // Backspace Character
+            if ("\177" === $c) {
+                if (0 === $numMatches && 0 !== $i) {
+                    --$i;
+                    // Move cursor backwards
+                    $output->write("\033[1D");
+                }
+
+                if (0 === $i) {
+                    $ofs = -1;
+                    $matches = $autocomplete;
+                    $numMatches = \count($matches);
+                } else {
+                    $numMatches = 0;
+                }
+
+                // Pop the last character off the end of our string
+                $ret = substr($ret, 0, $i);
+            } elseif ("\033" === $c) {
+                // Did we read an escape sequence?
+                $c .= fread($inputStream, 2);
+
+                // A = Up Arrow. B = Down Arrow
+                if (isset($c[2]) && ('A' === $c[2] || 'B' === $c[2])) {
+                    if ('A' === $c[2] && -1 === $ofs) {
+                        $ofs = 0;
+                    }
+
+                    if (0 === $numMatches) {
+                        continue;
+                    }
+
+                    $ofs += ('A' === $c[2]) ? -1 : 1;
+                    $ofs = ($numMatches + $ofs) % $numMatches;
+                }
+            } elseif (\ord($c) < 32) {
+                if ("\t" === $c || "\n" === $c) {
+                    if ($numMatches > 0 && -1 !== $ofs) {
+                        $ret = $matches[$ofs];
+                        // Echo out remaining chars for current match
+                        $output->write(substr($ret, $i));
+                        $i = \strlen($ret);
+                    }
+
+                    if ("\n" === $c) {
+                        $output->write($c);
+                        break;
+                    }
+
+                    $numMatches = 0;
+                }
+
+                continue;
+            } else {
+                $output->write($c);
+                $ret .= $c;
+                ++$i;
+
+                $numMatches = 0;
+                $ofs = 0;
+
+                foreach ($autocomplete as $value) {
+                    // If typed characters match the beginning chunk of value (e.g. [AcmeDe]moBundle)
+                    if (0 === strpos($value, $ret)) {
+                        $matches[$numMatches++] = $value;
+                    }
+                }
+            }
+
+            // Erase characters from cursor to end of line
+            $output->write("\033[K");
+
+            if ($numMatches > 0 && -1 !== $ofs) {
+                // Save cursor position
+                $output->write("\0337");
+                // Write highlighted text
+                $output->write('<hl>'.OutputFormatter::escapeTrailingBackslash(substr($matches[$ofs], $i)).'</hl>');
+                // Restore cursor position
+                $output->write("\0338");
+            }
+        }
+
+        // Reset stty so it behaves normally again
+        shell_exec(sprintf('stty %s', $sttyMode));
+
+        return $ret;
     }
 
     /**
      * Gets a hidden response from user.
      *
-     * @param OutputInterface $output An Output instance
-     * @param resource $inputStream The handler resource
+     * @param OutputInterface $output      An Output instance
+     * @param resource        $inputStream The handler resource
      *
      * @throws RuntimeException In case the fallback is deactivated and the response cannot be hidden
      */
     private function getHiddenResponse(OutputInterface $output, $inputStream): string
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
-            $exe = __DIR__ . '/../Resources/bin/hiddeninput.exe';
+        if ('\\' === \DIRECTORY_SEPARATOR) {
+            $exe = __DIR__.'/../Resources/bin/hiddeninput.exe';
 
             // handle code running from a phar
             if ('phar:' === substr(__FILE__, 0, 5)) {
-                $tmpExe = sys_get_temp_dir() . '/hiddeninput.exe';
+                $tmpExe = sys_get_temp_dir().'/hiddeninput.exe';
                 copy($exe, $tmpExe);
                 $exe = $tmpExe;
             }
@@ -222,6 +346,37 @@ class QuestionHelper extends Helper
     }
 
     /**
+     * Validates an attempt.
+     *
+     * @param callable        $interviewer A callable that will ask for a question and return the result
+     * @param OutputInterface $output      An Output instance
+     * @param Question        $question    A Question instance
+     *
+     * @return mixed The validated response
+     *
+     * @throws \Exception In case the max number of attempts has been reached and no valid response has been given
+     */
+    private function validateAttempts(callable $interviewer, OutputInterface $output, Question $question)
+    {
+        $error = null;
+        $attempts = $question->getMaxAttempts();
+        while (null === $attempts || $attempts--) {
+            if (null !== $error) {
+                $this->writeError($output, $error);
+            }
+
+            try {
+                return \call_user_func($question->getValidator(), $interviewer());
+            } catch (RuntimeException $e) {
+                throw $e;
+            } catch (\Exception $error) {
+            }
+        }
+
+        throw $error;
+    }
+
+    /**
      * Returns a valid unix shell.
      *
      * @return string|bool The valid shell name, false in case no valid shell is found
@@ -249,171 +404,16 @@ class QuestionHelper extends Helper
     }
 
     /**
-     * Autocompletes a question.
-     *
-     * @param OutputInterface $output
-     * @param Question $question
-     * @param resource $inputStream
+     * Returns whether Stty is available or not.
      */
-    private function autocomplete(OutputInterface $output, Question $question, $inputStream, array $autocomplete): string
+    private function hasSttyAvailable(): bool
     {
-        $ret = '';
-
-        $i = 0;
-        $ofs = -1;
-        $matches = $autocomplete;
-        $numMatches = count($matches);
-
-        $sttyMode = shell_exec('stty -g');
-
-        // Disable icanon (so we can fread each keypress) and echo (we'll do echoing here instead)
-        shell_exec('stty -icanon -echo');
-
-        // Add highlighted text style
-        $output->getFormatter()->setStyle('hl', new OutputFormatterStyle('black', 'white'));
-
-        // Read a keypress
-        while (!feof($inputStream)) {
-            $c = fread($inputStream, 1);
-
-            // Backspace Character
-            if ("\177" === $c) {
-                if (0 === $numMatches && 0 !== $i) {
-                    --$i;
-                    // Move cursor backwards
-                    $output->write("\033[1D");
-                }
-
-                if (0 === $i) {
-                    $ofs = -1;
-                    $matches = $autocomplete;
-                    $numMatches = count($matches);
-                } else {
-                    $numMatches = 0;
-                }
-
-                // Pop the last character off the end of our string
-                $ret = substr($ret, 0, $i);
-            } elseif ("\033" === $c) {
-                // Did we read an escape sequence?
-                $c .= fread($inputStream, 2);
-
-                // A = Up Arrow. B = Down Arrow
-                if (isset($c[2]) && ('A' === $c[2] || 'B' === $c[2])) {
-                    if ('A' === $c[2] && -1 === $ofs) {
-                        $ofs = 0;
-                    }
-
-                    if (0 === $numMatches) {
-                        continue;
-                    }
-
-                    $ofs += ('A' === $c[2]) ? -1 : 1;
-                    $ofs = ($numMatches + $ofs) % $numMatches;
-                }
-            } elseif (ord($c) < 32) {
-                if ("\t" === $c || "\n" === $c) {
-                    if ($numMatches > 0 && -1 !== $ofs) {
-                        $ret = $matches[$ofs];
-                        // Echo out remaining chars for current match
-                        $output->write(substr($ret, $i));
-                        $i = strlen($ret);
-                    }
-
-                    if ("\n" === $c) {
-                        $output->write($c);
-                        break;
-                    }
-
-                    $numMatches = 0;
-                }
-
-                continue;
-            } else {
-                $output->write($c);
-                $ret .= $c;
-                ++$i;
-
-                $numMatches = 0;
-                $ofs = 0;
-
-                foreach ($autocomplete as $value) {
-                    // If typed characters match the beginning chunk of value (e.g. [AcmeDe]moBundle)
-                    if (0 === strpos($value, $ret)) {
-                        $matches[$numMatches++] = $value;
-                    }
-                }
-            }
-
-            // Erase characters from cursor to end of line
-            $output->write("\033[K");
-
-            if ($numMatches > 0 && -1 !== $ofs) {
-                // Save cursor position
-                $output->write("\0337");
-                // Write highlighted text
-                $output->write('<hl>' . OutputFormatter::escapeTrailingBackslash(substr($matches[$ofs], $i)) . '</hl>');
-                // Restore cursor position
-                $output->write("\0338");
-            }
+        if (null !== self::$stty) {
+            return self::$stty;
         }
 
-        // Reset stty so it behaves normally again
-        shell_exec(sprintf('stty %s', $sttyMode));
+        exec('stty 2>&1', $output, $exitcode);
 
-        return $ret;
-    }
-
-    /**
-     * Validates an attempt.
-     *
-     * @param callable $interviewer A callable that will ask for a question and return the result
-     * @param OutputInterface $output An Output instance
-     * @param Question $question A Question instance
-     *
-     * @return mixed The validated response
-     *
-     * @throws \Exception In case the max number of attempts has been reached and no valid response has been given
-     */
-    private function validateAttempts(callable $interviewer, OutputInterface $output, Question $question)
-    {
-        $error = null;
-        $attempts = $question->getMaxAttempts();
-        while (null === $attempts || $attempts--) {
-            if (null !== $error) {
-                $this->writeError($output, $error);
-            }
-
-            try {
-                return call_user_func($question->getValidator(), $interviewer());
-            } catch (RuntimeException $e) {
-                throw $e;
-            } catch (\Exception $error) {
-            }
-        }
-
-        throw $error;
-    }
-
-    /**
-     * Outputs an error message.
-     */
-    protected function writeError(OutputInterface $output, \Exception $error)
-    {
-        if (null !== $this->getHelperSet() && $this->getHelperSet()->has('formatter')) {
-            $message = $this->getHelperSet()->get('formatter')->formatBlock($error->getMessage(), 'error');
-        } else {
-            $message = '<error>' . $error->getMessage() . '</error>';
-        }
-
-        $output->writeln($message);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'question';
+        return self::$stty = 0 === $exitcode;
     }
 }

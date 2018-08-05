@@ -26,22 +26,6 @@ class HelperSetTest extends TestCase
         $this->assertTrue($helperset->has('fake_helper_alias'), '__construct sets helper alias for given helper');
     }
 
-    private function getGenericMockHelper($name, HelperSet $helperset = null)
-    {
-        $mock_helper = $this->getMockBuilder('\Symfony\Component\Console\Helper\HelperInterface')->getMock();
-        $mock_helper->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue($name));
-
-        if ($helperset) {
-            $mock_helper->expects($this->any())
-                ->method('setHelperSet')
-                ->with($this->equalTo($helperset));
-        }
-
-        return $mock_helper;
-    }
-
     public function testSet()
     {
         $helperset = new HelperSet();
@@ -123,5 +107,21 @@ class HelperSetTest extends TestCase
         foreach ($helperset as $helper) {
             $this->assertEquals($helpers[$i++], $helper->getName());
         }
+    }
+
+    private function getGenericMockHelper($name, HelperSet $helperset = null)
+    {
+        $mock_helper = $this->getMockBuilder('\Symfony\Component\Console\Helper\HelperInterface')->getMock();
+        $mock_helper->expects($this->any())
+            ->method('getName')
+            ->will($this->returnValue($name));
+
+        if ($helperset) {
+            $mock_helper->expects($this->any())
+                ->method('setHelperSet')
+                ->with($this->equalTo($helperset));
+        }
+
+        return $mock_helper;
     }
 }

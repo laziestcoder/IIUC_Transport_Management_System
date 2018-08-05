@@ -16,9 +16,9 @@ use SebastianBergmann\Diff\Differ;
 /**
  * @covers SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder
  *
- * @uses   SebastianBergmann\Diff\Differ
- * @uses   SebastianBergmann\Diff\Output\AbstractChunkOutputBuilder
- * @uses   SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
+ * @uses SebastianBergmann\Diff\Differ
+ * @uses SebastianBergmann\Diff\Output\AbstractChunkOutputBuilder
+ * @uses SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
  */
 final class UnifiedDiffOutputBuilderTest extends TestCase
 {

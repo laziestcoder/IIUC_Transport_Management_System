@@ -40,42 +40,6 @@ class Paginator extends AbstractTool
     }
 
     /**
-     * Render Paginator.
-     *
-     * @return string
-     */
-    public function render()
-    {
-        if (!$this->grid->usePagination()) {
-            return '';
-        }
-
-        return $this->paginationRanger() .
-            $this->paginationLinks() .
-            $this->perPageSelector();
-    }
-
-    /**
-     * Get range infomation of paginator.
-     *
-     * @return string|\Symfony\Component\Translation\TranslatorInterface
-     */
-    protected function paginationRanger()
-    {
-        $parameters = [
-            'first' => $this->paginator->firstItem(),
-            'last' => $this->paginator->lastItem(),
-            'total' => $this->paginator->total(),
-        ];
-
-        $parameters = collect($parameters)->flatMap(function ($parameter, $key) {
-            return [$key => "<b>$parameter</b>"];
-        });
-
-        return trans('admin.pagination.range', $parameters->all());
-    }
-
-    /**
      * Get Pagination links.
      *
      * @return string
@@ -93,5 +57,41 @@ class Paginator extends AbstractTool
     protected function perPageSelector()
     {
         return new PerPageSelector($this->grid);
+    }
+
+    /**
+     * Get range infomation of paginator.
+     *
+     * @return string|\Symfony\Component\Translation\TranslatorInterface
+     */
+    protected function paginationRanger()
+    {
+        $parameters = [
+            'first' => $this->paginator->firstItem(),
+            'last'  => $this->paginator->lastItem(),
+            'total' => $this->paginator->total(),
+        ];
+
+        $parameters = collect($parameters)->flatMap(function ($parameter, $key) {
+            return [$key => "<b>$parameter</b>"];
+        });
+
+        return trans('admin.pagination.range', $parameters->all());
+    }
+
+    /**
+     * Render Paginator.
+     *
+     * @return string
+     */
+    public function render()
+    {
+        if (!$this->grid->usePagination()) {
+            return '';
+        }
+
+        return $this->paginationRanger().
+            $this->paginationLinks().
+            $this->perPageSelector();
     }
 }

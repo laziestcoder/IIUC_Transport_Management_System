@@ -46,20 +46,6 @@ class Box extends Widget implements Renderable
     }
 
     /**
-     * Set box title.
-     *
-     * @param string $title
-     *
-     * @return $this
-     */
-    public function title($title)
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    /**
      * Set box content.
      *
      * @param string $content
@@ -71,8 +57,22 @@ class Box extends Widget implements Renderable
         if ($content instanceof Renderable) {
             $this->content = $content->render();
         } else {
-            $this->content = (string)$content;
+            $this->content = (string) $content;
         }
+
+        return $this;
+    }
+
+    /**
+     * Set box title.
+     *
+     * @param string $title
+     *
+     * @return $this
+     */
+    public function title($title)
+    {
+        $this->title = $title;
 
         return $this;
     }
@@ -104,16 +104,6 @@ class Box extends Widget implements Renderable
     }
 
     /**
-     * Add `box-solid` class to box.
-     *
-     * @return $this
-     */
-    public function solid()
-    {
-        return $this->style('solid');
-    }
-
-    /**
      * Set box style.
      *
      * @param string $styles
@@ -127,22 +117,22 @@ class Box extends Widget implements Renderable
         }
 
         $styles = array_map(function ($style) {
-            return 'box-' . $style;
+            return 'box-'.$style;
         }, $styles);
 
-        $this->class = $this->class . ' ' . implode(' ', $styles);
+        $this->class = $this->class.' '.implode(' ', $styles);
 
         return $this;
     }
 
     /**
-     * Render box.
+     * Add `box-solid` class to box.
      *
-     * @return string
+     * @return $this
      */
-    public function render()
+    public function solid()
     {
-        return view($this->view, $this->variables())->render();
+        return $this->style('solid');
     }
 
     /**
@@ -153,10 +143,20 @@ class Box extends Widget implements Renderable
     protected function variables()
     {
         return [
-            'title' => $this->title,
-            'content' => $this->content,
-            'tools' => $this->tools,
+            'title'      => $this->title,
+            'content'    => $this->content,
+            'tools'      => $this->tools,
             'attributes' => $this->formatAttributes(),
         ];
+    }
+
+    /**
+     * Render box.
+     *
+     * @return string
+     */
+    public function render()
+    {
+        return view($this->view, $this->variables())->render();
     }
 }

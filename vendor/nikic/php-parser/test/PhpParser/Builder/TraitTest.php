@@ -9,8 +9,11 @@ use PHPUnit\Framework\TestCase;
 
 class TraitTest extends TestCase
 {
-    public function testStmtAddition()
-    {
+    protected function createTraitBuilder($class) {
+        return new Trait_($class);
+    }
+
+    public function testStmtAddition() {
         $method1 = new Stmt\ClassMethod('test1');
         $method2 = new Stmt\ClassMethod('test2');
         $method3 = new Stmt\ClassMethod('test3');
@@ -34,18 +37,13 @@ class TraitTest extends TestCase
         ]), $trait);
     }
 
-    protected function createTraitBuilder($class)
-    {
-        return new Trait_($class);
-    }
-
     /**
      * @expectedException \LogicException
      * @expectedExceptionMessage Unexpected node of type "Stmt_Echo"
      */
-    public function testInvalidStmtError()
-    {
+    public function testInvalidStmtError() {
         $this->createTraitBuilder('Test')
-            ->addStmt(new Stmt\Echo_([]));
+            ->addStmt(new Stmt\Echo_([]))
+        ;
     }
 }

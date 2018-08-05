@@ -2,10 +2,10 @@
 
 namespace Illuminate\Database;
 
-use Illuminate\Console\Command;
-use Illuminate\Container\Container;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
+use Illuminate\Console\Command;
+use Illuminate\Container\Container;
 
 abstract class Seeder
 {
@@ -24,21 +24,10 @@ abstract class Seeder
     protected $command;
 
     /**
-     * Silently seed the given connection from the given path.
-     *
-     * @param  array|string $class
-     * @return void
-     */
-    public function callSilent($class)
-    {
-        $this->call($class, true);
-    }
-
-    /**
      * Seed the given connection from the given path.
      *
-     * @param  array|string $class
-     * @param  bool $silent
+     * @param  array|string  $class
+     * @param  bool  $silent
      * @return $this
      */
     public function call($class, $silent = false)
@@ -57,27 +46,20 @@ abstract class Seeder
     }
 
     /**
-     * Run the database seeds.
+     * Silently seed the given connection from the given path.
      *
+     * @param  array|string  $class
      * @return void
-     *
-     * @throws \InvalidArgumentException
      */
-    public function __invoke()
+    public function callSilent($class)
     {
-        if (!method_exists($this, 'run')) {
-            throw new InvalidArgumentException('Method [run] missing from ' . get_class($this));
-        }
-
-        return isset($this->container)
-            ? $this->container->call([$this, 'run'])
-            : $this->run();
+        $this->call($class, true);
     }
 
     /**
      * Resolve an instance of the given seeder class.
      *
-     * @param  string $class
+     * @param  string  $class
      * @return \Illuminate\Database\Seeder
      */
     protected function resolve($class)
@@ -100,7 +82,7 @@ abstract class Seeder
     /**
      * Set the IoC container instance.
      *
-     * @param  \Illuminate\Container\Container $container
+     * @param  \Illuminate\Container\Container  $container
      * @return $this
      */
     public function setContainer(Container $container)
@@ -113,7 +95,7 @@ abstract class Seeder
     /**
      * Set the console command instance.
      *
-     * @param  \Illuminate\Console\Command $command
+     * @param  \Illuminate\Console\Command  $command
      * @return $this
      */
     public function setCommand(Command $command)
@@ -121,5 +103,23 @@ abstract class Seeder
         $this->command = $command;
 
         return $this;
+    }
+
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function __invoke()
+    {
+        if (! method_exists($this, 'run')) {
+            throw new InvalidArgumentException('Method [run] missing from '.get_class($this));
+        }
+
+        return isset($this->container)
+                    ? $this->container->call([$this, 'run'])
+                    : $this->run();
     }
 }

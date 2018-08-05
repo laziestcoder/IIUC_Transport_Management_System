@@ -30,7 +30,7 @@ class Carousel extends Widget implements Renderable
     {
         $this->items = $items;
 
-        $this->id('carousel-' . uniqid());
+        $this->id('carousel-'.uniqid());
         $this->class('carousel slide');
         $this->offsetSet('data-ride', 'carousel');
     }
@@ -53,8 +53,8 @@ class Carousel extends Widget implements Renderable
     public function render()
     {
         $variables = [
-            'items' => $this->items,
-            'title' => $this->title,
+            'items'      => $this->items,
+            'title'      => $this->title,
             'attributes' => $this->formatAttributes(),
         ];
 

@@ -32,9 +32,9 @@ abstract class AbstractSurrogateFragmentRenderer extends RoutableFragmentRendere
      * The "fallback" strategy when surrogate is not available should always be an
      * instance of InlineFragmentRenderer.
      *
-     * @param SurrogateInterface $surrogate An Surrogate instance
+     * @param SurrogateInterface        $surrogate      An Surrogate instance
      * @param FragmentRendererInterface $inlineStrategy The inline strategy to use when the surrogate is not supported
-     * @param UriSigner $signer
+     * @param UriSigner                 $signer
      */
     public function __construct(SurrogateInterface $surrogate = null, FragmentRendererInterface $inlineStrategy, UriSigner $signer = null)
     {
@@ -83,19 +83,6 @@ abstract class AbstractSurrogateFragmentRenderer extends RoutableFragmentRendere
         return new Response($tag);
     }
 
-    private function containsNonScalars(array $values): bool
-    {
-        foreach ($values as $value) {
-            if (is_array($value)) {
-                return $this->containsNonScalars($value);
-            } elseif (!is_scalar($value) && null !== $value) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private function generateSignedFragmentUri($uri, Request $request): string
     {
         if (null === $this->signer) {
@@ -105,6 +92,19 @@ abstract class AbstractSurrogateFragmentRenderer extends RoutableFragmentRendere
         // we need to sign the absolute URI, but want to return the path only.
         $fragmentUri = $this->signer->sign($this->generateFragmentUri($uri, $request, true));
 
-        return substr($fragmentUri, strlen($request->getSchemeAndHttpHost()));
+        return substr($fragmentUri, \strlen($request->getSchemeAndHttpHost()));
+    }
+
+    private function containsNonScalars(array $values): bool
+    {
+        foreach ($values as $value) {
+            if (\is_array($value)) {
+                return $this->containsNonScalars($value);
+            } elseif (!is_scalar($value) && null !== $value) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -77,21 +77,6 @@ class UserAgent extends Base
         return 'Mozilla/5.0 ' . static::randomElement($platforms);
     }
 
-    public static function linuxPlatformToken()
-    {
-        return 'X11; Linux ' . static::randomElement(static::$linuxProcessor);
-    }
-
-    public static function windowsPlatformToken()
-    {
-        return static::randomElement(static::$windowsPlatformTokens);
-    }
-
-    public static function macPlatformToken()
-    {
-        return 'Macintosh; ' . static::randomElement(static::$macProcessor) . ' Mac OS X 10_' . mt_rand(5, 8) . '_' . mt_rand(0, 9);
-    }
-
     /**
      * Generate Firefox user agent
      *
@@ -161,5 +146,20 @@ class UserAgent extends Base
     public static function internetExplorer()
     {
         return 'Mozilla/5.0 (compatible; MSIE ' . mt_rand(5, 11) . '.0; ' . static::windowsPlatformToken() . '; Trident/' . mt_rand(3, 5) . '.' . mt_rand(0, 1) . ')';
+    }
+
+    public static function windowsPlatformToken()
+    {
+        return static::randomElement(static::$windowsPlatformTokens);
+    }
+
+    public static function macPlatformToken()
+    {
+        return 'Macintosh; ' . static::randomElement(static::$macProcessor) . ' Mac OS X 10_' . mt_rand(5, 8) . '_' . mt_rand(0, 9);
+    }
+
+    public static function linuxPlatformToken()
+    {
+        return 'X11; Linux ' . static::randomElement(static::$linuxProcessor);
     }
 }

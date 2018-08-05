@@ -26,20 +26,9 @@ class None extends Preset
     }
 
     /**
-     * Write the stubs for the Sass and JavaScript files.
-     *
-     * @return void
-     */
-    protected static function updateBootstrapping()
-    {
-        file_put_contents(resource_path('assets/sass/app.scss'), '' . PHP_EOL);
-        copy(__DIR__ . '/none-stubs/app.js', resource_path('assets/js/app.js'));
-    }
-
-    /**
      * Update the given package array.
      *
-     * @param  array $packages
+     * @param  array  $packages
      * @return array
      */
     protected static function updatePackageArray(array $packages)
@@ -55,5 +44,16 @@ class None extends Preset
         );
 
         return $packages;
+    }
+
+    /**
+     * Write the stubs for the Sass and JavaScript files.
+     *
+     * @return void
+     */
+    protected static function updateBootstrapping()
+    {
+        file_put_contents(resource_path('assets/sass/app.scss'), ''.PHP_EOL);
+        copy(__DIR__.'/none-stubs/app.js', resource_path('assets/js/app.js'));
     }
 }

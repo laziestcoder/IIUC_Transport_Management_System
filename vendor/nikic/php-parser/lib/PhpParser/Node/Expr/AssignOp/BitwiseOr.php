@@ -6,8 +6,7 @@ use PhpParser\Node\Expr\AssignOp;
 
 class BitwiseOr extends AssignOp
 {
-    public function getType(): string
-    {
+    public function getType() : string {
         return 'Expr_AssignOp_BitwiseOr';
     }
 }

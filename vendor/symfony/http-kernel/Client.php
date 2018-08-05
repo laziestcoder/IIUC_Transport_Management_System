@@ -25,8 +25,8 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  *
- * @method Request|null  getRequest()  A Request instance
- * @method Response|null getResponse() A Response instance
+ * @method Request  getRequest()  A Request instance
+ * @method Response getResponse() A Response instance
  */
 class Client extends BaseClient
 {
@@ -34,10 +34,10 @@ class Client extends BaseClient
     private $catchExceptions = true;
 
     /**
-     * @param HttpKernelInterface $kernel An HttpKernel instance
-     * @param array $server The server parameters (equivalent of $_SERVER)
-     * @param History $history A History instance to store the browser history
-     * @param CookieJar $cookieJar A CookieJar instance to store the cookies
+     * @param HttpKernelInterface $kernel    An HttpKernel instance
+     * @param array               $server    The server parameters (equivalent of $_SERVER)
+     * @param History             $history   A History instance to store the browser history
+     * @param CookieJar           $cookieJar A CookieJar instance to store the cookies
      */
     public function __construct(HttpKernelInterface $kernel, array $server = array(), History $history = null, CookieJar $cookieJar = null)
     {
@@ -89,9 +89,9 @@ class Client extends BaseClient
         foreach (get_declared_classes() as $class) {
             if (0 === strpos($class, 'ComposerAutoloaderInit')) {
                 $r = new \ReflectionClass($class);
-                $file = dirname(dirname($r->getFileName())) . '/autoload.php';
+                $file = \dirname(\dirname($r->getFileName())).'/autoload.php';
                 if (file_exists($file)) {
-                    $requires .= "require_once '" . str_replace("'", "\\'", $file) . "';\n";
+                    $requires .= "require_once '".str_replace("'", "\\'", $file)."';\n";
                 }
             }
         }
@@ -111,7 +111,7 @@ $requires
 \$request = unserialize('$request');
 EOF;
 
-        return $code . $this->getHandleScript();
+        return $code.$this->getHandleScript();
     }
 
     protected function getHandleScript()
@@ -160,7 +160,7 @@ EOF;
     {
         $filtered = array();
         foreach ($files as $key => $value) {
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $filtered[$key] = $this->filterFiles($value);
             } elseif ($value instanceof UploadedFile) {
                 if ($value->isValid() && $value->getSize() > UploadedFile::getMaxFilesize()) {
@@ -168,7 +168,6 @@ EOF;
                         '',
                         $value->getClientOriginalName(),
                         $value->getClientMimeType(),
-                        0,
                         UPLOAD_ERR_INI_SIZE,
                         true
                     );
@@ -177,7 +176,6 @@ EOF;
                         $value->getPathname(),
                         $value->getClientOriginalName(),
                         $value->getClientMimeType(),
-                        $value->getClientSize(),
                         $value->getError(),
                         true
                     );

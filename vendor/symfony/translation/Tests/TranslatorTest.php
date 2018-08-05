@@ -210,11 +210,11 @@ class TranslatorTest extends TestCase
      */
     public function testTransWithoutFallbackLocaleFile($format, $loader)
     {
-        $loaderClass = 'Symfony\\Component\\Translation\\Loader\\' . $loader;
+        $loaderClass = 'Symfony\\Component\\Translation\\Loader\\'.$loader;
         $translator = new Translator('en');
         $translator->addLoader($format, new $loaderClass());
-        $translator->addResource($format, __DIR__ . '/fixtures/non-existing', 'en');
-        $translator->addResource($format, __DIR__ . '/fixtures/resources.' . $format, 'en');
+        $translator->addResource($format, __DIR__.'/fixtures/non-existing', 'en');
+        $translator->addResource($format, __DIR__.'/fixtures/resources.'.$format, 'en');
 
         // force catalogue loading
         $translator->trans('foo');
@@ -225,11 +225,11 @@ class TranslatorTest extends TestCase
      */
     public function testTransWithFallbackLocaleFile($format, $loader)
     {
-        $loaderClass = 'Symfony\\Component\\Translation\\Loader\\' . $loader;
+        $loaderClass = 'Symfony\\Component\\Translation\\Loader\\'.$loader;
         $translator = new Translator('en_GB');
         $translator->addLoader($format, new $loaderClass());
-        $translator->addResource($format, __DIR__ . '/fixtures/non-existing', 'en_GB');
-        $translator->addResource($format, __DIR__ . '/fixtures/resources.' . $format, 'en', 'resources');
+        $translator->addResource($format, __DIR__.'/fixtures/non-existing', 'en_GB');
+        $translator->addResource($format, __DIR__.'/fixtures/resources.'.$format, 'en', 'resources');
 
         $this->assertEquals('bar', $translator->trans('foo', array(), 'resources'));
     }
@@ -289,20 +289,20 @@ class TranslatorTest extends TestCase
     {
         $translator = new Translator('en_GB');
         $translator->addLoader('yml', new \Symfony\Component\Translation\Loader\YamlFileLoader());
-        $translator->addResource('yml', __DIR__ . '/fixtures/empty.yml', 'en_GB');
-        $translator->addResource('yml', __DIR__ . '/fixtures/resources.yml', 'en');
+        $translator->addResource('yml', __DIR__.'/fixtures/empty.yml', 'en_GB');
+        $translator->addResource('yml', __DIR__.'/fixtures/resources.yml', 'en');
 
         // force catalogue loading
         $this->assertEquals('bar', $translator->trans('foo', array()));
 
         $resources = $translator->getCatalogue('en')->getResources();
         $this->assertCount(1, $resources);
-        $this->assertContains(__DIR__ . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'resources.yml', $resources);
+        $this->assertContains(__DIR__.\DIRECTORY_SEPARATOR.'fixtures'.\DIRECTORY_SEPARATOR.'resources.yml', $resources);
 
         $resources = $translator->getCatalogue('en_GB')->getResources();
         $this->assertCount(2, $resources);
-        $this->assertContains(__DIR__ . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'empty.yml', $resources);
-        $this->assertContains(__DIR__ . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'resources.yml', $resources);
+        $this->assertContains(__DIR__.\DIRECTORY_SEPARATOR.'fixtures'.\DIRECTORY_SEPARATOR.'empty.yml', $resources);
+        $this->assertContains(__DIR__.\DIRECTORY_SEPARATOR.'fixtures'.\DIRECTORY_SEPARATOR.'resources.yml', $resources);
     }
 
     /**
@@ -312,7 +312,7 @@ class TranslatorTest extends TestCase
     {
         $translator = new Translator('en');
         $translator->addLoader('array', new ArrayLoader());
-        $translator->addResource('array', array((string)$id => $translation), $locale, $domain);
+        $translator->addResource('array', array((string) $id => $translation), $locale, $domain);
 
         $this->assertEquals($expected, $translator->trans($id, $parameters, $domain, $locale));
     }
@@ -362,7 +362,7 @@ class TranslatorTest extends TestCase
     {
         $translator = new Translator('en');
         $translator->addLoader('array', new ArrayLoader());
-        $translator->addResource('array', array((string)$id => $translation), $locale, $domain);
+        $translator->addResource('array', array((string) $id => $translation), $locale, $domain);
 
         $this->assertEquals($expected, $translator->transChoice($id, $number, $parameters, $domain, $locale));
     }

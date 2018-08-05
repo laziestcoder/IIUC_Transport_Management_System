@@ -33,7 +33,7 @@ class PhpFileLoaderTest extends TestCase
 
     public function testLoadWithRoute()
     {
-        $loader = new PhpFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures')));
+        $loader = new PhpFileLoader(new FileLocator(array(__DIR__.'/../Fixtures')));
         $routeCollection = $loader->load('validpattern.php');
         $routes = $routeCollection->all();
 
@@ -52,7 +52,7 @@ class PhpFileLoaderTest extends TestCase
 
     public function testLoadWithImport()
     {
-        $loader = new PhpFileLoader(new FileLocator(array(__DIR__ . '/../Fixtures')));
+        $loader = new PhpFileLoader(new FileLocator(array(__DIR__.'/../Fixtures')));
         $routeCollection = $loader->load('validresource.php');
         $routes = $routeCollection->all();
 
@@ -71,7 +71,7 @@ class PhpFileLoaderTest extends TestCase
 
     public function testThatDefiningVariableInConfigFileHasNoSideEffects()
     {
-        $locator = new FileLocator(array(__DIR__ . '/../Fixtures'));
+        $locator = new FileLocator(array(__DIR__.'/../Fixtures'));
         $loader = new PhpFileLoader($locator);
         $routeCollection = $loader->load('with_define_path_variable.php');
         $resources = $routeCollection->getResources();
@@ -80,15 +80,16 @@ class PhpFileLoaderTest extends TestCase
         $fileResource = reset($resources);
         $this->assertSame(
             realpath($locator->locate('with_define_path_variable.php')),
-            (string)$fileResource
+            (string) $fileResource
         );
     }
 
     public function testRoutingConfigurator()
     {
-        $locator = new FileLocator(array(__DIR__ . '/../Fixtures'));
+        $locator = new FileLocator(array(__DIR__.'/../Fixtures'));
         $loader = new PhpFileLoader($locator);
-        $routeCollection = $loader->load('php_dsl.php');
+        $routeCollectionClosure = $loader->load('php_dsl.php');
+        $routeCollectionObject = $loader->load('php_object_dsl.php');
 
         $expectedCollection = new RouteCollection();
 
@@ -99,6 +100,9 @@ class PhpFileLoaderTest extends TestCase
         $expectedCollection->add('buz', (new Route('/zub'))
             ->setDefaults(array('_controller' => 'foo:act'))
         );
+        $expectedCollection->add('c_root', (new Route('/sub/pub/'))
+            ->setRequirements(array('id' => '\d+'))
+        );
         $expectedCollection->add('c_bar', (new Route('/sub/pub/bar'))
             ->setRequirements(array('id' => '\d+'))
         );
@@ -106,21 +110,33 @@ class PhpFileLoaderTest extends TestCase
             ->setHost('host')
             ->setRequirements(array('id' => '\d+'))
         );
+        $expectedCollection->add('z_c_root', new Route('/zub/pub/'));
+        $expectedCollection->add('z_c_bar', new Route('/zub/pub/bar'));
+        $expectedCollection->add('z_c_pub_buz', (new Route('/zub/pub/buz'))->setHost('host'));
+        $expectedCollection->add('r_root', new Route('/bus'));
+        $expectedCollection->add('r_bar', new Route('/bus/bar/'));
         $expectedCollection->add('ouf', (new Route('/ouf'))
             ->setSchemes(array('https'))
             ->setMethods(array('GET'))
             ->setDefaults(array('id' => 0))
         );
 
-        $expectedCollection->addResource(new FileResource(realpath(__DIR__ . '/../Fixtures/php_dsl_sub.php')));
-        $expectedCollection->addResource(new FileResource(realpath(__DIR__ . '/../Fixtures/php_dsl.php')));
+        $expectedCollection->addResource(new FileResource(realpath(__DIR__.'/../Fixtures/php_dsl_sub.php')));
+        $expectedCollection->addResource(new FileResource(realpath(__DIR__.'/../Fixtures/php_dsl_sub_root.php')));
 
-        $this->assertEquals($expectedCollection, $routeCollection);
+        $expectedCollectionClosure = $expectedCollection;
+        $expectedCollectionObject = clone $expectedCollection;
+
+        $expectedCollectionClosure->addResource(new FileResource(realpath(__DIR__.'/../Fixtures/php_dsl.php')));
+        $expectedCollectionObject->addResource(new FileResource(realpath(__DIR__.'/../Fixtures/php_object_dsl.php')));
+
+        $this->assertEquals($expectedCollectionClosure, $routeCollectionClosure);
+        $this->assertEquals($expectedCollectionObject, $routeCollectionObject);
     }
 
     public function testRoutingConfiguratorCanImportGlobPatterns()
     {
-        $locator = new FileLocator(array(__DIR__ . '/../Fixtures/glob'));
+        $locator = new FileLocator(array(__DIR__.'/../Fixtures/glob'));
         $loader = new PhpFileLoader($locator);
         $routeCollection = $loader->load('php_dsl.php');
 
@@ -129,5 +145,25 @@ class PhpFileLoaderTest extends TestCase
 
         $route = $routeCollection->get('baz_route');
         $this->assertSame('AppBundle:Baz:view', $route->getDefault('_controller'));
+    }
+
+    public function testRoutingI18nConfigurator()
+    {
+        $locator = new FileLocator(array(__DIR__.'/../Fixtures'));
+        $loader = new PhpFileLoader($locator);
+        $routeCollection = $loader->load('php_dsl_i18n.php');
+
+        $expectedCollection = new RouteCollection();
+
+        $expectedCollection->add('foo.en', (new Route('/glish/foo'))->setDefaults(array('_locale' => 'en', '_canonical_route' => 'foo')));
+        $expectedCollection->add('bar.en', (new Route('/glish/bar'))->setDefaults(array('_locale' => 'en', '_canonical_route' => 'bar')));
+        $expectedCollection->add('baz.en', (new Route('/baz'))->setDefaults(array('_locale' => 'en', '_canonical_route' => 'baz')));
+        $expectedCollection->add('c_foo.fr', (new Route('/ench/pub/foo'))->setDefaults(array('_locale' => 'fr', '_canonical_route' => 'c_foo')));
+        $expectedCollection->add('c_bar.fr', (new Route('/ench/pub/bar'))->setDefaults(array('_locale' => 'fr', '_canonical_route' => 'c_bar')));
+
+        $expectedCollection->addResource(new FileResource(realpath(__DIR__.'/../Fixtures/php_dsl_sub_i18n.php')));
+        $expectedCollection->addResource(new FileResource(realpath(__DIR__.'/../Fixtures/php_dsl_i18n.php')));
+
+        $this->assertEquals($expectedCollection, $routeCollection);
     }
 }

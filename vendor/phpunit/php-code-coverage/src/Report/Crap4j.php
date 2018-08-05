@@ -31,7 +31,7 @@ final class Crap4j
      */
     public function process(CodeCoverage $coverage, ?string $target = null, ?string $name = null): string
     {
-        $document = new \DOMDocument('1.0', 'UTF-8');
+        $document               = new \DOMDocument('1.0', 'UTF-8');
         $document->formatOutput = true;
 
         $root = $document->createElement('crap_result');
@@ -39,18 +39,18 @@ final class Crap4j
 
         $project = $document->createElement('project', \is_string($name) ? $name : '');
         $root->appendChild($project);
-        $root->appendChild($document->createElement('timestamp', \date('Y-m-d H:i:s', (int)$_SERVER['REQUEST_TIME'])));
+        $root->appendChild($document->createElement('timestamp', \date('Y-m-d H:i:s', (int) $_SERVER['REQUEST_TIME'])));
 
-        $stats = $document->createElement('stats');
+        $stats       = $document->createElement('stats');
         $methodsNode = $document->createElement('methods');
 
         $report = $coverage->getReport();
         unset($coverage);
 
-        $fullMethodCount = 0;
+        $fullMethodCount     = 0;
         $fullCrapMethodCount = 0;
-        $fullCrapLoad = 0;
-        $fullCrap = 0;
+        $fullCrapLoad        = 0;
+        $fullCrap            = 0;
 
         foreach ($report as $item) {
             $namespace = 'global';
@@ -117,7 +117,7 @@ final class Crap4j
         $buffer = $document->saveXML();
 
         if ($target !== null) {
-            if (!@\mkdir(\dirname($target), 0777, true) && !\is_dir(\dirname($target))) {
+            if (!$this->createDirectory(\dirname($target))) {
                 throw new \RuntimeException(\sprintf('Directory "%s" was not created', \dirname($target)));
             }
 
@@ -136,7 +136,7 @@ final class Crap4j
 
     /**
      * @param float $crapValue
-     * @param int $cyclomaticComplexity
+     * @param int   $cyclomaticComplexity
      * @param float $coveragePercent
      *
      * @return float
@@ -161,5 +161,10 @@ final class Crap4j
     private function roundValue($value): float
     {
         return \round($value, 2);
+    }
+
+    private function createDirectory(string $directory): bool
+    {
+        return !(!\is_dir($directory) && !@\mkdir($directory, 0777, true) && !\is_dir($directory));
     }
 }

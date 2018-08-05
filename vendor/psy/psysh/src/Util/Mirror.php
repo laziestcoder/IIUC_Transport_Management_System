@@ -12,17 +12,18 @@
 namespace Psy\Util;
 
 use Psy\Exception\RuntimeException;
-use Psy\Reflection\ReflectionConstant;
+use Psy\Reflection\ReflectionClassConstant;
+use Psy\Reflection\ReflectionConstant_;
 
 /**
  * A utility class for getting Reflectors.
  */
 class Mirror
 {
-    const CONSTANT = 1;
-    const METHOD = 2;
+    const CONSTANT        = 1;
+    const METHOD          = 2;
     const STATIC_PROPERTY = 4;
-    const PROPERTY = 8;
+    const PROPERTY        = 8;
 
     /**
      * Get a Reflector for a function, class or instance, constant, method or property.
@@ -35,16 +36,20 @@ class Mirror
      * @throws \Psy\Exception\RuntimeException when a $member specified but not present on $value
      * @throws \InvalidArgumentException       if $value is something other than an object or class/function name
      *
-     * @param mixed $value Class or function name, or variable instance
+     * @param mixed  $value  Class or function name, or variable instance
      * @param string $member Optional: property, constant or method name (default: null)
-     * @param int $filter (default: CONSTANT | METHOD | PROPERTY | STATIC_PROPERTY)
+     * @param int    $filter (default: CONSTANT | METHOD | PROPERTY | STATIC_PROPERTY)
      *
      * @return \Reflector
      */
     public static function get($value, $member = null, $filter = 15)
     {
-        if ($member === null && is_string($value) && function_exists($value)) {
-            return new \ReflectionFunction($value);
+        if ($member === null && is_string($value)) {
+            if (function_exists($value)) {
+                return new \ReflectionFunction($value);
+            } elseif (defined($value) || ReflectionConstant_::isMagicConstant($value)) {
+                return new ReflectionConstant_($value);
+            }
         }
 
         $class = self::getClass($value);
@@ -52,7 +57,7 @@ class Mirror
         if ($member === null) {
             return $class;
         } elseif ($filter & self::CONSTANT && $class->hasConstant($member)) {
-            return new ReflectionConstant($class, $member);
+            return ReflectionClassConstant::create($value, $member);
         } elseif ($filter & self::METHOD && $class->hasMethod($member)) {
             return $class->getMethod($member);
         } elseif ($filter & self::PROPERTY && $class->hasProperty($member)) {
@@ -85,7 +90,7 @@ class Mirror
 
         if (!is_string($value)) {
             throw new \InvalidArgumentException('Mirror expects an object or class');
-        } elseif (!class_exists($value) && !interface_exists($value) && !(function_exists('trait_exists') && trait_exists($value))) {
+        } elseif (!class_exists($value) && !interface_exists($value) && !trait_exists($value)) {
             throw new \InvalidArgumentException('Unknown class or function: ' . $value);
         }
 

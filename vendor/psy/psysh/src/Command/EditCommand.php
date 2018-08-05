@@ -33,8 +33,8 @@ class EditCommand extends Command implements ContextAware
     /**
      * Constructor.
      *
-     * @param string $runtimeDir The directory to use for temporary files
-     * @param string|null $name The name of the command; passing null means it must be set in configure()
+     * @param string      $runtimeDir The directory to use for temporary files
+     * @param string|null $name       The name of the command; passing null means it must be set in configure()
      *
      * @throws \Symfony\Component\Console\Exception\LogicException When the command name is empty
      */
@@ -43,16 +43,6 @@ class EditCommand extends Command implements ContextAware
         parent::__construct($name);
 
         $this->runtimeDir = $runtimeDir;
-    }
-
-    /**
-     * Set the Context reference.
-     *
-     * @param Context $context
-     */
-    public function setContext(Context $context)
-    {
-        $this->context = $context;
     }
 
     protected function configure()
@@ -81,7 +71,7 @@ class EditCommand extends Command implements ContextAware
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      *
      * @throws \InvalidArgumentException when both exec and no-exec flags are given or if a given variable is not found in the current context
@@ -117,27 +107,8 @@ class EditCommand extends Command implements ContextAware
     }
 
     /**
-     * @param string|null $fileArgument
-     *
-     * @return string|null The file path to edit, null if the input was null, or the value of the referenced variable
-     *
-     * @throws \InvalidArgumentException If the variable is not found in the current context
-     */
-    private function extractFilePath($fileArgument)
-    {
-        // If the file argument was a variable, get it from the context
-        if ($fileArgument !== null &&
-            strlen($fileArgument) > 0 &&
-            $fileArgument[0] === '$') {
-            $fileArgument = $this->context->get(preg_replace('/^\$/', '', $fileArgument));
-        }
-
-        return $fileArgument;
-    }
-
-    /**
-     * @param bool $execOption
-     * @param bool $noExecOption
+     * @param bool        $execOption
+     * @param bool        $noExecOption
      * @param string|null $filePath
      *
      * @return bool
@@ -154,6 +125,25 @@ class EditCommand extends Command implements ContextAware
 
         // By default, code that is edited is executed if there was no given input file path
         return $filePath === null;
+    }
+
+    /**
+     * @param string|null $fileArgument
+     *
+     * @return string|null The file path to edit, null if the input was null, or the value of the referenced variable
+     *
+     * @throws \InvalidArgumentException If the variable is not found in the current context
+     */
+    private function extractFilePath($fileArgument)
+    {
+        // If the file argument was a variable, get it from the context
+        if ($fileArgument !== null &&
+            strlen($fileArgument) > 0 &&
+            $fileArgument[0] === '$') {
+            $fileArgument = $this->context->get(preg_replace('/^\$/', '', $fileArgument));
+        }
+
+        return $fileArgument;
     }
 
     /**
@@ -183,5 +173,15 @@ class EditCommand extends Command implements ContextAware
         }
 
         return $editedContent;
+    }
+
+    /**
+     * Set the Context reference.
+     *
+     * @param Context $context
+     */
+    public function setContext(Context $context)
+    {
+        $this->context = $context;
     }
 }

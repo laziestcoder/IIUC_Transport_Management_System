@@ -60,14 +60,6 @@ class ValidFunctionNamePass extends NamespaceAwarePass
         }
     }
 
-    private static function isConditional(Node $node)
-    {
-        return $node instanceof If_ ||
-            $node instanceof While_ ||
-            $node instanceof Do_ ||
-            $node instanceof Switch_;
-    }
-
     /**
      * Validate that function calls will succeed.
      *
@@ -85,13 +77,21 @@ class ValidFunctionNamePass extends NamespaceAwarePass
             $name = $node->name;
             if (!$name instanceof Expr && !$name instanceof Variable) {
                 $shortName = implode('\\', $name->parts);
-                $fullName = $this->getFullyQualifiedName($name);
-                $inScope = isset($this->currentScope[strtolower($fullName)]);
+                $fullName  = $this->getFullyQualifiedName($name);
+                $inScope   = isset($this->currentScope[strtolower($fullName)]);
                 if (!$inScope && !function_exists($shortName) && !function_exists($fullName)) {
                     $message = sprintf('Call to undefined function %s()', $name);
                     throw new FatalErrorException($message, 0, E_ERROR, null, $node->getLine());
                 }
             }
         }
+    }
+
+    private static function isConditional(Node $node)
+    {
+        return $node instanceof If_ ||
+            $node instanceof While_ ||
+            $node instanceof Do_ ||
+            $node instanceof Switch_;
     }
 }

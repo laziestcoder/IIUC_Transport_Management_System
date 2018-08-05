@@ -7,21 +7,28 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass SebastianBergmann\Comparator\ResourceComparator
+ * @covers \SebastianBergmann\Comparator\ResourceComparator<extended>
  *
- * @uses SebastianBergmann\Comparator\Comparator
- * @uses SebastianBergmann\Comparator\Factory
- * @uses SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
-class ResourceComparatorTest extends TestCase
+final class ResourceComparatorTest extends TestCase
 {
+    /**
+     * @var ResourceComparator
+     */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new ResourceComparator;
+    }
 
     public function acceptsSucceedsProvider()
     {
@@ -69,41 +76,29 @@ class ResourceComparatorTest extends TestCase
     }
 
     /**
-     * @covers       ::accepts
      * @dataProvider acceptsSucceedsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAcceptsSucceeds($expected, $actual)
+    public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
     /**
-     * @covers       ::accepts
      * @dataProvider acceptsFailsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAcceptsFails($expected, $actual)
+    public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
     /**
-     * @covers       ::assertEquals
      * @dataProvider assertEqualsSucceedsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAssertEqualsSucceeds($expected, $actual)
+    public function testAssertEqualsSucceeds($expected, $actual): void
     {
         $exception = null;
 
@@ -116,21 +111,12 @@ class ResourceComparatorTest extends TestCase
     }
 
     /**
-     * @covers       ::assertEquals
      * @dataProvider assertEqualsFailsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAssertEqualsFails($expected, $actual)
+    public function testAssertEqualsFails($expected, $actual): void
     {
         $this->expectException(ComparisonFailure::class);
 
         $this->comparator->assertEquals($expected, $actual);
-    }
-
-    protected function setUp()
-    {
-        $this->comparator = new ResourceComparator;
     }
 }

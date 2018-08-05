@@ -595,11 +595,6 @@ class Text extends \Faker\Provider\Text
 ジョバンニはもういろいろなことで胸むねがいっぱいで、なんにも言いえずに博士はかせの前をはなれて、早くお母さんに牛乳ぎゅうにゅうを持もって行って、お父さんの帰ることを知らせようと思うと、もういちもくさんに河原かわらを街まちの方へ走りました。
 EOT;
 
-    protected static function strlen($text)
-    {
-        return function_exists('mb_strlen') ? mb_strlen($text, 'UTF-8') : count(static::explode($text));
-    }
-
     protected static function explode($text)
     {
         $chars = array();
@@ -609,6 +604,11 @@ EOT;
             }
         }
         return $chars;
+    }
+
+    protected static function strlen($text)
+    {
+        return function_exists('mb_strlen') ? mb_strlen($text, 'UTF-8') : count(static::explode($text));
     }
 
     protected static function validStart($word)

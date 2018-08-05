@@ -49,31 +49,13 @@ class Profile
     }
 
     /**
-     * Returns the parent profile.
+     * Sets the token.
      *
-     * @return self
+     * @param string $token The token
      */
-    public function getParent()
+    public function setToken($token)
     {
-        return $this->parent;
-    }
-
-    /**
-     * Sets the parent token.
-     */
-    public function setParent(self $parent)
-    {
-        $this->parent = $parent;
-    }
-
-    /**
-     * Returns the parent token.
-     *
-     * @return null|string The parent token
-     */
-    public function getParentToken()
-    {
-        return $this->parent ? $this->parent->getToken() : null;
+        $this->token = $token;
     }
 
     /**
@@ -87,13 +69,31 @@ class Profile
     }
 
     /**
-     * Sets the token.
-     *
-     * @param string $token The token
+     * Sets the parent token.
      */
-    public function setToken($token)
+    public function setParent(self $parent)
     {
-        $this->token = $token;
+        $this->parent = $parent;
+    }
+
+    /**
+     * Returns the parent profile.
+     *
+     * @return self
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * Returns the parent token.
+     *
+     * @return null|string The parent token
+     */
+    public function getParentToken()
+    {
+        return $this->parent ? $this->parent->getToken() : null;
     }
 
     /**
@@ -169,19 +169,19 @@ class Profile
     }
 
     /**
-     * @return int
-     */
-    public function getStatusCode()
-    {
-        return $this->statusCode;
-    }
-
-    /**
      * @param int $statusCode
      */
     public function setStatusCode($statusCode)
     {
         $this->statusCode = $statusCode;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatusCode()
+    {
+        return $this->statusCode;
     }
 
     /**
@@ -214,6 +214,17 @@ class Profile
     {
         $this->children[] = $child;
         $child->setParent($this);
+    }
+
+    public function getChildByToken(string $token): ?self
+    {
+        foreach ($this->children as $child) {
+            if ($token === $child->getToken()) {
+                return $child;
+            }
+        }
+
+        return null;
     }
 
     /**

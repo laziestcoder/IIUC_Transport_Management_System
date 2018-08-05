@@ -40,8 +40,8 @@ class MessageSelector
      *     {0} There are no apples|one: There is one apple|more: There are %count% apples
      *
      * @param string $message The message being translated
-     * @param int $number The number of items represented for the message
-     * @param string $locale The locale to use for choosing
+     * @param int    $number  The number of items represented for the message
+     * @param string $locale  The locale to use for choosing
      *
      * @return string
      *
@@ -61,7 +61,7 @@ class MessageSelector
         foreach ($parts as $part) {
             $part = trim(str_replace('||', '|', $part));
 
-            if (preg_match('/^(?P<interval>' . Interval::getIntervalRegexp() . ')\s*(?P<message>.*?)$/xs', $part, $matches)) {
+            if (preg_match('/^(?P<interval>'.Interval::getIntervalRegexp().')\s*(?P<message>.*?)$/xs', $part, $matches)) {
                 $explicitRules[$matches['interval']] = $matches['message'];
             } elseif (preg_match('/^\w+\:\s*(.*?)$/', $part, $matches)) {
                 $standardRules[] = $matches[1];
@@ -82,7 +82,7 @@ class MessageSelector
         if (!isset($standardRules[$position])) {
             // when there's exactly one rule given, and that rule is a standard
             // rule, use this rule
-            if (1 === count($parts) && isset($standardRules[0])) {
+            if (1 === \count($parts) && isset($standardRules[0])) {
                 return $standardRules[0];
             }
 

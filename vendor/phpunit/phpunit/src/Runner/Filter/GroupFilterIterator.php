@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Runner\Filter;
 
 use PHPUnit\Framework\TestSuite;
@@ -17,7 +16,7 @@ use RecursiveIterator;
 abstract class GroupFilterIterator extends RecursiveFilterIterator
 {
     /**
-     * @var array
+     * @var string[]
      */
     protected $groupTests = [];
 
@@ -26,11 +25,9 @@ abstract class GroupFilterIterator extends RecursiveFilterIterator
         parent::__construct($iterator);
 
         foreach ($suite->getGroupDetails() as $group => $tests) {
-            if (\in_array($group, $groups)) {
+            if (\in_array($group, $groups, true)) {
                 $testHashes = \array_map(
-                    function ($test) {
-                        return \spl_object_hash($test);
-                    },
+                    'spl_object_hash',
                     $tests
                 );
 

@@ -7,11 +7,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\ExpectationFailedException;
-use SebastianBergmann;
+use SebastianBergmann\Comparator\ComparisonFailure;
+use SebastianBergmann\Comparator\Factory as ComparatorFactory;
 
 /**
  * Constraint that checks if one value is equal to another.
@@ -32,37 +32,32 @@ class IsEqual extends Constraint
     /**
      * @var float
      */
-    private $delta = 0.0;
+    private $delta;
 
     /**
      * @var int
      */
-    private $maxDepth = 10;
+    private $maxDepth;
 
     /**
      * @var bool
      */
-    private $canonicalize = false;
+    private $canonicalize;
 
     /**
      * @var bool
      */
-    private $ignoreCase = false;
-
-    /**
-     * @var SebastianBergmann\Comparator\ComparisonFailure
-     */
-    private $lastFailure;
+    private $ignoreCase;
 
     public function __construct($value, float $delta = 0.0, int $maxDepth = 10, bool $canonicalize = false, bool $ignoreCase = false)
     {
         parent::__construct();
 
-        $this->value = $value;
-        $this->delta = $delta;
-        $this->maxDepth = $maxDepth;
+        $this->value        = $value;
+        $this->delta        = $delta;
+        $this->maxDepth     = $maxDepth;
         $this->canonicalize = $canonicalize;
-        $this->ignoreCase = $ignoreCase;
+        $this->ignoreCase   = $ignoreCase;
     }
 
     /**
@@ -75,13 +70,11 @@ class IsEqual extends Constraint
      * a boolean value instead: true in case of success, false in case of a
      * failure.
      *
-     * @param mixed $other value or object to evaluate
-     * @param string $description Additional information about the test
-     * @param bool $returnResult Whether to return a result or throw an exception
+     * @param mixed  $other        value or object to evaluate
+     * @param string $description  Additional information about the test
+     * @param bool   $returnResult Whether to return a result or throw an exception
      *
      * @throws ExpectationFailedException
-     *
-     * @return mixed
      */
     public function evaluate($other, $description = '', $returnResult = false)
     {
@@ -92,7 +85,7 @@ class IsEqual extends Constraint
             return true;
         }
 
-        $comparatorFactory = SebastianBergmann\Comparator\Factory::getInstance();
+        $comparatorFactory = ComparatorFactory::getInstance();
 
         try {
             $comparator = $comparatorFactory->getComparatorFor(
@@ -107,7 +100,7 @@ class IsEqual extends Constraint
                 $this->canonicalize,
                 $this->ignoreCase
             );
-        } catch (SebastianBergmann\Comparator\ComparisonFailure $f) {
+        } catch (ComparisonFailure $f) {
             if ($returnResult) {
                 return false;
             }

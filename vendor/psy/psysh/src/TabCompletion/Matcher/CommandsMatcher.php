@@ -52,38 +52,6 @@ class CommandsMatcher extends AbstractMatcher
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getMatches(array $tokens, array $info = [])
-    {
-        $input = $this->getInput($tokens);
-
-        return array_filter($this->commands, function ($command) use ($input) {
-            return AbstractMatcher::startsWith($input, $command);
-        });
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasMatched(array $tokens)
-    {
-        /* $openTag */
-        array_shift($tokens);
-        $command = array_shift($tokens);
-
-        switch (true) {
-            case self::tokenIs($command, self::T_STRING) &&
-                !$this->isCommand($command[1]) &&
-                $this->matchCommand($command[1]) &&
-                empty($tokens):
-                return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Check whether a command $name is defined.
      *
      * @param string $name
@@ -108,6 +76,37 @@ class CommandsMatcher extends AbstractMatcher
             if ($this->startsWith($name, $cmd)) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMatches(array $tokens, array $info = [])
+    {
+        $input = $this->getInput($tokens);
+
+        return array_filter($this->commands, function ($command) use ($input) {
+            return AbstractMatcher::startsWith($input, $command);
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasMatched(array $tokens)
+    {
+        /* $openTag */ array_shift($tokens);
+        $command = array_shift($tokens);
+
+        switch (true) {
+            case self::tokenIs($command, self::T_STRING) &&
+                !$this->isCommand($command[1]) &&
+                $this->matchCommand($command[1]) &&
+                empty($tokens):
+                return true;
         }
 
         return false;

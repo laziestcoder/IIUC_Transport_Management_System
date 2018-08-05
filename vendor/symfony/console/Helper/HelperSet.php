@@ -33,7 +33,7 @@ class HelperSet implements \IteratorAggregate
     public function __construct(array $helpers = array())
     {
         foreach ($helpers as $alias => $helper) {
-            $this->set($helper, is_int($alias) ? null : $alias);
+            $this->set($helper, \is_int($alias) ? null : $alias);
         }
     }
 
@@ -41,7 +41,7 @@ class HelperSet implements \IteratorAggregate
      * Sets a helper.
      *
      * @param HelperInterface $helper The helper instance
-     * @param string $alias An alias
+     * @param string          $alias  An alias
      */
     public function set(HelperInterface $helper, $alias = null)
     {
@@ -51,6 +51,18 @@ class HelperSet implements \IteratorAggregate
         }
 
         $helper->setHelperSet($this);
+    }
+
+    /**
+     * Returns true if the helper if defined.
+     *
+     * @param string $name The helper name
+     *
+     * @return bool true if the helper is defined, false otherwise
+     */
+    public function has($name)
+    {
+        return isset($this->helpers[$name]);
     }
 
     /**
@@ -71,16 +83,9 @@ class HelperSet implements \IteratorAggregate
         return $this->helpers[$name];
     }
 
-    /**
-     * Returns true if the helper if defined.
-     *
-     * @param string $name The helper name
-     *
-     * @return bool true if the helper is defined, false otherwise
-     */
-    public function has($name)
+    public function setCommand(Command $command = null)
     {
-        return isset($this->helpers[$name]);
+        $this->command = $command;
     }
 
     /**
@@ -91,11 +96,6 @@ class HelperSet implements \IteratorAggregate
     public function getCommand()
     {
         return $this->command;
-    }
-
-    public function setCommand(Command $command = null)
-    {
-        $this->command = $command;
     }
 
     /**

@@ -60,16 +60,6 @@ class TraceableUrlMatcherTest extends TestCase
         $this->assertSame(array(0, 0, 0, 0, 0, 1), $this->getLevels($traces));
     }
 
-    public function getLevels($traces)
-    {
-        $levels = array();
-        foreach ($traces as $trace) {
-            $levels[] = $trace['level'];
-        }
-
-        return $levels;
-    }
-
     public function testMatchRouteOnMultipleHosts()
     {
         $routes = new RouteCollection();
@@ -99,6 +89,16 @@ class TraceableUrlMatcherTest extends TestCase
             array(TraceableUrlMatcher::ROUTE_ALMOST_MATCHES, TraceableUrlMatcher::ROUTE_ALMOST_MATCHES),
             $this->getLevels($traces)
         );
+    }
+
+    public function getLevels($traces)
+    {
+        $levels = array();
+        foreach ($traces as $trace) {
+            $levels[] = $trace['level'];
+        }
+
+        return $levels;
     }
 
     public function testRoutesWithConditions()

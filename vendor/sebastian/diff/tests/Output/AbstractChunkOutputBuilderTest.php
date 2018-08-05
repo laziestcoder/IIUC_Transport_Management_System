@@ -16,24 +16,23 @@ use SebastianBergmann\Diff\Differ;
 /**
  * @covers SebastianBergmann\Diff\Output\AbstractChunkOutputBuilder
  *
- * @uses   SebastianBergmann\Diff\Differ
- * @uses   SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder
- * @uses   SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
+ * @uses SebastianBergmann\Diff\Differ
+ * @uses SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder
+ * @uses SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
  */
 final class AbstractChunkOutputBuilderTest extends TestCase
 {
     /**
-     * @param array $expected
+     * @param array  $expected
      * @param string $from
      * @param string $to
-     * @param int $lineThreshold
+     * @param int    $lineThreshold
      *
      * @dataProvider provideGetCommonChunks
      */
     public function testGetCommonChunks(array $expected, string $from, string $to, int $lineThreshold = 5): void
     {
-        $output = new class extends AbstractChunkOutputBuilder
-        {
+        $output = new class extends AbstractChunkOutputBuilder {
             public function getDiff(array $diff): string
             {
                 return '';
@@ -53,7 +52,7 @@ final class AbstractChunkOutputBuilderTest extends TestCase
 
     public function provideGetCommonChunks(): array
     {
-        return [
+        return[
             'same (with default threshold)' => [
                 [],
                 'A',

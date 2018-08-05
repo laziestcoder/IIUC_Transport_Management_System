@@ -13,11 +13,56 @@ class Swift_MessageTest extends \PHPUnit\Framework\TestCase
         $this->addToAssertionCount(1);
     }
 
+    public function testCloningWithSigners()
+    {
+        $message1 = new Swift_Message('subj', 'body', 'ctype');
+        $signer = new Swift_Signers_DKIMSigner(dirname(dirname(__DIR__)).'/_samples/dkim/dkim.test.priv', 'test.example', 'example');
+        $message1->attachSigner($signer);
+        $message2 = new Swift_Message('subj', 'body', 'ctype');
+        $signer = new Swift_Signers_DKIMSigner(dirname(dirname(__DIR__)).'/_samples/dkim/dkim.test.priv', 'test.example', 'example');
+        $message2->attachSigner($signer);
+        $message1_clone = clone $message1;
+
+        $this->recursiveObjectCloningCheck($message1, $message2, $message1_clone);
+        // the test above will fail if the two messages are not identical
+        $this->addToAssertionCount(1);
+    }
+
+    public function testBodySwap()
+    {
+        $message1 = new Swift_Message('Test');
+        $html = new Swift_MimePart('<html></html>', 'text/html');
+        $html->getHeaders()->addTextHeader('X-Test-Remove', 'Test-Value');
+        $html->getHeaders()->addTextHeader('X-Test-Alter', 'Test-Value');
+        $message1->attach($html);
+        $source = $message1->toString();
+        $message2 = clone $message1;
+        $message2->setSubject('Message2');
+        foreach ($message2->getChildren() as $child) {
+            $child->setBody('Test');
+            $child->getHeaders()->removeAll('X-Test-Remove');
+            $child->getHeaders()->get('X-Test-Alter')->setValue('Altered');
+        }
+        $final = $message1->toString();
+        if ($source != $final) {
+            $this->fail("Difference although object cloned \n [".$source."]\n[".$final."]\n");
+        }
+        $final = $message2->toString();
+        if ($final == $source) {
+            $this->fail('Two body matches although they should differ'."\n [".$source."]\n[".$final."]\n");
+        }
+        $id_1 = $message1->getId();
+        $id_2 = $message2->getId();
+        $this->assertEquals($id_1, $id_2, 'Message Ids differ');
+        $id_2 = $message2->generateId();
+        $this->assertNotEquals($id_1, $id_2, 'Message Ids are the same');
+    }
+
     protected function recursiveObjectCloningCheck($obj1, $obj2, $obj1_clone)
     {
-        $obj1_properties = (array)$obj1;
-        $obj2_properties = (array)$obj2;
-        $obj1_clone_properties = (array)$obj1_clone;
+        $obj1_properties = (array) $obj1;
+        $obj2_properties = (array) $obj2;
+        $obj1_clone_properties = (array) $obj1_clone;
 
         foreach ($obj1_properties as $property => $value) {
             if (is_object($value)) {
@@ -28,14 +73,14 @@ class Swift_MessageTest extends \PHPUnit\Framework\TestCase
                 if ($obj1_value !== $obj2_value) {
                     // two separetely instanciated objects property not referencing same object
                     $this->assertFalse(
-                    // but object's clone does - not everything copied
+                        // but object's clone does - not everything copied
                         $obj1_value === $obj1_clone_value,
                         "Property `$property` cloning error: source and cloned objects property is referencing same object"
                     );
                 } else {
                     // two separetely instanciated objects have same reference
                     $this->assertFalse(
-                    // but object's clone doesn't - overdone making copies
+                        // but object's clone doesn't - overdone making copies
                         $obj1_value !== $obj1_clone_value,
                         "Property `$property` not properly cloned: it should reference same object as cloning source (overdone copping)"
                     );
@@ -62,14 +107,14 @@ class Swift_MessageTest extends \PHPUnit\Framework\TestCase
                 if ($arr1_value !== $arr2_value) {
                     // two separetely instanciated objects property not referencing same object
                     $this->assertFalse(
-                    // but object's clone does - not everything copied
+                        // but object's clone does - not everything copied
                         $arr1_value === $arr1_clone_value,
                         "Key `$key` cloning error: source and cloned objects property is referencing same object"
                     );
                 } else {
                     // two separetely instanciated objects have same reference
                     $this->assertFalse(
-                    // but object's clone doesn't - overdone making copies
+                        // but object's clone doesn't - overdone making copies
                         $arr1_value !== $arr1_clone_value,
                         "Key `$key` not properly cloned: it should reference same object as cloning source (overdone copping)"
                     );
@@ -84,50 +129,5 @@ class Swift_MessageTest extends \PHPUnit\Framework\TestCase
                 return $this->recursiveArrayCloningCheck($arr1_value, $arr2_value, $arr1_clone_value);
             }
         }
-    }
-
-    public function testCloningWithSigners()
-    {
-        $message1 = new Swift_Message('subj', 'body', 'ctype');
-        $signer = new Swift_Signers_DKIMSigner(dirname(dirname(__DIR__)) . '/_samples/dkim/dkim.test.priv', 'test.example', 'example');
-        $message1->attachSigner($signer);
-        $message2 = new Swift_Message('subj', 'body', 'ctype');
-        $signer = new Swift_Signers_DKIMSigner(dirname(dirname(__DIR__)) . '/_samples/dkim/dkim.test.priv', 'test.example', 'example');
-        $message2->attachSigner($signer);
-        $message1_clone = clone $message1;
-
-        $this->recursiveObjectCloningCheck($message1, $message2, $message1_clone);
-        // the test above will fail if the two messages are not identical
-        $this->addToAssertionCount(1);
-    }
-
-    public function testBodySwap()
-    {
-        $message1 = new Swift_Message('Test');
-        $html = new Swift_MimePart('<html></html>', 'text/html');
-        $html->getHeaders()->addTextHeader('X-Test-Remove', 'Test-Value');
-        $html->getHeaders()->addTextHeader('X-Test-Alter', 'Test-Value');
-        $message1->attach($html);
-        $source = $message1->toString();
-        $message2 = clone $message1;
-        $message2->setSubject('Message2');
-        foreach ($message2->getChildren() as $child) {
-            $child->setBody('Test');
-            $child->getHeaders()->removeAll('X-Test-Remove');
-            $child->getHeaders()->get('X-Test-Alter')->setValue('Altered');
-        }
-        $final = $message1->toString();
-        if ($source != $final) {
-            $this->fail("Difference although object cloned \n [" . $source . "]\n[" . $final . "]\n");
-        }
-        $final = $message2->toString();
-        if ($final == $source) {
-            $this->fail('Two body matches although they should differ' . "\n [" . $source . "]\n[" . $final . "]\n");
-        }
-        $id_1 = $message1->getId();
-        $id_2 = $message2->getId();
-        $this->assertEquals($id_1, $id_2, 'Message Ids differ');
-        $id_2 = $message2->generateId();
-        $this->assertNotEquals($id_1, $id_2, 'Message Ids are the same');
     }
 }

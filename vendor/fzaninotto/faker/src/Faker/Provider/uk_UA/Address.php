@@ -252,7 +252,7 @@ class Address extends \Faker\Provider\Address
         'Тернопіль',
         'Харків',
         'Херсон',
-        'Хмельницьк',
+        'Хмельницький',
         'Черкаси',
         'Чернівці',
         'Чернігів'
@@ -309,6 +309,11 @@ class Address extends \Faker\Provider\Address
         return '';
     }
 
+    public function streetName()
+    {
+        return static::randomElement(static::$street);
+    }
+
     public static function postcode()
     {
         return static::toUpper(static::bothify(static::randomElement(static::$postcode)));
@@ -327,16 +332,6 @@ class Address extends \Faker\Provider\Address
     public static function cityPrefix()
     {
         return static::randomElement(static::$cityPrefix);
-    }
-
-    public static function streetPrefix()
-    {
-        return static::randomElement(static::$streetPrefix);
-    }
-
-    public function streetName()
-    {
-        return static::randomElement(static::$street);
     }
 
     public function city()
@@ -358,5 +353,10 @@ class Address extends \Faker\Provider\Address
         $format = "$region {{regionSuffix}}, {{cityPrefix}} $city";
 
         return $this->generator->parse($format);
+    }
+
+    public static function streetPrefix()
+    {
+        return static::randomElement(static::$streetPrefix);
     }
 }

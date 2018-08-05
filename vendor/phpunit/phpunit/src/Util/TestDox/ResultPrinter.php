@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util\TestDox;
 
 use PHPUnit\Framework\AssertionFailedError;
@@ -97,8 +96,6 @@ abstract class ResultPrinter extends Printer implements TestListener
 
     /**
      * @param resource $out
-     * @param array $groups
-     * @param array $excludeGroups
      *
      * @throws \PHPUnit\Framework\Exception
      */
@@ -106,18 +103,11 @@ abstract class ResultPrinter extends Printer implements TestListener
     {
         parent::__construct($out);
 
-        $this->groups = $groups;
+        $this->groups        = $groups;
         $this->excludeGroups = $excludeGroups;
 
         $this->prettifier = new NamePrettifier;
         $this->startRun();
-    }
-
-    /**
-     * Handler for 'start run' event.
-     */
-    protected function startRun(): void
-    {
     }
 
     /**
@@ -131,38 +121,6 @@ abstract class ResultPrinter extends Printer implements TestListener
         parent::flush();
     }
 
-    protected function doEndClass(): void
-    {
-        foreach ($this->tests as $test) {
-            $this->onTest($test[0], $test[1] === BaseTestRunner::STATUS_PASSED);
-        }
-
-        $this->endClass($this->testClass);
-    }
-
-    /**
-     * Handler for 'on test' event.
-     *
-     * @param mixed $name
-     */
-    protected function onTest($name, bool $success = true): void
-    {
-    }
-
-    /**
-     * Handler for 'end class' event.
-     */
-    protected function endClass(string $name): void
-    {
-    }
-
-    /**
-     * Handler for 'end run' event.
-     */
-    protected function endRun(): void
-    {
-    }
-
     /**
      * An error occurred.
      */
@@ -174,39 +132,6 @@ abstract class ResultPrinter extends Printer implements TestListener
 
         $this->testStatus = BaseTestRunner::STATUS_ERROR;
         $this->failed++;
-    }
-
-    private function isOfInterest(Test $test): bool
-    {
-        if (!$test instanceof TestCase) {
-            return false;
-        }
-
-        if ($test instanceof WarningTestCase) {
-            return false;
-        }
-
-        if (!empty($this->groups)) {
-            foreach ($test->getGroups() as $group) {
-                if (\in_array($group, $this->groups)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        if (!empty($this->excludeGroups)) {
-            foreach ($test->getGroups() as $group) {
-                if (\in_array($group, $this->excludeGroups)) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        return true;
     }
 
     /**
@@ -306,42 +231,18 @@ abstract class ResultPrinter extends Printer implements TestListener
                 $this->doEndClass();
             }
 
-            $classAnnotations = \PHPUnit\Util\Test::parseTestMethodAnnotations($class);
-
-            if (isset($classAnnotations['class']['testdox'][0])) {
-                $this->currentTestClassPrettified = $classAnnotations['class']['testdox'][0];
-            } else {
-                $this->currentTestClassPrettified = $this->prettifier->prettifyTestClass($class);
-            }
+            $this->currentTestClassPrettified = $this->prettifier->prettifyTestClass($class);
+            $this->testClass                  = $class;
+            $this->tests                      = [];
 
             $this->startClass($class);
-
-            $this->testClass = $class;
-            $this->tests = [];
         }
 
         if ($test instanceof TestCase) {
-            $annotations = $test->getAnnotations();
-
-            if (isset($annotations['method']['testdox'][0])) {
-                $this->currentTestMethodPrettified = $annotations['method']['testdox'][0];
-            } else {
-                $this->currentTestMethodPrettified = $this->prettifier->prettifyTestMethod($test->getName(false));
-            }
-
-            if ($test->usesDataProvider()) {
-                $this->currentTestMethodPrettified .= ' ' . $test->dataDescription();
-            }
+            $this->currentTestMethodPrettified = $this->prettifier->prettifyTestCase($test);
         }
 
         $this->testStatus = BaseTestRunner::STATUS_PASSED;
-    }
-
-    /**
-     * Handler for 'start class' event.
-     */
-    protected function startClass(string $name): void
-    {
     }
 
     /**
@@ -355,7 +256,84 @@ abstract class ResultPrinter extends Printer implements TestListener
 
         $this->tests[] = [$this->currentTestMethodPrettified, $this->testStatus];
 
-        $this->currentTestClassPrettified = null;
+        $this->currentTestClassPrettified  = null;
         $this->currentTestMethodPrettified = null;
+    }
+
+    protected function doEndClass(): void
+    {
+        foreach ($this->tests as $test) {
+            $this->onTest($test[0], $test[1] === BaseTestRunner::STATUS_PASSED);
+        }
+
+        $this->endClass($this->testClass);
+    }
+
+    /**
+     * Handler for 'start run' event.
+     */
+    protected function startRun(): void
+    {
+    }
+
+    /**
+     * Handler for 'start class' event.
+     */
+    protected function startClass(string $name): void
+    {
+    }
+
+    /**
+     * Handler for 'on test' event.
+     */
+    protected function onTest($name, bool $success = true): void
+    {
+    }
+
+    /**
+     * Handler for 'end class' event.
+     */
+    protected function endClass(string $name): void
+    {
+    }
+
+    /**
+     * Handler for 'end run' event.
+     */
+    protected function endRun(): void
+    {
+    }
+
+    private function isOfInterest(Test $test): bool
+    {
+        if (!$test instanceof TestCase) {
+            return false;
+        }
+
+        if ($test instanceof WarningTestCase) {
+            return false;
+        }
+
+        if (!empty($this->groups)) {
+            foreach ($test->getGroups() as $group) {
+                if (\in_array($group, $this->groups)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        if (!empty($this->excludeGroups)) {
+            foreach ($test->getGroups() as $group) {
+                if (\in_array($group, $this->excludeGroups)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return true;
     }
 }

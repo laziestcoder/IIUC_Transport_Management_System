@@ -100,7 +100,7 @@ class Profiler
         }
 
         if (!($ret = $this->storage->write($profile)) && null !== $this->logger) {
-            $this->logger->warning('Unable to store the profiler information.', array('configured_storage' => get_class($this->storage)));
+            $this->logger->warning('Unable to store the profiler information.', array('configured_storage' => \get_class($this->storage)));
         }
 
         return $ret;
@@ -117,12 +117,12 @@ class Profiler
     /**
      * Finds profiler tokens for the given criteria.
      *
-     * @param string $ip The IP
-     * @param string $url The URL
-     * @param string $limit The maximum number of tokens to return
-     * @param string $method The request method
-     * @param string $start The start date to search from
-     * @param string $end The end date to search to
+     * @param string $ip         The IP
+     * @param string $url        The URL
+     * @param string $limit      The maximum number of tokens to return
+     * @param string $method     The request method
+     * @param string $start      The start date to search from
+     * @param string $end        The end date to search to
      * @param string $statusCode The request status code
      *
      * @return array An array of tokens
@@ -132,21 +132,6 @@ class Profiler
     public function find($ip, $url, $limit, $method, $start, $end, $statusCode = null)
     {
         return $this->storage->find($ip, $url, $limit, $method, $this->getTimestamp($start), $this->getTimestamp($end), $statusCode);
-    }
-
-    private function getTimestamp($value)
-    {
-        if (null === $value || '' == $value) {
-            return;
-        }
-
-        try {
-            $value = new \DateTime(is_numeric($value) ? '@' . $value : $value);
-        } catch (\Exception $e) {
-            return;
-        }
-
-        return $value->getTimestamp();
     }
 
     /**
@@ -169,6 +154,10 @@ class Profiler
             $profile->setIp($request->getClientIp());
         } catch (ConflictingHeadersException $e) {
             $profile->setIp('Unknown');
+        }
+
+        if ($prevToken = $response->headers->get('X-Debug-Token')) {
+            $response->headers->set('X-Previous-Debug-Token', $prevToken);
         }
 
         $response->headers->set('X-Debug-Token', $profile->getToken());
@@ -250,5 +239,20 @@ class Profiler
         }
 
         return $this->collectors[$name];
+    }
+
+    private function getTimestamp($value)
+    {
+        if (null === $value || '' == $value) {
+            return;
+        }
+
+        try {
+            $value = new \DateTime(is_numeric($value) ? '@'.$value : $value);
+        } catch (\Exception $e) {
+            return;
+        }
+
+        return $value->getTimestamp();
     }
 }

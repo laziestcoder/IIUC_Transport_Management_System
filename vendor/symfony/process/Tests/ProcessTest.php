@@ -32,11 +32,19 @@ class ProcessTest extends TestCase
     public static function setUpBeforeClass()
     {
         $phpBin = new PhpExecutableFinder();
-        self::$phpBin = getenv('SYMFONY_PROCESS_PHP_TEST_BINARY') ?: ('phpdbg' === PHP_SAPI ? 'php' : $phpBin->find());
+        self::$phpBin = getenv('SYMFONY_PROCESS_PHP_TEST_BINARY') ?: ('phpdbg' === \PHP_SAPI ? 'php' : $phpBin->find());
 
         ob_start();
         phpinfo(INFO_GENERAL);
         self::$sigchild = false !== strpos(ob_get_clean(), '--enable-sigchild');
+    }
+
+    protected function tearDown()
+    {
+        if (self::$process) {
+            self::$process->stop(0);
+            self::$process = null;
+        }
     }
 
     /**
@@ -53,13 +61,13 @@ class ProcessTest extends TestCase
             $this->fail($e);
         }
 
-        $cmd = new Process('echo test', __DIR__ . '/notfound/');
+        $cmd = new Process('echo test', __DIR__.'/notfound/');
         $cmd->run();
     }
 
     public function testThatProcessDoesNotThrowWarningDuringRun()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             $this->markTestSkipped('This test is transient on Windows');
         }
         @trigger_error('Test Error', E_USER_NOTICE);
@@ -68,36 +76,6 @@ class ProcessTest extends TestCase
         $actualError = error_get_last();
         $this->assertEquals('Test Error', $actualError['message']);
         $this->assertEquals(E_USER_NOTICE, $actualError['type']);
-    }
-
-    /**
-     * @return Process
-     */
-    private function getProcessForCode($code, $cwd = null, array $env = null, $input = null, $timeout = 60)
-    {
-        return $this->getProcess(array(self::$phpBin, '-r', $code), $cwd, $env, $input, $timeout);
-    }
-
-    /**
-     * @param string $commandline
-     * @param null|string $cwd
-     * @param null|array $env
-     * @param null|string $input
-     * @param int $timeout
-     * @param array $options
-     *
-     * @return Process
-     */
-    private function getProcess($commandline, $cwd = null, array $env = null, $input = null, $timeout = 60)
-    {
-        $process = new Process($commandline, $cwd, $env, $input, $timeout);
-        $process->inheritEnvironmentVariables();
-
-        if (self::$process) {
-            self::$process->stop(0);
-        }
-
-        return self::$process = $process;
     }
 
     /**
@@ -136,7 +114,7 @@ class ProcessTest extends TestCase
      */
     public function testStopWithTimeoutIsActuallyWorking()
     {
-        $p = $this->getProcess(array(self::$phpBin, __DIR__ . '/NonStopableProcess.php', 30));
+        $p = $this->getProcess(array(self::$phpBin, __DIR__.'/NonStopableProcess.php', 30));
         $p->start();
 
         while ($p->isRunning() && false === strpos($p->getOutput(), 'received')) {
@@ -144,7 +122,7 @@ class ProcessTest extends TestCase
         }
 
         if (!$p->isRunning()) {
-            throw new \LogicException('Process is not running: ' . $p->getErrorOutput());
+            throw new \LogicException('Process is not running: '.$p->getErrorOutput());
         }
 
         $start = microtime(true);
@@ -184,7 +162,7 @@ class ProcessTest extends TestCase
 
         $o = $p->getOutput();
 
-        $this->assertEquals($expectedOutputSize, strlen($o));
+        $this->assertEquals($expectedOutputSize, \strlen($o));
     }
 
     public function testCallbacksAreExecutedWithStart()
@@ -196,7 +174,7 @@ class ProcessTest extends TestCase
 
         $process->wait();
 
-        $this->assertSame('foo' . PHP_EOL, $data);
+        $this->assertSame('foo'.PHP_EOL, $data);
     }
 
     /**
@@ -219,15 +197,15 @@ class ProcessTest extends TestCase
      */
     public function testProcessPipes($code, $size)
     {
-        $expected = str_repeat(str_repeat('*', 1024), $size) . '!';
+        $expected = str_repeat(str_repeat('*', 1024), $size).'!';
         $expectedLength = (1024 * $size) + 1;
 
         $p = $this->getProcessForCode($code);
         $p->setInput($expected);
         $p->run();
 
-        $this->assertEquals($expectedLength, strlen($p->getOutput()));
-        $this->assertEquals($expectedLength, strlen($p->getErrorOutput()));
+        $this->assertEquals($expectedLength, \strlen($p->getOutput()));
+        $this->assertEquals($expectedLength, \strlen($p->getErrorOutput()));
     }
 
     /**
@@ -235,7 +213,7 @@ class ProcessTest extends TestCase
      */
     public function testSetStreamAsInput($code, $size)
     {
-        $expected = str_repeat(str_repeat('*', 1024), $size) . '!';
+        $expected = str_repeat(str_repeat('*', 1024), $size).'!';
         $expectedLength = (1024 * $size) + 1;
 
         $stream = fopen('php://temporary', 'w+');
@@ -248,8 +226,8 @@ class ProcessTest extends TestCase
 
         fclose($stream);
 
-        $this->assertEquals($expectedLength, strlen($p->getOutput()));
-        $this->assertEquals($expectedLength, strlen($p->getErrorOutput()));
+        $this->assertEquals($expectedLength, \strlen($p->getOutput()));
+        $this->assertEquals($expectedLength, \strlen($p->getErrorOutput()));
     }
 
     public function testLiveStreamAsInput()
@@ -329,7 +307,7 @@ class ProcessTest extends TestCase
 
     public function chainedCommandsOutputProvider()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             return array(
                 array("2 \r\n2\r\n", '&&', '2'),
             );
@@ -400,7 +378,7 @@ class ProcessTest extends TestCase
     {
         $lock = tempnam(sys_get_temp_dir(), __FUNCTION__);
 
-        $p = $this->getProcessForCode('file_put_contents($s = \'' . $uri . '\', \'foo\'); flock(fopen(' . var_export($lock, true) . ', \'r\'), LOCK_EX); file_put_contents($s, \'bar\');');
+        $p = $this->getProcessForCode('file_put_contents($s = \''.$uri.'\', \'foo\'); flock(fopen('.var_export($lock, true).', \'r\'), LOCK_EX); file_put_contents($s, \'bar\');');
 
         $h = fopen($lock, 'w');
         flock($h, LOCK_EX);
@@ -448,7 +426,7 @@ class ProcessTest extends TestCase
 
     public function testZeroAsOutput()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             // see http://stackoverflow.com/questions/7105433/windows-batch-echo-without-new-line
             $p = $this->getProcess('echo | set /p dummyName=0');
         } else {
@@ -461,7 +439,7 @@ class ProcessTest extends TestCase
 
     public function testExitCodeCommandFailed()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             $this->markTestSkipped('Windows does not support POSIX exit code');
         }
 
@@ -477,11 +455,11 @@ class ProcessTest extends TestCase
      */
     public function testTTYCommand()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             $this->markTestSkipped('Windows does not have /dev/tty support');
         }
 
-        $process = $this->getProcess('echo "foo" >> /dev/null && ' . $this->getProcessForCode('usleep(100000);')->getCommandLine());
+        $process = $this->getProcess('echo "foo" >> /dev/null && '.$this->getProcessForCode('usleep(100000);')->getCommandLine());
         $process->setTty(true);
         $process->start();
         $this->assertTrue($process->isRunning());
@@ -495,7 +473,7 @@ class ProcessTest extends TestCase
      */
     public function testTTYCommandExitCode()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             $this->markTestSkipped('Windows does have /dev/tty support');
         }
 
@@ -512,7 +490,7 @@ class ProcessTest extends TestCase
      */
     public function testTTYInWindowsEnvironment()
     {
-        if ('\\' !== DIRECTORY_SEPARATOR) {
+        if ('\\' !== \DIRECTORY_SEPARATOR) {
             $this->markTestSkipped('This test is for Windows platform only');
         }
 
@@ -546,7 +524,7 @@ class ProcessTest extends TestCase
         $process = $this->getProcess('echo foo');
 
         $this->assertSame($process, $process->mustRun());
-        $this->assertEquals('foo' . PHP_EOL, $process->getOutput());
+        $this->assertEquals('foo'.PHP_EOL, $process->getOutput());
     }
 
     public function testSuccessfulMustRunHasCorrectExitCode()
@@ -589,7 +567,7 @@ class ProcessTest extends TestCase
     {
         $process = $this->getProcess('echo foo');
         $process->run();
-        $this->assertGreaterThan(0, strlen($process->getOutput()));
+        $this->assertGreaterThan(0, \strlen($process->getOutput()));
     }
 
     public function testGetExitCodeIsNullOnStart()
@@ -676,7 +654,7 @@ class ProcessTest extends TestCase
 
     public function testProcessIsNotSignaled()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             $this->markTestSkipped('Windows does not support POSIX signals');
         }
 
@@ -687,7 +665,7 @@ class ProcessTest extends TestCase
 
     public function testProcessWithoutTermSignal()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             $this->markTestSkipped('Windows does not support POSIX signals');
         }
 
@@ -698,7 +676,7 @@ class ProcessTest extends TestCase
 
     public function testProcessIsSignaledIfStopped()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             $this->markTestSkipped('Windows does not support POSIX signals');
         }
 
@@ -710,12 +688,12 @@ class ProcessTest extends TestCase
     }
 
     /**
-     * @expectedException \Symfony\Component\Process\Exception\RuntimeException
-     * @expectedExceptionMessage The process has been signaled
+     * @expectedException \Symfony\Component\Process\Exception\ProcessSignaledException
+     * @expectedExceptionMessage The process has been signaled with signal "9".
      */
     public function testProcessThrowsExceptionWhenExternallySignaled()
     {
-        if (!function_exists('posix_kill')) {
+        if (!\function_exists('posix_kill')) {
             $this->markTestSkipped('Function posix_kill is required.');
         }
 
@@ -779,7 +757,7 @@ class ProcessTest extends TestCase
         $start = microtime(true);
         try {
             $process->start();
-            foreach ($process as $buffer) ;
+            foreach ($process as $buffer);
             $this->fail('A RuntimeException should have been raised');
         } catch (RuntimeException $e) {
         }
@@ -915,7 +893,7 @@ class ProcessTest extends TestCase
      */
     public function testSignal()
     {
-        $process = $this->getProcess(array(self::$phpBin, __DIR__ . '/SignalListener.php'));
+        $process = $this->getProcess(array(self::$phpBin, __DIR__.'/SignalListener.php'));
         $process->start();
 
         while (false === strpos($process->getOutput(), 'Caught')) {
@@ -1019,7 +997,7 @@ class ProcessTest extends TestCase
      */
     public function testWrongSignal()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             $this->markTestSkipped('POSIX signals do not work on Windows');
         }
 
@@ -1171,10 +1149,10 @@ class ProcessTest extends TestCase
     {
         $variations = array(
             'fwrite(STDOUT, $in = file_get_contents(\'php://stdin\')); fwrite(STDERR, $in);',
-            'include \'' . __DIR__ . '/PipeStdinInStdoutStdErrStreamSelect.php\';',
+            'include \''.__DIR__.'/PipeStdinInStdoutStdErrStreamSelect.php\';',
         );
 
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             // Avoid XL buffers on Windows because of https://bugs.php.net/bug.php?id=65650
             $sizes = array(1, 2, 4, 8);
         } else {
@@ -1196,7 +1174,7 @@ class ProcessTest extends TestCase
      */
     public function testIncrementalOutputDoesNotRequireAnotherCall($stream, $method)
     {
-        $process = $this->getProcessForCode('$n = 0; while ($n < 3) { file_put_contents(\'' . $stream . '\', $n, 1); $n++; usleep(1000); }', null, null, null, null);
+        $process = $this->getProcessForCode('$n = 0; while ($n < 3) { file_put_contents(\''.$stream.'\', $n, 1); $n++; usleep(1000); }', null, null, null, null);
         $process->start();
         $result = '';
         $limit = microtime(true) + 3;
@@ -1298,9 +1276,7 @@ class ProcessTest extends TestCase
     {
         $i = 0;
         $input = new InputStream();
-        $input->onEmpty(function () use (&$i) {
-            ++$i;
-        });
+        $input->onEmpty(function () use (&$i) { ++$i; });
 
         $process = $this->getProcessForCode('echo 123; echo fread(STDIN, 1); echo 456;');
         $process->setInput($input);
@@ -1410,7 +1386,7 @@ class ProcessTest extends TestCase
 
         $process->run();
 
-        $this->assertSame('hello' . PHP_EOL, $process->getOutput());
+        $this->assertSame('hello'.PHP_EOL, $process->getOutput());
         $this->assertSame('', $process->getErrorOutput());
     }
 
@@ -1454,7 +1430,7 @@ class ProcessTest extends TestCase
     {
         $p = new Process(array('/usr/bin/php'));
 
-        $expected = '\\' === DIRECTORY_SEPARATOR ? '"/usr/bin/php"' : "'/usr/bin/php'";
+        $expected = '\\' === \DIRECTORY_SEPARATOR ? '"/usr/bin/php"' : "'/usr/bin/php'";
         $this->assertSame($expected, $p->getCommandLine());
     }
 
@@ -1501,7 +1477,7 @@ EOTXT;
     public function testEnvArgument()
     {
         $env = array('FOO' => 'Foo', 'BAR' => 'Bar');
-        $cmd = '\\' === DIRECTORY_SEPARATOR ? 'echo !FOO! !BAR! !BAZ!' : 'echo $FOO $BAR $BAZ';
+        $cmd = '\\' === \DIRECTORY_SEPARATOR ? 'echo !FOO! !BAR! !BAZ!' : 'echo $FOO $BAR $BAZ';
         $p = new Process($cmd, null, $env);
         $p->run(null, array('BAR' => 'baR', 'BAZ' => 'baZ'));
 
@@ -1509,12 +1485,34 @@ EOTXT;
         $this->assertSame($env, $p->getEnv());
     }
 
-    protected function tearDown()
+    /**
+     * @param string      $commandline
+     * @param null|string $cwd
+     * @param null|array  $env
+     * @param null|string $input
+     * @param int         $timeout
+     * @param array       $options
+     *
+     * @return Process
+     */
+    private function getProcess($commandline, $cwd = null, array $env = null, $input = null, $timeout = 60)
     {
+        $process = new Process($commandline, $cwd, $env, $input, $timeout);
+        $process->inheritEnvironmentVariables();
+
         if (self::$process) {
             self::$process->stop(0);
-            self::$process = null;
         }
+
+        return self::$process = $process;
+    }
+
+    /**
+     * @return Process
+     */
+    private function getProcessForCode($code, $cwd = null, array $env = null, $input = null, $timeout = 60)
+    {
+        return $this->getProcess(array(self::$phpBin, '-r', $code), $cwd, $env, $input, $timeout);
     }
 }
 

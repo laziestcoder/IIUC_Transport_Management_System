@@ -1,15 +1,7 @@
 <?php
-
 class BankAccount
 {
     protected $balance = 0;
-
-    public function depositMoney($balance)
-    {
-        $this->setBalance($this->getBalance() + $balance);
-
-        return $this->getBalance();
-    }
 
     public function getBalance()
     {
@@ -23,6 +15,13 @@ class BankAccount
         } else {
             throw new RuntimeException;
         }
+    }
+
+    public function depositMoney($balance)
+    {
+        $this->setBalance($this->getBalance() + $balance);
+
+        return $this->getBalance();
     }
 
     public function withdrawMoney($balance)

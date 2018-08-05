@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\ExpectationFailedException;
@@ -102,7 +101,7 @@ EOF
     public function testConstraintIsIdenticalArrayDiff(): void
     {
         $expected = [1, 2, 3, 4, 5, 6];
-        $actual = [1, 2, 33, 4, 5, 6];
+        $actual   = [1, 2, 33, 4, 5, 6];
 
         $constraint = new IsIdentical($expected);
 

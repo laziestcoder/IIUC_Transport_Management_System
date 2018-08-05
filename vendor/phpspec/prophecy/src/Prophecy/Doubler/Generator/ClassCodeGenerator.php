@@ -32,22 +32,20 @@ class ClassCodeGenerator
     /**
      * Generates PHP code for class node.
      *
-     * @param string $classname
+     * @param string         $classname
      * @param Node\ClassNode $class
      *
      * @return string
      */
     public function generate($classname, Node\ClassNode $class)
     {
-        $parts = explode('\\', $classname);
+        $parts     = explode('\\', $classname);
         $classname = array_pop($parts);
         $namespace = implode('\\', $parts);
 
         $code = sprintf("class %s extends \%s implements %s {\n",
             $classname, $class->getParentClass(), implode(', ',
-                array_map(function ($interface) {
-                    return '\\' . $interface;
-                }, $class->getInterfaces())
+                array_map(function ($interface) {return '\\'.$interface;}, $class->getInterfaces())
             )
         );
 
@@ -57,7 +55,7 @@ class ClassCodeGenerator
         $code .= "\n";
 
         foreach ($class->getMethods() as $method) {
-            $code .= $this->generateMethod($method) . "\n";
+            $code .= $this->generateMethod($method)."\n";
         }
         $code .= "\n}";
 
@@ -69,42 +67,14 @@ class ClassCodeGenerator
         $php = sprintf("%s %s function %s%s(%s)%s {\n",
             $method->getVisibility(),
             $method->isStatic() ? 'static' : '',
-            $method->returnsReference() ? '&' : '',
+            $method->returnsReference() ? '&':'',
             $method->getName(),
             implode(', ', $this->generateArguments($method->getArguments())),
             $this->getReturnType($method)
         );
-        $php .= $method->getCode() . "\n";
+        $php .= $method->getCode()."\n";
 
-        return $php . '}';
-    }
-
-    private function generateArguments(array $arguments)
-    {
-        $typeHintReference = $this->typeHintReference;
-        return array_map(function (Node\ArgumentNode $argument) use ($typeHintReference) {
-            $php = '';
-
-            if (version_compare(PHP_VERSION, '7.1', '>=')) {
-                $php .= $argument->isNullable() ? '?' : '';
-            }
-
-            if ($hint = $argument->getTypeHint()) {
-                $php .= $typeHintReference->isBuiltInParamTypeHint($hint) ? $hint : '\\' . $hint;
-            }
-
-            $php .= ' ' . ($argument->isPassedByReference() ? '&' : '');
-
-            $php .= $argument->isVariadic() ? '...' : '';
-
-            $php .= '$' . $argument->getName();
-
-            if ($argument->isOptional() && !$argument->isVariadic()) {
-                $php .= ' = ' . var_export($argument->getDefault(), true);
-            }
-
-            return $php;
-        }, $arguments);
+        return $php.'}';
     }
 
     /**
@@ -127,5 +97,33 @@ class ClassCodeGenerator
         }
 
         return '';
+    }
+
+    private function generateArguments(array $arguments)
+    {
+        $typeHintReference = $this->typeHintReference;
+        return array_map(function (Node\ArgumentNode $argument) use ($typeHintReference) {
+            $php = '';
+
+            if (version_compare(PHP_VERSION, '7.1', '>=')) {
+                $php .= $argument->isNullable() ? '?' : '';
+            }
+
+            if ($hint = $argument->getTypeHint()) {
+                $php .= $typeHintReference->isBuiltInParamTypeHint($hint) ? $hint : '\\'.$hint;
+            }
+
+            $php .= ' '.($argument->isPassedByReference() ? '&' : '');
+
+            $php .= $argument->isVariadic() ? '...' : '';
+
+            $php .= '$'.$argument->getName();
+
+            if ($argument->isOptional() && !$argument->isVariadic()) {
+                $php .= ' = '.var_export($argument->getDefault(), true);
+            }
+
+            return $php;
+        }, $arguments);
     }
 }

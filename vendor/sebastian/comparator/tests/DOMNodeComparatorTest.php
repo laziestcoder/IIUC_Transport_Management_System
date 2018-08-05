@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use DOMDocument;
@@ -15,20 +14,28 @@ use DOMNode;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass SebastianBergmann\Comparator\DOMNodeComparator
+ * @covers \SebastianBergmann\Comparator\DOMNodeComparator<extended>
  *
- * @uses SebastianBergmann\Comparator\Comparator
- * @uses SebastianBergmann\Comparator\Factory
- * @uses SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
-class DOMNodeComparatorTest extends TestCase
+final class DOMNodeComparatorTest extends TestCase
 {
+    /**
+     * @var DOMNodeComparator
+     */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new DOMNodeComparator;
+    }
 
     public function acceptsSucceedsProvider()
     {
         $document = new DOMDocument;
-        $node = new DOMNode;
+        $node     = new DOMNode;
 
         return [
             [$document, $document],
@@ -68,16 +75,16 @@ class DOMNodeComparatorTest extends TestCase
                 $this->createDOMDocument("<root>\n  <child/>\n</root>"),
                 $this->createDOMDocument('<root><child/></root>')
             ],
+            [
+                $this->createDOMDocument('<Root></Root>'),
+                $this->createDOMDocument('<root></root>'),
+                $ignoreCase = true
+            ],
+            [
+                $this->createDOMDocument("<a x='' a=''/>"),
+                $this->createDOMDocument("<a a='' x=''/>"),
+            ],
         ];
-    }
-
-    private function createDOMDocument($content)
-    {
-        $document = new DOMDocument;
-        $document->preserveWhiteSpace = false;
-        $document->loadXML($content);
-
-        return $document;
     }
 
     public function assertEqualsFailsProvider()
@@ -102,51 +109,49 @@ class DOMNodeComparatorTest extends TestCase
             [
                 $this->createDOMDocument('<foo> bar </foo>'),
                 $this->createDOMDocument('<foo> bir </foo>')
+            ],
+            [
+                $this->createDOMDocument('<Root></Root>'),
+                $this->createDOMDocument('<root></root>')
+            ],
+            [
+                $this->createDOMDocument('<root> bar </root>'),
+                $this->createDOMDocument('<root> BAR </root>')
             ]
         ];
     }
 
     /**
-     * @covers       ::accepts
      * @dataProvider acceptsSucceedsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAcceptsSucceeds($expected, $actual)
+    public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
     /**
-     * @covers       ::accepts
      * @dataProvider acceptsFailsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAcceptsFails($expected, $actual)
+    public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
     /**
-     * @covers       ::assertEquals
      * @dataProvider assertEqualsSucceedsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAssertEqualsSucceeds($expected, $actual)
+    public function testAssertEqualsSucceeds($expected, $actual, $ignoreCase = false): void
     {
         $exception = null;
 
         try {
-            $this->comparator->assertEquals($expected, $actual);
+            $delta        = 0.0;
+            $canonicalize = false;
+            $this->comparator->assertEquals($expected, $actual, $delta, $canonicalize, $ignoreCase);
         } catch (ComparisonFailure $exception) {
         }
 
@@ -154,13 +159,9 @@ class DOMNodeComparatorTest extends TestCase
     }
 
     /**
-     * @covers       ::assertEquals
      * @dataProvider assertEqualsFailsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAssertEqualsFails($expected, $actual)
+    public function testAssertEqualsFails($expected, $actual): void
     {
         $this->expectException(ComparisonFailure::class);
         $this->expectExceptionMessage('Failed asserting that two DOM');
@@ -168,8 +169,12 @@ class DOMNodeComparatorTest extends TestCase
         $this->comparator->assertEquals($expected, $actual);
     }
 
-    protected function setUp()
+    private function createDOMDocument($content)
     {
-        $this->comparator = new DOMNodeComparator;
+        $document                     = new DOMDocument;
+        $document->preserveWhiteSpace = false;
+        $document->loadXML($content);
+
+        return $document;
     }
 }

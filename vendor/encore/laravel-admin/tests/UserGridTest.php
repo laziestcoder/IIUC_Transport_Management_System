@@ -47,6 +47,16 @@ class UserGridTest extends TestCase
             ->seeInElement('a[href="/admin/users/create"]', 'New');
     }
 
+    protected function seedsTable($count = 100)
+    {
+        factory(\Tests\Models\User::class, $count)
+            ->create()
+            ->each(function ($u) {
+                $u->profile()->save(factory(\Tests\Models\Profile::class)->make());
+                $u->tags()->saveMany(factory(\Tests\Models\Tag::class, 5)->make());
+            });
+    }
+
     public function testGridWithData()
     {
         $this->seedsTable();
@@ -56,16 +66,6 @@ class UserGridTest extends TestCase
 
         $this->assertCount(100, UserModel::all());
         $this->assertCount(100, ProfileModel::all());
-    }
-
-    protected function seedsTable($count = 100)
-    {
-        factory(\Tests\Models\User::class, $count)
-            ->create()
-            ->each(function ($u) {
-                $u->profile()->save(factory(\Tests\Models\Profile::class)->make());
-                $u->tags()->saveMany(factory(\Tests\Models\Tag::class, 5)->make());
-            });
     }
 
     public function testGridPagination()
@@ -102,7 +102,7 @@ class UserGridTest extends TestCase
 
         $user = UserModel::find($id);
 
-        $this->visit('admin/users?id=' . $id)
+        $this->visit('admin/users?id='.$id)
             ->seeInElement('td', $user->username)
             ->seeInElement('td', $user->email)
             ->seeInElement('td', $user->mobile)
@@ -143,7 +143,7 @@ class UserGridTest extends TestCase
 
         $user = UserModel::with('profile')->find(rand(1, 50));
 
-        $this->visit('admin/users?email=' . $user->email)
+        $this->visit('admin/users?email='.$user->email)
             ->seeInElement('td', $user->username)
             ->seeInElement('td', $user->email)
             ->seeInElement('td', $user->mobile)
@@ -221,7 +221,7 @@ class UserGridTest extends TestCase
 
         $perPage = rand(1, 98);
 
-        $this->visit('admin/users?per_page=' . $perPage)
+        $this->visit('admin/users?per_page='.$perPage)
             ->seeInElement('select option[selected]', $perPage)
             ->assertCount($perPage + 1, $this->crawler()->filter('tr'));
     }

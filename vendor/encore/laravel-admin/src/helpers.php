@@ -11,7 +11,7 @@ if (!function_exists('admin_path')) {
      */
     function admin_path($path = '')
     {
-        return ucfirst(config('admin.directory')) . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+        return ucfirst(config('admin.directory')).($path ? DIRECTORY_SEPARATOR.$path : $path);
     }
 }
 
@@ -20,8 +20,8 @@ if (!function_exists('admin_url')) {
      * Get admin url.
      *
      * @param string $path
-     * @param mixed $parameters
-     * @param bool $secure
+     * @param mixed  $parameters
+     * @param bool   $secure
      *
      * @return string
      */
@@ -47,11 +47,11 @@ if (!function_exists('admin_base_path')) {
      */
     function admin_base_path($path = '')
     {
-        $prefix = '/' . trim(config('admin.route.prefix'), '/');
+        $prefix = '/'.trim(config('admin.route.prefix'), '/');
 
         $prefix = ($prefix == '/') ? '' : $prefix;
 
-        return $prefix . '/' . trim($path, '/');
+        return $prefix.'/'.trim($path, '/');
     }
 }
 
@@ -62,7 +62,7 @@ if (!function_exists('admin_toastr')) {
      *
      * @param string $message
      * @param string $type
-     * @param array $options
+     * @param array  $options
      *
      * @return string
      */
@@ -84,5 +84,23 @@ if (!function_exists('admin_asset')) {
     function admin_asset($path)
     {
         return asset($path, config('admin.secure'));
+    }
+}
+
+if (!function_exists('array_delete')) {
+
+    /**
+     * Delete from array by value.
+     *
+     * @param array $array
+     * @param mixed $value
+     */
+    function array_delete(&$array, $value)
+    {
+        foreach ($array as $index => $item) {
+            if ($value == $item) {
+                unset($array[$index]);
+            }
+        }
     }
 }

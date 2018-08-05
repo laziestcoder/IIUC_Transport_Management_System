@@ -30,25 +30,6 @@ trait Componentable
     }
 
     /**
-     * Dynamically handle calls to the class.
-     *
-     * @param  string $method
-     * @param  array $parameters
-     *
-     * @return \Illuminate\Contracts\View\View|mixed
-     *
-     * @throws \BadMethodCallException
-     */
-    public function __call($method, $parameters)
-    {
-        if (static::hasComponent($method)) {
-            return $this->renderComponent($method, $parameters);
-        }
-
-        throw new BadMethodCallException("Method {$method} does not exist.");
-    }
-
-    /**
      * Check if a component is registered.
      *
      * @param $name
@@ -74,7 +55,7 @@ trait Componentable
         $data = $this->getComponentData($component['signature'], $arguments);
 
         return new HtmlString(
-            $this->view->make($component['view'], $data)->render()
+          $this->view->make($component['view'], $data)->render()
         );
     }
 
@@ -106,5 +87,24 @@ trait Componentable
         }
 
         return $data;
+    }
+
+    /**
+     * Dynamically handle calls to the class.
+     *
+     * @param  string $method
+     * @param  array  $parameters
+     *
+     * @return \Illuminate\Contracts\View\View|mixed
+     *
+     * @throws \BadMethodCallException
+     */
+    public function __call($method, $parameters)
+    {
+        if (static::hasComponent($method)) {
+            return $this->renderComponent($method, $parameters);
+        }
+
+        throw new BadMethodCallException("Method {$method} does not exist.");
     }
 }

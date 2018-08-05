@@ -18,8 +18,8 @@ abstract class Handler implements HandlerInterface
      Return constants that can be returned from Handler::handle
      to message the handler walker.
      */
-    const DONE = 0x10; // returning this is optional, only exists for
-    // semantic purposes
+    const DONE         = 0x10; // returning this is optional, only exists for
+                               // semantic purposes
     /**
      * The Handler has handled the Throwable in some way, and wishes to skip any other Handler.
      * Execution will continue.
@@ -28,7 +28,7 @@ abstract class Handler implements HandlerInterface
     /**
      * The Handler has handled the Throwable in some way, and wishes to quit/stop execution
      */
-    const QUIT = 0x30;
+    const QUIT         = 0x30;
 
     /**
      * @var RunInterface
@@ -46,14 +46,6 @@ abstract class Handler implements HandlerInterface
     private $exception;
 
     /**
-     * @return RunInterface
-     */
-    protected function getRun()
-    {
-        return $this->run;
-    }
-
-    /**
      * @param RunInterface $run
      */
     public function setRun(RunInterface $run)
@@ -62,11 +54,11 @@ abstract class Handler implements HandlerInterface
     }
 
     /**
-     * @return Inspector
+     * @return RunInterface
      */
-    protected function getInspector()
+    protected function getRun()
     {
-        return $this->inspector;
+        return $this->run;
     }
 
     /**
@@ -78,11 +70,11 @@ abstract class Handler implements HandlerInterface
     }
 
     /**
-     * @return \Throwable
+     * @return Inspector
      */
-    protected function getException()
+    protected function getInspector()
     {
-        return $this->exception;
+        return $this->inspector;
     }
 
     /**
@@ -91,5 +83,13 @@ abstract class Handler implements HandlerInterface
     public function setException($exception)
     {
         $this->exception = $exception;
+    }
+
+    /**
+     * @return \Throwable
+     */
+    protected function getException()
+    {
+        return $this->exception;
     }
 }

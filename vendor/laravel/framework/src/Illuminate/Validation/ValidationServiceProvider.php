@@ -26,18 +26,6 @@ class ValidationServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the database presence verifier.
-     *
-     * @return void
-     */
-    protected function registerPresenceVerifier()
-    {
-        $this->app->singleton('validation.presence', function ($app) {
-            return new DatabasePresenceVerifier($app['db']);
-        });
-    }
-
-    /**
      * Register the validation factory.
      *
      * @return void
@@ -55,6 +43,18 @@ class ValidationServiceProvider extends ServiceProvider
             }
 
             return $validator;
+        });
+    }
+
+    /**
+     * Register the database presence verifier.
+     *
+     * @return void
+     */
+    protected function registerPresenceVerifier()
+    {
+        $this->app->singleton('validation.presence', function ($app) {
+            return new DatabasePresenceVerifier($app['db']);
         });
     }
 

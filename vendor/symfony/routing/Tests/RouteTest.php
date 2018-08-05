@@ -54,7 +54,7 @@ class RouteTest extends TestCase
         $route = new Route('/{foo}');
         $route->setOptions(array('foo' => 'bar'));
         $this->assertEquals(array_merge(array(
-            'compiler_class' => 'Symfony\\Component\\Routing\\RouteCompiler',
+        'compiler_class' => 'Symfony\\Component\\Routing\\RouteCompiler',
         ), array('foo' => 'bar')), $route->getOptions(), '->setOptions() sets the options');
         $this->assertEquals($route, $route->setOptions(array()), '->setOptions() implements a fluent interface');
 
@@ -87,9 +87,7 @@ class RouteTest extends TestCase
         $this->assertEquals('bar2', $route->getDefault('foo2'), '->getDefault() return the default value');
         $this->assertNull($route->getDefault('not_defined'), '->getDefault() return null if default value is not set');
 
-        $route->setDefault('_controller', $closure = function () {
-            return 'Hello';
-        });
+        $route->setDefault('_controller', $closure = function () { return 'Hello'; });
         $this->assertEquals($closure, $route->getDefault('_controller'), '->setDefault() sets a default value');
 
         $route->setDefaults(array('foo' => 'foo'));
@@ -137,11 +135,11 @@ class RouteTest extends TestCase
     public function getInvalidRequirements()
     {
         return array(
-            array(''),
-            array(array()),
-            array('^$'),
-            array('^'),
-            array('$'),
+           array(''),
+           array(array()),
+           array('^$'),
+           array('^'),
+           array('$'),
         );
     }
 
@@ -203,6 +201,22 @@ class RouteTest extends TestCase
 
         $this->assertEquals($route, $unserialized);
         $this->assertNotSame($route, $unserialized);
+    }
+
+    public function testInlineDefaultAndRequirement()
+    {
+        $this->assertEquals((new Route('/foo/{bar}'))->setDefault('bar', null), new Route('/foo/{bar?}'));
+        $this->assertEquals((new Route('/foo/{bar}'))->setDefault('bar', 'baz'), new Route('/foo/{bar?baz}'));
+        $this->assertEquals((new Route('/foo/{bar}'))->setDefault('bar', 'baz<buz>'), new Route('/foo/{bar?baz<buz>}'));
+        $this->assertEquals((new Route('/foo/{bar}'))->setDefault('bar', 'baz'), new Route('/foo/{bar?}', array('bar' => 'baz')));
+
+        $this->assertEquals((new Route('/foo/{bar}'))->setRequirement('bar', '.*'), new Route('/foo/{bar<.*>}'));
+        $this->assertEquals((new Route('/foo/{bar}'))->setRequirement('bar', '>'), new Route('/foo/{bar<>>}'));
+        $this->assertEquals((new Route('/foo/{bar}'))->setRequirement('bar', '\d+'), new Route('/foo/{bar<.*>}', array(), array('bar' => '\d+')));
+        $this->assertEquals((new Route('/foo/{bar}'))->setRequirement('bar', '[a-z]{2}'), new Route('/foo/{bar<[a-z]{2}>}'));
+
+        $this->assertEquals((new Route('/foo/{bar}'))->setDefault('bar', null)->setRequirement('bar', '.*'), new Route('/foo/{bar<.*>?}'));
+        $this->assertEquals((new Route('/foo/{bar}'))->setDefault('bar', '<>')->setRequirement('bar', '>'), new Route('/foo/{bar<>>?<>}'));
     }
 
     /**

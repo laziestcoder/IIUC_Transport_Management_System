@@ -20,8 +20,8 @@ final class InvalidArgumentExceptionTest extends TestCase
     public function testInvalidArgumentException(): void
     {
         $previousException = new \LogicException();
-        $message = 'test';
-        $code = 123;
+        $message           = 'test';
+        $code              = 123;
 
         $exception = new InvalidArgumentException($message, $code, $previousException);
 

@@ -41,6 +41,35 @@ class ShellInput extends StringInput
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * @throws \InvalidArgumentException if $definition has CodeArgument before the final argument position
+     */
+    public function bind(InputDefinition $definition)
+    {
+        $hasCodeArgument = false;
+
+        if ($definition->getArgumentCount() > 0) {
+            $args    = $definition->getArguments();
+            $lastArg = array_pop($args);
+            foreach ($args as $arg) {
+                if ($arg instanceof CodeArgument) {
+                    $msg = sprintf('Unexpected CodeArgument before the final position: %s', $arg->getName());
+                    throw new \InvalidArgumentException($msg);
+                }
+            }
+
+            if ($lastArg instanceof CodeArgument) {
+                $hasCodeArgument = true;
+            }
+        }
+
+        $this->hasCodeArgument = $hasCodeArgument;
+
+        return parent::bind($definition);
+    }
+
+    /**
      * Tokenizes a string.
      *
      * The version of this on StringInput is good, but doesn't handle code
@@ -76,42 +105,15 @@ class ShellInput extends StringInput
                 ];
             } else {
                 // should never happen
+                // @codeCoverageIgnoreStart
                 throw new \InvalidArgumentException(sprintf('Unable to parse input near "... %s ..."', substr($input, $cursor, 10)));
+                // @codeCoverageIgnoreEnd
             }
 
             $cursor += strlen($match[0]);
         }
 
         return $tokens;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \InvalidArgumentException if $definition has CodeArgument before the final argument position
-     */
-    public function bind(InputDefinition $definition)
-    {
-        $hasCodeArgument = false;
-
-        if ($definition->getArgumentCount() > 0) {
-            $args = $definition->getArguments();
-            $lastArg = array_pop($args);
-            foreach ($args as $arg) {
-                if ($arg instanceof CodeArgument) {
-                    $msg = sprintf('Unexpected CodeArgument before the final position: %s', $arg->getName());
-                    throw new \InvalidArgumentException($msg);
-                }
-            }
-
-            if ($lastArg instanceof CodeArgument) {
-                $hasCodeArgument = true;
-            }
-        }
-
-        $this->hasCodeArgument = $hasCodeArgument;
-
-        return parent::bind($definition);
     }
 
     /**
@@ -144,7 +146,7 @@ class ShellInput extends StringInput
      * Parses an argument, with bonus handling for code arguments.
      *
      * @param string $token The current token
-     * @param string $rest The remaining unparsed input, including the current token
+     * @param string $rest  The remaining unparsed input, including the current token
      *
      * @throws \RuntimeException When too many arguments are given
      */
@@ -168,6 +170,10 @@ class ShellInput extends StringInput
             return;
         }
 
+        // (copypasta)
+        //
+        // @codeCoverageIgnoreStart
+
         // if last argument isArray(), append token to last argument
         if ($this->definition->hasArgument($c - 1) && $this->definition->getArgument($c - 1)->isArray()) {
             $arg = $this->definition->getArgument($c - 1);
@@ -183,9 +189,58 @@ class ShellInput extends StringInput
         }
 
         throw new \RuntimeException(sprintf('No arguments expected, got "%s".', $token));
+        // @codeCoverageIgnoreEnd
     }
 
     // Everything below this is copypasta from ArgvInput private methods
+    // @codeCoverageIgnoreStart
+
+    /**
+     * Parses a short option.
+     *
+     * @param string $token The current token
+     */
+    private function parseShortOption($token)
+    {
+        $name = substr($token, 1);
+
+        if (strlen($name) > 1) {
+            if ($this->definition->hasShortcut($name[0]) && $this->definition->getOptionForShortcut($name[0])->acceptValue()) {
+                // an option with a value (with no space)
+                $this->addShortOption($name[0], substr($name, 1));
+            } else {
+                $this->parseShortOptionSet($name);
+            }
+        } else {
+            $this->addShortOption($name, null);
+        }
+    }
+
+    /**
+     * Parses a short option set.
+     *
+     * @param string $name The current token
+     *
+     * @throws \RuntimeException When option given doesn't exist
+     */
+    private function parseShortOptionSet($name)
+    {
+        $len = strlen($name);
+        for ($i = 0; $i < $len; $i++) {
+            if (!$this->definition->hasShortcut($name[$i])) {
+                throw new \RuntimeException(sprintf('The "-%s" option does not exist.', $name[$i]));
+            }
+
+            $option = $this->definition->getOptionForShortcut($name[$i]);
+            if ($option->acceptValue()) {
+                $this->addLongOption($option->getName(), $i === $len - 1 ? null : substr($name, $i + 1));
+
+                break;
+            } else {
+                $this->addLongOption($option->getName(), null);
+            }
+        }
+    }
 
     /**
      * Parses a long option.
@@ -212,10 +267,27 @@ class ShellInput extends StringInput
     }
 
     /**
+     * Adds a short option value.
+     *
+     * @param string $shortcut The short option key
+     * @param mixed  $value    The value for the option
+     *
+     * @throws \RuntimeException When option given doesn't exist
+     */
+    private function addShortOption($shortcut, $value)
+    {
+        if (!$this->definition->hasShortcut($shortcut)) {
+            throw new \RuntimeException(sprintf('The "-%s" option does not exist.', $shortcut));
+        }
+
+        $this->addLongOption($this->definition->getOptionForShortcut($shortcut)->getName(), $value);
+    }
+
+    /**
      * Adds a long option value.
      *
-     * @param string $name The long option key
-     * @param mixed $value The value for the option
+     * @param string $name  The long option key
+     * @param mixed  $value The value for the option
      *
      * @throws \RuntimeException When option given doesn't exist
      */
@@ -260,67 +332,5 @@ class ShellInput extends StringInput
         }
     }
 
-    /**
-     * Parses a short option.
-     *
-     * @param string $token The current token
-     */
-    private function parseShortOption($token)
-    {
-        $name = substr($token, 1);
-
-        if (strlen($name) > 1) {
-            if ($this->definition->hasShortcut($name[0]) && $this->definition->getOptionForShortcut($name[0])->acceptValue()) {
-                // an option with a value (with no space)
-                $this->addShortOption($name[0], substr($name, 1));
-            } else {
-                $this->parseShortOptionSet($name);
-            }
-        } else {
-            $this->addShortOption($name, null);
-        }
-    }
-
-    /**
-     * Adds a short option value.
-     *
-     * @param string $shortcut The short option key
-     * @param mixed $value The value for the option
-     *
-     * @throws \RuntimeException When option given doesn't exist
-     */
-    private function addShortOption($shortcut, $value)
-    {
-        if (!$this->definition->hasShortcut($shortcut)) {
-            throw new \RuntimeException(sprintf('The "-%s" option does not exist.', $shortcut));
-        }
-
-        $this->addLongOption($this->definition->getOptionForShortcut($shortcut)->getName(), $value);
-    }
-
-    /**
-     * Parses a short option set.
-     *
-     * @param string $name The current token
-     *
-     * @throws \RuntimeException When option given doesn't exist
-     */
-    private function parseShortOptionSet($name)
-    {
-        $len = strlen($name);
-        for ($i = 0; $i < $len; $i++) {
-            if (!$this->definition->hasShortcut($name[$i])) {
-                throw new \RuntimeException(sprintf('The "-%s" option does not exist.', $name[$i]));
-            }
-
-            $option = $this->definition->getOptionForShortcut($name[$i]);
-            if ($option->acceptValue()) {
-                $this->addLongOption($option->getName(), $i === $len - 1 ? null : substr($name, $i + 1));
-
-                break;
-            } else {
-                $this->addLongOption($option->getName(), null);
-            }
-        }
-    }
+    // @codeCoverageIgnoreEnd
 }

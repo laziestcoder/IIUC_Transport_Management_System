@@ -39,8 +39,8 @@ class PropertyEnumerator extends Enumerator
             return;
         }
 
-        $showAll = $input->getOption('all');
-        $noInherit = $input->getOption('no-inherit');
+        $showAll    = $input->getOption('all');
+        $noInherit  = $input->getOption('no-inherit');
         $properties = $this->prepareProperties($this->getProperties($showAll, $reflector, $noInherit), $target);
 
         if (empty($properties)) {
@@ -51,6 +51,35 @@ class PropertyEnumerator extends Enumerator
         $ret[$this->getKindLabel($reflector)] = $properties;
 
         return $ret;
+    }
+
+    /**
+     * Get defined properties for the given class or object Reflector.
+     *
+     * @param bool       $showAll   Include private and protected properties
+     * @param \Reflector $reflector
+     * @param bool       $noInherit Exclude inherited properties
+     *
+     * @return array
+     */
+    protected function getProperties($showAll, \Reflector $reflector, $noInherit = false)
+    {
+        $className = $reflector->getName();
+
+        $properties = [];
+        foreach ($reflector->getProperties() as $property) {
+            if ($noInherit && $property->getDeclaringClass()->getName() !== $className) {
+                continue;
+            }
+
+            if ($showAll || $property->isPublic()) {
+                $properties[$property->getName()] = $property;
+            }
+        }
+
+        ksort($properties, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return $properties;
     }
 
     /**
@@ -69,7 +98,7 @@ class PropertyEnumerator extends Enumerator
             if ($this->showItem($name)) {
                 $fname = '$' . $name;
                 $ret[$fname] = [
-                    'name' => $fname,
+                    'name'  => $fname,
                     'style' => $this->getVisibilityStyle($property),
                     'value' => $this->presentValue($property, $target),
                 ];
@@ -77,6 +106,24 @@ class PropertyEnumerator extends Enumerator
         }
 
         return $ret;
+    }
+
+    /**
+     * Get a label for the particular kind of "class" represented.
+     *
+     * @param \ReflectionClass $reflector
+     *
+     * @return string
+     */
+    protected function getKindLabel(\ReflectionClass $reflector)
+    {
+        if ($reflector->isInterface()) {
+            return 'Interface Properties';
+        } elseif (method_exists($reflector, 'isTrait') && $reflector->isTrait()) {
+            return 'Trait Properties';
+        } else {
+            return 'Class Properties';
+        }
     }
 
     /**
@@ -101,7 +148,7 @@ class PropertyEnumerator extends Enumerator
      * Present the $target's current value for a reflection property.
      *
      * @param \ReflectionProperty $property
-     * @param mixed $target
+     * @param mixed               $target
      *
      * @return string
      */
@@ -129,52 +176,5 @@ class PropertyEnumerator extends Enumerator
         $value = $property->getValue($target);
 
         return $this->presentRef($value);
-    }
-
-    /**
-     * Get defined properties for the given class or object Reflector.
-     *
-     * @param bool $showAll Include private and protected properties
-     * @param \Reflector $reflector
-     * @param bool $noInherit Exclude inherited properties
-     *
-     * @return array
-     */
-    protected function getProperties($showAll, \Reflector $reflector, $noInherit = false)
-    {
-        $className = $reflector->getName();
-
-        $properties = [];
-        foreach ($reflector->getProperties() as $property) {
-            if ($noInherit && $property->getDeclaringClass()->getName() !== $className) {
-                continue;
-            }
-
-            if ($showAll || $property->isPublic()) {
-                $properties[$property->getName()] = $property;
-            }
-        }
-
-        ksort($properties, SORT_NATURAL | SORT_FLAG_CASE);
-
-        return $properties;
-    }
-
-    /**
-     * Get a label for the particular kind of "class" represented.
-     *
-     * @param \ReflectionClass $reflector
-     *
-     * @return string
-     */
-    protected function getKindLabel(\ReflectionClass $reflector)
-    {
-        if ($reflector->isInterface()) {
-            return 'Interface Properties';
-        } elseif (method_exists($reflector, 'isTrait') && $reflector->isTrait()) {
-            return 'Trait Properties';
-        } else {
-            return 'Class Properties';
-        }
     }
 }

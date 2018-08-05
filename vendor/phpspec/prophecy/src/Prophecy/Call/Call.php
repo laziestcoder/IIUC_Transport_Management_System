@@ -12,6 +12,7 @@
 namespace Prophecy\Call;
 
 use Exception;
+use Prophecy\Argument\ArgumentsWildcard;
 
 /**
  * Call object.
@@ -26,24 +27,26 @@ class Call
     private $exception;
     private $file;
     private $line;
+    private $scores;
 
     /**
      * Initializes call.
      *
-     * @param string $methodName
-     * @param array $arguments
-     * @param mixed $returnValue
-     * @param Exception $exception
+     * @param string      $methodName
+     * @param array       $arguments
+     * @param mixed       $returnValue
+     * @param Exception   $exception
      * @param null|string $file
-     * @param null|int $line
+     * @param null|int    $line
      */
     public function __construct($methodName, array $arguments, $returnValue,
                                 Exception $exception = null, $file, $line)
     {
-        $this->methodName = $methodName;
-        $this->arguments = $arguments;
+        $this->methodName  = $methodName;
+        $this->arguments   = $arguments;
         $this->returnValue = $returnValue;
-        $this->exception = $exception;
+        $this->exception   = $exception;
+        $this->scores      = new \SplObjectStorage();
 
         if ($file) {
             $this->file = $file;
@@ -123,5 +126,37 @@ class Call
         }
 
         return sprintf('%s:%d', $this->file, $this->line);
+    }
+
+    /**
+     * Adds the wildcard match score for the provided wildcard.
+     *
+     * @param ArgumentsWildcard $wildcard
+     * @param false|int $score
+     *
+     * @return $this
+     */
+    public function addScore(ArgumentsWildcard $wildcard, $score)
+    {
+        $this->scores[$wildcard] = $score;
+
+        return $this;
+    }
+
+    /**
+     * Returns wildcard match score for the provided wildcard. The score is
+     * calculated if not already done.
+     *
+     * @param ArgumentsWildcard $wildcard
+     *
+     * @return false|int False OR integer score (higher - better)
+     */
+    public function getScore(ArgumentsWildcard $wildcard)
+    {
+        if (isset($this->scores[$wildcard])) {
+            return $this->scores[$wildcard];
+        }
+
+        return $this->scores[$wildcard] = $wildcard->scoreArguments($this->getArguments());
     }
 }

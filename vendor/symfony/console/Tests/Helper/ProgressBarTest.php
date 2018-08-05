@@ -12,8 +12,10 @@
 namespace Symfony\Component\Console\Tests\Helper;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\StreamOutput;
 
 /**
@@ -30,23 +32,11 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '    0 [>---------------------------]' .
-            $this->generateOutput('    1 [->--------------------------]') .
+            '    0 [>---------------------------]'.
+            $this->generateOutput('    1 [->--------------------------]').
             $this->generateOutput('    0 [>---------------------------]'),
             stream_get_contents($output->getStream())
         );
-    }
-
-    protected function getOutputStream($decorated = true, $verbosity = StreamOutput::VERBOSITY_NORMAL)
-    {
-        return new StreamOutput(fopen('php://memory', 'r+', false), $verbosity, $decorated);
-    }
-
-    protected function generateOutput($expected)
-    {
-        $count = substr_count($expected, "\n");
-
-        return "\x0D\x1B[2K" . ($count ? str_repeat("\x1B[1A\x1B[2K", $count) : '') . $expected;
     }
 
     public function testAdvance()
@@ -57,7 +47,7 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '    0 [>---------------------------]' .
+            '    0 [>---------------------------]'.
             $this->generateOutput('    1 [->--------------------------]'),
             stream_get_contents($output->getStream())
         );
@@ -71,7 +61,7 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '    0 [>---------------------------]' .
+            '    0 [>---------------------------]'.
             $this->generateOutput('    5 [----->----------------------]'),
             stream_get_contents($output->getStream())
         );
@@ -86,8 +76,8 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '    0 [>---------------------------]' .
-            $this->generateOutput('    3 [--->------------------------]') .
+            '    0 [>---------------------------]'.
+            $this->generateOutput('    3 [--->------------------------]').
             $this->generateOutput('    5 [----->----------------------]'),
             stream_get_contents($output->getStream())
         );
@@ -102,8 +92,8 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '  9/10 [=========================>--]  90%' .
-            $this->generateOutput(' 10/10 [============================] 100%') .
+            '  9/10 [=========================>--]  90%'.
+            $this->generateOutput(' 10/10 [============================] 100%').
             $this->generateOutput(' 11/11 [============================] 100%'),
             stream_get_contents($output->getStream())
         );
@@ -119,9 +109,9 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '    0 [>---------------------------]' .
-            $this->generateOutput('    1 [->--------------------------]') .
-            $this->generateOutput('    2 [-->-------------------------]') .
+            '    0 [>---------------------------]'.
+            $this->generateOutput('    1 [->--------------------------]').
+            $this->generateOutput('    2 [-->-------------------------]').
             $this->generateOutput('    1 [->--------------------------]'),
             stream_get_contents($output->getStream())
         );
@@ -137,9 +127,9 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '    0 [>---------------------------]' .
-            $this->generateOutput('    4 [---->-----------------------]') .
-            $this->generateOutput('    8 [-------->-------------------]') .
+            '    0 [>---------------------------]'.
+            $this->generateOutput('    4 [---->-----------------------]').
+            $this->generateOutput('    8 [-------->-------------------]').
             $this->generateOutput('    6 [------>---------------------]'),
             stream_get_contents($output->getStream())
         );
@@ -156,10 +146,10 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '    0 [>---------------------------]' .
-            $this->generateOutput('    3 [--->------------------------]') .
-            $this->generateOutput('    6 [------>---------------------]') .
-            $this->generateOutput('    5 [----->----------------------]') .
+            '    0 [>---------------------------]'.
+            $this->generateOutput('    3 [--->------------------------]').
+            $this->generateOutput('    6 [------>---------------------]').
+            $this->generateOutput('    5 [----->----------------------]').
             $this->generateOutput('    3 [--->------------------------]'),
             stream_get_contents($output->getStream())
         );
@@ -174,7 +164,7 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '  1/10 [==>-------------------------]  10%' .
+            '  1/10 [==>-------------------------]  10%'.
             $this->generateOutput('  0/10 [>---------------------------]   0%'),
             stream_get_contents($output->getStream())
         );
@@ -183,9 +173,10 @@ class ProgressBarTest extends TestCase
     public function testFormat()
     {
         $expected =
-            '  0/10 [>---------------------------]   0%' .
-            $this->generateOutput(' 10/10 [============================] 100%') .
-            $this->generateOutput(' 10/10 [============================] 100%');
+            '  0/10 [>---------------------------]   0%'.
+            $this->generateOutput(' 10/10 [============================] 100%').
+            $this->generateOutput(' 10/10 [============================] 100%')
+        ;
 
         // max in construct, no format
         $bar = new ProgressBar($output = $this->getOutputStream(), 10);
@@ -239,7 +230,7 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '  0/10 [/         ]   0%' .
+            '  0/10 [/         ]   0%'.
             $this->generateOutput('  1/10 [_/        ]  10%'),
             stream_get_contents($output->getStream())
         );
@@ -291,9 +282,9 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '  0/50 [>---------------------------]   0%' .
-            $this->generateOutput('  0/50 [>---------------------------]   0%') .
-            $this->generateOutput('  1/50 [>---------------------------]   2%') .
+            '  0/50 [>---------------------------]   0%'.
+            $this->generateOutput('  0/50 [>---------------------------]   0%').
+            $this->generateOutput('  1/50 [>---------------------------]   2%').
             $this->generateOutput('  2/50 [=>--------------------------]   4%'),
             stream_get_contents($output->getStream())
         );
@@ -313,11 +304,93 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '  0/50 [>---------------------------]   0%' .
-            $this->generateOutput('  0/50 [>---------------------------]   0%') .
-            $this->generateOutput('  1/50 [>---------------------------]   2%') .
+            '  0/50 [>---------------------------]   0%'.
+            $this->generateOutput('  0/50 [>---------------------------]   0%').
+            $this->generateOutput('  1/50 [>---------------------------]   2%').
             $this->generateOutput('  2/50 [=>--------------------------]'),
             stream_get_contents($output->getStream())
+        );
+    }
+
+    public function testOverwriteWithSectionOutput()
+    {
+        $sections = array();
+        $stream = $this->getOutputStream(true);
+        $output = new ConsoleSectionOutput($stream->getStream(), $sections, $stream->getVerbosity(), $stream->isDecorated(), new OutputFormatter());
+
+        $bar = new ProgressBar($output, 50);
+        $bar->start();
+        $bar->display();
+        $bar->advance();
+        $bar->advance();
+
+        rewind($output->getStream());
+        $this->assertEquals(
+            '  0/50 [>---------------------------]   0%'.PHP_EOL.
+            "\x1b[1A\x1b[0J".'  0/50 [>---------------------------]   0%'.PHP_EOL.
+            "\x1b[1A\x1b[0J".'  1/50 [>---------------------------]   2%'.PHP_EOL.
+            "\x1b[1A\x1b[0J".'  2/50 [=>--------------------------]   4%'.PHP_EOL,
+            stream_get_contents($output->getStream())
+        );
+    }
+
+    public function testOverwriteMultipleProgressBarsWithSectionOutputs()
+    {
+        $sections = array();
+        $stream = $this->getOutputStream(true);
+        $output1 = new ConsoleSectionOutput($stream->getStream(), $sections, $stream->getVerbosity(), $stream->isDecorated(), new OutputFormatter());
+        $output2 = new ConsoleSectionOutput($stream->getStream(), $sections, $stream->getVerbosity(), $stream->isDecorated(), new OutputFormatter());
+
+        $progress = new ProgressBar($output1, 50);
+        $progress2 = new ProgressBar($output2, 50);
+
+        $progress->start();
+        $progress2->start();
+
+        $progress2->advance();
+        $progress->advance();
+
+        rewind($stream->getStream());
+
+        $this->assertEquals(
+            '  0/50 [>---------------------------]   0%'.PHP_EOL.
+            '  0/50 [>---------------------------]   0%'.PHP_EOL.
+            "\x1b[1A\x1b[0J".'  1/50 [>---------------------------]   2%'.PHP_EOL.
+            "\x1b[2A\x1b[0J".'  1/50 [>---------------------------]   2%'.PHP_EOL.
+            "\x1b[1A\x1b[0J".'  1/50 [>---------------------------]   2%'.PHP_EOL.
+            '  1/50 [>---------------------------]   2%'.PHP_EOL,
+            stream_get_contents($stream->getStream())
+        );
+    }
+
+    public function testMultipleSectionsWithCustomFormat()
+    {
+        $sections = array();
+        $stream = $this->getOutputStream(true);
+        $output1 = new ConsoleSectionOutput($stream->getStream(), $sections, $stream->getVerbosity(), $stream->isDecorated(), new OutputFormatter());
+        $output2 = new ConsoleSectionOutput($stream->getStream(), $sections, $stream->getVerbosity(), $stream->isDecorated(), new OutputFormatter());
+
+        ProgressBar::setFormatDefinition('test', '%current%/%max% [%bar%] %percent:3s%% Fruitcake marzipan toffee. Cupcake gummi bears tart dessert ice cream chupa chups cupcake chocolate bar sesame snaps. Croissant halvah cookie jujubes powder macaroon. Fruitcake bear claw bonbon jelly beans oat cake pie muffin Fruitcake marzipan toffee.');
+
+        $progress = new ProgressBar($output1, 50);
+        $progress2 = new ProgressBar($output2, 50);
+        $progress2->setFormat('test');
+
+        $progress->start();
+        $progress2->start();
+
+        $progress->advance();
+        $progress2->advance();
+
+        rewind($stream->getStream());
+
+        $this->assertEquals('  0/50 [>---------------------------]   0%'.PHP_EOL.
+            ' 0/50 [>]   0% Fruitcake marzipan toffee. Cupcake gummi bears tart dessert ice cream chupa chups cupcake chocolate bar sesame snaps. Croissant halvah cookie jujubes powder macaroon. Fruitcake bear claw bonbon jelly beans oat cake pie muffin Fruitcake marzipan toffee.'.PHP_EOL.
+            "\x1b[4A\x1b[0J".' 0/50 [>]   0% Fruitcake marzipan toffee. Cupcake gummi bears tart dessert ice cream chupa chups cupcake chocolate bar sesame snaps. Croissant halvah cookie jujubes powder macaroon. Fruitcake bear claw bonbon jelly beans oat cake pie muffin Fruitcake marzipan toffee.'.PHP_EOL.
+            "\x1b[3A\x1b[0J".'  1/50 [>---------------------------]   2%'.PHP_EOL.
+            ' 0/50 [>]   0% Fruitcake marzipan toffee. Cupcake gummi bears tart dessert ice cream chupa chups cupcake chocolate bar sesame snaps. Croissant halvah cookie jujubes powder macaroon. Fruitcake bear claw bonbon jelly beans oat cake pie muffin Fruitcake marzipan toffee.'.PHP_EOL.
+            "\x1b[3A\x1b[0J".' 1/50 [>]   2% Fruitcake marzipan toffee. Cupcake gummi bears tart dessert ice cream chupa chups cupcake chocolate bar sesame snaps. Croissant halvah cookie jujubes powder macaroon. Fruitcake bear claw bonbon jelly beans oat cake pie muffin Fruitcake marzipan toffee.'.PHP_EOL,
+            stream_get_contents($stream->getStream())
         );
     }
 
@@ -330,7 +403,7 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            ' 0/50 [>---------------------------]' .
+            ' 0/50 [>---------------------------]'.
             $this->generateOutput(' 1/50 [>---------------------------]'),
             stream_get_contents($output->getStream())
         );
@@ -347,10 +420,10 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '  0/50 [>---------------------------]   0%' .
-            $this->generateOutput('  0/50 [>---------------------------]   0%') .
-            $this->generateOutput('  1/50 [>---------------------------]   2%') .
-            $this->generateOutput(' 15/50 [========>-------------------]  30%') .
+            '  0/50 [>---------------------------]   0%'.
+            $this->generateOutput('  0/50 [>---------------------------]   0%').
+            $this->generateOutput('  1/50 [>---------------------------]   2%').
+            $this->generateOutput(' 15/50 [========>-------------------]  30%').
             $this->generateOutput(' 25/50 [==============>-------------]  50%'),
             stream_get_contents($output->getStream())
         );
@@ -375,9 +448,9 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            ' 0/6 [>---------------------------]   0%' .
-            $this->generateOutput(' 3/6 [==============>-------------]  50%') .
-            $this->generateOutput(' 5/6 [=======================>----]  83%') .
+            ' 0/6 [>---------------------------]   0%'.
+            $this->generateOutput(' 3/6 [==============>-------------]  50%').
+            $this->generateOutput(' 5/6 [=======================>----]  83%').
             $this->generateOutput(' 6/6 [============================] 100%'),
             stream_get_contents($output->getStream())
         );
@@ -392,7 +465,7 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '    0 [>---------------------------]' .
+            '    0 [>---------------------------]'.
             $this->generateOutput('    1 [->--------------------------]'),
             stream_get_contents($output->getStream())
         );
@@ -407,7 +480,7 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '    0 [>---------------------------]' .
+            '    0 [>---------------------------]'.
             $this->generateOutput('    1 [->--------------------------]'),
             stream_get_contents($output->getStream())
         );
@@ -422,7 +495,7 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '    0 [>---------------------------]' .
+            '    0 [>---------------------------]'.
             $this->generateOutput('    3 [■■■>------------------------]'),
             stream_get_contents($output->getStream())
         );
@@ -437,8 +510,8 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '  0/50 [>---------------------------]   0%' .
-            $this->generateOutput(' 25/50 [==============>-------------]  50%') .
+            '  0/50 [>---------------------------]   0%'.
+            $this->generateOutput(' 25/50 [==============>-------------]  50%').
             $this->generateOutput(''),
             stream_get_contents($output->getStream())
         );
@@ -454,9 +527,9 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '   0/200 [>---------------------------]   0%' .
-            $this->generateOutput('   0/200 [>---------------------------]   0%') .
-            $this->generateOutput(' 199/200 [===========================>]  99%') .
+            '   0/200 [>---------------------------]   0%'.
+            $this->generateOutput('   0/200 [>---------------------------]   0%').
+            $this->generateOutput(' 199/200 [===========================>]  99%').
             $this->generateOutput(' 200/200 [============================] 100%'),
             stream_get_contents($output->getStream())
         );
@@ -475,16 +548,16 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '   0/200 [>---------------------------]   0%' . PHP_EOL .
-            '  20/200 [==>-------------------------]  10%' . PHP_EOL .
-            '  40/200 [=====>----------------------]  20%' . PHP_EOL .
-            '  60/200 [========>-------------------]  30%' . PHP_EOL .
-            '  80/200 [===========>----------------]  40%' . PHP_EOL .
-            ' 100/200 [==============>-------------]  50%' . PHP_EOL .
-            ' 120/200 [================>-----------]  60%' . PHP_EOL .
-            ' 140/200 [===================>--------]  70%' . PHP_EOL .
-            ' 160/200 [======================>-----]  80%' . PHP_EOL .
-            ' 180/200 [=========================>--]  90%' . PHP_EOL .
+            '   0/200 [>---------------------------]   0%'.PHP_EOL.
+            '  20/200 [==>-------------------------]  10%'.PHP_EOL.
+            '  40/200 [=====>----------------------]  20%'.PHP_EOL.
+            '  60/200 [========>-------------------]  30%'.PHP_EOL.
+            '  80/200 [===========>----------------]  40%'.PHP_EOL.
+            ' 100/200 [==============>-------------]  50%'.PHP_EOL.
+            ' 120/200 [================>-----------]  60%'.PHP_EOL.
+            ' 140/200 [===================>--------]  70%'.PHP_EOL.
+            ' 160/200 [======================>-----]  80%'.PHP_EOL.
+            ' 180/200 [=========================>--]  90%'.PHP_EOL.
             ' 200/200 [============================] 100%',
             stream_get_contents($output->getStream())
         );
@@ -501,8 +574,8 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '  0/50 [>---------------------------]   0%' . PHP_EOL .
-            ' 25/50 [==============>-------------]  50%' . PHP_EOL .
+            '  0/50 [>---------------------------]   0%'.PHP_EOL.
+            ' 25/50 [==============>-------------]  50%'.PHP_EOL.
             ' 50/50 [============================] 100%',
             stream_get_contents($output->getStream())
         );
@@ -516,7 +589,7 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '    0 [>---------------------------]' . PHP_EOL .
+            '    0 [>---------------------------]'.PHP_EOL.
             '    1 [->--------------------------]',
             stream_get_contents($output->getStream())
         );
@@ -554,28 +627,28 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            ' 0/2 [>---------------------------]   0%' . "\n" .
-            ' 0/3 [#---------------------------]   0%' . "\n" .
-            rtrim('    0 [>---------------------------]') .
+            ' 0/2 [>---------------------------]   0%'."\n".
+            ' 0/3 [#---------------------------]   0%'."\n".
+            rtrim('    0 [>---------------------------]').
 
-            "\033[2A" .
-            $this->generateOutput(' 1/2 [==============>-------------]  50%') . "\n" .
-            $this->generateOutput(' 1/3 [=========#------------------]  33%') . "\n" .
-            rtrim($this->generateOutput('    1 [->--------------------------]')) .
+            "\033[2A".
+            $this->generateOutput(' 1/2 [==============>-------------]  50%')."\n".
+            $this->generateOutput(' 1/3 [=========#------------------]  33%')."\n".
+            rtrim($this->generateOutput('    1 [->--------------------------]')).
 
-            "\033[2A" .
-            $this->generateOutput(' 2/2 [============================] 100%') . "\n" .
-            $this->generateOutput(' 2/3 [==================#---------]  66%') . "\n" .
-            rtrim($this->generateOutput('    2 [-->-------------------------]')) .
+            "\033[2A".
+            $this->generateOutput(' 2/2 [============================] 100%')."\n".
+            $this->generateOutput(' 2/3 [==================#---------]  66%')."\n".
+            rtrim($this->generateOutput('    2 [-->-------------------------]')).
 
-            "\033[2A" .
-            "\n" .
-            $this->generateOutput(' 3/3 [============================] 100%') . "\n" .
-            rtrim($this->generateOutput('    3 [--->------------------------]')) .
+            "\033[2A".
+            "\n".
+            $this->generateOutput(' 3/3 [============================] 100%')."\n".
+            rtrim($this->generateOutput('    3 [--->------------------------]')).
 
-            "\033[2A" .
-            "\n" .
-            "\n" .
+            "\033[2A".
+            "\n".
+            "\n".
             rtrim($this->generateOutput('    3 [============================]')),
             stream_get_contents($output->getStream())
         );
@@ -594,11 +667,34 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            rtrim('    0 [>---------------------------]') .
-            rtrim($this->generateOutput('    1 [->--------------------------]')) .
-            rtrim($this->generateOutput('    2 [-->-------------------------]')) .
-            rtrim($this->generateOutput('    3 [--->------------------------]')) .
+            rtrim('    0 [>---------------------------]').
+            rtrim($this->generateOutput('    1 [->--------------------------]')).
+            rtrim($this->generateOutput('    2 [-->-------------------------]')).
+            rtrim($this->generateOutput('    3 [--->------------------------]')).
             rtrim($this->generateOutput('    3 [============================]')),
+            stream_get_contents($output->getStream())
+        );
+    }
+
+    public function testSettingMaxStepsDuringProgressing()
+    {
+        $output = $this->getOutputStream();
+        $bar = new ProgressBar($output);
+        $bar->start();
+        $bar->setProgress(2);
+        $bar->setMaxSteps(10);
+        $bar->setProgress(5);
+        $bar->setMaxSteps(100);
+        $bar->setProgress(10);
+        $bar->finish();
+
+        rewind($output->getStream());
+        $this->assertEquals(
+            rtrim('    0 [>---------------------------]').
+            rtrim($this->generateOutput('    2 [-->-------------------------]')).
+            rtrim($this->generateOutput('  5/10 [==============>-------------]  50%')).
+            rtrim($this->generateOutput('  10/100 [==>-------------------------]  10%')).
+            rtrim($this->generateOutput(' 100/100 [============================] 100%')),
             stream_get_contents($output->getStream())
         );
     }
@@ -615,7 +711,7 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            '    0 [>---]' .
+            '    0 [>---]'.
             $this->generateOutput('    1 [->--]'),
             stream_get_contents($output->getStream())
         );
@@ -635,8 +731,8 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            ' 3 [>---------------------------]' .
-            $this->generateOutput(' 2 [=========>------------------]') .
+            ' 3 [>---------------------------]'.
+            $this->generateOutput(' 2 [=========>------------------]').
             $this->generateOutput(' 0 [============================]'),
             stream_get_contents($output->getStream())
         );
@@ -654,9 +750,9 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            ">---------------------------\nfoobar" .
-            $this->generateOutput("=========>------------------\nfoobar") .
-            "\x0D\x1B[2K\x1B[1A\x1B[2K" .
+            ">---------------------------\nfoobar".
+            $this->generateOutput("=========>------------------\nfoobar").
+            "\x0D\x1B[2K\x1B[1A\x1B[2K".
             $this->generateOutput("============================\nfoobar"),
             stream_get_contents($output->getStream())
         );
@@ -672,7 +768,7 @@ class ProgressBarTest extends TestCase
             $mem = 100000 * $i;
             $colors = $i++ ? '41;37' : '44;37';
 
-            return "\033[" . $colors . 'm ' . Helper::formatMemory($mem) . " \033[0m";
+            return "\033[".$colors.'m '.Helper::formatMemory($mem)." \033[0m";
         });
         $bar->setFormat(" \033[44;37m %title:-37s% \033[0m\n %current%/%max% %bar% %percent:3s%%\n 🏁  %remaining:-10s% %memory:37s%");
         $bar->setBarCharacter($done = "\033[32m●\033[0m");
@@ -684,8 +780,8 @@ class ProgressBarTest extends TestCase
 
         rewind($output->getStream());
         $this->assertEquals(
-            " \033[44;37m Starting the demo... fingers crossed  \033[0m\n" .
-            '  0/15 ' . $progress . str_repeat($empty, 26) . "   0%\n" .
+            " \033[44;37m Starting the demo... fingers crossed  \033[0m\n".
+            '  0/15 '.$progress.str_repeat($empty, 26)."   0%\n".
             " \xf0\x9f\x8f\x81  < 1 sec                        \033[44;37m 0 B \033[0m",
             stream_get_contents($output->getStream())
         );
@@ -698,8 +794,8 @@ class ProgressBarTest extends TestCase
         rewind($output->getStream());
         $this->assertEquals(
             $this->generateOutput(
-                " \033[44;37m Looks good to me...                   \033[0m\n" .
-                '  4/15 ' . str_repeat($done, 7) . $progress . str_repeat($empty, 19) . "  26%\n" .
+                " \033[44;37m Looks good to me...                   \033[0m\n".
+                '  4/15 '.str_repeat($done, 7).$progress.str_repeat($empty, 19)."  26%\n".
                 " \xf0\x9f\x8f\x81  < 1 sec                     \033[41;37m 97 KiB \033[0m"
             ),
             stream_get_contents($output->getStream())
@@ -713,8 +809,8 @@ class ProgressBarTest extends TestCase
         rewind($output->getStream());
         $this->assertEquals(
             $this->generateOutput(
-                " \033[44;37m Thanks, bye                           \033[0m\n" .
-                ' 15/15 ' . str_repeat($done, 28) . " 100%\n" .
+                " \033[44;37m Thanks, bye                           \033[0m\n".
+                ' 15/15 '.str_repeat($done, 28)." 100%\n".
                 " \xf0\x9f\x8f\x81  < 1 sec                    \033[41;37m 195 KiB \033[0m"
             ),
             stream_get_contents($output->getStream())
@@ -769,6 +865,18 @@ class ProgressBarTest extends TestCase
             array('very_verbose'),
             array('debug'),
         );
+    }
+
+    protected function getOutputStream($decorated = true, $verbosity = StreamOutput::VERBOSITY_NORMAL)
+    {
+        return new StreamOutput(fopen('php://memory', 'r+', false), $verbosity, $decorated);
+    }
+
+    protected function generateOutput($expected)
+    {
+        $count = substr_count($expected, "\n");
+
+        return "\x0D\x1B[2K".($count ? str_repeat("\x1B[1A\x1B[2K", $count) : '').$expected;
     }
 
     public function testBarWidthWithMultilineFormat()

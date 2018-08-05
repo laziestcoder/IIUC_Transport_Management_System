@@ -15,8 +15,7 @@ class Collecting implements ErrorHandler
     /** @var Error[] Collected errors */
     private $errors = [];
 
-    public function handleError(Error $error)
-    {
+    public function handleError(Error $error) {
         $this->errors[] = $error;
     }
 
@@ -25,8 +24,7 @@ class Collecting implements ErrorHandler
      *
      * @return Error[]
      */
-    public function getErrors(): array
-    {
+    public function getErrors() : array {
         return $this->errors;
     }
 
@@ -35,16 +33,14 @@ class Collecting implements ErrorHandler
      *
      * @return bool
      */
-    public function hasErrors(): bool
-    {
+    public function hasErrors() : bool {
         return !empty($this->errors);
     }
 
     /**
      * Reset/clear collected errors.
      */
-    public function clearErrors()
-    {
+    public function clearErrors() {
         $this->errors = [];
     }
 }

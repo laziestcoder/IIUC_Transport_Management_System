@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 use PHPUnit\Framework\TestCase;
 
 class ClonedDependencyTest extends TestCase
@@ -28,8 +27,6 @@ class ClonedDependencyTest extends TestCase
 
     /**
      * @depends testOne
-     *
-     * @param mixed $dependency
      */
     public function testTwo($dependency): void
     {
@@ -38,8 +35,6 @@ class ClonedDependencyTest extends TestCase
 
     /**
      * @depends !clone testOne
-     *
-     * @param mixed $dependency
      */
     public function testThree($dependency): void
     {
@@ -48,8 +43,6 @@ class ClonedDependencyTest extends TestCase
 
     /**
      * @depends clone testOne
-     *
-     * @param mixed $dependency
      */
     public function testFour($dependency): void
     {
@@ -58,8 +51,6 @@ class ClonedDependencyTest extends TestCase
 
     /**
      * @depends !shallowClone testOne
-     *
-     * @param mixed $dependency
      */
     public function testFive($dependency): void
     {
@@ -68,8 +59,6 @@ class ClonedDependencyTest extends TestCase
 
     /**
      * @depends shallowClone testOne
-     *
-     * @param mixed $dependency
      */
     public function testSix($dependency): void
     {

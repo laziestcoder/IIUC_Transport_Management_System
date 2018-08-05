@@ -28,11 +28,6 @@ class CodeFormatterTest extends \PHPUnit\Framework\TestCase
         $this->assertNotEquals($expected, self::trimLines($formatted));
     }
 
-    private static function trimLines($code)
-    {
-        return rtrim(implode("\n", array_map('rtrim', explode("\n", $code))));
-    }
-
     public function reflectors()
     {
         $expectClass = <<<'EOS'
@@ -125,5 +120,10 @@ EOS;
         }
 
         return [[null], ['not a file']];
+    }
+
+    private static function trimLines($code)
+    {
+        return rtrim(implode("\n", array_map('rtrim', explode("\n", $code))));
     }
 }

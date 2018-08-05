@@ -79,15 +79,6 @@ class EntityPopulator
         return $formatters;
     }
 
-    protected function getTable($class)
-    {
-        $options = [];
-        if (!empty($this->connectionName)) {
-            $options['connection'] = $this->connectionName;
-        }
-        return TableRegistry::get($class, $options);
-    }
-
     /**
      * @return array
      */
@@ -107,11 +98,11 @@ class EntityPopulator
                     $foreignKeys = $insertedEntities[$foreignModel];
                 } else {
                     $foreignKeys = $table->find('all')
-                        ->select(['id'])
-                        ->map(function ($row) {
-                            return $row->id;
-                        })
-                        ->toArray();
+                    ->select(['id'])
+                    ->map(function ($row) {
+                        return $row->id;
+                    })
+                    ->toArray();
                 }
 
                 if (empty($foreignKeys)) {
@@ -162,5 +153,14 @@ class EntityPopulator
     public function setConnection($name)
     {
         $this->connectionName = $name;
+    }
+
+    protected function getTable($class)
+    {
+        $options = [];
+        if (!empty($this->connectionName)) {
+            $options['connection'] = $this->connectionName;
+        }
+        return TableRegistry::get($class, $options);
     }
 }

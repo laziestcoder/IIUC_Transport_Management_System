@@ -2,8 +2,8 @@
 
 namespace Illuminate\Mail\Transport;
 
-use GuzzleHttp\ClientInterface;
 use Swift_Mime_SimpleMessage;
+use GuzzleHttp\ClientInterface;
 
 class SparkPostTransport extends Transport
 {
@@ -31,9 +31,9 @@ class SparkPostTransport extends Transport
     /**
      * Create a new SparkPost transport instance.
      *
-     * @param  \GuzzleHttp\ClientInterface $client
-     * @param  string $key
-     * @param  array $options
+     * @param  \GuzzleHttp\ClientInterface  $client
+     * @param  string  $key
+     * @param  array  $options
      * @return void
      */
     public function __construct(ClientInterface $client, $key, $options = [])
@@ -87,19 +87,53 @@ class SparkPostTransport extends Transport
     {
         $recipients = [];
 
-        foreach ((array)$message->getTo() as $email => $name) {
+        foreach ((array) $message->getTo() as $email => $name) {
             $recipients[] = ['address' => compact('name', 'email')];
         }
 
-        foreach ((array)$message->getCc() as $email => $name) {
+        foreach ((array) $message->getCc() as $email => $name) {
             $recipients[] = ['address' => compact('name', 'email')];
         }
 
-        foreach ((array)$message->getBcc() as $email => $name) {
+        foreach ((array) $message->getBcc() as $email => $name) {
             $recipients[] = ['address' => compact('name', 'email')];
         }
 
         return $recipients;
+    }
+
+    /**
+     * Get the transmission ID from the response.
+     *
+     * @param  \GuzzleHttp\Psr7\Response  $response
+     * @return string
+     */
+    protected function getTransmissionId($response)
+    {
+        return object_get(
+            json_decode($response->getBody()->getContents()), 'results.id'
+        );
+    }
+
+    /**
+     * Get the API key being used by the transport.
+     *
+     * @return string
+     */
+    public function getKey()
+    {
+        return $this->key;
+    }
+
+    /**
+     * Set the API key being used by the transport.
+     *
+     * @param  string  $key
+     * @return string
+     */
+    public function setKey($key)
+    {
+        return $this->key = $key;
     }
 
     /**
@@ -125,45 +159,11 @@ class SparkPostTransport extends Transport
     /**
      * Set the transmission options being used by the transport.
      *
-     * @param  array $options
+     * @param  array  $options
      * @return array
      */
     public function setOptions(array $options)
     {
         return $this->options = $options;
-    }
-
-    /**
-     * Get the transmission ID from the response.
-     *
-     * @param  \GuzzleHttp\Psr7\Response $response
-     * @return string
-     */
-    protected function getTransmissionId($response)
-    {
-        return object_get(
-            json_decode($response->getBody()->getContents()), 'results.id'
-        );
-    }
-
-    /**
-     * Get the API key being used by the transport.
-     *
-     * @return string
-     */
-    public function getKey()
-    {
-        return $this->key;
-    }
-
-    /**
-     * Set the API key being used by the transport.
-     *
-     * @param  string $key
-     * @return string
-     */
-    public function setKey($key)
-    {
-        return $this->key = $key;
     }
 }

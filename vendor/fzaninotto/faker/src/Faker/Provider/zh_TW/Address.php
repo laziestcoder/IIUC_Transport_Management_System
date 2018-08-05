@@ -176,10 +176,10 @@ class Address extends \Faker\Provider\Address
             '壯圍鄉', '員山鄉', '冬山鄉', '五結鄉', '三星鄉',
             '大同鄉', '南澳鄉',
         ),
-        '桃園縣' => array(
-            '桃園市', '中壢市', '大溪鎮', '楊梅鎮', '蘆竹鄉',
-            '大園鄉', '龜山鄉', '八德市', '龍潭鄉', '平鎮市',
-            '新屋鄉', '觀音鄉', '復興鄉',
+        '桃園市' => array(
+            '桃園區', '中壢區', '大溪區', '楊梅區', '蘆竹區',
+            '大園區', '龜山區', '八德區', '龍潭區', '平鎮區',
+            '新屋區', '觀音區', '復興區',
         ),
         '新竹縣' => array(
             '竹北市', '竹東鎮', '新埔鎮', '關西鎮', '湖口鄉',
@@ -352,6 +352,11 @@ class Address extends \Faker\Provider\Address
 
     protected static $postcode = array('###-##', '###');
 
+    public function street()
+    {
+        return static::randomElement(static::$street);
+    }
+
     public static function randomChineseNumber()
     {
         $digits = array(
@@ -372,12 +377,24 @@ class Address extends \Faker\Provider\Address
 
     public static function localLatitude()
     {
-        return number_format(mt_rand(22000000, 25000000) / 1000000, 6);
+        return number_format(mt_rand(22000000, 25000000)/1000000, 6);
     }
 
     public static function localLongitude()
     {
-        return number_format(mt_rand(120000000, 122000000) / 1000000, 6);
+        return number_format(mt_rand(120000000, 122000000)/1000000, 6);
+    }
+
+    public function city()
+    {
+        $county = static::randomElement(array_keys(static::$city));
+        $city = static::randomElement(static::$city[$county]);
+        return $county.$city;
+    }
+
+    public function state()
+    {
+        return '臺灣省';
     }
 
     public static function stateAbbr()
@@ -397,23 +414,6 @@ class Address extends \Faker\Provider\Address
 
     public static function secondaryAddress()
     {
-        return (static::randomNumber(2) + 1) . static::randomElement(static::$secondaryAddressSuffix);
-    }
-
-    public function street()
-    {
-        return static::randomElement(static::$street);
-    }
-
-    public function city()
-    {
-        $county = static::randomElement(array_keys(static::$city));
-        $city = static::randomElement(static::$city[$county]);
-        return $county . $city;
-    }
-
-    public function state()
-    {
-        return '臺灣省';
+        return (static::randomNumber(2)+1).static::randomElement(static::$secondaryAddressSuffix);
     }
 }

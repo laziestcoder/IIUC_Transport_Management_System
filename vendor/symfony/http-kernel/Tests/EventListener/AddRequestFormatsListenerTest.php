@@ -28,6 +28,16 @@ class AddRequestFormatsListenerTest extends TestCase
      */
     private $listener;
 
+    protected function setUp()
+    {
+        $this->listener = new AddRequestFormatsListener(array('csv' => array('text/csv', 'text/plain')));
+    }
+
+    protected function tearDown()
+    {
+        $this->listener = null;
+    }
+
     public function testIsAnEventSubscriber()
     {
         $this->assertInstanceOf('Symfony\Component\EventDispatcher\EventSubscriberInterface', $this->listener);
@@ -70,15 +80,5 @@ class AddRequestFormatsListenerTest extends TestCase
             ->will($this->returnValue($request));
 
         return $event;
-    }
-
-    protected function setUp()
-    {
-        $this->listener = new AddRequestFormatsListener(array('csv' => array('text/csv', 'text/plain')));
-    }
-
-    protected function tearDown()
-    {
-        $this->listener = null;
     }
 }

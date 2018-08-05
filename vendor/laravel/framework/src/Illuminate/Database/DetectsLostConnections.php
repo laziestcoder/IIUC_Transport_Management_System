@@ -2,15 +2,15 @@
 
 namespace Illuminate\Database;
 
-use Illuminate\Support\Str;
 use Throwable;
+use Illuminate\Support\Str;
 
 trait DetectsLostConnections
 {
     /**
      * Determine if the given exception was caused by a lost connection.
      *
-     * @param  \Throwable $e
+     * @param  \Throwable  $e
      * @return bool
      */
     protected function causedByLostConnection(Throwable $e)
@@ -32,6 +32,8 @@ trait DetectsLostConnections
             'child connection forced to terminate due to client_idle_limit',
             'query_wait_timeout',
             'reset by peer',
+            'Physical connection is not usable',
+            'TCP Provider: Error code 0x68',
         ]);
     }
 }

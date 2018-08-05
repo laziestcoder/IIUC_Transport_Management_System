@@ -39,6 +39,14 @@ final class Iterator implements \RecursiveIterator
     }
 
     /**
+     * Checks if there is a current element after calls to rewind() or next().
+     */
+    public function valid(): bool
+    {
+        return $this->position < \count($this->nodes);
+    }
+
+    /**
      * Returns the key of the current element.
      */
     public function key(): int
@@ -52,14 +60,6 @@ final class Iterator implements \RecursiveIterator
     public function current(): AbstractNode
     {
         return $this->valid() ? $this->nodes[$this->position] : null;
-    }
-
-    /**
-     * Checks if there is a current element after calls to rewind() or next().
-     */
-    public function valid(): bool
-    {
-        return $this->position < \count($this->nodes);
     }
 
     /**

@@ -4,8 +4,7 @@ namespace PhpParser;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-function canonicalize($str)
-{
+function canonicalize($str) {
     // normalize EOL style
     $str = str_replace("\r\n", "\n", $str);
 
@@ -14,14 +13,13 @@ function canonicalize($str)
 
     // remove trailing whitespace on all lines
     $lines = explode("\n", $str);
-    $lines = array_map(function ($line) {
+    $lines = array_map(function($line) {
         return rtrim($line, " \t");
     }, $lines);
     return implode("\n", $lines);
 }
 
-function filesInDir($directory, $fileExtension)
-{
+function filesInDir($directory, $fileExtension) {
     $directory = realpath($directory);
     $it = new \RecursiveDirectoryIterator($directory);
     $it = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::LEAVES_ONLY);

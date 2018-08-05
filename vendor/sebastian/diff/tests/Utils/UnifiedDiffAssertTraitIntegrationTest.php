@@ -24,6 +24,18 @@ final class UnifiedDiffAssertTraitIntegrationTest extends TestCase
 
     private $filePatch;
 
+    protected function setUp(): void
+    {
+        $this->filePatch = __DIR__ . '/../fixtures/out/patch.txt';
+
+        $this->cleanUpTempFiles();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->cleanUpTempFiles();
+    }
+
     /**
      * @param string $fileFrom
      * @param string $fileTo
@@ -74,12 +86,12 @@ final class UnifiedDiffAssertTraitIntegrationTest extends TestCase
         $cases = [];
 
         // created cases based on dedicated fixtures
-        $dir = \realpath(__DIR__ . '/../fixtures/UnifiedDiffAssertTraitIntegrationTest');
+        $dir       = \realpath(__DIR__ . '/../fixtures/UnifiedDiffAssertTraitIntegrationTest');
         $dirLength = \strlen($dir);
 
-        for ($i = 1; ; ++$i) {
+        for ($i = 1;; ++$i) {
             $fromFile = \sprintf('%s/%d_a.txt', $dir, $i);
-            $toFile = \sprintf('%s/%d_b.txt', $dir, $i);
+            $toFile   = \sprintf('%s/%d_b.txt', $dir, $i);
 
             if (!\file_exists($fromFile)) {
                 break;
@@ -90,11 +102,11 @@ final class UnifiedDiffAssertTraitIntegrationTest extends TestCase
         }
 
         // create cases based on PHP files within the vendor directory for integration testing
-        $dir = \realpath(__DIR__ . '/../../vendor');
+        $dir       = \realpath(__DIR__ . '/../../vendor');
         $dirLength = \strlen($dir);
 
         $fileIterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS));
-        $fromFile = __FILE__;
+        $fromFile     = __FILE__;
 
         /** @var \SplFileInfo $file */
         foreach ($fileIterator as $file) {
@@ -102,28 +114,16 @@ final class UnifiedDiffAssertTraitIntegrationTest extends TestCase
                 continue;
             }
 
-            $toFile = $file->getPathname();
+            $toFile                                                                                                                                   = $file->getPathname();
             $cases[\sprintf("Diff file:\n\"%s\"\nvs.\n\"%s\"\n", \substr(\realpath($fromFile), $dirLength), \substr(\realpath($toFile), $dirLength))] = [$fromFile, $toFile];
-            $fromFile = $toFile;
+            $fromFile                                                                                                                                 = $toFile;
         }
 
         return $cases;
     }
 
-    protected function setUp(): void
-    {
-        $this->filePatch = __DIR__ . '/../fixtures/out/patch.txt';
-
-        $this->cleanUpTempFiles();
-    }
-
     private function cleanUpTempFiles(): void
     {
         @\unlink($this->filePatch);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->cleanUpTempFiles();
     }
 }

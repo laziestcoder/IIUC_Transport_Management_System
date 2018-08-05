@@ -34,7 +34,7 @@ class VariableEnumerator extends Enumerator
      * the current scope variables, so we need to pass it a Context instance.
      *
      * @param Presenter $presenter
-     * @param Context $context
+     * @param Context   $context
      */
     public function __construct(Presenter $presenter, Context $context)
     {
@@ -57,7 +57,7 @@ class VariableEnumerator extends Enumerator
             return;
         }
 
-        $showAll = $input->getOption('all');
+        $showAll   = $input->getOption('all');
         $variables = $this->prepareVariables($this->getVariables($showAll));
 
         if (empty($variables)) {
@@ -67,31 +67,6 @@ class VariableEnumerator extends Enumerator
         return [
             'Variables' => $variables,
         ];
-    }
-
-    /**
-     * Prepare formatted variable array.
-     *
-     * @param array $variables
-     *
-     * @return array
-     */
-    protected function prepareVariables(array $variables)
-    {
-        // My kingdom for a generator.
-        $ret = [];
-        foreach ($variables as $name => $val) {
-            if ($this->showItem($name)) {
-                $fname = '$' . $name;
-                $ret[$fname] = [
-                    'name' => $fname,
-                    'style' => in_array($name, self::$specialNames) ? self::IS_PRIVATE : self::IS_PUBLIC,
-                    'value' => $this->presentRef($val),
-                ];
-            }
-        }
-
-        return $ret;
     }
 
     /**
@@ -130,6 +105,31 @@ class VariableEnumerator extends Enumerator
             }
 
             $ret[$name] = $val;
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Prepare formatted variable array.
+     *
+     * @param array $variables
+     *
+     * @return array
+     */
+    protected function prepareVariables(array $variables)
+    {
+        // My kingdom for a generator.
+        $ret = [];
+        foreach ($variables as $name => $val) {
+            if ($this->showItem($name)) {
+                $fname = '$' . $name;
+                $ret[$fname] = [
+                    'name'  => $fname,
+                    'style' => in_array($name, self::$specialNames) ? self::IS_PRIVATE : self::IS_PUBLIC,
+                    'value' => $this->presentRef($val),
+                ];
+            }
         }
 
         return $ret;

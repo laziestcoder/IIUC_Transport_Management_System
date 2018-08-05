@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\ExpectationFailedException;
@@ -70,8 +69,8 @@ class JsonMatches extends Constraint
     /**
      * Throws an exception for the given compared value and test description
      *
-     * @param mixed $other evaluated value or object
-     * @param string $description Additional information about the test
+     * @param mixed             $other             evaluated value or object
+     * @param string            $description       Additional information about the test
      * @param ComparisonFailure $comparisonFailure
      *
      * @throws ExpectationFailedException

@@ -2,72 +2,73 @@
 
 namespace Illuminate\Foundation\Providers;
 
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Queue\Console\TableCommand;
 use Illuminate\Auth\Console\AuthMakeCommand;
+use Illuminate\Foundation\Console\UpCommand;
+use Illuminate\Foundation\Console\DownCommand;
 use Illuminate\Auth\Console\ClearResetsCommand;
 use Illuminate\Cache\Console\CacheTableCommand;
-use Illuminate\Cache\Console\ClearCommand as CacheClearCommand;
-use Illuminate\Cache\Console\ForgetCommand as CacheForgetCommand;
-use Illuminate\Console\Scheduling\ScheduleFinishCommand;
-use Illuminate\Console\Scheduling\ScheduleRunCommand;
-use Illuminate\Database\Console\Factories\FactoryMakeCommand;
-use Illuminate\Database\Console\Migrations\FreshCommand as MigrateFreshCommand;
-use Illuminate\Database\Console\Migrations\InstallCommand as MigrateInstallCommand;
-use Illuminate\Database\Console\Migrations\MigrateCommand;
-use Illuminate\Database\Console\Migrations\MigrateMakeCommand;
-use Illuminate\Database\Console\Migrations\RefreshCommand as MigrateRefreshCommand;
-use Illuminate\Database\Console\Migrations\ResetCommand as MigrateResetCommand;
-use Illuminate\Database\Console\Migrations\RollbackCommand as MigrateRollbackCommand;
-use Illuminate\Database\Console\Migrations\StatusCommand as MigrateStatusCommand;
-use Illuminate\Database\Console\Seeds\SeedCommand;
-use Illuminate\Database\Console\Seeds\SeederMakeCommand;
+use Illuminate\Foundation\Console\ServeCommand;
+use Illuminate\Foundation\Console\PresetCommand;
+use Illuminate\Queue\Console\FailedTableCommand;
 use Illuminate\Foundation\Console\AppNameCommand;
+use Illuminate\Foundation\Console\JobMakeCommand;
+use Illuminate\Database\Console\Seeds\SeedCommand;
+use Illuminate\Foundation\Console\MailMakeCommand;
+use Illuminate\Foundation\Console\RuleMakeCommand;
+use Illuminate\Foundation\Console\TestMakeCommand;
+use Illuminate\Foundation\Console\EventMakeCommand;
+use Illuminate\Foundation\Console\ModelMakeCommand;
+use Illuminate\Foundation\Console\RouteListCommand;
+use Illuminate\Foundation\Console\ViewCacheCommand;
+use Illuminate\Foundation\Console\ViewClearCommand;
+use Illuminate\Session\Console\SessionTableCommand;
+use Illuminate\Foundation\Console\PolicyMakeCommand;
+use Illuminate\Foundation\Console\RouteCacheCommand;
+use Illuminate\Foundation\Console\RouteClearCommand;
+use Illuminate\Console\Scheduling\ScheduleRunCommand;
 use Illuminate\Foundation\Console\ChannelMakeCommand;
-use Illuminate\Foundation\Console\ClearCompiledCommand;
 use Illuminate\Foundation\Console\ConfigCacheCommand;
 use Illuminate\Foundation\Console\ConfigClearCommand;
 use Illuminate\Foundation\Console\ConsoleMakeCommand;
-use Illuminate\Foundation\Console\DownCommand;
 use Illuminate\Foundation\Console\EnvironmentCommand;
-use Illuminate\Foundation\Console\EventGenerateCommand;
-use Illuminate\Foundation\Console\EventMakeCommand;
-use Illuminate\Foundation\Console\ExceptionMakeCommand;
-use Illuminate\Foundation\Console\JobMakeCommand;
 use Illuminate\Foundation\Console\KeyGenerateCommand;
-use Illuminate\Foundation\Console\ListenerMakeCommand;
-use Illuminate\Foundation\Console\MailMakeCommand;
-use Illuminate\Foundation\Console\ModelMakeCommand;
-use Illuminate\Foundation\Console\NotificationMakeCommand;
-use Illuminate\Foundation\Console\PackageDiscoverCommand;
-use Illuminate\Foundation\Console\PolicyMakeCommand;
-use Illuminate\Foundation\Console\PresetCommand;
-use Illuminate\Foundation\Console\ProviderMakeCommand;
 use Illuminate\Foundation\Console\RequestMakeCommand;
-use Illuminate\Foundation\Console\ResourceMakeCommand;
-use Illuminate\Foundation\Console\RouteCacheCommand;
-use Illuminate\Foundation\Console\RouteClearCommand;
-use Illuminate\Foundation\Console\RouteListCommand;
-use Illuminate\Foundation\Console\RuleMakeCommand;
-use Illuminate\Foundation\Console\ServeCommand;
 use Illuminate\Foundation\Console\StorageLinkCommand;
-use Illuminate\Foundation\Console\TestMakeCommand;
-use Illuminate\Foundation\Console\UpCommand;
-use Illuminate\Foundation\Console\VendorPublishCommand;
-use Illuminate\Foundation\Console\ViewCacheCommand;
-use Illuminate\Foundation\Console\ViewClearCommand;
-use Illuminate\Notifications\Console\NotificationTableCommand;
-use Illuminate\Queue\Console\FailedTableCommand;
-use Illuminate\Queue\Console\FlushFailedCommand as FlushFailedQueueCommand;
-use Illuminate\Queue\Console\ForgetFailedCommand as ForgetFailedQueueCommand;
-use Illuminate\Queue\Console\ListenCommand as QueueListenCommand;
-use Illuminate\Queue\Console\ListFailedCommand as ListFailedQueueCommand;
-use Illuminate\Queue\Console\RestartCommand as QueueRestartCommand;
-use Illuminate\Queue\Console\RetryCommand as QueueRetryCommand;
-use Illuminate\Queue\Console\TableCommand;
-use Illuminate\Queue\Console\WorkCommand as QueueWorkCommand;
 use Illuminate\Routing\Console\ControllerMakeCommand;
 use Illuminate\Routing\Console\MiddlewareMakeCommand;
-use Illuminate\Session\Console\SessionTableCommand;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\Console\ListenerMakeCommand;
+use Illuminate\Foundation\Console\ObserverMakeCommand;
+use Illuminate\Foundation\Console\ProviderMakeCommand;
+use Illuminate\Foundation\Console\ResourceMakeCommand;
+use Illuminate\Foundation\Console\ClearCompiledCommand;
+use Illuminate\Foundation\Console\EventGenerateCommand;
+use Illuminate\Foundation\Console\ExceptionMakeCommand;
+use Illuminate\Foundation\Console\VendorPublishCommand;
+use Illuminate\Console\Scheduling\ScheduleFinishCommand;
+use Illuminate\Database\Console\Seeds\SeederMakeCommand;
+use Illuminate\Foundation\Console\PackageDiscoverCommand;
+use Illuminate\Database\Console\Migrations\MigrateCommand;
+use Illuminate\Foundation\Console\NotificationMakeCommand;
+use Illuminate\Database\Console\Factories\FactoryMakeCommand;
+use Illuminate\Queue\Console\WorkCommand as QueueWorkCommand;
+use Illuminate\Database\Console\Migrations\MigrateMakeCommand;
+use Illuminate\Notifications\Console\NotificationTableCommand;
+use Illuminate\Cache\Console\ClearCommand as CacheClearCommand;
+use Illuminate\Queue\Console\RetryCommand as QueueRetryCommand;
+use Illuminate\Cache\Console\ForgetCommand as CacheForgetCommand;
+use Illuminate\Queue\Console\ListenCommand as QueueListenCommand;
+use Illuminate\Queue\Console\RestartCommand as QueueRestartCommand;
+use Illuminate\Queue\Console\ListFailedCommand as ListFailedQueueCommand;
+use Illuminate\Queue\Console\FlushFailedCommand as FlushFailedQueueCommand;
+use Illuminate\Queue\Console\ForgetFailedCommand as ForgetFailedQueueCommand;
+use Illuminate\Database\Console\Migrations\FreshCommand as MigrateFreshCommand;
+use Illuminate\Database\Console\Migrations\ResetCommand as MigrateResetCommand;
+use Illuminate\Database\Console\Migrations\StatusCommand as MigrateStatusCommand;
+use Illuminate\Database\Console\Migrations\InstallCommand as MigrateInstallCommand;
+use Illuminate\Database\Console\Migrations\RefreshCommand as MigrateRefreshCommand;
+use Illuminate\Database\Console\Migrations\RollbackCommand as MigrateRollbackCommand;
 
 class ArtisanServiceProvider extends ServiceProvider
 {
@@ -145,6 +146,7 @@ class ArtisanServiceProvider extends ServiceProvider
         'ModelMake' => 'command.model.make',
         'NotificationMake' => 'command.notification.make',
         'NotificationTable' => 'command.notification.table',
+        'ObserverMake' => 'command.observer.make',
         'PolicyMake' => 'command.policy.make',
         'ProviderMake' => 'command.provider.make',
         'QueueFailedTable' => 'command.queue.failed-table',
@@ -174,7 +176,7 @@ class ArtisanServiceProvider extends ServiceProvider
     /**
      * Register the given commands.
      *
-     * @param  array $commands
+     * @param  array  $commands
      * @return void
      */
     protected function registerCommands(array $commands)
@@ -184,16 +186,6 @@ class ArtisanServiceProvider extends ServiceProvider
         }
 
         $this->commands(array_values($commands));
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return array_merge(array_values($this->commands), array_values($this->devCommands));
     }
 
     /**
@@ -215,7 +207,7 @@ class ArtisanServiceProvider extends ServiceProvider
      */
     protected function registerAuthMakeCommand()
     {
-        $this->app->singleton('command.auth.make', function ($app) {
+        $this->app->singleton('command.auth.make', function () {
             return new AuthMakeCommand;
         });
     }
@@ -604,10 +596,46 @@ class ArtisanServiceProvider extends ServiceProvider
      *
      * @return void
      */
+    protected function registerNotificationTableCommand()
+    {
+        $this->app->singleton('command.notification.table', function ($app) {
+            return new NotificationTableCommand($app['files'], $app['composer']);
+        });
+    }
+
+    /**
+     * Register the command.
+     *
+     * @return void
+     */
+    protected function registerObserverMakeCommand()
+    {
+        $this->app->singleton('command.observer.make', function ($app) {
+            return new ObserverMakeCommand($app['files']);
+        });
+    }
+
+    /**
+     * Register the command.
+     *
+     * @return void
+     */
     protected function registerPackageDiscoverCommand()
     {
-        $this->app->singleton('command.package.discover', function ($app) {
+        $this->app->singleton('command.package.discover', function () {
             return new PackageDiscoverCommand;
+        });
+    }
+
+    /**
+     * Register the command.
+     *
+     * @return void
+     */
+    protected function registerPolicyMakeCommand()
+    {
+        $this->app->singleton('command.policy.make', function ($app) {
+            return new PolicyMakeCommand($app['files']);
         });
     }
 
@@ -938,7 +966,7 @@ class ArtisanServiceProvider extends ServiceProvider
      */
     protected function registerViewCacheCommand()
     {
-        $this->app->singleton('command.view.cache', function ($app) {
+        $this->app->singleton('command.view.cache', function () {
             return new ViewCacheCommand;
         });
     }
@@ -956,26 +984,12 @@ class ArtisanServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the command.
+     * Get the services provided by the provider.
      *
-     * @return void
+     * @return array
      */
-    protected function registerPolicyMakeCommand()
+    public function provides()
     {
-        $this->app->singleton('command.policy.make', function ($app) {
-            return new PolicyMakeCommand($app['files']);
-        });
-    }
-
-    /**
-     * Register the command.
-     *
-     * @return void
-     */
-    protected function registerNotificationTableCommand()
-    {
-        $this->app->singleton('command.notification.table', function ($app) {
-            return new NotificationTableCommand($app['files'], $app['composer']);
-        });
+        return array_merge(array_values($this->commands), array_values($this->devCommands));
     }
 }

@@ -7,8 +7,11 @@ use PHPUnit\Framework\TestCase;
 
 class UseTest extends TestCase
 {
-    public function testCreation()
-    {
+    protected function createUseBuilder($name, $type = Stmt\Use_::TYPE_NORMAL) {
+        return new Builder\Use_($name, $type);
+    }
+
+    public function testCreation() {
         $node = $this->createUseBuilder('Foo\Bar')->getNode();
         $this->assertEquals(new Stmt\Use_([
             new Stmt\UseUse(new Name('Foo\Bar'), null)
@@ -23,10 +26,5 @@ class UseTest extends TestCase
         $this->assertEquals(new Stmt\Use_([
             new Stmt\UseUse(new Name('foo\bar'), 'foo')
         ], Stmt\Use_::TYPE_FUNCTION), $node);
-    }
-
-    protected function createUseBuilder($name, $type = Stmt\Use_::TYPE_NORMAL)
-    {
-        return new Builder\Use_($name, $type);
     }
 }

@@ -4,8 +4,7 @@ namespace PharIo\Manifest;
 
 use DOMDocument;
 
-class PhpElementTest extends \PHPUnit_Framework_TestCase
-{
+class PhpElementTest extends \PHPUnit\Framework\TestCase {
     /**
      * @var DOMDocument
      */
@@ -16,40 +15,34 @@ class PhpElementTest extends \PHPUnit_Framework_TestCase
      */
     private $php;
 
-    public function testVersionConstraintCanBeRetrieved()
-    {
+    protected function setUp() {
+        $this->dom = new DOMDocument();
+        $this->dom->loadXML('<?xml version="1.0" ?><php xmlns="https://phar.io/xml/manifest/1.0" version="^5.6 || ^7.0" />');
+        $this->php = new PhpElement($this->dom->documentElement);
+    }
+
+    public function testVersionConstraintCanBeRetrieved() {
         $this->assertEquals('^5.6 || ^7.0', $this->php->getVersion());
     }
 
-    public function testHasExtElementsReturnsFalseWhenNoExtensionsAreRequired()
-    {
+    public function testHasExtElementsReturnsFalseWhenNoExtensionsAreRequired() {
         $this->assertFalse($this->php->hasExtElements());
     }
 
-    public function testHasExtElementsReturnsTrueWhenExtensionsAreRequired()
-    {
+    public function testHasExtElementsReturnsTrueWhenExtensionsAreRequired() {
         $this->addExtElement();
         $this->assertTrue($this->php->hasExtElements());
     }
 
-    private function addExtElement()
-    {
-        $this->dom->documentElement->appendChild(
-            $this->dom->createElementNS('https://phar.io/xml/manifest/1.0', 'ext')
-        );
-    }
-
-    public function testGetExtElementsReturnsExtElementCollection()
-    {
+    public function testGetExtElementsReturnsExtElementCollection() {
         $this->addExtElement();
         $this->assertInstanceOf(ExtElementCollection::class, $this->php->getExtElements());
     }
 
-    protected function setUp()
-    {
-        $this->dom = new DOMDocument();
-        $this->dom->loadXML('<?xml version="1.0" ?><php xmlns="https://phar.io/xml/manifest/1.0" version="^5.6 || ^7.0" />');
-        $this->php = new PhpElement($this->dom->documentElement);
+    private function addExtElement() {
+        $this->dom->documentElement->appendChild(
+            $this->dom->createElementNS('https://phar.io/xml/manifest/1.0', 'ext')
+        );
     }
 
 }

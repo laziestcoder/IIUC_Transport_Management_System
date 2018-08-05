@@ -99,13 +99,13 @@ class Address extends \Faker\Provider\fr_FR\Address
     }
 
     /**
-     * Returns the abbreviation of a canton.
+     * Returns a random city name.
+     * @example Luzern
      * @return string
      */
-    public static function cantonShort()
+    public function cityName()
     {
-        $canton = static::canton();
-        return key($canton);
+        return static::randomElement(static::$cityNames);
     }
 
     /**
@@ -119,6 +119,16 @@ class Address extends \Faker\Provider\fr_FR\Address
     }
 
     /**
+     * Returns the abbreviation of a canton.
+     * @return string
+     */
+    public static function cantonShort()
+    {
+        $canton = static::canton();
+        return key($canton);
+    }
+
+    /**
      * Returns the name of canton.
      * @return string
      */
@@ -126,15 +136,5 @@ class Address extends \Faker\Provider\fr_FR\Address
     {
         $canton = static::canton();
         return current($canton);
-    }
-
-    /**
-     * Returns a random city name.
-     * @example Luzern
-     * @return string
-     */
-    public function cityName()
-    {
-        return static::randomElement(static::$cityNames);
     }
 }

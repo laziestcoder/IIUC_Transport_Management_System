@@ -4,14 +4,13 @@ namespace PhpParser;
 
 class CodeTestParser
 {
-    public function parseTest($code, $chunksPerTest)
-    {
+    public function parseTest($code, $chunksPerTest) {
         $code = canonicalize($code);
 
         // evaluate @@{expr}@@ expressions
         $code = preg_replace_callback(
             '/@@\{(.*?)\}@@/',
-            function ($matches) {
+            function($matches) {
                 return eval('return ' . $matches[1] . ';');
             },
             $code
@@ -35,24 +34,7 @@ class CodeTestParser
         return [$name, $tests];
     }
 
-    private function extractMode($expected)
-    {
-        $firstNewLine = strpos($expected, "\n");
-        if (false === $firstNewLine) {
-            $firstNewLine = strlen($expected);
-        }
-
-        $firstLine = substr($expected, 0, $firstNewLine);
-        if (0 !== strpos($firstLine, '!!')) {
-            return [$expected, null];
-        }
-
-        $expected = (string)substr($expected, $firstNewLine + 1);
-        return [$expected, substr($firstLine, 2)];
-    }
-
-    public function reconstructTest($name, array $tests)
-    {
+    public function reconstructTest($name, array $tests) {
         $result = $name;
         foreach ($tests as list($mode, $parts)) {
             $lastPart = array_pop($parts);
@@ -67,5 +49,20 @@ class CodeTestParser
             $result .= $lastPart;
         }
         return $result;
+    }
+
+    private function extractMode($expected) {
+        $firstNewLine = strpos($expected, "\n");
+        if (false === $firstNewLine) {
+            $firstNewLine = strlen($expected);
+        }
+
+        $firstLine = substr($expected, 0, $firstNewLine);
+        if (0 !== strpos($firstLine, '!!')) {
+            return [$expected, null];
+        }
+
+        $expected = (string) substr($expected, $firstNewLine + 1);
+        return [$expected, substr($firstLine, 2)];
     }
 }

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\ExpectationFailedException;
@@ -44,10 +43,6 @@ EOF
 
     /**
      * @dataProvider isEqualProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
-     * @param mixed $message
      */
     public function testConstraintIsEqual2($expected, $actual, $message): void
     {
@@ -67,42 +62,30 @@ EOF
         $this->fail();
     }
 
-    /**
-     * Removes spaces in front of newlines
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    private function trimnl($string)
-    {
-        return \preg_replace('/[ ]*\n/', "\n", $string);
-    }
-
     public function isEqualProvider()
     {
-        $a = new \stdClass;
+        $a      = new \stdClass;
         $a->foo = 'bar';
-        $b = new \stdClass;
-        $ahash = \spl_object_hash($a);
-        $bhash = \spl_object_hash($b);
+        $b      = new \stdClass;
+        $ahash  = \spl_object_hash($a);
+        $bhash  = \spl_object_hash($b);
 
-        $c = new \stdClass;
-        $c->foo = 'bar';
-        $c->int = 1;
-        $c->array = [0, [1], [2], 3];
-        $c->related = new \stdClass;
+        $c               = new \stdClass;
+        $c->foo          = 'bar';
+        $c->int          = 1;
+        $c->array        = [0, [1], [2], 3];
+        $c->related      = new \stdClass;
         $c->related->foo = "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk";
-        $c->self = $c;
-        $c->c = $c;
-        $d = new \stdClass;
-        $d->foo = 'bar';
-        $d->int = 2;
-        $d->array = [0, [4], [2], 3];
-        $d->related = new \stdClass;
+        $c->self         = $c;
+        $c->c            = $c;
+        $d               = new \stdClass;
+        $d->foo          = 'bar';
+        $d->int          = 2;
+        $d->array        = [0, [4], [2], 3];
+        $d->related      = new \stdClass;
         $d->related->foo = "a\np\nc\nd\ne\nf\ng\nh\ni\nw\nk";
-        $d->self = $d;
-        $d->c = $c;
+        $d->self         = $d;
+        $d->c            = $c;
 
         $storage1 = new \SplObjectStorage;
         $storage1->attach($a);
@@ -112,10 +95,10 @@ EOF
         $storage1hash = \spl_object_hash($storage1);
         $storage2hash = \spl_object_hash($storage2);
 
-        $dom1 = new \DOMDocument;
+        $dom1                     = new \DOMDocument;
         $dom1->preserveWhiteSpace = false;
         $dom1->loadXML('<root></root>');
-        $dom2 = new \DOMDocument;
+        $dom2                     = new \DOMDocument;
         $dom2->preserveWhiteSpace = false;
         $dom2->loadXML('<root><foo/></root>');
 
@@ -322,5 +305,17 @@ Failed asserting that two objects are equal.
 EOF
             ],
         ];
+    }
+
+    /**
+     * Removes spaces in front of newlines
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    private function trimnl($string)
+    {
+        return \preg_replace('/[ ]*\n/', "\n", $string);
     }
 }

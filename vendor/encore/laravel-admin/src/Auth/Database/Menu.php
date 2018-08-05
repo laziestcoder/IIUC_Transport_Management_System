@@ -45,25 +45,11 @@ class Menu extends Model
     }
 
     /**
-     * Detach models from the relationship.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        static::treeBoot();
-
-        static::deleting(function ($model) {
-            $model->roles()->detach();
-        });
-    }
-
-    /**
      * A Menu belongs to many roles.
      *
      * @return BelongsToMany
      */
-    public function roles(): BelongsToMany
+    public function roles() : BelongsToMany
     {
         $pivotTable = config('admin.database.role_menu_table');
 
@@ -75,11 +61,27 @@ class Menu extends Model
     /**
      * @return array
      */
-    public function allNodes(): array
+    public function allNodes() : array
     {
-        $orderColumn = DB::getQueryGrammar()->wrap($this->orderColumn);
-        $byOrder = $orderColumn . ' = 0,' . $orderColumn;
+        $connection = config('admin.database.connection') ?: config('database.default');
+        $orderColumn = DB::connection($connection)->getQueryGrammar()->wrap($this->orderColumn);
+
+        $byOrder = $orderColumn.' = 0,'.$orderColumn;
 
         return static::with('roles')->orderByRaw($byOrder)->get()->toArray();
+    }
+
+    /**
+     * Detach models from the relationship.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        static::treeBoot();
+
+        static::deleting(function ($model) {
+            $model->roles()->detach();
+        });
     }
 }

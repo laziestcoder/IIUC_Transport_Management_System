@@ -35,7 +35,7 @@ class ClassEnumerator extends Enumerator
             return;
         }
 
-        $user = $input->getOption('user');
+        $user     = $input->getOption('user');
         $internal = $input->getOption('internal');
 
         $ret = [];
@@ -50,7 +50,7 @@ class ClassEnumerator extends Enumerator
             $ret = array_merge($ret, $this->filterClasses('Interfaces', get_declared_interfaces(), $internal, $user));
         }
 
-        if (function_exists('get_declared_traits') && $input->getOption('traits')) {
+        if ($input->getOption('traits')) {
             $ret = array_merge($ret, $this->filterClasses('Traits', get_declared_traits(), $internal, $user));
         }
 
@@ -64,9 +64,9 @@ class ClassEnumerator extends Enumerator
      * user-defined classes as appropriate.
      *
      * @param string $key
-     * @param array $classes
-     * @param bool $internal
-     * @param bool $user
+     * @param array  $classes
+     * @param bool   $internal
+     * @param bool   $user
      *
      * @return array
      */
@@ -114,7 +114,7 @@ class ClassEnumerator extends Enumerator
         foreach ($classes as $name) {
             if ($this->showItem($name)) {
                 $ret[$name] = [
-                    'name' => $name,
+                    'name'  => $name,
                     'style' => self::IS_CLASS,
                     'value' => $this->presentSignature($name),
                 ];

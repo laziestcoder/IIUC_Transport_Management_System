@@ -11,8 +11,7 @@ class ThrowingTest extends TestCase
      * @expectedException \PhpParser\Error
      * @expectedExceptionMessage Test
      */
-    public function testHandleError()
-    {
+    public function testHandleError() {
         $errorHandler = new Throwing();
         $errorHandler->handleError(new Error('Test'));
     }

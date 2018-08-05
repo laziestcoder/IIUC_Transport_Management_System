@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 use PHPUnit\Framework\TestCase;
 
 class DataProviderTest extends TestCase
@@ -24,10 +23,6 @@ class DataProviderTest extends TestCase
 
     /**
      * @dataProvider providerMethod
-     *
-     * @param mixed $a
-     * @param mixed $b
-     * @param mixed $c
      */
     public function testAdd($a, $b, $c): void
     {

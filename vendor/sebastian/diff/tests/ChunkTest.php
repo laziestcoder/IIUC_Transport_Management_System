@@ -22,6 +22,11 @@ final class ChunkTest extends TestCase
      */
     private $chunk;
 
+    protected function setUp(): void
+    {
+        $this->chunk = new Chunk;
+    }
+
     public function testCanBeCreatedWithoutArguments(): void
     {
         $this->assertInstanceOf(Chunk::class, $this->chunk);
@@ -59,10 +64,5 @@ final class ChunkTest extends TestCase
         $testValue = ['line0', 'line1'];
         $this->chunk->setLines($testValue);
         $this->assertSame($testValue, $this->chunk->getLines());
-    }
-
-    protected function setUp(): void
-    {
-        $this->chunk = new Chunk;
     }
 }

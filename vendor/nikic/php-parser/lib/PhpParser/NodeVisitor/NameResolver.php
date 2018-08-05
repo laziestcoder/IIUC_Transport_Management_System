@@ -2,6 +2,7 @@
 
 namespace PhpParser\NodeVisitor;
 
+use PhpParser\Error;
 use PhpParser\ErrorHandler;
 use PhpParser\NameContext;
 use PhpParser\Node;
@@ -35,8 +36,7 @@ class NameResolver extends NodeVisitorAbstract
      * @param ErrorHandler|null $errorHandler Error handler
      * @param array $options Options
      */
-    public function __construct(ErrorHandler $errorHandler = null, array $options = [])
-    {
+    public function __construct(ErrorHandler $errorHandler = null, array $options = []) {
         $this->nameContext = new NameContext($errorHandler ?? new ErrorHandler\Throwing);
         $this->preserveOriginalNames = $options['preserveOriginalNames'] ?? false;
         $this->replaceNodes = $options['replaceNodes'] ?? true;
@@ -47,19 +47,16 @@ class NameResolver extends NodeVisitorAbstract
      *
      * @return NameContext
      */
-    public function getNameContext(): NameContext
-    {
+    public function getNameContext() : NameContext {
         return $this->nameContext;
     }
 
-    public function beforeTraverse(array $nodes)
-    {
+    public function beforeTraverse(array $nodes) {
         $this->nameContext->startNamespace();
         return null;
     }
 
-    public function enterNode(Node $node)
-    {
+    public function enterNode(Node $node) {
         if ($node instanceof Stmt\Namespace_) {
             $this->nameContext->startNamespace($node->name);
         } elseif ($node instanceof Stmt\Use_) {
@@ -94,7 +91,7 @@ class NameResolver extends NodeVisitorAbstract
             $this->addNamespacedName($node);
             $this->resolveSignature($node);
         } elseif ($node instanceof Stmt\ClassMethod
-            || $node instanceof Expr\Closure
+                  || $node instanceof Expr\Closure
         ) {
             $this->resolveSignature($node);
         } elseif ($node instanceof Stmt\Const_) {
@@ -102,10 +99,10 @@ class NameResolver extends NodeVisitorAbstract
                 $this->addNamespacedName($const);
             }
         } elseif ($node instanceof Expr\StaticCall
-            || $node instanceof Expr\StaticPropertyFetch
-            || $node instanceof Expr\ClassConstFetch
-            || $node instanceof Expr\New_
-            || $node instanceof Expr\Instanceof_
+                  || $node instanceof Expr\StaticPropertyFetch
+                  || $node instanceof Expr\ClassConstFetch
+                  || $node instanceof Expr\New_
+                  || $node instanceof Expr\Instanceof_
         ) {
             if ($node->class instanceof Name) {
                 $node->class = $this->resolveClassName($node->class);
@@ -141,33 +138,45 @@ class NameResolver extends NodeVisitorAbstract
         return null;
     }
 
-    private function addAlias(Stmt\UseUse $use, $type, Name $prefix = null)
-    {
+    private function addAlias(Stmt\UseUse $use, $type, Name $prefix = null) {
         // Add prefix for group uses
         $name = $prefix ? Name::concat($prefix, $use->name) : $use->name;
         // Type is determined either by individual element or whole use declaration
         $type |= $use->type;
 
         $this->nameContext->addAlias(
-            $name, (string)$use->getAlias(), $type, $use->getAttributes()
+            $name, (string) $use->getAlias(), $type, $use->getAttributes()
         );
     }
 
-    protected function resolveClassName(Name $name)
-    {
-        return $this->resolveName($name, Stmt\Use_::TYPE_NORMAL);
+    /** @param Stmt\Function_|Stmt\ClassMethod|Expr\Closure $node */
+    private function resolveSignature($node) {
+        foreach ($node->params as $param) {
+            $param->type = $this->resolveType($param->type);
+        }
+        $node->returnType = $this->resolveType($node->returnType);
+    }
+
+    private function resolveType($node) {
+        if ($node instanceof Node\NullableType) {
+            $node->type = $this->resolveType($node->type);
+            return $node;
+        }
+        if ($node instanceof Name) {
+            return $this->resolveClassName($node);
+        }
+        return $node;
     }
 
     /**
      * Resolve name, according to name resolver options.
      *
      * @param Name $name Function or constant name to resolve
-     * @param int $type One of Stmt\Use_::TYPE_*
+     * @param int  $type One of Stmt\Use_::TYPE_*
      *
      * @return Name Resolved name, or original name with attribute
      */
-    protected function resolveName(Name $name, int $type): Name
-    {
+    protected function resolveName(Name $name, int $type) : Name {
         if (!$this->replaceNodes) {
             $resolvedName = $this->nameContext->getResolvedName($name, $type);
             if (null !== $resolvedName) {
@@ -198,30 +207,12 @@ class NameResolver extends NodeVisitorAbstract
         return $name;
     }
 
-    protected function addNamespacedName(Node $node)
-    {
+    protected function resolveClassName(Name $name) {
+        return $this->resolveName($name, Stmt\Use_::TYPE_NORMAL);
+    }
+
+    protected function addNamespacedName(Node $node) {
         $node->namespacedName = Name::concat(
-            $this->nameContext->getNamespace(), (string)$node->name);
-    }
-
-    /** @param Stmt\Function_|Stmt\ClassMethod|Expr\Closure $node */
-    private function resolveSignature($node)
-    {
-        foreach ($node->params as $param) {
-            $param->type = $this->resolveType($param->type);
-        }
-        $node->returnType = $this->resolveType($node->returnType);
-    }
-
-    private function resolveType($node)
-    {
-        if ($node instanceof Node\NullableType) {
-            $node->type = $this->resolveType($node->type);
-            return $node;
-        }
-        if ($node instanceof Name) {
-            return $this->resolveClassName($node);
-        }
-        return $node;
+            $this->nameContext->getNamespace(), (string) $node->name);
     }
 }

@@ -5,8 +5,9 @@ namespace Faker\Test\Provider\ro_RO;
 use Faker\Generator;
 use Faker\Provider\DateTime;
 use Faker\Provider\ro_RO\Person;
+use PHPUnit\Framework\TestCase;
 
-class PersonTest extends \PHPUnit_Framework_TestCase
+class PersonTest extends TestCase
 {
     const TEST_CNP_REGEX = '/^[1-9][0-9]{2}(?:0[1-9]|1[012])(?:0[1-9]|[12][0-9]|3[01])(?:0[1-9]|[123][0-9]|4[0-6]|5[12])[0-9]{3}[0-9]$/';
 
@@ -15,22 +16,19 @@ class PersonTest extends \PHPUnit_Framework_TestCase
      *
      */
     protected $faker;
-    protected $originalTz;
 
     public function setUp()
     {
-        $this->originalTz = @date_default_timezone_get();
-        date_default_timezone_set('Europe/Bucharest');
-
         $faker = new Generator();
         $faker->addProvider(new DateTime($faker));
         $faker->addProvider(new Person($faker));
+        $faker->setDefaultTimezone('Europe/Bucharest');
         $this->faker = $faker;
     }
 
     public function tearDown()
     {
-        date_default_timezone_set($this->originalTz);
+        $this->faker->setDefaultTimezone();
     }
 
     public function invalidGenderProvider()
@@ -89,13 +87,12 @@ class PersonTest extends \PHPUnit_Framework_TestCase
     public function validInputDataProvider()
     {
         return array(
-            array(Person::GENDER_MALE, '1981-06-16', 'B2', true, '181061642'),
-            array(Person::GENDER_FEMALE, '1981-06-16', 'B2', true, '281061642'),
-            array(Person::GENDER_MALE, '1981-06-16', 'B2', false, '981061642'),
-            array(Person::GENDER_FEMALE, '1981-06-16', 'B2', false, '981061642'),
+            array(Person::GENDER_MALE, '1981-06-16','B2', true, '181061642'),
+            array(Person::GENDER_FEMALE, '1981-06-16','B2', true, '281061642'),
+            array(Person::GENDER_MALE, '1981-06-16','B2', false, '981061642'),
+            array(Person::GENDER_FEMALE, '1981-06-16','B2', false, '981061642'),
         );
     }
-
     /**
      *
      */
@@ -106,26 +103,6 @@ class PersonTest extends \PHPUnit_Framework_TestCase
             $this->isValidCnp($cnp),
             sprintf("Invalid CNP '%' generated", $cnp)
         );
-    }
-
-    protected function isValidCnp($cnp)
-    {
-        if (preg_match(static::TEST_CNP_REGEX, $cnp) !== false) {
-            $checkNumber = 279146358279;
-
-            $checksum = 0;
-            foreach (range(0, 11) as $digit) {
-                $checksum += (int)substr($cnp, $digit, 1) * (int)substr($checkNumber, $digit, 1);
-            }
-            $checksum = $checksum % 11;
-            $checksum = $checksum == 10 ? 1 : $checksum;
-
-            if ($checksum == substr($cnp, -1)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -144,16 +121,6 @@ class PersonTest extends \PHPUnit_Framework_TestCase
             $this->isValidFemaleCnp($cnp),
             sprintf("Invalid CNP '%' generated for '%s' gender", $cnp, Person::GENDER_FEMALE)
         );
-    }
-
-    protected function isValidMaleCnp($value)
-    {
-        return $this->isValidCnp($value) && in_array($value[0], array(1, 3, 5, 7, 9));
-    }
-
-    protected function isValidFemaleCnp($value)
-    {
-        return $this->isValidCnp($value) && in_array($value[0], array(2, 4, 6, 8, 9));
     }
 
     /**
@@ -250,5 +217,36 @@ class PersonTest extends \PHPUnit_Framework_TestCase
             $cnp,
             sprintf("Invalid CNP '%' generated for non valid data", $cnp)
         );
+    }
+
+
+    protected function isValidFemaleCnp($value)
+    {
+        return $this->isValidCnp($value) && in_array($value[0], array(2, 4, 6, 8, 9));
+    }
+
+    protected function isValidMaleCnp($value)
+    {
+        return $this->isValidCnp($value) && in_array($value[0], array(1, 3, 5, 7, 9));
+    }
+
+    protected function isValidCnp($cnp)
+    {
+        if (preg_match(static::TEST_CNP_REGEX, $cnp) !== false) {
+            $checkNumber = 279146358279;
+
+            $checksum = 0;
+            foreach (range(0, 11) as $digit) {
+                $checksum += (int)substr($cnp, $digit, 1) * (int)substr($checkNumber, $digit, 1);
+            }
+            $checksum = $checksum % 11;
+            $checksum = $checksum == 10 ? 1 : $checksum;
+
+            if ($checksum == substr($cnp, -1)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

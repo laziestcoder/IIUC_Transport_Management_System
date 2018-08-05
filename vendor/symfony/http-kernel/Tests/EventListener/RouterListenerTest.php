@@ -31,6 +31,11 @@ class RouterListenerTest extends TestCase
 {
     private $requestStack;
 
+    protected function setUp()
+    {
+        $this->requestStack = $this->getMockBuilder('Symfony\Component\HttpFoundation\RequestStack')->disableOriginalConstructor()->getMock();
+    }
+
     /**
      * @dataProvider getPortData
      */
@@ -55,15 +60,6 @@ class RouterListenerTest extends TestCase
         $this->assertEquals(0 === strpos($uri, 'https') ? 'https' : 'http', $context->getScheme());
     }
 
-    private function createGetResponseEventForUri(string $uri): GetResponseEvent
-    {
-        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\HttpKernelInterface')->getMock();
-        $request = Request::create($uri);
-        $request->attributes->set('_controller', null); // Prevents going in to routing process
-
-        return new GetResponseEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST);
-    }
-
     public function getPortData()
     {
         return array(
@@ -72,6 +68,15 @@ class RouterListenerTest extends TestCase
             array(80, 443, 'https://localhost/', 80, 443),
             array(80, 443, 'https://localhost:90/', 80, 90),
         );
+    }
+
+    private function createGetResponseEventForUri(string $uri): GetResponseEvent
+    {
+        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\HttpKernelInterface')->getMock();
+        $request = Request::create($uri);
+        $request->attributes->set('_controller', null); // Prevents going in to routing process
+
+        return new GetResponseEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST);
     }
 
     /**
@@ -90,9 +95,9 @@ class RouterListenerTest extends TestCase
 
         $requestMatcher = $this->getMockBuilder('Symfony\Component\Routing\Matcher\RequestMatcherInterface')->getMock();
         $requestMatcher->expects($this->once())
-            ->method('matchRequest')
-            ->with($this->isInstanceOf('Symfony\Component\HttpFoundation\Request'))
-            ->will($this->returnValue(array()));
+                       ->method('matchRequest')
+                       ->with($this->isInstanceOf('Symfony\Component\HttpFoundation\Request'))
+                       ->will($this->returnValue(array()));
 
         $listener = new RouterListener($requestMatcher, $this->requestStack, new RequestContext());
         $listener->onKernelRequest($event);
@@ -106,9 +111,9 @@ class RouterListenerTest extends TestCase
 
         $requestMatcher = $this->getMockBuilder('Symfony\Component\Routing\Matcher\RequestMatcherInterface')->getMock();
         $requestMatcher->expects($this->any())
-            ->method('matchRequest')
-            ->with($this->isInstanceOf('Symfony\Component\HttpFoundation\Request'))
-            ->will($this->returnValue(array()));
+                       ->method('matchRequest')
+                       ->with($this->isInstanceOf('Symfony\Component\HttpFoundation\Request'))
+                       ->will($this->returnValue(array()));
 
         $context = new RequestContext();
 
@@ -185,7 +190,8 @@ class RouterListenerTest extends TestCase
         $requestMatcher
             ->expects($this->once())
             ->method('matchRequest')
-            ->willThrowException(new NoConfigurationException());
+            ->willThrowException(new NoConfigurationException())
+        ;
 
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new RouterListener($requestMatcher, $requestStack, new RequestContext()));
@@ -211,10 +217,5 @@ class RouterListenerTest extends TestCase
 
         $listener = new RouterListener($requestMatcher, $this->requestStack, new RequestContext());
         $listener->onKernelRequest($event);
-    }
-
-    protected function setUp()
-    {
-        $this->requestStack = $this->getMockBuilder('Symfony\Component\HttpFoundation\RequestStack')->disableOriginalConstructor()->getMock();
     }
 }

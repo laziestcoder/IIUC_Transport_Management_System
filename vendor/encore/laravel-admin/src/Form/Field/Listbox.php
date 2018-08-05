@@ -9,13 +9,15 @@ namespace Encore\Admin\Form\Field;
  */
 class Listbox extends MultipleSelect
 {
+    protected $settings = [];
+
     protected static $css = [
         '/vendor/laravel-admin/bootstrap-duallistbox/dist/bootstrap-duallistbox.min.css',
     ];
+
     protected static $js = [
         '/vendor/laravel-admin/bootstrap-duallistbox/dist/jquery.bootstrap-duallistbox.min.js',
     ];
-    protected $settings = [];
 
     public function settings(array $settings)
     {
@@ -27,10 +29,10 @@ class Listbox extends MultipleSelect
     public function render()
     {
         $settings = array_merge($this->settings, [
-            'infoText' => trans('admin.listbox.text_total'),
-            'infoTextEmpty' => trans('admin.listbox.text_empty'),
-            'infoTextFiltered' => trans('admin.listbox.filtered'),
-            'filterTextClear' => trans('admin.listbox.filter_clear'),
+            'infoText'          => trans('admin.listbox.text_total'),
+            'infoTextEmpty'     => trans('admin.listbox.text_empty'),
+            'infoTextFiltered'  => trans('admin.listbox.filtered'),
+            'filterTextClear'   => trans('admin.listbox.filter_clear'),
             'filterPlaceHolder' => trans('admin.listbox.filter_placeholder'),
         ]);
 

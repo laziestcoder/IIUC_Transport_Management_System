@@ -15,8 +15,7 @@ trait AnonymousClassInTrait
 {
     public function test()
     {
-        return new class()
-        {
+        return new class() {
             public function foo()
             {
             }

@@ -15,6 +15,11 @@ use Psy\CodeCleaner\ValidConstructorPass;
 
 class ValidConstructorPassTest extends CodeCleanerTestCase
 {
+    protected function setUp()
+    {
+        $this->setPass(new ValidConstructorPass());
+    }
+
     /**
      * @dataProvider invalidStatements
      * @expectedException \Psy\Exception\FatalErrorException
@@ -84,10 +89,5 @@ class ValidConstructorPassTest extends CodeCleanerTestCase
         }
 
         return $data;
-    }
-
-    protected function setUp()
-    {
-        $this->setPass(new ValidConstructorPass());
     }
 }

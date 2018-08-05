@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://symfony.com/schema/routing"
-        xsi:schemaLocation="http://symfony.com/schema/routing
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
         http://symfony.com/schema/routing/routing-1.0.xsd">
 
     <route id="blog" path="/blog">
@@ -10,12 +10,12 @@
         </default>
         <default key="list">
             <list>
-                <bool xsi:nil="true"/>
-                <int xsi:nil="true"/>
-                <float xsi:nil="1"/>
-                <string xsi:nil="true"/>
-                <list xsi:nil="true"/>
-                <map xsi:nil="true"/>
+                <bool xsi:nil="true" />
+                <int xsi:nil="true" />
+                <float xsi:nil="1" />
+                <string xsi:nil="true" />
+                <list xsi:nil="true" />
+                <map xsi:nil="true" />
             </list>
         </default>
     </route>

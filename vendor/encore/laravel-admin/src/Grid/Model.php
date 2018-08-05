@@ -2,9 +2,11 @@
 
 namespace Encore\Admin\Grid;
 
+use Encore\Admin\Grid;
 use Encore\Admin\Middleware\Pjax;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -74,6 +76,16 @@ class Model
      * @var \Closure
      */
     protected $collectionCallback;
+
+    /**
+     * @var Grid
+     */
+    protected $grid;
+
+    /**
+     * @var Relation
+     */
+    protected $relation;
 
     /**
      * Create a new grid model instance.
@@ -172,6 +184,54 @@ class Model
     }
 
     /**
+     * @param Grid $grid
+     *
+     * @return $this
+     */
+    public function setGrid(Grid $grid)
+    {
+        $this->grid = $grid;
+
+        return $this;
+    }
+
+    /**
+     * @param Relation $relation
+     *
+     * @return $this
+     */
+    public function setRelation(Relation $relation)
+    {
+        $this->relation = $relation;
+
+        return $this;
+    }
+
+    /**
+     * @return Relation
+     */
+    public function getRelation()
+    {
+        return $this->relation;
+    }
+
+    /**
+     * Get constraints.
+     *
+     * @return array|bool
+     */
+    public function getConstraints()
+    {
+        if ($this->relation instanceof HasMany) {
+            return [
+                $this->relation->getForeignKeyName() => $this->relation->getParentKey(),
+            ];
+        }
+
+        return false;
+    }
+
+    /**
      * Set collection callback.
      *
      * @param \Closure $callback
@@ -183,29 +243,6 @@ class Model
         $this->collectionCallback = $callback;
 
         return $this;
-    }
-
-    /**
-     * @param callable $callback
-     * @param int $count
-     *
-     * @return bool
-     */
-    public function chunk($callback, $count = 100)
-    {
-        if ($this->usePaginate) {
-            return $this->buildData(false)->chunk($count)->each($callback);
-        }
-
-        $this->setSort();
-
-        $this->queries->reject(function ($query) {
-            return $query['method'] == 'paginate';
-        })->each(function ($query) {
-            $this->model = $this->model->{$query['method']}(...$query['arguments']);
-        });
-
-        return $this->model->chunk($count, $callback);
     }
 
     /**
@@ -235,229 +272,26 @@ class Model
     }
 
     /**
-     * @throws \Exception
+     * @param callable $callback
+     * @param int      $count
      *
-     * @return Collection
+     * @return bool
      */
-    protected function get()
+    public function chunk($callback, $count = 100)
     {
-        if ($this->model instanceof LengthAwarePaginator) {
-            return $this->model;
+        if ($this->usePaginate) {
+            return $this->buildData(false)->chunk($count)->each($callback);
         }
 
         $this->setSort();
-        $this->setPaginate();
 
-        $this->queries->unique()->each(function ($query) {
-            $this->model = call_user_func_array([$this->model, $query['method']], $query['arguments']);
-        });
-
-        if ($this->model instanceof Collection) {
-            return $this->model;
-        }
-
-        if ($this->model instanceof LengthAwarePaginator) {
-            $this->handleInvalidPage($this->model);
-
-            return $this->model->getCollection();
-        }
-
-        throw new \Exception('Grid query error');
-    }
-
-    /**
-     * Set the grid sort.
-     *
-     * @return void
-     */
-    protected function setSort()
-    {
-        $this->sort = Input::get($this->sortName, []);
-        if (!is_array($this->sort)) {
-            return;
-        }
-
-        if (empty($this->sort['column']) || empty($this->sort['type'])) {
-            return;
-        }
-
-        if (str_contains($this->sort['column'], '.')) {
-            $this->setRelationSort($this->sort['column']);
-        } else {
-            $this->resetOrderBy();
-
-            $this->queries->push([
-                'method' => 'orderBy',
-                'arguments' => [$this->sort['column'], $this->sort['type']],
-            ]);
-        }
-    }
-
-    /**
-     * Set relation sort.
-     *
-     * @param string $column
-     *
-     * @return void
-     */
-    protected function setRelationSort($column)
-    {
-        list($relationName, $relationColumn) = explode('.', $column);
-
-        if ($this->queries->contains(function ($query) use ($relationName) {
-            return $query['method'] == 'with' && in_array($relationName, $query['arguments']);
-        })) {
-            $relation = $this->model->$relationName();
-
-            $this->queries->push([
-                'method' => 'join',
-                'arguments' => $this->joinParameters($relation),
-            ]);
-
-            $this->resetOrderBy();
-
-            $this->queries->push([
-                'method' => 'orderBy',
-                'arguments' => [
-                    $relation->getRelated()->getTable() . '.' . $relationColumn,
-                    $this->sort['type'],
-                ],
-            ]);
-        }
-    }
-
-    /**
-     * Build join parameters for related model.
-     *
-     * `HasOne` and `BelongsTo` relation has different join parameters.
-     *
-     * @param Relation $relation
-     *
-     * @throws \Exception
-     *
-     * @return array
-     */
-    protected function joinParameters(Relation $relation)
-    {
-        $relatedTable = $relation->getRelated()->getTable();
-
-        if ($relation instanceof BelongsTo) {
-            return [
-                $relatedTable,
-                $relation->getForeignKey(),
-                '=',
-                $relatedTable . '.' . $relation->getRelated()->getKeyName(),
-            ];
-        }
-
-        if ($relation instanceof HasOne) {
-            return [
-                $relatedTable,
-                $relation->getQualifiedParentKeyName(),
-                '=',
-                $relation->getQualifiedForeignKeyName(),
-            ];
-        }
-
-        throw new \Exception('Related sortable only support `HasOne` and `BelongsTo` relation.');
-    }
-
-    /**
-     * Reset orderBy query.
-     *
-     * @return void
-     */
-    public function resetOrderBy()
-    {
-        $this->queries = $this->queries->reject(function ($query) {
-            return $query['method'] == 'orderBy' || $query['method'] == 'orderByDesc';
-        });
-    }
-
-    /**
-     * Set the grid paginate.
-     *
-     * @return void
-     */
-    protected function setPaginate()
-    {
-        $paginate = $this->findQueryByMethod('paginate');
-
-        $this->queries = $this->queries->reject(function ($query) {
+        $this->queries->reject(function ($query) {
             return $query['method'] == 'paginate';
+        })->each(function ($query) {
+            $this->model = $this->model->{$query['method']}(...$query['arguments']);
         });
 
-        if (!$this->usePaginate) {
-            $query = [
-                'method' => 'get',
-                'arguments' => [],
-            ];
-        } else {
-            $query = [
-                'method' => 'paginate',
-                'arguments' => $this->resolvePerPage($paginate),
-            ];
-        }
-
-        $this->queries->push($query);
-    }
-
-    /**
-     * Find query by method name.
-     *
-     * @param $method
-     *
-     * @return static
-     */
-    protected function findQueryByMethod($method)
-    {
-        return $this->queries->first(function ($query) use ($method) {
-            return $query['method'] == $method;
-        });
-    }
-
-    /**
-     * Resolve perPage for pagination.
-     *
-     * @param array|null $paginate
-     *
-     * @return array
-     */
-    protected function resolvePerPage($paginate)
-    {
-        if ($perPage = app('request')->input($this->perPageName)) {
-            if (is_array($paginate)) {
-                $paginate['arguments'][0] = (int)$perPage;
-
-                return $paginate['arguments'];
-            }
-
-            $this->perPage = (int)$perPage;
-        }
-
-        if (isset($paginate['arguments'][0])) {
-            return $paginate['arguments'];
-        }
-
-        return [$this->perPage];
-    }
-
-    /**
-     * If current page is greater than last page, then redirect to last page.
-     *
-     * @param LengthAwarePaginator $paginator
-     *
-     * @return void
-     */
-    protected function handleInvalidPage(LengthAwarePaginator $paginator)
-    {
-        if ($paginator->lastPage() && $paginator->currentPage() > $paginator->lastPage()) {
-            $lastPageUrl = Request::fullUrlWithQuery([
-                $paginator->getPageName() => $paginator->lastPage(),
-            ]);
-
-            Pjax::respond(redirect($lastPageUrl));
-        }
+        return $this->model->chunk($count, $callback);
     }
 
     /**
@@ -487,15 +321,249 @@ class Model
     }
 
     /**
+     * @throws \Exception
+     *
+     * @return Collection
+     */
+    protected function get()
+    {
+        if ($this->model instanceof LengthAwarePaginator) {
+            return $this->model;
+        }
+
+        if ($this->relation) {
+            $this->model = $this->relation->getQuery();
+        }
+
+        $this->setSort();
+        $this->setPaginate();
+
+        $this->queries->unique()->each(function ($query) {
+            $this->model = call_user_func_array([$this->model, $query['method']], $query['arguments']);
+        });
+
+        if ($this->model instanceof Collection) {
+            return $this->model;
+        }
+
+        if ($this->model instanceof LengthAwarePaginator) {
+            $this->handleInvalidPage($this->model);
+
+            return $this->model->getCollection();
+        }
+
+        throw new \Exception('Grid query error');
+    }
+
+    /**
+     * If current page is greater than last page, then redirect to last page.
+     *
+     * @param LengthAwarePaginator $paginator
+     *
+     * @return void
+     */
+    protected function handleInvalidPage(LengthAwarePaginator $paginator)
+    {
+        if ($paginator->lastPage() && $paginator->currentPage() > $paginator->lastPage()) {
+            $lastPageUrl = Request::fullUrlWithQuery([
+                $paginator->getPageName() => $paginator->lastPage(),
+            ]);
+
+            Pjax::respond(redirect($lastPageUrl));
+        }
+    }
+
+    /**
+     * Set the grid paginate.
+     *
+     * @return void
+     */
+    protected function setPaginate()
+    {
+        $paginate = $this->findQueryByMethod('paginate');
+
+        $this->queries = $this->queries->reject(function ($query) {
+            return $query['method'] == 'paginate';
+        });
+
+        if (!$this->usePaginate) {
+            $query = [
+                'method'    => 'get',
+                'arguments' => [],
+            ];
+        } else {
+            $query = [
+                'method'    => 'paginate',
+                'arguments' => $this->resolvePerPage($paginate),
+            ];
+        }
+
+        $this->queries->push($query);
+    }
+
+    /**
+     * Resolve perPage for pagination.
+     *
+     * @param array|null $paginate
+     *
+     * @return array
+     */
+    protected function resolvePerPage($paginate)
+    {
+        if ($perPage = app('request')->input($this->perPageName)) {
+            if (is_array($paginate)) {
+                $paginate['arguments'][0] = (int) $perPage;
+
+                return $paginate['arguments'];
+            }
+
+            $this->perPage = (int) $perPage;
+        }
+
+        if (isset($paginate['arguments'][0])) {
+            return $paginate['arguments'];
+        }
+
+        if ($name = $this->grid->getName()) {
+            return [$this->perPage, null, "{$name}_page"];
+        }
+
+        return [$this->perPage];
+    }
+
+    /**
+     * Find query by method name.
+     *
+     * @param $method
+     *
+     * @return static
+     */
+    protected function findQueryByMethod($method)
+    {
+        return $this->queries->first(function ($query) use ($method) {
+            return $query['method'] == $method;
+        });
+    }
+
+    /**
+     * Set the grid sort.
+     *
+     * @return void
+     */
+    protected function setSort()
+    {
+        $this->sort = Input::get($this->sortName, []);
+        if (!is_array($this->sort)) {
+            return;
+        }
+
+        if (empty($this->sort['column']) || empty($this->sort['type'])) {
+            return;
+        }
+
+        if (str_contains($this->sort['column'], '.')) {
+            $this->setRelationSort($this->sort['column']);
+        } else {
+            $this->resetOrderBy();
+
+            $this->queries->push([
+                'method'    => 'orderBy',
+                'arguments' => [$this->sort['column'], $this->sort['type']],
+            ]);
+        }
+    }
+
+    /**
+     * Set relation sort.
+     *
+     * @param string $column
+     *
+     * @return void
+     */
+    protected function setRelationSort($column)
+    {
+        list($relationName, $relationColumn) = explode('.', $column);
+
+        if ($this->queries->contains(function ($query) use ($relationName) {
+            return $query['method'] == 'with' && in_array($relationName, $query['arguments']);
+        })) {
+            $relation = $this->model->$relationName();
+
+            $this->queries->push([
+                'method'    => 'join',
+                'arguments' => $this->joinParameters($relation),
+            ]);
+
+            $this->resetOrderBy();
+
+            $this->queries->push([
+                'method'    => 'orderBy',
+                'arguments' => [
+                    $relation->getRelated()->getTable().'.'.$relationColumn,
+                    $this->sort['type'],
+                ],
+            ]);
+        }
+    }
+
+    /**
+     * Reset orderBy query.
+     *
+     * @return void
+     */
+    public function resetOrderBy()
+    {
+        $this->queries = $this->queries->reject(function ($query) {
+            return $query['method'] == 'orderBy' || $query['method'] == 'orderByDesc';
+        });
+    }
+
+    /**
+     * Build join parameters for related model.
+     *
+     * `HasOne` and `BelongsTo` relation has different join parameters.
+     *
+     * @param Relation $relation
+     *
+     * @throws \Exception
+     *
+     * @return array
+     */
+    protected function joinParameters(Relation $relation)
+    {
+        $relatedTable = $relation->getRelated()->getTable();
+
+        if ($relation instanceof BelongsTo) {
+            return [
+                $relatedTable,
+                $relation->getForeignKey(),
+                '=',
+                $relatedTable.'.'.$relation->getRelated()->getKeyName(),
+            ];
+        }
+
+        if ($relation instanceof HasOne) {
+            return [
+                $relatedTable,
+                $relation->getQualifiedParentKeyName(),
+                '=',
+                $relation->getQualifiedForeignKeyName(),
+            ];
+        }
+
+        throw new \Exception('Related sortable only support `HasOne` and `BelongsTo` relation.');
+    }
+
+    /**
      * @param string $method
-     * @param array $arguments
+     * @param array  $arguments
      *
      * @return $this
      */
     public function __call($method, $arguments)
     {
         $this->queries->push([
-            'method' => $method,
+            'method'    => $method,
             'arguments' => $arguments,
         ]);
 

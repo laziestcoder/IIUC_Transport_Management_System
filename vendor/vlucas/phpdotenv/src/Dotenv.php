@@ -2,6 +2,8 @@
 
 namespace Dotenv;
 
+use Dotenv\Exception\InvalidPathException;
+
 /**
  * This is the dotenv class.
  *
@@ -39,25 +41,6 @@ class Dotenv
     }
 
     /**
-     * Returns the full path to the file.
-     *
-     * @param string $path
-     * @param string $file
-     *
-     * @return string
-     */
-    protected function getFilePath($path, $file)
-    {
-        if (!is_string($file)) {
-            $file = '.env';
-        }
-
-        $filePath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file;
-
-        return $filePath;
-    }
-
-    /**
      * Load environment file in given directory.
      *
      * @return array
@@ -68,17 +51,18 @@ class Dotenv
     }
 
     /**
-     * Actually load the data.
-     *
-     * @param bool $overload
+     * Load environment file in given directory, suppress InvalidPathException.
      *
      * @return array
      */
-    protected function loadData($overload = false)
+    public function safeLoad()
     {
-        $this->loader = new Loader($this->filePath, !$overload);
-
-        return $this->loader->load();
+        try {
+            return $this->loadData();
+        } catch (InvalidPathException $e) {
+            // suppressing exception
+            return array();
+        }
     }
 
     /**
@@ -92,6 +76,37 @@ class Dotenv
     }
 
     /**
+     * Returns the full path to the file.
+     *
+     * @param string $path
+     * @param string $file
+     *
+     * @return string
+     */
+    protected function getFilePath($path, $file)
+    {
+        if (!is_string($file)) {
+            $file = '.env';
+        }
+
+        $filePath = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file;
+
+        return $filePath;
+    }
+
+    /**
+     * Actually load the data.
+     *
+     * @param bool $overload
+     *
+     * @return array
+     */
+    protected function loadData($overload = false)
+    {
+        return $this->loader->setImmutable(!$overload)->load();
+    }
+
+    /**
      * Required ensures that the specified variables exist, and returns a new validator object.
      *
      * @param string|string[] $variable
@@ -100,6 +115,16 @@ class Dotenv
      */
     public function required($variable)
     {
-        return new Validator((array)$variable, $this->loader);
+        return new Validator((array) $variable, $this->loader);
+    }
+
+    /**
+     * Get the list of environment variables declared inside the 'env' file.
+     *
+     * @return array
+     */
+    public function getEnvironmentVariableNames()
+    {
+        return $this->loader->variableNames;
     }
 }

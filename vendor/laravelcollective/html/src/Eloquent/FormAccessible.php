@@ -2,9 +2,9 @@
 
 namespace Collective\Html\Eloquent;
 
-use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionMethod;
+use Illuminate\Support\Str;
 
 trait FormAccessible
 {
@@ -29,7 +29,7 @@ trait FormAccessible
         // instance on retrieval, which makes it quite convenient to work with
         // date fields without having to create a mutator for each property.
         if (in_array($key, $this->getDates())) {
-            if (!is_null($value)) {
+            if (! is_null($value)) {
                 $value = $this->asDateTime($value);
             }
         }
@@ -53,11 +53,27 @@ trait FormAccessible
                 return $relatedModel->getFormValue($key);
             }
 
-            return data_get($relatedModel, empty($key) ? null : $key);
+            return data_get($relatedModel, empty($key)? null: $key);
         }
 
         // No form mutator, let the model resolve this
         return data_get($this, $key);
+    }
+
+    /**
+     * Check for a nested model.
+     *
+     * @param  string  $key
+     *
+     * @return bool
+     */
+    public function isNestedModel($key)
+    {
+        if (in_array($key, array_keys($this->getRelations()))) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -70,24 +86,11 @@ trait FormAccessible
         $methods = $this->getReflection()->getMethods(ReflectionMethod::IS_PUBLIC);
 
         $mutator = collect($methods)
-            ->first(function (ReflectionMethod $method) use ($key) {
-                return $method->getName() === 'form' . Str::studly($key) . 'Attribute';
-            });
+          ->first(function (ReflectionMethod $method) use ($key) {
+              return $method->getName() === 'form' . Str::studly($key) . 'Attribute';
+          });
 
-        return (bool)$mutator;
-    }
-
-    /**
-     * Get a ReflectionClass Instance
-     * @return ReflectionClass
-     */
-    protected function getReflection()
-    {
-        if (!$this->reflection) {
-            $this->reflection = new ReflectionClass($this);
-        }
-
-        return $this->reflection;
+        return (bool) $mutator;
     }
 
     /**
@@ -102,18 +105,15 @@ trait FormAccessible
     }
 
     /**
-     * Check for a nested model.
-     *
-     * @param  string $key
-     *
-     * @return bool
+     * Get a ReflectionClass Instance
+     * @return ReflectionClass
      */
-    public function isNestedModel($key)
+    protected function getReflection()
     {
-        if (in_array($key, array_keys($this->getRelations()))) {
-            return true;
+        if (! $this->reflection) {
+            $this->reflection = new ReflectionClass($this);
         }
 
-        return false;
+        return $this->reflection;
     }
 }

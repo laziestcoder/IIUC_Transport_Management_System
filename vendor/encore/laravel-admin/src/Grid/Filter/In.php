@@ -24,7 +24,7 @@ class In extends AbstractFilter
             return;
         }
 
-        $this->value = (array)$value;
+        $this->value = (array) $value;
 
         return $this->buildCondition($this->column, $this->value);
     }

@@ -10,19 +10,21 @@ class Tags extends Field
     /**
      * @var array
      */
+    protected $value = [];
+
+    /**
+     * @var array
+     */
     protected static $css = [
         '/vendor/laravel-admin/AdminLTE/plugins/select2/select2.min.css',
     ];
+
     /**
      * @var array
      */
     protected static $js = [
         '/vendor/laravel-admin/AdminLTE/plugins/select2/select2.full.min.js',
     ];
-    /**
-     * @var array
-     */
-    protected $value = [];
 
     /**
      * {@inheritdoc}
@@ -35,7 +37,7 @@ class Tags extends Field
             $this->value = explode(',', $this->value);
         }
 
-        $this->value = array_filter((array)$this->value);
+        $this->value = array_filter((array) $this->value);
     }
 
     /**
@@ -63,7 +65,7 @@ class Tags extends Field
             return empty($this->value) ? ($this->getDefault() ?? []) : $this->value;
         }
 
-        $this->value = (array)$value;
+        $this->value = (array) $value;
 
         return $this;
     }

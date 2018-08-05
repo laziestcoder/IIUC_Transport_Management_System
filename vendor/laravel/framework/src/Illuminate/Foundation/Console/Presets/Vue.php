@@ -2,8 +2,8 @@
 
 namespace Illuminate\Foundation\Console\Presets;
 
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
+use Illuminate\Filesystem\Filesystem;
 
 class Vue extends Preset
 {
@@ -23,23 +23,28 @@ class Vue extends Preset
     }
 
     /**
+     * Update the given package array.
+     *
+     * @param  array  $packages
+     * @return array
+     */
+    protected static function updatePackageArray(array $packages)
+    {
+        return ['vue' => '^2.5.7'] + Arr::except($packages, [
+            'babel-preset-react',
+            'react',
+            'react-dom',
+        ]);
+    }
+
+    /**
      * Update the Webpack configuration.
      *
      * @return void
      */
     protected static function updateWebpackConfiguration()
     {
-        copy(__DIR__ . '/vue-stubs/webpack.mix.js', base_path('webpack.mix.js'));
-    }
-
-    /**
-     * Update the bootstrapping files.
-     *
-     * @return void
-     */
-    protected static function updateBootstrapping()
-    {
-        copy(__DIR__ . '/vue-stubs/app.js', resource_path('assets/js/app.js'));
+        copy(__DIR__.'/vue-stubs/webpack.mix.js', base_path('webpack.mix.js'));
     }
 
     /**
@@ -54,23 +59,18 @@ class Vue extends Preset
         );
 
         copy(
-            __DIR__ . '/vue-stubs/ExampleComponent.vue',
+            __DIR__.'/vue-stubs/ExampleComponent.vue',
             resource_path('assets/js/components/ExampleComponent.vue')
         );
     }
 
     /**
-     * Update the given package array.
+     * Update the bootstrapping files.
      *
-     * @param  array $packages
-     * @return array
+     * @return void
      */
-    protected static function updatePackageArray(array $packages)
+    protected static function updateBootstrapping()
     {
-        return ['vue' => '^2.5.7'] + Arr::except($packages, [
-                'babel-preset-react',
-                'react',
-                'react-dom',
-            ]);
+        copy(__DIR__.'/vue-stubs/app.js', resource_path('assets/js/app.js'));
     }
 }

@@ -5,6 +5,21 @@ class Swift_Bug51Test extends \SwiftMailerTestCase
     private $attachmentFile;
     private $outputFile;
 
+    protected function setUp()
+    {
+        $this->attachmentFile = sys_get_temp_dir().'/attach.rand.bin';
+        file_put_contents($this->attachmentFile, '');
+
+        $this->outputFile = sys_get_temp_dir().'/attach.out.bin';
+        file_put_contents($this->outputFile, '');
+    }
+
+    protected function tearDown()
+    {
+        unlink($this->attachmentFile);
+        unlink($this->outputFile);
+    }
+
     public function testAttachmentsDoNotGetTruncatedUsingToByteStream()
     {
         //Run 100 times with 10KB attachments
@@ -27,32 +42,21 @@ class Swift_Bug51Test extends \SwiftMailerTestCase
         }
     }
 
-    private function createMessageWithRandomAttachment($size, $attachmentPath)
+    public function testAttachmentsDoNotGetTruncatedUsingToString()
     {
-        $this->fillFileWithRandomBytes($size, $attachmentPath);
+        //Run 100 times with 10KB attachments
+        for ($i = 0; $i < 10; ++$i) {
+            $message = $this->createMessageWithRandomAttachment(
+                10000, $this->attachmentFile
+            );
 
-        $message = (new Swift_Message())
-            ->setSubject('test')
-            ->setBody('test')
-            ->setFrom('a@b.c')
-            ->setTo('d@e.f')
-            ->attach(Swift_Attachment::fromPath($attachmentPath));
+            $emailSource = $message->toString();
 
-        return $message;
-    }
-
-    private function fillFileWithRandomBytes($byteCount, $file)
-    {
-        // I was going to use dd with if=/dev/random but this way seems more
-        // cross platform even if a hella expensive!!
-
-        file_put_contents($file, '');
-        $fp = fopen($file, 'wb');
-        for ($i = 0; $i < $byteCount; ++$i) {
-            $byteVal = random_int(0, 255);
-            fwrite($fp, pack('i', $byteVal));
+            $this->assertAttachmentFromSourceMatches(
+                file_get_contents($this->attachmentFile),
+                $emailSource
+            );
         }
-        fclose($fp);
     }
 
     public function assertAttachmentFromSourceMatches($attachmentData, $source)
@@ -75,35 +79,32 @@ class Swift_Bug51Test extends \SwiftMailerTestCase
         $this->assertIdenticalBinary($attachmentData, base64_decode($attachmentBase64));
     }
 
-    public function testAttachmentsDoNotGetTruncatedUsingToString()
+    private function fillFileWithRandomBytes($byteCount, $file)
     {
-        //Run 100 times with 10KB attachments
-        for ($i = 0; $i < 10; ++$i) {
-            $message = $this->createMessageWithRandomAttachment(
-                10000, $this->attachmentFile
-            );
+        // I was going to use dd with if=/dev/random but this way seems more
+        // cross platform even if a hella expensive!!
 
-            $emailSource = $message->toString();
-
-            $this->assertAttachmentFromSourceMatches(
-                file_get_contents($this->attachmentFile),
-                $emailSource
-            );
+        file_put_contents($file, '');
+        $fp = fopen($file, 'wb');
+        for ($i = 0; $i < $byteCount; ++$i) {
+            $byteVal = random_int(0, 255);
+            fwrite($fp, pack('i', $byteVal));
         }
+        fclose($fp);
     }
 
-    protected function setUp()
+    private function createMessageWithRandomAttachment($size, $attachmentPath)
     {
-        $this->attachmentFile = sys_get_temp_dir() . '/attach.rand.bin';
-        file_put_contents($this->attachmentFile, '');
+        $this->fillFileWithRandomBytes($size, $attachmentPath);
 
-        $this->outputFile = sys_get_temp_dir() . '/attach.out.bin';
-        file_put_contents($this->outputFile, '');
-    }
+        $message = (new Swift_Message())
+            ->setSubject('test')
+            ->setBody('test')
+            ->setFrom('a@b.c')
+            ->setTo('d@e.f')
+            ->attach(Swift_Attachment::fromPath($attachmentPath))
+            ;
 
-    protected function tearDown()
-    {
-        unlink($this->attachmentFile);
-        unlink($this->outputFile);
+        return $message;
     }
 }

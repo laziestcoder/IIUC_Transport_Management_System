@@ -18,7 +18,7 @@ class Embeds extends Field
      * Create a new HasMany field instance.
      *
      * @param string $column
-     * @param array $arguments
+     * @param array  $arguments
      */
     public function __construct($column, $arguments = [])
     {
@@ -46,50 +46,6 @@ class Embeds extends Field
         $form = $this->buildEmbeddedForm();
 
         return $form->setOriginal($this->original)->prepare($input);
-    }
-
-    /**
-     * Build a Embedded Form and fill data.
-     *
-     * @return EmbeddedForm
-     */
-    protected function buildEmbeddedForm()
-    {
-        $form = new EmbeddedForm($this->column);
-
-        $form->setParent($this->form);
-
-        call_user_func($this->builder, $form);
-
-        $form->fill($this->getEmbeddedData());
-
-        return $form;
-    }
-
-    /**
-     * Get data for Embedded form.
-     *
-     * Normally, data is obtained from the database.
-     *
-     * When the data validation errors, data is obtained from session flash.
-     *
-     * @return array
-     */
-    protected function getEmbeddedData()
-    {
-        if ($old = old($this->column)) {
-            return $old;
-        }
-
-        if (empty($this->value)) {
-            return [];
-        }
-
-        if (is_string($this->value)) {
-            return json_decode($this->value, true);
-        }
-
-        return (array)$this->value;
     }
 
     /**
@@ -176,6 +132,42 @@ class Embeds extends Field
     }
 
     /**
+     * Format validation attributes.
+     *
+     * @param array  $input
+     * @param string $label
+     * @param string $column
+     *
+     * @return array
+     */
+    protected function formatValidationAttribute($input, $label, $column)
+    {
+        $new = $attributes = [];
+
+        if (is_array($column)) {
+            foreach ($column as $index => $col) {
+                $new[$col.$index] = $col;
+            }
+        }
+
+        foreach (array_keys(array_dot($input)) as $key) {
+            if (is_string($column)) {
+                if (Str::endsWith($key, ".$column")) {
+                    $attributes[$key] = $label;
+                }
+            } else {
+                foreach ($new as $k => $val) {
+                    if (Str::endsWith($key, ".$k")) {
+                        $attributes[$key] = $label."[$val]";
+                    }
+                }
+            }
+        }
+
+        return $attributes;
+    }
+
+    /**
      * Reset input key for validation.
      *
      * @param array $input
@@ -192,7 +184,7 @@ class Embeds extends Field
                 continue;
             }
 
-            $newKey = $key . $column[$key];
+            $newKey = $key.$column[$key];
 
             /*
              * set new key
@@ -206,39 +198,47 @@ class Embeds extends Field
     }
 
     /**
-     * Format validation attributes.
+     * Get data for Embedded form.
      *
-     * @param array $input
-     * @param string $label
-     * @param string $column
+     * Normally, data is obtained from the database.
+     *
+     * When the data validation errors, data is obtained from session flash.
      *
      * @return array
      */
-    protected function formatValidationAttribute($input, $label, $column)
+    protected function getEmbeddedData()
     {
-        $new = $attributes = [];
-
-        if (is_array($column)) {
-            foreach ($column as $index => $col) {
-                $new[$col . $index] = $col;
-            }
+        if ($old = old($this->column)) {
+            return $old;
         }
 
-        foreach (array_keys(array_dot($input)) as $key) {
-            if (is_string($column)) {
-                if (Str::endsWith($key, ".$column")) {
-                    $attributes[$key] = $label;
-                }
-            } else {
-                foreach ($new as $k => $val) {
-                    if (Str::endsWith($key, ".$k")) {
-                        $attributes[$key] = $label . "[$val]";
-                    }
-                }
-            }
+        if (empty($this->value)) {
+            return [];
         }
 
-        return $attributes;
+        if (is_string($this->value)) {
+            return json_decode($this->value, true);
+        }
+
+        return (array) $this->value;
+    }
+
+    /**
+     * Build a Embedded Form and fill data.
+     *
+     * @return EmbeddedForm
+     */
+    protected function buildEmbeddedForm()
+    {
+        $form = new EmbeddedForm($this->column);
+
+        $form->setParent($this->form);
+
+        call_user_func($this->builder, $form);
+
+        $form->fill($this->getEmbeddedData());
+
+        return $form;
     }
 
     /**

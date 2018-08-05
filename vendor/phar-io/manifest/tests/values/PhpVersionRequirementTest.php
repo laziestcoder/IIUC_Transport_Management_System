@@ -16,27 +16,23 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers PharIo\Manifest\PhpVersionRequirement
  *
- * @uses   \PharIo\Version\VersionConstraint
+ * @uses \PharIo\Version\VersionConstraint
  */
-class PhpVersionRequirementTest extends TestCase
-{
+class PhpVersionRequirementTest extends TestCase {
     /**
      * @var PhpVersionRequirement
      */
     private $requirement;
 
-    public function testCanBeCreated()
-    {
+    protected function setUp() {
+        $this->requirement = new PhpVersionRequirement(new ExactVersionConstraint('7.1.0'));
+    }
+
+    public function testCanBeCreated() {
         $this->assertInstanceOf(PhpVersionRequirement::class, $this->requirement);
     }
 
-    public function testVersionConstraintCanBeRetrieved()
-    {
+    public function testVersionConstraintCanBeRetrieved() {
         $this->assertEquals('7.1.0', $this->requirement->getVersionConstraint()->asString());
-    }
-
-    protected function setUp()
-    {
-        $this->requirement = new PhpVersionRequirement(new ExactVersionConstraint('7.1.0'));
     }
 }

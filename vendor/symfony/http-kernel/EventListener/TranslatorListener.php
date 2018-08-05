@@ -35,27 +35,9 @@ class TranslatorListener implements EventSubscriberInterface
         $this->requestStack = $requestStack;
     }
 
-    public static function getSubscribedEvents()
-    {
-        return array(
-            // must be registered after the Locale listener
-            KernelEvents::REQUEST => array(array('onKernelRequest', 10)),
-            KernelEvents::FINISH_REQUEST => array(array('onKernelFinishRequest', 0)),
-        );
-    }
-
     public function onKernelRequest(GetResponseEvent $event)
     {
         $this->setLocale($event->getRequest());
-    }
-
-    private function setLocale(Request $request)
-    {
-        try {
-            $this->translator->setLocale($request->getLocale());
-        } catch (\InvalidArgumentException $e) {
-            $this->translator->setLocale($request->getDefaultLocale());
-        }
     }
 
     public function onKernelFinishRequest(FinishRequestEvent $event)
@@ -65,5 +47,23 @@ class TranslatorListener implements EventSubscriberInterface
         }
 
         $this->setLocale($parentRequest);
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array(
+            // must be registered after the Locale listener
+            KernelEvents::REQUEST => array(array('onKernelRequest', 10)),
+            KernelEvents::FINISH_REQUEST => array(array('onKernelFinishRequest', 0)),
+        );
+    }
+
+    private function setLocale(Request $request)
+    {
+        try {
+            $this->translator->setLocale($request->getLocale());
+        } catch (\InvalidArgumentException $e) {
+            $this->translator->setLocale($request->getDefaultLocale());
+        }
     }
 }

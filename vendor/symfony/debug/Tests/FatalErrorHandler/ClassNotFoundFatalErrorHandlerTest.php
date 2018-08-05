@@ -22,7 +22,7 @@ class ClassNotFoundFatalErrorHandlerTest extends TestCase
     public static function setUpBeforeClass()
     {
         foreach (spl_autoload_functions() as $function) {
-            if (!is_array($function)) {
+            if (!\is_array($function)) {
                 continue;
             }
 
@@ -32,7 +32,7 @@ class ClassNotFoundFatalErrorHandlerTest extends TestCase
             }
 
             if ($function[0] instanceof ComposerClassLoader) {
-                $function[0]->add('Symfony_Component_Debug_Tests_Fixtures', dirname(dirname(dirname(dirname(dirname(__DIR__))))));
+                $function[0]->add('Symfony_Component_Debug_Tests_Fixtures', \dirname(\dirname(\dirname(\dirname(\dirname(__DIR__))))));
                 break;
             }
         }
@@ -70,7 +70,7 @@ class ClassNotFoundFatalErrorHandlerTest extends TestCase
     public function provideClassNotFoundData()
     {
         $autoloader = new ComposerClassLoader();
-        $autoloader->add('Symfony\Component\Debug\Exception\\', realpath(__DIR__ . '/../../Exception'));
+        $autoloader->add('Symfony\Component\Debug\Exception\\', realpath(__DIR__.'/../../Exception'));
 
         $debugClassLoader = new DebugClassLoader(array($autoloader, 'loadClass'));
 
@@ -148,19 +148,18 @@ class ClassNotFoundFatalErrorHandlerTest extends TestCase
                     'message' => 'Class \'Foo\\Bar\\UndefinedFunctionException\' not found',
                 ),
                 "Attempted to load class \"UndefinedFunctionException\" from namespace \"Foo\\Bar\".\nDid you forget a \"use\" statement for another namespace?",
-                function ($className) { /* do nothing here */
-                },
+                function ($className) { /* do nothing here */ },
             ),
         );
     }
 
     public function testCannotRedeclareClass()
     {
-        if (!file_exists(__DIR__ . '/../FIXTURES2/REQUIREDTWICE.PHP')) {
+        if (!file_exists(__DIR__.'/../FIXTURES2/REQUIREDTWICE.PHP')) {
             $this->markTestSkipped('Can only be run on case insensitive filesystems');
         }
 
-        require_once __DIR__ . '/../FIXTURES2/REQUIREDTWICE.PHP';
+        require_once __DIR__.'/../FIXTURES2/REQUIREDTWICE.PHP';
 
         $error = array(
             'type' => 1,

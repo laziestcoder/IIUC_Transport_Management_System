@@ -2,8 +2,8 @@
 
 namespace Illuminate\Foundation\Exceptions;
 
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
+use Illuminate\Filesystem\Filesystem;
 use Whoops\Handler\PrettyPageHandler;
 
 class WhoopsHandler
@@ -19,41 +19,9 @@ class WhoopsHandler
             $handler->handleUnconditionally(true);
 
             $this->registerApplicationPaths($handler)
-                ->registerBlacklist($handler)
-                ->registerEditor($handler);
+                 ->registerBlacklist($handler)
+                 ->registerEditor($handler);
         });
-    }
-
-    /**
-     * Register the editor with the handler.
-     *
-     * @param  \Whoops\Handler\PrettyPageHandler $handler
-     * @return $this
-     */
-    protected function registerEditor($handler)
-    {
-        if (config('app.editor', false)) {
-            $handler->setEditor(config('app.editor'));
-        }
-
-        return $this;
-    }
-
-    /**
-     * Register the blacklist with the handler.
-     *
-     * @param  \Whoops\Handler\PrettyPageHandler $handler
-     * @return $this
-     */
-    protected function registerBlacklist($handler)
-    {
-        foreach (config('app.debug_blacklist', []) as $key => $secrets) {
-            foreach ($secrets as $secret) {
-                $handler->blacklist($key, $secret);
-            }
-        }
-
-        return $this;
     }
 
     /**
@@ -82,5 +50,37 @@ class WhoopsHandler
             array_flip((new Filesystem)->directories(base_path())),
             [base_path('vendor')]
         );
+    }
+
+    /**
+     * Register the blacklist with the handler.
+     *
+     * @param  \Whoops\Handler\PrettyPageHandler $handler
+     * @return $this
+     */
+    protected function registerBlacklist($handler)
+    {
+        foreach (config('app.debug_blacklist', []) as $key => $secrets) {
+            foreach ($secrets as $secret) {
+                $handler->blacklist($key, $secret);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Register the editor with the handler.
+     *
+     * @param  \Whoops\Handler\PrettyPageHandler $handler
+     * @return $this
+     */
+    protected function registerEditor($handler)
+    {
+        if (config('app.editor', false)) {
+            $handler->setEditor(config('app.editor'));
+        }
+
+        return $this;
     }
 }

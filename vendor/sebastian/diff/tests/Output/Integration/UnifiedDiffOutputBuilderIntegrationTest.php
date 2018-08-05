@@ -17,8 +17,8 @@ use Symfony\Component\Process\Process;
 /**
  * @covers SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder
  *
- * @uses   SebastianBergmann\Diff\Differ
- * @uses   SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
+ * @uses SebastianBergmann\Diff\Differ
+ * @uses SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
  *
  * @requires OS Linux
  */
@@ -32,6 +32,20 @@ final class UnifiedDiffOutputBuilderIntegrationTest extends TestCase
 
     private $filePatch;
 
+    protected function setUp(): void
+    {
+        $this->dir       = \realpath(__DIR__ . '/../../fixtures/out/') . '/';
+        $this->fileFrom  = $this->dir . 'from.txt';
+        $this->filePatch = $this->dir . 'patch.txt';
+
+        $this->cleanUpTempFiles();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->cleanUpTempFiles();
+    }
+
     /**
      * @dataProvider provideDiffWithLineNumbers
      *
@@ -42,6 +56,29 @@ final class UnifiedDiffOutputBuilderIntegrationTest extends TestCase
     public function testDiffWithLineNumbersPath($expected, $from, $to): void
     {
         $this->doIntegrationTestPatch($expected, $from, $to);
+    }
+
+    /**
+     * @dataProvider provideDiffWithLineNumbers
+     *
+     * @param mixed $expected
+     * @param mixed $from
+     * @param mixed $to
+     */
+    public function testDiffWithLineNumbersGitApply($expected, $from, $to): void
+    {
+        $this->doIntegrationTestGitApply($expected, $from, $to);
+    }
+
+    public function provideDiffWithLineNumbers()
+    {
+        return \array_filter(
+            UnifiedDiffOutputBuilderDataProvider::provideDiffWithLineNumbers(),
+            static function ($key) {
+                return !\is_string($key) || false === \strpos($key, 'non_patch_compat');
+            },
+            ARRAY_FILTER_USE_KEY
+        );
     }
 
     private function doIntegrationTestPatch(string $diff, string $from, string $to): void
@@ -72,41 +109,6 @@ final class UnifiedDiffOutputBuilderIntegrationTest extends TestCase
         );
     }
 
-    private static function setDiffFileHeader(string $diff, string $file): string
-    {
-        $diffLines = \preg_split('/(.*\R)/', $diff, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        $diffLines[0] = \preg_replace('#^\-\-\- .*#', '--- /' . $file, $diffLines[0], 1);
-        $diffLines[1] = \preg_replace('#^\+\+\+ .*#', '+++ /' . $file, $diffLines[1], 1);
-
-        return \implode('', $diffLines);
-    }
-
-    private function assertProcessSuccessful(Process $p): void
-    {
-        $this->assertTrue(
-            $p->isSuccessful(),
-            \sprintf(
-                "Command exec. was not successful:\n\"%s\"\nOutput:\n\"%s\"\nStdErr:\n\"%s\"\nExit code %d.\n",
-                $p->getCommandLine(),
-                $p->getOutput(),
-                $p->getErrorOutput(),
-                $p->getExitCode()
-            )
-        );
-    }
-
-    /**
-     * @dataProvider provideDiffWithLineNumbers
-     *
-     * @param mixed $expected
-     * @param mixed $from
-     * @param mixed $to
-     */
-    public function testDiffWithLineNumbersGitApply($expected, $from, $to): void
-    {
-        $this->doIntegrationTestGitApply($expected, $from, $to);
-    }
-
     private function doIntegrationTestGitApply(string $diff, string $from, string $to): void
     {
         $this->assertNotSame('', $diff);
@@ -129,24 +131,18 @@ final class UnifiedDiffOutputBuilderIntegrationTest extends TestCase
         $this->assertProcessSuccessful($p);
     }
 
-    public function provideDiffWithLineNumbers()
+    private function assertProcessSuccessful(Process $p): void
     {
-        return \array_filter(
-            UnifiedDiffOutputBuilderDataProvider::provideDiffWithLineNumbers(),
-            static function ($key) {
-                return !\is_string($key) || false === \strpos($key, 'non_patch_compat');
-            },
-            ARRAY_FILTER_USE_KEY
+        $this->assertTrue(
+            $p->isSuccessful(),
+            \sprintf(
+                "Command exec. was not successful:\n\"%s\"\nOutput:\n\"%s\"\nStdErr:\n\"%s\"\nExit code %d.\n",
+                $p->getCommandLine(),
+                $p->getOutput(),
+                $p->getErrorOutput(),
+                $p->getExitCode()
+            )
         );
-    }
-
-    protected function setUp(): void
-    {
-        $this->dir = \realpath(__DIR__ . '/../../fixtures/out/') . '/';
-        $this->fileFrom = $this->dir . 'from.txt';
-        $this->filePatch = $this->dir . 'patch.txt';
-
-        $this->cleanUpTempFiles();
     }
 
     private function cleanUpTempFiles(): void
@@ -156,8 +152,12 @@ final class UnifiedDiffOutputBuilderIntegrationTest extends TestCase
         @\unlink($this->filePatch);
     }
 
-    protected function tearDown(): void
+    private static function setDiffFileHeader(string $diff, string $file): string
     {
-        $this->cleanUpTempFiles();
+        $diffLines    = \preg_split('/(.*\R)/', $diff, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $diffLines[0] = \preg_replace('#^\-\-\- .*#', '--- /' . $file, $diffLines[0], 1);
+        $diffLines[1] = \preg_replace('#^\+\+\+ .*#', '+++ /' . $file, $diffLines[1], 1);
+
+        return \implode('', $diffLines);
     }
 }

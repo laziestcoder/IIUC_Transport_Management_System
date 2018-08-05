@@ -26,8 +26,8 @@ class File extends \SplFileInfo
     /**
      * Constructs a new file from the given path.
      *
-     * @param string $path The path to the file
-     * @param bool $checkPath Whether to check the path or not
+     * @param string $path      The path to the file
+     * @param bool   $checkPath Whether to check the path or not
      *
      * @throws FileNotFoundException If the given path is not a file
      */
@@ -83,7 +83,7 @@ class File extends \SplFileInfo
      * Moves the file to a new location.
      *
      * @param string $directory The destination folder
-     * @param string $name The new file name
+     * @param string $name      The new file name
      *
      * @return self A File object representing the new file
      *
@@ -93,9 +93,7 @@ class File extends \SplFileInfo
     {
         $target = $this->getTargetFile($directory, $name);
 
-        set_error_handler(function ($type, $msg) use (&$error) {
-            $error = $msg;
-        });
+        set_error_handler(function ($type, $msg) use (&$error) { $error = $msg; });
         $renamed = rename($this->getPathname(), $target);
         restore_error_handler();
         if (!$renamed) {
@@ -117,7 +115,7 @@ class File extends \SplFileInfo
             throw new FileException(sprintf('Unable to write in the "%s" directory', $directory));
         }
 
-        $target = rtrim($directory, '/\\') . DIRECTORY_SEPARATOR . (null === $name ? $this->getBasename() : $this->getName($name));
+        $target = rtrim($directory, '/\\').\DIRECTORY_SEPARATOR.(null === $name ? $this->getBasename() : $this->getName($name));
 
         return new self($target, false);
     }

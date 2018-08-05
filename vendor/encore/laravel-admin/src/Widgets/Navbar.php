@@ -18,7 +18,7 @@ class Navbar implements Renderable
     public function __construct()
     {
         $this->elements = [
-            'left' => collect(),
+            'left'  => collect(),
             'right' => collect(),
         ];
     }
@@ -38,18 +38,6 @@ class Navbar implements Renderable
     /**
      * @param $element
      *
-     * @return Navbar
-     *
-     * @deprecated
-     */
-    public function add($element)
-    {
-        return $this->right($element);
-    }
-
-    /**
-     * @param $element
-     *
      * @return $this
      */
     public function right($element)
@@ -57,6 +45,18 @@ class Navbar implements Renderable
         $this->elements['right']->push($element);
 
         return $this;
+    }
+
+    /**
+     * @param $element
+     *
+     * @return Navbar
+     *
+     * @deprecated
+     */
+    public function add($element)
+    {
+        return $this->right($element);
     }
 
     /**
@@ -79,7 +79,7 @@ class Navbar implements Renderable
                 return $element->render();
             }
 
-            return (string)$element;
+            return (string) $element;
         })->implode('');
     }
 }

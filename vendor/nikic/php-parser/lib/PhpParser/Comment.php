@@ -12,15 +12,14 @@ class Comment implements \JsonSerializable
     /**
      * Constructs a comment node.
      *
-     * @param string $text Comment text (including comment delimiters like /*)
-     * @param int $startLine Line number the comment started on
-     * @param int $startFilePos File offset the comment started on
-     * @param int $startTokenPos Token offset the comment started on
+     * @param string $text          Comment text (including comment delimiters like /*)
+     * @param int    $startLine     Line number the comment started on
+     * @param int    $startFilePos  File offset the comment started on
+     * @param int    $startTokenPos Token offset the comment started on
      */
     public function __construct(
         string $text, int $startLine = -1, int $startFilePos = -1, int $startTokenPos = -1
-    )
-    {
+    ) {
         $this->text = $text;
         $this->line = $startLine;
         $this->filePos = $startFilePos;
@@ -32,8 +31,7 @@ class Comment implements \JsonSerializable
      *
      * @return string The comment text (including comment delimiters like /*)
      */
-    public function getText(): string
-    {
+    public function getText() : string {
         return $this->text;
     }
 
@@ -42,8 +40,7 @@ class Comment implements \JsonSerializable
      *
      * @return int Line number
      */
-    public function getLine(): int
-    {
+    public function getLine() : int {
         return $this->line;
     }
 
@@ -52,8 +49,7 @@ class Comment implements \JsonSerializable
      *
      * @return int File offset
      */
-    public function getFilePos(): int
-    {
+    public function getFilePos() : int {
         return $this->filePos;
     }
 
@@ -62,8 +58,7 @@ class Comment implements \JsonSerializable
      *
      * @return int Token offset
      */
-    public function getTokenPos(): int
-    {
+    public function getTokenPos() : int {
         return $this->tokenPos;
     }
 
@@ -72,8 +67,7 @@ class Comment implements \JsonSerializable
      *
      * @return string The comment text (including comment delimiters like /*)
      */
-    public function __toString(): string
-    {
+    public function __toString() : string {
         return $this->text;
     }
 
@@ -87,8 +81,7 @@ class Comment implements \JsonSerializable
      *
      * @return mixed|string
      */
-    public function getReformattedText()
-    {
+    public function getReformattedText() {
         $text = trim($this->text);
         $newlinePos = strpos($text, "\n");
         if (false === $newlinePos) {
@@ -143,8 +136,7 @@ class Comment implements \JsonSerializable
      * @param string $str String to check
      * @return int Length in characters. Tabs count as single characters.
      */
-    private function getShortestWhitespacePrefixLen(string $str): int
-    {
+    private function getShortestWhitespacePrefixLen(string $str) : int {
         $lines = explode("\n", $str);
         $shortestPrefixLen = \INF;
         foreach ($lines as $line) {
@@ -161,8 +153,7 @@ class Comment implements \JsonSerializable
      * @return       array
      * @psalm-return array{nodeType:string, text:mixed, line:mixed, filePos:mixed}
      */
-    public function jsonSerialize(): array
-    {
+    public function jsonSerialize() : array {
         // Technically not a node, but we make it look like one anyway
         $type = $this instanceof Comment\Doc ? 'Comment_Doc' : 'Comment';
         return [

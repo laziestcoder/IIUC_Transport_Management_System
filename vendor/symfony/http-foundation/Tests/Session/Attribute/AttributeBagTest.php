@@ -28,6 +28,33 @@ class AttributeBagTest extends TestCase
      */
     private $bag;
 
+    protected function setUp()
+    {
+        $this->array = array(
+            'hello' => 'world',
+            'always' => 'be happy',
+            'user.login' => 'drak',
+            'csrf.token' => array(
+                'a' => '1234',
+                'b' => '4321',
+            ),
+            'category' => array(
+                'fishing' => array(
+                    'first' => 'cod',
+                    'second' => 'sole',
+                ),
+            ),
+        );
+        $this->bag = new AttributeBag('_sf2');
+        $this->bag->initialize($this->array);
+    }
+
+    protected function tearDown()
+    {
+        $this->bag = null;
+        $this->array = array();
+    }
+
     public function testInitialize()
     {
         $bag = new AttributeBag();
@@ -149,38 +176,11 @@ class AttributeBagTest extends TestCase
             ++$i;
         }
 
-        $this->assertEquals(count($this->array), $i);
+        $this->assertEquals(\count($this->array), $i);
     }
 
     public function testCount()
     {
-        $this->assertCount(count($this->array), $this->bag);
-    }
-
-    protected function setUp()
-    {
-        $this->array = array(
-            'hello' => 'world',
-            'always' => 'be happy',
-            'user.login' => 'drak',
-            'csrf.token' => array(
-                'a' => '1234',
-                'b' => '4321',
-            ),
-            'category' => array(
-                'fishing' => array(
-                    'first' => 'cod',
-                    'second' => 'sole',
-                ),
-            ),
-        );
-        $this->bag = new AttributeBag('_sf2');
-        $this->bag->initialize($this->array);
-    }
-
-    protected function tearDown()
-    {
-        $this->bag = null;
-        $this->array = array();
+        $this->assertCount(\count($this->array), $this->bag);
     }
 }

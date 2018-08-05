@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\Exception;
@@ -136,16 +135,6 @@ EOF;
         $this->fail();
     }
 
-    private function stringify(array $constraints): string
-    {
-        return \implode(
-            ' and ',
-            \array_map(function (Constraint $constraint) {
-                return $constraint->toString();
-            }, $constraints)
-        );
-    }
-
     /**
      * @dataProvider providerFailingConstraints
      *
@@ -153,7 +142,7 @@ EOF;
      */
     public function testEvaluateThrowsExceptionWithCustomMessageIfAnyOfTheComposedConstraintsEvaluateToFalse(array $constraints): void
     {
-        $other = 'whatever';
+        $other             = 'whatever';
         $customDescription = 'Not very happy about the results at this point in time, I have to admit!';
 
         $constraint = new LogicalAnd();
@@ -234,5 +223,15 @@ EOF;
                 $constraints,
             ];
         }
+    }
+
+    private function stringify(array $constraints): string
+    {
+        return \implode(
+            ' and ',
+            \array_map(function (Constraint $constraint) {
+                return $constraint->toString();
+            }, $constraints)
+        );
     }
 }

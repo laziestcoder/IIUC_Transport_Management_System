@@ -7,21 +7,28 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass SebastianBergmann\Comparator\ScalarComparator
+ * @covers \SebastianBergmann\Comparator\ScalarComparator<extended>
  *
- * @uses SebastianBergmann\Comparator\Comparator
- * @uses SebastianBergmann\Comparator\Factory
- * @uses SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
-class ScalarComparatorTest extends TestCase
+final class ScalarComparatorTest extends TestCase
 {
+    /**
+     * @var ScalarComparator
+     */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new ScalarComparator;
+    }
 
     public function acceptsSucceedsProvider()
     {
@@ -81,7 +88,7 @@ class ScalarComparatorTest extends TestCase
     public function assertEqualsFailsProvider()
     {
         $stringException = 'Failed asserting that two strings are equal.';
-        $otherException = 'matches expected';
+        $otherException  = 'matches expected';
 
         return [
             ['string', 'other string', $stringException],
@@ -100,47 +107,39 @@ class ScalarComparatorTest extends TestCase
             [false, true, $otherException],
             [true, false, $otherException],
             [null, true, $otherException],
-            [0, true, $otherException]
+            [0, true, $otherException],
+            ['0', '0.0', $stringException],
+            ['0.', '0.0', $stringException],
+            ['0e1', '0e2', $stringException],
+            ["\n\n\n0.0", '                   0.', $stringException],
+            ['0.0', '25e-10000', $stringException],
         ];
     }
 
     /**
-     * @covers       ::accepts
      * @dataProvider acceptsSucceedsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAcceptsSucceeds($expected, $actual)
+    public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
     /**
-     * @covers       ::accepts
      * @dataProvider acceptsFailsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAcceptsFails($expected, $actual)
+    public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
     /**
-     * @covers       ::assertEquals
      * @dataProvider assertEqualsSucceedsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
-     * @param mixed $ignoreCase
      */
-    public function testAssertEqualsSucceeds($expected, $actual, $ignoreCase = false)
+    public function testAssertEqualsSucceeds($expected, $actual, $ignoreCase = false): void
     {
         $exception = null;
 
@@ -153,23 +152,13 @@ class ScalarComparatorTest extends TestCase
     }
 
     /**
-     * @covers       ::assertEquals
      * @dataProvider assertEqualsFailsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
-     * @param mixed $message
      */
-    public function testAssertEqualsFails($expected, $actual, $message)
+    public function testAssertEqualsFails($expected, $actual, $message): void
     {
         $this->expectException(ComparisonFailure::class);
         $this->expectExceptionMessage($message);
 
         $this->comparator->assertEquals($expected, $actual);
-    }
-
-    protected function setUp()
-    {
-        $this->comparator = new ScalarComparator;
     }
 }

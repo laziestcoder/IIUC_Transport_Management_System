@@ -37,7 +37,7 @@ class FrameCollection implements ArrayAccess, IteratorAggregate, Serializable, C
     /**
      * Filters frames using a callable, returns the same FrameCollection
      *
-     * @param  callable $callable
+     * @param  callable        $callable
      * @return FrameCollection
      */
     public function filter($callable)
@@ -49,7 +49,7 @@ class FrameCollection implements ArrayAccess, IteratorAggregate, Serializable, C
     /**
      * Map the collection of frames
      *
-     * @param  callable $callable
+     * @param  callable        $callable
      * @return FrameCollection
      */
     public function map($callable)
@@ -69,6 +69,20 @@ class FrameCollection implements ArrayAccess, IteratorAggregate, Serializable, C
         }, $this->frames);
 
         return $this;
+    }
+
+    /**
+     * Returns an array with all frames, does not affect
+     * the internal array.
+     *
+     * @todo   If this gets any more complex than this,
+     *         have getIterator use this method.
+     * @see    FrameCollection::getIterator
+     * @return array
+     */
+    public function getArray()
+    {
+        return $this->frames;
     }
 
     /**
@@ -174,9 +188,9 @@ class FrameCollection implements ArrayAccess, IteratorAggregate, Serializable, C
         $diff = $this->frames;
 
         $parentFrames = $parentFrames->getArray();
-        $p = count($parentFrames) - 1;
+        $p = count($parentFrames)-1;
 
-        for ($i = count($diff) - 1; $i >= 0 && $p >= 0; $i--) {
+        for ($i = count($diff)-1; $i >= 0 && $p >= 0; $i--) {
             /** @var Frame $tailFrame */
             $tailFrame = $diff[$i];
             if ($tailFrame->equals($parentFrames[$p])) {
@@ -185,19 +199,5 @@ class FrameCollection implements ArrayAccess, IteratorAggregate, Serializable, C
             $p--;
         }
         return $diff;
-    }
-
-    /**
-     * Returns an array with all frames, does not affect
-     * the internal array.
-     *
-     * @todo   If this gets any more complex than this,
-     *         have getIterator use this method.
-     * @see    FrameCollection::getIterator
-     * @return array
-     */
-    public function getArray()
-    {
-        return $this->frames;
     }
 }

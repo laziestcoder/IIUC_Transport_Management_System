@@ -3,8 +3,9 @@
 namespace Faker\Test\Provider;
 
 use Faker\Provider\Lorem;
+use PHPUnit\Framework\TestCase;
 
-class LoremTest extends \PHPUnit_Framework_TestCase
+class LoremTest extends TestCase
 {
     /**
      * @expectedException \InvalidArgumentException
@@ -51,7 +52,7 @@ class LoremTest extends \PHPUnit_Framework_TestCase
 
     public function testSentenceWithPositiveNbWordsReturnsAtLeastOneWord()
     {
-        $sentence = Lorem::sentence(1);
+         $sentence = Lorem::sentence(1);
 
         $this->assertGreaterThan(1, strlen($sentence));
         $this->assertGreaterThanOrEqual(1, count(explode(' ', $sentence)));

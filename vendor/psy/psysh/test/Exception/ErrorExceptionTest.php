@@ -59,15 +59,15 @@ class ErrorExceptionTest extends \PHPUnit\Framework\TestCase
     public function getLevels()
     {
         return [
-            [E_WARNING, 'Warning'],
-            [E_CORE_WARNING, 'Warning'],
-            [E_COMPILE_WARNING, 'Warning'],
-            [E_USER_WARNING, 'Warning'],
-            [E_STRICT, 'Strict error'],
-            [E_DEPRECATED, 'Deprecated'],
-            [E_USER_DEPRECATED, 'Deprecated'],
+            [E_WARNING,           'Warning'],
+            [E_CORE_WARNING,      'Warning'],
+            [E_COMPILE_WARNING,   'Warning'],
+            [E_USER_WARNING,      'Warning'],
+            [E_STRICT,            'Strict error'],
+            [E_DEPRECATED,        'Deprecated'],
+            [E_USER_DEPRECATED,   'Deprecated'],
             [E_RECOVERABLE_ERROR, 'Recoverable fatal error'],
-            [0, 'Error'],
+            [0,                   'Error'],
         ];
     }
 
@@ -89,9 +89,9 @@ class ErrorExceptionTest extends \PHPUnit\Framework\TestCase
     public function getUserLevels()
     {
         return [
-            [E_USER_ERROR, 'Error'],
-            [E_USER_WARNING, 'Warning'],
-            [E_USER_NOTICE, 'Notice'],
+            [E_USER_ERROR,      'Error'],
+            [E_USER_WARNING,    'Warning'],
+            [E_USER_NOTICE,     'Notice'],
             [E_USER_DEPRECATED, 'Deprecated'],
         ];
     }

@@ -9,9 +9,10 @@ class Swift_Bug534Test extends \SwiftMailerTestCase
         $message = (new Swift_Message())
             ->setFrom('from@example.com')
             ->setTo('to@example.com')
-            ->setSubject('test');
-        $cid = $message->embed(Swift_Image::fromPath(__DIR__ . '/../../_samples/files/swiftmailer.png'));
-        $message->setBody('<img src="' . $cid . '" />', 'text/html');
+            ->setSubject('test')
+        ;
+        $cid = $message->embed(Swift_Image::fromPath(__DIR__.'/../../_samples/files/swiftmailer.png'));
+        $message->setBody('<img src="'.$cid.'" />', 'text/html');
 
         $that = $this;
         $messageValidation = function (Swift_Mime_SimpleMessage $message) use ($that) {
@@ -24,7 +25,7 @@ class Swift_Bug534Test extends \SwiftMailerTestCase
             return true;
         };
 
-        $failedRecipients = array();
+        $failedRecipients = [];
 
         $transport = m::mock('Swift_Transport');
         $transport->shouldReceive('isStarted')->andReturn(true);

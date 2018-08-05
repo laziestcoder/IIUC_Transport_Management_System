@@ -30,8 +30,8 @@ class CommandTest extends TestCase
 
     public static function setUpBeforeClass()
     {
-        self::$fixturesPath = __DIR__ . '/../Fixtures/';
-        require_once self::$fixturesPath . '/TestCommand.php';
+        self::$fixturesPath = __DIR__.'/../Fixtures/';
+        require_once self::$fixturesPath.'/TestCommand.php';
     }
 
     public function testConstructor()
@@ -271,7 +271,7 @@ class CommandTest extends TestCase
 
         $tester->execute(array(), array('interactive' => true));
 
-        $this->assertEquals('interact called' . PHP_EOL . 'execute called' . PHP_EOL, $tester->getDisplay(), '->run() calls the interact() method if the input is interactive');
+        $this->assertEquals('interact called'.PHP_EOL.'execute called'.PHP_EOL, $tester->getDisplay(), '->run() calls the interact() method if the input is interactive');
     }
 
     public function testRunNonInteractive()
@@ -280,7 +280,7 @@ class CommandTest extends TestCase
 
         $tester->execute(array(), array('interactive' => false));
 
-        $this->assertEquals('execute called' . PHP_EOL, $tester->getDisplay(), '->run() does not call the interact() method if the input is not interactive');
+        $this->assertEquals('execute called'.PHP_EOL, $tester->getDisplay(), '->run() does not call the interact() method if the input is not interactive');
     }
 
     /**
@@ -340,7 +340,7 @@ class CommandTest extends TestCase
         $command->setApplication(new Application());
         $command->setProcessTitle('foo');
         $this->assertSame(0, $command->run(new StringInput(''), new NullOutput()));
-        if (function_exists('cli_set_process_title')) {
+        if (\function_exists('cli_set_process_title')) {
             if (null === @cli_get_process_title() && 'Darwin' === PHP_OS) {
                 $this->markTestSkipped('Running "cli_get_process_title" as an unprivileged user is not supported on MacOS.');
             }
@@ -357,7 +357,7 @@ class CommandTest extends TestCase
         $this->assertEquals($command, $ret, '->setCode() implements a fluent interface');
         $tester = new CommandTester($command);
         $tester->execute(array());
-        $this->assertEquals('interact called' . PHP_EOL . 'from the code...' . PHP_EOL, $tester->getDisplay());
+        $this->assertEquals('interact called'.PHP_EOL.'from the code...'.PHP_EOL, $tester->getDisplay());
     }
 
     public function getSetCodeBindToClosureTests()
@@ -382,7 +382,7 @@ class CommandTest extends TestCase
         $command->setCode($code);
         $tester = new CommandTester($command);
         $tester->execute(array());
-        $this->assertEquals('interact called' . PHP_EOL . $expected . PHP_EOL, $tester->getDisplay());
+        $this->assertEquals('interact called'.PHP_EOL.$expected.PHP_EOL, $tester->getDisplay());
     }
 
     public function testSetCodeWithStaticClosure()
@@ -392,7 +392,7 @@ class CommandTest extends TestCase
         $tester = new CommandTester($command);
         $tester->execute(array());
 
-        $this->assertEquals('interact called' . PHP_EOL . 'bound' . PHP_EOL, $tester->getDisplay());
+        $this->assertEquals('interact called'.PHP_EOL.'bound'.PHP_EOL, $tester->getDisplay());
     }
 
     private static function createClosure()
@@ -409,7 +409,7 @@ class CommandTest extends TestCase
         $this->assertEquals($command, $ret, '->setCode() implements a fluent interface');
         $tester = new CommandTester($command);
         $tester->execute(array());
-        $this->assertEquals('interact called' . PHP_EOL . 'from the code...' . PHP_EOL, $tester->getDisplay());
+        $this->assertEquals('interact called'.PHP_EOL.'from the code...'.PHP_EOL, $tester->getDisplay());
     }
 
     public function callableMethodCommand(InputInterface $input, OutputInterface $output)

@@ -16,8 +16,8 @@ class Company extends \Faker\Provider\Company
         '{{companyName}}-{{companySuffix}}',
     );
 
-    protected static $companyPrefix = array('ТОВ', 'ПП', 'ПАТ', 'ПрАТ');
-    protected static $companySuffix = array('Сервіс', 'Плюс', 'Груп', 'Стиль', 'Дизайн');
+    protected static $companyPrefix = array('ТОВ', 'ПП', 'ПАТ','ПрАТ');
+    protected static $companySuffix = array('Сервіс','Плюс', 'Груп', 'Стиль', 'Дизайн');
 
     protected static $companyName = array(
         'Вектор', 'Едельвейс', 'Смарт', 'Альфа', 'Система', 'Універсал',
@@ -52,8 +52,15 @@ class Company extends \Faker\Provider\Company
         'Фармацевт', 'Фермер', 'Фізик', 'Філолог', 'Фольклорист', 'Формувальник', 'Фотограф', 'Футболіст', 'Флорист', 'Фінансист',
         'Хірург', 'Хімік', 'Художник', 'Хореограф', 'Хормейстер',
         'Шериф', 'Швачка', 'Штукатур',
-        'Ювелір', 'Юрист'
+        'Ювелір','Юрист'
     );
+
+    public function companyUrl()
+    {
+        $format = static::randomElement(static::$urlFormats);
+
+        return $this->generator->parse($format);
+    }
 
     public static function companyPrefix()
     {
@@ -63,12 +70,5 @@ class Company extends \Faker\Provider\Company
     public static function companyName()
     {
         return static::randomElement(static::$companyName);
-    }
-
-    public function companyUrl()
-    {
-        $format = static::randomElement(static::$urlFormats);
-
-        return $this->generator->parse($format);
     }
 }

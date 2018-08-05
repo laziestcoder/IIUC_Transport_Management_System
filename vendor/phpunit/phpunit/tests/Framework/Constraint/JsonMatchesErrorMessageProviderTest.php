@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\TestCase;
@@ -17,27 +16,27 @@ class JsonMatchesErrorMessageProviderTest extends TestCase
     public static function determineJsonErrorDataprovider()
     {
         return [
-            'JSON_ERROR_NONE' => [
+            'JSON_ERROR_NONE'  => [
                 null, 'json_error_none', ''
             ],
             'JSON_ERROR_DEPTH' => [
-                'Maximum stack depth exceeded', JSON_ERROR_DEPTH, ''
+                'Maximum stack depth exceeded', \JSON_ERROR_DEPTH, ''
             ],
             'prefixed JSON_ERROR_DEPTH' => [
-                'TUX: Maximum stack depth exceeded', JSON_ERROR_DEPTH, 'TUX: '
+                'TUX: Maximum stack depth exceeded', \JSON_ERROR_DEPTH, 'TUX: '
             ],
             'JSON_ERROR_STATE_MISMatch' => [
-                'Underflow or the modes mismatch', JSON_ERROR_STATE_MISMATCH, ''
+                'Underflow or the modes mismatch', \JSON_ERROR_STATE_MISMATCH, ''
             ],
             'JSON_ERROR_CTRL_CHAR' => [
-                'Unexpected control character found', JSON_ERROR_CTRL_CHAR, ''
+                'Unexpected control character found', \JSON_ERROR_CTRL_CHAR, ''
             ],
             'JSON_ERROR_SYNTAX' => [
-                'Syntax error, malformed JSON', JSON_ERROR_SYNTAX, ''
+                'Syntax error, malformed JSON', \JSON_ERROR_SYNTAX, ''
             ],
             'JSON_ERROR_UTF8`' => [
                 'Malformed UTF-8 characters, possibly incorrectly encoded',
-                JSON_ERROR_UTF8,
+                \JSON_ERROR_UTF8,
                 ''
             ],
             'Invalid error indicator' => [
@@ -50,16 +49,13 @@ class JsonMatchesErrorMessageProviderTest extends TestCase
     {
         return [
             'expected' => ['Expected value JSON decode error - ', 'expected'],
-            'actual' => ['Actual value JSON decode error - ', 'actual'],
-            'default' => ['', ''],
+            'actual'   => ['Actual value JSON decode error - ', 'actual'],
+            'default'  => ['', ''],
         ];
     }
 
     /**
      * @dataProvider translateTypeToPrefixDataprovider
-     *
-     * @param mixed $expected
-     * @param mixed $type
      *
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -74,10 +70,6 @@ class JsonMatchesErrorMessageProviderTest extends TestCase
 
     /**
      * @dataProvider determineJsonErrorDataprovider
-     *
-     * @param mixed $expected
-     * @param mixed $error
-     * @param mixed $prefix
      *
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException

@@ -19,6 +19,40 @@ use XdgBaseDir\Xdg;
 class ConfigPaths
 {
     /**
+     * Get potential config directory paths.
+     *
+     * Returns `~/.psysh`, `%APPDATA%/PsySH` (when on Windows), and all
+     * XDG Base Directory config directories:
+     *
+     *     http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+     *
+     * @return string[]
+     */
+    public static function getConfigDirs()
+    {
+        $xdg = new Xdg();
+
+        return self::getDirNames($xdg->getConfigDirs());
+    }
+
+    /**
+     * Get potential home config directory paths.
+     *
+     * Returns `~/.psysh`, `%APPDATA%/PsySH` (when on Windows), and the
+     * XDG Base Directory home config directory:
+     *
+     *     http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+     *
+     * @return string[]
+     */
+    public static function getHomeConfigDirs()
+    {
+        $xdg = new Xdg();
+
+        return self::getDirNames([$xdg->getHomeConfigDir()]);
+    }
+
+    /**
      * Get the current home config directory.
      *
      * Returns the highest precedence home config directory which actually
@@ -43,107 +77,16 @@ class ConfigPaths
     }
 
     /**
-     * Get potential home config directory paths.
-     *
-     * Returns `~/.psysh`, `%APPDATA%/PsySH` (when on Windows), and the
-     * XDG Base Directory home config directory:
-     *
-     *     http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-     *
-     * @return string[]
-     */
-    public static function getHomeConfigDirs()
-    {
-        $xdg = new Xdg();
-
-        return self::getDirNames([$xdg->getHomeConfigDir()]);
-    }
-
-    private static function getDirNames(array $baseDirs)
-    {
-        $dirs = array_map(function ($dir) {
-            return strtr($dir, '\\', '/') . '/psysh';
-        }, $baseDirs);
-
-        // Add ~/.psysh
-        if ($home = getenv('HOME')) {
-            $dirs[] = strtr($home, '\\', '/') . '/.psysh';
-        }
-
-        // Add some Windows specific ones :)
-        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
-            if ($appData = getenv('APPDATA')) {
-                // AppData gets preference
-                array_unshift($dirs, strtr($appData, '\\', '/') . '/PsySH');
-            }
-
-            $dir = strtr(getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH'), '\\', '/') . '/.psysh';
-            if (!in_array($dir, $dirs)) {
-                $dirs[] = $dir;
-            }
-        }
-
-        return $dirs;
-    }
-
-    /**
      * Find real config files in config directories.
      *
-     * @param string[] $names Config file names
-     * @param string $configDir Optionally use a specific config directory
+     * @param string[] $names     Config file names
+     * @param string   $configDir Optionally use a specific config directory
      *
      * @return string[]
      */
     public static function getConfigFiles(array $names, $configDir = null)
     {
         $dirs = ($configDir === null) ? self::getConfigDirs() : [$configDir];
-
-        return self::getRealFiles($dirs, $names);
-    }
-
-    /**
-     * Get potential config directory paths.
-     *
-     * Returns `~/.psysh`, `%APPDATA%/PsySH` (when on Windows), and all
-     * XDG Base Directory config directories:
-     *
-     *     http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-     *
-     * @return string[]
-     */
-    public static function getConfigDirs()
-    {
-        $xdg = new Xdg();
-
-        return self::getDirNames($xdg->getConfigDirs());
-    }
-
-    private static function getRealFiles(array $dirNames, array $fileNames)
-    {
-        $files = [];
-        foreach ($dirNames as $dir) {
-            foreach ($fileNames as $name) {
-                $file = $dir . '/' . $name;
-                if (@is_file($file)) {
-                    $files[] = $file;
-                }
-            }
-        }
-
-        return $files;
-    }
-
-    /**
-     * Find real data files in config directories.
-     *
-     * @param string[] $names Config file names
-     * @param string $dataDir Optionally use a specific config directory
-     *
-     * @return string[]
-     */
-    public static function getDataFiles(array $names, $dataDir = null)
-    {
-        $dirs = ($dataDir === null) ? self::getDataDirs() : [$dataDir];
 
         return self::getRealFiles($dirs, $names);
     }
@@ -165,6 +108,21 @@ class ConfigPaths
         $xdg = new Xdg();
 
         return self::getDirNames($xdg->getDataDirs());
+    }
+
+    /**
+     * Find real data files in config directories.
+     *
+     * @param string[] $names   Config file names
+     * @param string   $dataDir Optionally use a specific config directory
+     *
+     * @return string[]
+     */
+    public static function getDataFiles(array $names, $dataDir = null)
+    {
+        $dirs = ($dataDir === null) ? self::getDataDirs() : [$dataDir];
+
+        return self::getRealFiles($dirs, $names);
     }
 
     /**
@@ -194,6 +152,48 @@ class ConfigPaths
         restore_error_handler();
 
         return strtr($runtimeDir, '\\', '/') . '/psysh';
+    }
+
+    private static function getDirNames(array $baseDirs)
+    {
+        $dirs = array_map(function ($dir) {
+            return strtr($dir, '\\', '/') . '/psysh';
+        }, $baseDirs);
+
+        // Add ~/.psysh
+        if ($home = getenv('HOME')) {
+            $dirs[] = strtr($home, '\\', '/') . '/.psysh';
+        }
+
+        // Add some Windows specific ones :)
+        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            if ($appData = getenv('APPDATA')) {
+                // AppData gets preference
+                array_unshift($dirs, strtr($appData, '\\', '/') . '/PsySH');
+            }
+
+            $dir = strtr(getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH'), '\\', '/') . '/.psysh';
+            if (!in_array($dir, $dirs)) {
+                $dirs[] = $dir;
+            }
+        }
+
+        return $dirs;
+    }
+
+    private static function getRealFiles(array $dirNames, array $fileNames)
+    {
+        $files = [];
+        foreach ($dirNames as $dir) {
+            foreach ($fileNames as $name) {
+                $file = $dir . '/' . $name;
+                if (@is_file($file)) {
+                    $files[] = $file;
+                }
+            }
+        }
+
+        return $files;
     }
 
     /**

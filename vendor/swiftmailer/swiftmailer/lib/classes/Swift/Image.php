@@ -21,8 +21,8 @@ class Swift_Image extends Swift_EmbeddedFile
      * Details may be optionally provided to the constructor.
      *
      * @param string|Swift_OutputByteStream $data
-     * @param string $filename
-     * @param string $contentType
+     * @param string                        $filename
+     * @param string                        $contentType
      */
     public function __construct($data = null, $filename = null, $contentType = null)
     {

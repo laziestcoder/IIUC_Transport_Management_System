@@ -23,9 +23,6 @@ class Swift_Mime_SimpleHeaderFactory implements Swift_Mime_CharsetObserver
     /** The Encoder used by parameters */
     private $paramEncoder;
 
-    /** The Grammar */
-    private $grammar;
-
     /** Strict EmailValidator */
     private $emailValidator;
 
@@ -35,30 +32,28 @@ class Swift_Mime_SimpleHeaderFactory implements Swift_Mime_CharsetObserver
     /**
      * Creates a new SimpleHeaderFactory using $encoder and $paramEncoder.
      *
-     * @param Swift_Mime_HeaderEncoder $encoder
-     * @param Swift_Encoder $paramEncoder
-     * @param EmailValidator $emailValidator
      * @param string|null $charset
      */
-    public function __construct(Swift_Mime_HeaderEncoder $encoder, Swift_Encoder $paramEncoder, EmailValidator $emailValidator, $charset = null)
+    public function __construct(Swift_Mime_HeaderEncoder $encoder, Swift_Encoder $paramEncoder, EmailValidator $emailValidator, $charset = null, Swift_AddressEncoder $addressEncoder = null)
     {
         $this->encoder = $encoder;
         $this->paramEncoder = $paramEncoder;
         $this->emailValidator = $emailValidator;
         $this->charset = $charset;
+        $this->addressEncoder = $addressEncoder ?? new Swift_AddressEncoder_IdnAddressEncoder();
     }
 
     /**
      * Create a new Mailbox Header with a list of $addresses.
      *
-     * @param string $name
+     * @param string            $name
      * @param array|string|null $addresses
      *
      * @return Swift_Mime_Header
      */
     public function createMailboxHeader($name, $addresses = null)
     {
-        $header = new Swift_Mime_Headers_MailboxHeader($name, $this->encoder, $this->emailValidator);
+        $header = new Swift_Mime_Headers_MailboxHeader($name, $this->encoder, $this->emailValidator, $this->addressEncoder);
         if (isset($addresses)) {
             $header->setFieldBodyModel($addresses);
         }
@@ -67,18 +62,10 @@ class Swift_Mime_SimpleHeaderFactory implements Swift_Mime_CharsetObserver
         return $header;
     }
 
-    /** Apply the charset to the Header */
-    private function setHeaderCharset(Swift_Mime_Header $header)
-    {
-        if (isset($this->charset)) {
-            $header->setCharset($this->charset);
-        }
-    }
-
     /**
      * Create a new Date header using $dateTime.
      *
-     * @param string $name
+     * @param string                 $name
      * @param DateTimeInterface|null $dateTime
      *
      * @return Swift_Mime_Header
@@ -118,13 +105,13 @@ class Swift_Mime_SimpleHeaderFactory implements Swift_Mime_CharsetObserver
      *
      * @param string $name
      * @param string $value
-     * @param array $params
+     * @param array  $params
      *
      * @return Swift_Mime_Headers_ParameterizedHeader
      */
-    public function createParameterizedHeader($name, $value = null, $params = array())
+    public function createParameterizedHeader($name, $value = null, $params = [])
     {
-        $header = new Swift_Mime_Headers_ParameterizedHeader($name, $this->encoder, (strtolower($name) == 'content-disposition') ? $this->paramEncoder : null);
+        $header = new Swift_Mime_Headers_ParameterizedHeader($name, $this->encoder, ('content-disposition' == strtolower($name)) ? $this->paramEncoder : null);
         if (isset($value)) {
             $header->setFieldBodyModel($value);
         }
@@ -139,7 +126,7 @@ class Swift_Mime_SimpleHeaderFactory implements Swift_Mime_CharsetObserver
     /**
      * Create a new ID header for Message-ID or Content-ID.
      *
-     * @param string $name
+     * @param string       $name
      * @param string|array $ids
      *
      * @return Swift_Mime_Header
@@ -193,5 +180,13 @@ class Swift_Mime_SimpleHeaderFactory implements Swift_Mime_CharsetObserver
     {
         $this->encoder = clone $this->encoder;
         $this->paramEncoder = clone $this->paramEncoder;
+    }
+
+    /** Apply the charset to the Header */
+    private function setHeaderCharset(Swift_Mime_Header $header)
+    {
+        if (isset($this->charset)) {
+            $header->setCharset($this->charset);
+        }
     }
 }

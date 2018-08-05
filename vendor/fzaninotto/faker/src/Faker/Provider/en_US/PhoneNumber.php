@@ -57,6 +57,18 @@ class PhoneNumber extends \Faker\Provider\PhoneNumber
         '{{tollFreeAreaCode}}.{{exchangeCode}}.####',
     );
 
+    public function tollFreeAreaCode()
+    {
+        return self::randomElement(static::$tollFreeAreaCodes);
+    }
+
+    public function tollFreePhoneNumber()
+    {
+        $format = self::randomElement(static::$tollFreeFormats);
+
+        return self::numerify($this->generator->parse($format));
+    }
+
     /**
      * NPA-format area code
      *
@@ -92,17 +104,5 @@ class PhoneNumber extends \Faker\Provider\PhoneNumber
         }
 
         return join('', $digits);
-    }
-
-    public function tollFreeAreaCode()
-    {
-        return self::randomElement(static::$tollFreeAreaCodes);
-    }
-
-    public function tollFreePhoneNumber()
-    {
-        $format = self::randomElement(static::$tollFreeFormats);
-
-        return self::numerify($this->generator->parse($format));
     }
 }

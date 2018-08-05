@@ -4,8 +4,9 @@ namespace Faker\Test\Provider\es_ES;
 
 use Faker\Generator;
 use Faker\Provider\es_ES\Payment;
+use PHPUnit\Framework\TestCase;
 
-class PaymentTest extends \PHPUnit_Framework_TestCase
+class PaymentTest extends TestCase
 {
     /**
      * @var Generator
@@ -40,8 +41,8 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
     function isValidCIFFormat($docNumber)
     {
         return $this->respectsDocPattern($docNumber, '/^[PQSNWR][0-9][0-9][0-9][0-9][0-9][0-9][0-9][A-Z0-9]/')
-            ||
-            $this->respectsDocPattern($docNumber, '/^[ABCDEFGHJUV][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/');
+                ||
+               $this->respectsDocPattern($docNumber, '/^[ABCDEFGHJUV][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/');
     }
 
     function respectsDocPattern($givenString, $pattern)

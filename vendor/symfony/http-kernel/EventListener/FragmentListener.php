@@ -35,20 +35,13 @@ class FragmentListener implements EventSubscriberInterface
     private $fragmentPath;
 
     /**
-     * @param UriSigner $signer A UriSigner instance
-     * @param string $fragmentPath The path that triggers this listener
+     * @param UriSigner $signer       A UriSigner instance
+     * @param string    $fragmentPath The path that triggers this listener
      */
     public function __construct(UriSigner $signer, string $fragmentPath = '/_fragment')
     {
         $this->signer = $signer;
         $this->fragmentPath = $fragmentPath;
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return array(
-            KernelEvents::REQUEST => array(array('onKernelRequest', 48)),
-        );
     }
 
     /**
@@ -90,10 +83,17 @@ class FragmentListener implements EventSubscriberInterface
 
         // is the Request signed?
         // we cannot use $request->getUri() here as we want to work with the original URI (no query string reordering)
-        if ($this->signer->check($request->getSchemeAndHttpHost() . $request->getBaseUrl() . $request->getPathInfo() . (null !== ($qs = $request->server->get('QUERY_STRING')) ? '?' . $qs : ''))) {
+        if ($this->signer->check($request->getSchemeAndHttpHost().$request->getBaseUrl().$request->getPathInfo().(null !== ($qs = $request->server->get('QUERY_STRING')) ? '?'.$qs : ''))) {
             return;
         }
 
         throw new AccessDeniedHttpException();
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array(
+            KernelEvents::REQUEST => array(array('onKernelRequest', 48)),
+        );
     }
 }

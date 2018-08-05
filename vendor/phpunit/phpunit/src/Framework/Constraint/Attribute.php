@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\Assert;
@@ -37,15 +36,13 @@ class Attribute extends Composite
      * a boolean value instead: true in case of success, false in case of a
      * failure.
      *
-     * @param mixed $other value or object to evaluate
-     * @param string $description Additional information about the test
-     * @param bool $returnResult Whether to return a result or throw an exception
+     * @param mixed  $other        value or object to evaluate
+     * @param string $description  Additional information about the test
+     * @param bool   $returnResult Whether to return a result or throw an exception
      *
      * @throws ExpectationFailedException
      * @throws \PHPUnit\Framework\Exception
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
-     *
-     * @return mixed
      */
     public function evaluate($other, $description = '', $returnResult = false)
     {
@@ -60,6 +57,14 @@ class Attribute extends Composite
     }
 
     /**
+     * Returns a string representation of the constraint.
+     */
+    public function toString(): string
+    {
+        return 'attribute "' . $this->attributeName . '" ' . $this->innerConstraint()->toString();
+    }
+
+    /**
      * Returns the description of the failure
      *
      * The beginning of failure messages is "Failed asserting that" in most
@@ -70,13 +75,5 @@ class Attribute extends Composite
     protected function failureDescription($other): string
     {
         return $this->toString();
-    }
-
-    /**
-     * Returns a string representation of the constraint.
-     */
-    public function toString(): string
-    {
-        return 'attribute "' . $this->attributeName . '" ' . $this->innerConstraint()->toString();
     }
 }

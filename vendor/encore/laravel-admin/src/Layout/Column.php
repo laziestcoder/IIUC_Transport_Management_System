@@ -2,6 +2,7 @@
 
 namespace Encore\Admin\Layout;
 
+use Encore\Admin\Grid;
 use Illuminate\Contracts\Support\Renderable;
 
 class Column implements Buildable
@@ -83,10 +84,10 @@ class Column implements Buildable
         $this->startColumn();
 
         foreach ($this->contents as $content) {
-            if ($content instanceof Renderable) {
+            if ($content instanceof Renderable || $content instanceof Grid) {
                 echo $content->render();
             } else {
-                echo (string)$content;
+                echo (string) $content;
             }
         }
 

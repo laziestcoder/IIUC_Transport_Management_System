@@ -14,6 +14,7 @@ namespace Psy\Command;
 use Psy\Formatter\DocblockFormatter;
 use Psy\Formatter\SignatureFormatter;
 use Psy\Input\CodeArgument;
+use Psy\Reflection\ReflectionClassConstant;
 use Psy\Reflection\ReflectionLanguageConstruct;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -84,15 +85,6 @@ HELP
         $this->setCommandScopeVariables($reflector);
     }
 
-    private function getManualDocById($id)
-    {
-        if ($db = $this->getApplication()->getManualDb()) {
-            return $db
-                ->query(sprintf('SELECT doc FROM php_manual WHERE id = %s', $db->quote($id)))
-                ->fetchColumn(0);
-        }
-    }
-
     private function getManualDoc($reflector)
     {
         switch (get_class($reflector)) {
@@ -110,10 +102,31 @@ HELP
                 $id = $reflector->class . '::$' . $reflector->name;
                 break;
 
+            case 'ReflectionClassConstant':
+            case 'Psy\Reflection\ReflectionClassConstant':
+                // @todo this is going to collide with ReflectionMethod ids
+                // someday... start running the query by id + type if the DB
+                // supports it.
+                $id = $reflector->class . '::' . $reflector->name;
+                break;
+
+            case 'Psy\Reflection\ReflectionConstant_':
+                $id = $reflector->name;
+                break;
+
             default:
                 return false;
         }
 
         return $this->getManualDocById($id);
+    }
+
+    private function getManualDocById($id)
+    {
+        if ($db = $this->getApplication()->getManualDb()) {
+            return $db
+                ->query(sprintf('SELECT doc FROM php_manual WHERE id = %s', $db->quote($id)))
+                ->fetchColumn(0);
+        }
     }
 }

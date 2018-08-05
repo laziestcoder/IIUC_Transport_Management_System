@@ -34,6 +34,37 @@ class Select extends Field
     protected $config = [];
 
     /**
+     * Set options.
+     *
+     * @param array|callable|string $options
+     *
+     * @return $this|mixed
+     */
+    public function options($options = [])
+    {
+        // remote options
+        if (is_string($options)) {
+            return $this->loadRemoteOptions(...func_get_args());
+        }
+
+        if ($options instanceof Arrayable) {
+            $options = $options->toArray();
+        }
+
+        if (is_callable($options)) {
+            $this->options = $options;
+        } else {
+            $this->options = (array) $options;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array $groups
+     */
+
+    /**
      * Set option groups.
      *
      * eg: $group = [
@@ -57,10 +88,6 @@ class Select extends Field
 
         return $this;
     }
-
-    /**
-     * @param array $groups
-     */
 
     /**
      * Load options for other select on change.
@@ -156,6 +183,34 @@ EOT;
     }
 
     /**
+     * Load options from remote.
+     *
+     * @param string $url
+     * @param array  $parameters
+     * @param array  $options
+     *
+     * @return $this
+     */
+    protected function loadRemoteOptions($url, $parameters = [], $options = [])
+    {
+        $ajaxOptions = [
+            'url' => $url.'?'.http_build_query($parameters),
+        ];
+
+        $ajaxOptions = json_encode(array_merge($ajaxOptions, $options));
+
+        $this->script = <<<EOT
+
+$.ajax($ajaxOptions).done(function(data) {
+  $("{$this->getElementClassSelector()}").select2({data: data});
+});
+
+EOT;
+
+        return $this;
+    }
+
+    /**
      * Load options from ajax results.
      *
      * @param string $url
@@ -212,7 +267,7 @@ EOT;
      * all configurations see https://select2.org/configuration/options-api
      *
      * @param string $key
-     * @param mixed $val
+     * @param mixed  $val
      *
      * @return $this
      */
@@ -229,7 +284,7 @@ EOT;
     public function render()
     {
         $configs = array_merge([
-            'allowClear' => true,
+            'allowClear'  => true,
             'placeholder' => $this->label,
         ], $this->config);
 
@@ -249,64 +304,11 @@ EOT;
 
         $this->options = array_filter($this->options);
 
-        return parent::render()->with([
+        $this->addVariables([
             'options' => $this->options,
-            'groups' => $this->groups,
+            'groups'  => $this->groups,
         ]);
-    }
 
-    /**
-     * Set options.
-     *
-     * @param array|callable|string $options
-     *
-     * @return $this|mixed
-     */
-    public function options($options = [])
-    {
-        // remote options
-        if (is_string($options)) {
-            return $this->loadRemoteOptions(...func_get_args());
-        }
-
-        if ($options instanceof Arrayable) {
-            $options = $options->toArray();
-        }
-
-        if (is_callable($options)) {
-            $this->options = $options;
-        } else {
-            $this->options = (array)$options;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Load options from remote.
-     *
-     * @param string $url
-     * @param array $parameters
-     * @param array $options
-     *
-     * @return $this
-     */
-    protected function loadRemoteOptions($url, $parameters = [], $options = [])
-    {
-        $ajaxOptions = [
-            'url' => $url . '?' . http_build_query($parameters),
-        ];
-
-        $ajaxOptions = json_encode(array_merge($ajaxOptions, $options));
-
-        $this->script = <<<EOT
-
-$.ajax($ajaxOptions).done(function(data) {
-  $("{$this->getElementClassSelector()}").select2({data: data});
-});
-
-EOT;
-
-        return $this;
+        return parent::render();
     }
 }

@@ -89,7 +89,7 @@ class ProfilerTest extends TestCase
             @unlink($this->tmp);
         }
 
-        $this->storage = new FileProfilerStorage('file:' . $this->tmp);
+        $this->storage = new FileProfilerStorage('file:'.$this->tmp);
         $this->storage->purge();
     }
 

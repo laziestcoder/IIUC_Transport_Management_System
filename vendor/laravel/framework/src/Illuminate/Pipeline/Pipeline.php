@@ -3,11 +3,11 @@
 namespace Illuminate\Pipeline;
 
 use Closure;
-use Illuminate\Contracts\Container\Container;
-use Illuminate\Contracts\Pipeline\Pipeline as PipelineContract;
-use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Http\Request;
 use RuntimeException;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Contracts\Pipeline\Pipeline as PipelineContract;
 
 class Pipeline implements PipelineContract
 {
@@ -42,7 +42,7 @@ class Pipeline implements PipelineContract
     /**
      * Create a new class instance.
      *
-     * @param  \Illuminate\Contracts\Container\Container|null $container
+     * @param  \Illuminate\Contracts\Container\Container|null  $container
      * @return void
      */
     public function __construct(Container $container = null)
@@ -53,7 +53,7 @@ class Pipeline implements PipelineContract
     /**
      * Set the object being sent through the pipeline.
      *
-     * @param  mixed $passable
+     * @param  mixed  $passable
      * @return $this
      */
     public function send($passable)
@@ -66,7 +66,7 @@ class Pipeline implements PipelineContract
     /**
      * Set the array of pipes.
      *
-     * @param  array|mixed $pipes
+     * @param  array|mixed  $pipes
      * @return $this
      */
     public function through($pipes)
@@ -79,7 +79,7 @@ class Pipeline implements PipelineContract
     /**
      * Set the method to call on the pipes.
      *
-     * @param  string $method
+     * @param  string  $method
      * @return $this
      */
     public function via($method)
@@ -92,7 +92,7 @@ class Pipeline implements PipelineContract
     /**
      * Run the pipeline with a final destination callback.
      *
-     * @param  \Closure $destination
+     * @param  \Closure  $destination
      * @return mixed
      */
     public function then(Closure $destination)
@@ -102,6 +102,19 @@ class Pipeline implements PipelineContract
         );
 
         return $pipeline($this->passable);
+    }
+
+    /**
+     * Get the final piece of the Closure onion.
+     *
+     * @param  \Closure  $destination
+     * @return \Closure
+     */
+    protected function prepareDestination(Closure $destination)
+    {
+        return function ($passable) use ($destination) {
+            return $destination($passable);
+        };
     }
 
     /**
@@ -118,7 +131,7 @@ class Pipeline implements PipelineContract
                     // otherwise we'll resolve the pipes out of the container and call it with
                     // the appropriate method and arguments, returning the results back out.
                     return $pipe($passable, $stack);
-                } elseif (!is_object($pipe)) {
+                } elseif (! is_object($pipe)) {
                     list($name, $parameters) = $this->parsePipeString($pipe);
 
                     // If the pipe is a string we will parse the string and resolve the class out
@@ -135,12 +148,12 @@ class Pipeline implements PipelineContract
                 }
 
                 $response = method_exists($pipe, $this->method)
-                    ? $pipe->{$this->method}(...$parameters)
-                    : $pipe(...$parameters);
+                                ? $pipe->{$this->method}(...$parameters)
+                                : $pipe(...$parameters);
 
                 return $response instanceof Responsable
-                    ? $response->toResponse($this->container->make(Request::class))
-                    : $response;
+                            ? $response->toResponse($this->container->make(Request::class))
+                            : $response;
             };
         };
     }
@@ -170,23 +183,10 @@ class Pipeline implements PipelineContract
      */
     protected function getContainer()
     {
-        if (!$this->container) {
+        if (! $this->container) {
             throw new RuntimeException('A container instance has not been passed to the Pipeline.');
         }
 
         return $this->container;
-    }
-
-    /**
-     * Get the final piece of the Closure onion.
-     *
-     * @param  \Closure $destination
-     * @return \Closure
-     */
-    protected function prepareDestination(Closure $destination)
-    {
-        return function ($passable) use ($destination) {
-            return $destination($passable);
-        };
     }
 }

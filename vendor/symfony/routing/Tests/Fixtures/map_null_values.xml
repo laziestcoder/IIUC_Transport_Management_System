@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://symfony.com/schema/routing"
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing
         http://symfony.com/schema/routing/routing-1.0.xsd">
 
@@ -10,12 +10,12 @@
         </default>
         <default key="map">
             <map>
-                <bool key="boolean" xsi:nil="true"/>
-                <int key="integer" xsi:nil="true"/>
-                <float key="float" xsi:nil="true"/>
-                <string key="string" xsi:nil="1"/>
-                <list key="list" xsi:nil="true"/>
-                <map key="map" xsi:nil="true"/>
+                <bool key="boolean" xsi:nil="true" />
+                <int key="integer" xsi:nil="true" />
+                <float key="float" xsi:nil="true" />
+                <string key="string" xsi:nil="1" />
+                <list key="list" xsi:nil="true" />
+                <map key="map" xsi:nil="true" />
             </map>
         </default>
     </route>

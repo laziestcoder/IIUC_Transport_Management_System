@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of PHPUnit.
  *
@@ -8,14 +7,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 class Singleton
 {
     private static $uniqueInstance = null;
-
-    protected function __construct()
-    {
-    }
 
     public static function getInstance()
     {
@@ -24,6 +18,10 @@ class Singleton
         }
 
         return self::$uniqueInstance;
+    }
+
+    protected function __construct()
+    {
     }
 
     private function __clone()

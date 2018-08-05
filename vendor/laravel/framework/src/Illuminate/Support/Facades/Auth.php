@@ -3,7 +3,7 @@
 namespace Illuminate\Support\Facades;
 
 /**
- * @method static mixed guard(string | null $name = null)
+ * @method static mixed guard(string|null $name = null)
  * @method static void shouldUse(string $name);
  * @method static bool check()
  * @method static bool guest()
@@ -18,6 +18,11 @@ namespace Illuminate\Support\Facades;
  * @method static bool onceUsingId(mixed $id)
  * @method static bool viaRemember()
  * @method static void logout()
+ * @method static \Symfony\Component\HttpFoundation\Response|null onceBasic(string $field = 'email',array $extraConditions = [])
+ * @method static null|bool logoutOtherDevices(string $password, string $attribute = 'password')
+ * @method static \Illuminate\Contracts\Auth\UserProvider|null createUserProvider(string $provider = null)
+ * @method static \Illuminate\Auth\AuthManager extend(string $driver, \Closure $callback)
+ * @method static \Illuminate\Auth\AuthManager provider(string $name, \Closure $callback)
  *
  * @see \Illuminate\Auth\AuthManager
  * @see \Illuminate\Contracts\Auth\Factory
@@ -27,16 +32,6 @@ namespace Illuminate\Support\Facades;
 class Auth extends Facade
 {
     /**
-     * Register the typical authentication routes for an application.
-     *
-     * @return void
-     */
-    public static function routes()
-    {
-        static::$app->make('router')->auth();
-    }
-
-    /**
      * Get the registered name of the component.
      *
      * @return string
@@ -44,5 +39,15 @@ class Auth extends Facade
     protected static function getFacadeAccessor()
     {
         return 'auth';
+    }
+
+    /**
+     * Register the typical authentication routes for an application.
+     *
+     * @return void
+     */
+    public static function routes()
+    {
+        static::$app->make('router')->auth();
     }
 }

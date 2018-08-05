@@ -43,54 +43,6 @@ abstract class AbstractMatcher
     const T_INCLUDE_ONCE = 'T_INCLUDE_ONCE';
 
     /**
-     * Check whether $word starts with $prefix.
-     *
-     * @param string $prefix
-     * @param string $word
-     *
-     * @return bool
-     */
-    public static function startsWith($prefix, $word)
-    {
-        return preg_match(sprintf('#^%s#', $prefix), $word);
-    }
-
-    /**
-     * Check whether $token matches a given syntax pattern.
-     *
-     * @param mixed $token A PHP token (see token_get_all)
-     * @param string $syntax A syntax pattern (default: variable pattern)
-     *
-     * @return bool
-     */
-    public static function hasSyntax($token, $syntax = self::VAR_SYNTAX)
-    {
-        if (!is_array($token)) {
-            return false;
-        }
-
-        $regexp = sprintf('#%s#', $syntax);
-
-        return (bool)preg_match($regexp, $token[1]);
-    }
-
-    /**
-     * Check whether $token is an operator.
-     *
-     * @param mixed $token A PHP token (see token_get_all)
-     *
-     * @return bool
-     */
-    public static function isOperator($token)
-    {
-        if (!is_string($token)) {
-            return false;
-        }
-
-        return strpos(self::MISC_OPERATORS, $token) !== false;
-    }
-
-    /**
      * Check whether this matcher can provide completions for $tokens.
      *
      * @param array $tokens Tokenized readline input
@@ -101,16 +53,6 @@ abstract class AbstractMatcher
     {
         return false;
     }
-
-    /**
-     * Provide tab completion matches for readline input.
-     *
-     * @param array $tokens information substracted with get_token_all
-     * @param array $info readline_info object
-     *
-     * @return array The matches resulting from the query
-     */
-    abstract public function getMatches(array $tokens, array $info = []);
 
     /**
      * Get current readline input word.
@@ -128,23 +70,6 @@ abstract class AbstractMatcher
         }
 
         return $var;
-    }
-
-    /**
-     * Check whether $token type is $which.
-     *
-     * @param string $which A PHP token type
-     * @param mixed $token A PHP token (see token_get_all)
-     *
-     * @return bool
-     */
-    public static function tokenIs($token, $which)
-    {
-        if (!is_array($token)) {
-            return false;
-        }
-
-        return token_name($token[0]) === $which;
     }
 
     /**
@@ -172,9 +97,89 @@ abstract class AbstractMatcher
     }
 
     /**
+     * Provide tab completion matches for readline input.
+     *
+     * @param array $tokens information substracted with get_token_all
+     * @param array $info   readline_info object
+     *
+     * @return array The matches resulting from the query
+     */
+    abstract public function getMatches(array $tokens, array $info = []);
+
+    /**
+     * Check whether $word starts with $prefix.
+     *
+     * @param string $prefix
+     * @param string $word
+     *
+     * @return bool
+     */
+    public static function startsWith($prefix, $word)
+    {
+        return preg_match(sprintf('#^%s#', $prefix), $word);
+    }
+
+    /**
+     * Check whether $token matches a given syntax pattern.
+     *
+     * @param mixed  $token  A PHP token (see token_get_all)
+     * @param string $syntax A syntax pattern (default: variable pattern)
+     *
+     * @return bool
+     */
+    public static function hasSyntax($token, $syntax = self::VAR_SYNTAX)
+    {
+        if (!is_array($token)) {
+            return false;
+        }
+
+        $regexp = sprintf('#%s#', $syntax);
+
+        return (bool) preg_match($regexp, $token[1]);
+    }
+
+    /**
+     * Check whether $token type is $which.
+     *
+     * @param string $which A PHP token type
+     * @param mixed  $token A PHP token (see token_get_all)
+     *
+     * @return bool
+     */
+    public static function tokenIs($token, $which)
+    {
+        if (!is_array($token)) {
+            return false;
+        }
+
+        return token_name($token[0]) === $which;
+    }
+
+    /**
+     * Check whether $token is an operator.
+     *
+     * @param mixed $token A PHP token (see token_get_all)
+     *
+     * @return bool
+     */
+    public static function isOperator($token)
+    {
+        if (!is_string($token)) {
+            return false;
+        }
+
+        return strpos(self::MISC_OPERATORS, $token) !== false;
+    }
+
+    public static function needCompleteClass($token)
+    {
+        return in_array($token[1], ['doc', 'ls', 'show']);
+    }
+
+    /**
      * Check whether $token type is present in $coll.
      *
-     * @param array $coll A list of token types
+     * @param array $coll  A list of token types
      * @param mixed $token A PHP token (see token_get_all)
      *
      * @return bool
@@ -186,10 +191,5 @@ abstract class AbstractMatcher
         }
 
         return in_array(token_name($token[0]), $coll);
-    }
-
-    public static function needCompleteClass($token)
-    {
-        return in_array($token[1], ['doc', 'ls', 'show']);
     }
 }

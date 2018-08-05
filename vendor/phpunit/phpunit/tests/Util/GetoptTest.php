@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util;
 
 use PHPUnit\Framework\Exception;
@@ -98,7 +97,7 @@ class GetoptTest extends TestCase
             'myArgument',
             '-f',
         ];
-        $actual = Getopt::getopt($args, 'f::');
+        $actual   = Getopt::getopt($args, 'f::');
         $expected = [
             [
                 [
@@ -170,7 +169,7 @@ class GetoptTest extends TestCase
     public function testItHandlesLongParametesWithValues(): void
     {
         $command = 'command parameter-0 --exec parameter-1 --conf config.xml --optn parameter-2 --optn=content-of-o parameter-n';
-        $args = \explode(' ', $command);
+        $args    = \explode(' ', $command);
         unset($args[0]);
         $expected = [
             [
@@ -193,7 +192,7 @@ class GetoptTest extends TestCase
     public function testItHandlesShortParametesWithValues(): void
     {
         $command = 'command parameter-0 -x parameter-1 -c config.xml -o parameter-2 -ocontent-of-o parameter-n';
-        $args = \explode(' ', $command);
+        $args    = \explode(' ', $command);
         unset($args[0]);
         $expected = [
             [

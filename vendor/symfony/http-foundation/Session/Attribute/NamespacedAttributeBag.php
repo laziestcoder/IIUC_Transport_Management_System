@@ -22,7 +22,7 @@ class NamespacedAttributeBag extends AttributeBag
     private $namespaceCharacter;
 
     /**
-     * @param string $storageKey Session storage key
+     * @param string $storageKey         Session storage key
      * @param string $namespaceCharacter Namespace character to use in keys
      */
     public function __construct(string $storageKey = '_sf2_attributes', string $namespaceCharacter = '/')
@@ -45,68 +45,6 @@ class NamespacedAttributeBag extends AttributeBag
         }
 
         return array_key_exists($name, $attributes);
-    }
-
-    /**
-     * Resolves a path in attributes property and returns it as a reference.
-     *
-     * This method allows structured namespacing of session attributes.
-     *
-     * @param string $name Key name
-     * @param bool $writeContext Write context, default false
-     *
-     * @return array
-     */
-    protected function &resolveAttributePath($name, $writeContext = false)
-    {
-        $array = &$this->attributes;
-        $name = (0 === strpos($name, $this->namespaceCharacter)) ? substr($name, 1) : $name;
-
-        // Check if there is anything to do, else return
-        if (!$name) {
-            return $array;
-        }
-
-        $parts = explode($this->namespaceCharacter, $name);
-        if (count($parts) < 2) {
-            if (!$writeContext) {
-                return $array;
-            }
-
-            $array[$parts[0]] = array();
-
-            return $array;
-        }
-
-        unset($parts[count($parts) - 1]);
-
-        foreach ($parts as $part) {
-            if (null !== $array && !array_key_exists($part, $array)) {
-                $array[$part] = $writeContext ? array() : null;
-            }
-
-            $array = &$array[$part];
-        }
-
-        return $array;
-    }
-
-    /**
-     * Resolves the key from the name.
-     *
-     * This is the last part in a dot separated string.
-     *
-     * @param string $name
-     *
-     * @return string
-     */
-    protected function resolveKey($name)
-    {
-        if (false !== $pos = strrpos($name, $this->namespaceCharacter)) {
-            $name = substr($name, $pos + 1);
-        }
-
-        return $name;
     }
 
     /**
@@ -149,5 +87,73 @@ class NamespacedAttributeBag extends AttributeBag
         }
 
         return $retval;
+    }
+
+    /**
+     * Resolves a path in attributes property and returns it as a reference.
+     *
+     * This method allows structured namespacing of session attributes.
+     *
+     * @param string $name         Key name
+     * @param bool   $writeContext Write context, default false
+     *
+     * @return array
+     */
+    protected function &resolveAttributePath($name, $writeContext = false)
+    {
+        $array = &$this->attributes;
+        $name = (0 === strpos($name, $this->namespaceCharacter)) ? substr($name, 1) : $name;
+
+        // Check if there is anything to do, else return
+        if (!$name) {
+            return $array;
+        }
+
+        $parts = explode($this->namespaceCharacter, $name);
+        if (\count($parts) < 2) {
+            if (!$writeContext) {
+                return $array;
+            }
+
+            $array[$parts[0]] = array();
+
+            return $array;
+        }
+
+        unset($parts[\count($parts) - 1]);
+
+        foreach ($parts as $part) {
+            if (null !== $array && !array_key_exists($part, $array)) {
+                if (!$writeContext) {
+                    $null = null;
+
+                    return $null;
+                }
+
+                $array[$part] = array();
+            }
+
+            $array = &$array[$part];
+        }
+
+        return $array;
+    }
+
+    /**
+     * Resolves the key from the name.
+     *
+     * This is the last part in a dot separated string.
+     *
+     * @param string $name
+     *
+     * @return string
+     */
+    protected function resolveKey($name)
+    {
+        if (false !== $pos = strrpos($name, $this->namespaceCharacter)) {
+            $name = substr($name, $pos + 1);
+        }
+
+        return $name;
     }
 }

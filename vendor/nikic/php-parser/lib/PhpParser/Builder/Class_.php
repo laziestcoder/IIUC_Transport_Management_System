@@ -25,8 +25,7 @@ class Class_ extends Declaration
      *
      * @param string $name Name of the class
      */
-    public function __construct(string $name)
-    {
+    public function __construct(string $name) {
         $this->name = $name;
     }
 
@@ -37,8 +36,7 @@ class Class_ extends Declaration
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function extend($class)
-    {
+    public function extend($class) {
         $this->extends = BuilderHelpers::normalizeName($class);
 
         return $this;
@@ -51,8 +49,7 @@ class Class_ extends Declaration
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function implement(...$interfaces)
-    {
+    public function implement(...$interfaces) {
         foreach ($interfaces as $interface) {
             $this->implements[] = BuilderHelpers::normalizeName($interface);
         }
@@ -65,8 +62,7 @@ class Class_ extends Declaration
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function makeAbstract()
-    {
+    public function makeAbstract() {
         $this->flags = BuilderHelpers::addModifier($this->flags, Stmt\Class_::MODIFIER_ABSTRACT);
 
         return $this;
@@ -77,8 +73,7 @@ class Class_ extends Declaration
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function makeFinal()
-    {
+    public function makeFinal() {
         $this->flags = BuilderHelpers::addModifier($this->flags, Stmt\Class_::MODIFIER_FINAL);
 
         return $this;
@@ -91,14 +86,13 @@ class Class_ extends Declaration
      *
      * @return $this The builder instance (for fluid interface)
      */
-    public function addStmt($stmt)
-    {
+    public function addStmt($stmt) {
         $stmt = BuilderHelpers::normalizeNode($stmt);
 
         $targets = [
-            Stmt\TraitUse::class => &$this->uses,
-            Stmt\ClassConst::class => &$this->constants,
-            Stmt\Property::class => &$this->properties,
+            Stmt\TraitUse::class    => &$this->uses,
+            Stmt\ClassConst::class  => &$this->constants,
+            Stmt\Property::class    => &$this->properties,
             Stmt\ClassMethod::class => &$this->methods,
         ];
 
@@ -117,8 +111,7 @@ class Class_ extends Declaration
      *
      * @return Stmt\Class_ The built class node
      */
-    public function getNode(): PhpParser\Node
-    {
+    public function getNode() : PhpParser\Node {
         return new Stmt\Class_($this->name, [
             'flags' => $this->flags,
             'extends' => $this->extends,

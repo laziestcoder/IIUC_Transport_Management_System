@@ -35,7 +35,7 @@ class Callout extends Widget implements Renderable
      */
     public function __construct($content, $title = '', $style = 'danger')
     {
-        $this->content = (string)$content;
+        $this->content = (string) $content;
 
         $this->title = $title;
 
@@ -57,16 +57,6 @@ class Callout extends Widget implements Renderable
     }
 
     /**
-     * Render Callout.
-     *
-     * @return string
-     */
-    public function render()
-    {
-        return view($this->view, $this->variables())->render();
-    }
-
-    /**
      * @return array
      */
     protected function variables()
@@ -74,9 +64,19 @@ class Callout extends Widget implements Renderable
         $this->class("callout callout-{$this->style}");
 
         return [
-            'title' => $this->title,
-            'content' => $this->content,
+            'title'      => $this->title,
+            'content'    => $this->content,
             'attributes' => $this->formatAttributes(),
         ];
+    }
+
+    /**
+     * Render Callout.
+     *
+     * @return string
+     */
+    public function render()
+    {
+        return view($this->view, $this->variables())->render();
     }
 }

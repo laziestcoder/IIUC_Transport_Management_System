@@ -62,12 +62,27 @@ class ProcessForker extends AbstractListener
             fclose($up);
 
             // Wait for a return value from the loop process.
-            $read = [$down];
-            $write = null;
+            $read   = [$down];
+            $write  = null;
             $except = null;
-            if (stream_select($read, $write, $except, null) === false) {
-                throw new \RuntimeException('Error waiting for execution loop');
-            }
+
+            do {
+                $n = @stream_select($read, $write, $except, null);
+
+                if ($n === 0) {
+                    throw new \RuntimeException('Process timed out waiting for execution loop');
+                }
+
+                if ($n === false) {
+                    $err = error_get_last();
+                    if (!isset($err['message']) || stripos($err['message'], 'interrupted system call') === false) {
+                        $msg = $err['message'] ?
+                            sprintf('Error waiting for execution loop: %s', $err['message']) :
+                            'Error waiting for execution loop';
+                        throw new \RuntimeException($msg);
+                    }
+                }
+            } while ($n < 1);
 
             $content = stream_get_contents($down);
             fclose($down);
@@ -102,35 +117,6 @@ class ProcessForker extends AbstractListener
     }
 
     /**
-     * Create a savegame fork.
-     *
-     * The savegame contains the current execution state, and can be resumed in
-     * the event that the worker dies unexpectedly (for example, by encountering
-     * a PHP fatal error).
-     */
-    private function createSavegame()
-    {
-        // the current process will become the savegame
-        $this->savegame = posix_getpid();
-
-        $pid = pcntl_fork();
-        if ($pid < 0) {
-            throw new \RuntimeException('Unable to create savegame fork');
-        } elseif ($pid > 0) {
-            // we're the savegame now... let's wait and see what happens
-            pcntl_waitpid($pid, $status);
-
-            // worker exited cleanly, let's bail
-            if (!pcntl_wexitstatus($status)) {
-                posix_kill(posix_getpid(), SIGKILL);
-            }
-
-            // worker didn't exit cleanly, we'll need to have another go
-            $this->createSavegame();
-        }
-    }
-
-    /**
      * Clean up old savegames at the end of each loop iteration.
      *
      * @param Shell $shell
@@ -158,6 +144,35 @@ class ProcessForker extends AbstractListener
             fclose($this->up);
 
             posix_kill(posix_getpid(), SIGKILL);
+        }
+    }
+
+    /**
+     * Create a savegame fork.
+     *
+     * The savegame contains the current execution state, and can be resumed in
+     * the event that the worker dies unexpectedly (for example, by encountering
+     * a PHP fatal error).
+     */
+    private function createSavegame()
+    {
+        // the current process will become the savegame
+        $this->savegame = posix_getpid();
+
+        $pid = pcntl_fork();
+        if ($pid < 0) {
+            throw new \RuntimeException('Unable to create savegame fork');
+        } elseif ($pid > 0) {
+            // we're the savegame now... let's wait and see what happens
+            pcntl_waitpid($pid, $status);
+
+            // worker exited cleanly, let's bail
+            if (!pcntl_wexitstatus($status)) {
+                posix_kill(posix_getpid(), SIGKILL);
+            }
+
+            // worker didn't exit cleanly, we'll need to have another go
+            $this->createSavegame();
         }
     }
 

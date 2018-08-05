@@ -84,11 +84,11 @@ class Router implements RouterInterface, RequestMatcherInterface
     private $expressionLanguageProviders = array();
 
     /**
-     * @param LoaderInterface $loader A LoaderInterface instance
-     * @param mixed $resource The main resource to load
-     * @param array $options An array of options
-     * @param RequestContext $context The context
-     * @param LoggerInterface $logger A logger instance
+     * @param LoaderInterface $loader   A LoaderInterface instance
+     * @param mixed           $resource The main resource to load
+     * @param array           $options  An array of options
+     * @param RequestContext  $context  The context
+     * @param LoggerInterface $logger   A logger instance
      */
     public function __construct(LoaderInterface $loader, $resource, array $options = array(), RequestContext $context = null, LoggerInterface $logger = null)
     {
@@ -157,8 +157,8 @@ class Router implements RouterInterface, RequestMatcherInterface
     /**
      * Sets an option.
      *
-     * @param string $key The key
-     * @param mixed $value The value
+     * @param string $key   The key
+     * @param mixed  $value The value
      *
      * @throws \InvalidArgumentException
      */
@@ -192,9 +192,13 @@ class Router implements RouterInterface, RequestMatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function getContext()
+    public function getRouteCollection()
     {
-        return $this->context;
+        if (null === $this->collection) {
+            $this->collection = $this->loader->load($this->resource, $this->options['resource_type']);
+        }
+
+        return $this->collection;
     }
 
     /**
@@ -213,134 +217,11 @@ class Router implements RouterInterface, RequestMatcherInterface
     }
 
     /**
-     * Gets the UrlMatcher instance associated with this Router.
-     *
-     * @return UrlMatcherInterface A UrlMatcherInterface instance
-     */
-    public function getMatcher()
-    {
-        if (null !== $this->matcher) {
-            return $this->matcher;
-        }
-
-        if (null === $this->options['cache_dir'] || null === $this->options['matcher_cache_class']) {
-            $this->matcher = new $this->options['matcher_class']($this->getRouteCollection(), $this->context);
-            if (method_exists($this->matcher, 'addExpressionLanguageProvider')) {
-                foreach ($this->expressionLanguageProviders as $provider) {
-                    $this->matcher->addExpressionLanguageProvider($provider);
-                }
-            }
-
-            return $this->matcher;
-        }
-
-        $cache = $this->getConfigCacheFactory()->cache($this->options['cache_dir'] . '/' . $this->options['matcher_cache_class'] . '.php',
-            function (ConfigCacheInterface $cache) {
-                $dumper = $this->getMatcherDumperInstance();
-                if (method_exists($dumper, 'addExpressionLanguageProvider')) {
-                    foreach ($this->expressionLanguageProviders as $provider) {
-                        $dumper->addExpressionLanguageProvider($provider);
-                    }
-                }
-
-                $options = array(
-                    'class' => $this->options['matcher_cache_class'],
-                    'base_class' => $this->options['matcher_base_class'],
-                );
-
-                $cache->write($dumper->dump($options), $this->getRouteCollection()->getResources());
-            }
-        );
-
-        if (!class_exists($this->options['matcher_cache_class'], false)) {
-            require_once $cache->getPath();
-        }
-
-        return $this->matcher = new $this->options['matcher_cache_class']($this->context);
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function getRouteCollection()
+    public function getContext()
     {
-        if (null === $this->collection) {
-            $this->collection = $this->loader->load($this->resource, $this->options['resource_type']);
-        }
-
-        return $this->collection;
-    }
-
-    /**
-     * Provides the ConfigCache factory implementation, falling back to a
-     * default implementation if necessary.
-     *
-     * @return ConfigCacheFactoryInterface $configCacheFactory
-     */
-    private function getConfigCacheFactory()
-    {
-        if (null === $this->configCacheFactory) {
-            $this->configCacheFactory = new ConfigCacheFactory($this->options['debug']);
-        }
-
-        return $this->configCacheFactory;
-    }
-
-    /**
-     * @return MatcherDumperInterface
-     */
-    protected function getMatcherDumperInstance()
-    {
-        return new $this->options['matcher_dumper_class']($this->getRouteCollection());
-    }
-
-    /**
-     * Gets the UrlGenerator instance associated with this Router.
-     *
-     * @return UrlGeneratorInterface A UrlGeneratorInterface instance
-     */
-    public function getGenerator()
-    {
-        if (null !== $this->generator) {
-            return $this->generator;
-        }
-
-        if (null === $this->options['cache_dir'] || null === $this->options['generator_cache_class']) {
-            $this->generator = new $this->options['generator_class']($this->getRouteCollection(), $this->context, $this->logger);
-        } else {
-            $cache = $this->getConfigCacheFactory()->cache($this->options['cache_dir'] . '/' . $this->options['generator_cache_class'] . '.php',
-                function (ConfigCacheInterface $cache) {
-                    $dumper = $this->getGeneratorDumperInstance();
-
-                    $options = array(
-                        'class' => $this->options['generator_cache_class'],
-                        'base_class' => $this->options['generator_base_class'],
-                    );
-
-                    $cache->write($dumper->dump($options), $this->getRouteCollection()->getResources());
-                }
-            );
-
-            if (!class_exists($this->options['generator_cache_class'], false)) {
-                require_once $cache->getPath();
-            }
-
-            $this->generator = new $this->options['generator_cache_class']($this->context, $this->logger);
-        }
-
-        if ($this->generator instanceof ConfigurableRequirementsInterface) {
-            $this->generator->setStrictRequirements($this->options['strict_requirements']);
-        }
-
-        return $this->generator;
-    }
-
-    /**
-     * @return GeneratorDumperInterface
-     */
-    protected function getGeneratorDumperInstance()
-    {
-        return new $this->options['generator_dumper_class']($this->getRouteCollection());
+        return $this->context;
     }
 
     /**
@@ -381,8 +262,127 @@ class Router implements RouterInterface, RequestMatcherInterface
         return $matcher->matchRequest($request);
     }
 
+    /**
+     * Gets the UrlMatcher instance associated with this Router.
+     *
+     * @return UrlMatcherInterface A UrlMatcherInterface instance
+     */
+    public function getMatcher()
+    {
+        if (null !== $this->matcher) {
+            return $this->matcher;
+        }
+
+        if (null === $this->options['cache_dir'] || null === $this->options['matcher_cache_class']) {
+            $this->matcher = new $this->options['matcher_class']($this->getRouteCollection(), $this->context);
+            if (method_exists($this->matcher, 'addExpressionLanguageProvider')) {
+                foreach ($this->expressionLanguageProviders as $provider) {
+                    $this->matcher->addExpressionLanguageProvider($provider);
+                }
+            }
+
+            return $this->matcher;
+        }
+
+        $cache = $this->getConfigCacheFactory()->cache($this->options['cache_dir'].'/'.$this->options['matcher_cache_class'].'.php',
+            function (ConfigCacheInterface $cache) {
+                $dumper = $this->getMatcherDumperInstance();
+                if (method_exists($dumper, 'addExpressionLanguageProvider')) {
+                    foreach ($this->expressionLanguageProviders as $provider) {
+                        $dumper->addExpressionLanguageProvider($provider);
+                    }
+                }
+
+                $options = array(
+                    'class' => $this->options['matcher_cache_class'],
+                    'base_class' => $this->options['matcher_base_class'],
+                );
+
+                $cache->write($dumper->dump($options), $this->getRouteCollection()->getResources());
+            }
+        );
+
+        if (!class_exists($this->options['matcher_cache_class'], false)) {
+            require_once $cache->getPath();
+        }
+
+        return $this->matcher = new $this->options['matcher_cache_class']($this->context);
+    }
+
+    /**
+     * Gets the UrlGenerator instance associated with this Router.
+     *
+     * @return UrlGeneratorInterface A UrlGeneratorInterface instance
+     */
+    public function getGenerator()
+    {
+        if (null !== $this->generator) {
+            return $this->generator;
+        }
+
+        if (null === $this->options['cache_dir'] || null === $this->options['generator_cache_class']) {
+            $this->generator = new $this->options['generator_class']($this->getRouteCollection(), $this->context, $this->logger);
+        } else {
+            $cache = $this->getConfigCacheFactory()->cache($this->options['cache_dir'].'/'.$this->options['generator_cache_class'].'.php',
+                function (ConfigCacheInterface $cache) {
+                    $dumper = $this->getGeneratorDumperInstance();
+
+                    $options = array(
+                        'class' => $this->options['generator_cache_class'],
+                        'base_class' => $this->options['generator_base_class'],
+                    );
+
+                    $cache->write($dumper->dump($options), $this->getRouteCollection()->getResources());
+                }
+            );
+
+            if (!class_exists($this->options['generator_cache_class'], false)) {
+                require_once $cache->getPath();
+            }
+
+            $this->generator = new $this->options['generator_cache_class']($this->context, $this->logger);
+        }
+
+        if ($this->generator instanceof ConfigurableRequirementsInterface) {
+            $this->generator->setStrictRequirements($this->options['strict_requirements']);
+        }
+
+        return $this->generator;
+    }
+
     public function addExpressionLanguageProvider(ExpressionFunctionProviderInterface $provider)
     {
         $this->expressionLanguageProviders[] = $provider;
+    }
+
+    /**
+     * @return GeneratorDumperInterface
+     */
+    protected function getGeneratorDumperInstance()
+    {
+        return new $this->options['generator_dumper_class']($this->getRouteCollection());
+    }
+
+    /**
+     * @return MatcherDumperInterface
+     */
+    protected function getMatcherDumperInstance()
+    {
+        return new $this->options['matcher_dumper_class']($this->getRouteCollection());
+    }
+
+    /**
+     * Provides the ConfigCache factory implementation, falling back to a
+     * default implementation if necessary.
+     *
+     * @return ConfigCacheFactoryInterface $configCacheFactory
+     */
+    private function getConfigCacheFactory()
+    {
+        if (null === $this->configCacheFactory) {
+            $this->configCacheFactory = new ConfigCacheFactory($this->options['debug']);
+        }
+
+        return $this->configCacheFactory;
     }
 }

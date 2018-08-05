@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 
@@ -27,8 +26,8 @@ class ExceptionStackTest extends TestCase
     public function testNestedExceptions(): void
     {
         $exceptionThree = new Exception('Three');
-        $exceptionTwo = new InvalidArgumentException('Two', 0, $exceptionThree);
-        $exceptionOne = new Exception('One', 0, $exceptionTwo);
+        $exceptionTwo   = new InvalidArgumentException('Two', 0, $exceptionThree);
+        $exceptionOne   = new Exception('One', 0, $exceptionTwo);
 
         throw $exceptionOne;
     }

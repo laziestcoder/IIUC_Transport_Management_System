@@ -14,19 +14,17 @@ class Property extends Node\Stmt
     /**
      * Constructs a class property list node.
      *
-     * @param int $flags Modifiers
-     * @param PropertyProperty[] $props Properties
-     * @param array $attributes Additional attributes
+     * @param int                $flags      Modifiers
+     * @param PropertyProperty[] $props      Properties
+     * @param array              $attributes Additional attributes
      */
-    public function __construct(int $flags, array $props, array $attributes = [])
-    {
+    public function __construct(int $flags, array $props, array $attributes = []) {
         parent::__construct($attributes);
         $this->flags = $flags;
         $this->props = $props;
     }
 
-    public function getSubNodeNames(): array
-    {
+    public function getSubNodeNames() : array {
         return ['flags', 'props'];
     }
 
@@ -35,8 +33,7 @@ class Property extends Node\Stmt
      *
      * @return bool
      */
-    public function isPublic(): bool
-    {
+    public function isPublic() : bool {
         return ($this->flags & Class_::MODIFIER_PUBLIC) !== 0
             || ($this->flags & Class_::VISIBILITY_MODIFIER_MASK) === 0;
     }
@@ -46,9 +43,8 @@ class Property extends Node\Stmt
      *
      * @return bool
      */
-    public function isProtected(): bool
-    {
-        return (bool)($this->flags & Class_::MODIFIER_PROTECTED);
+    public function isProtected() : bool {
+        return (bool) ($this->flags & Class_::MODIFIER_PROTECTED);
     }
 
     /**
@@ -56,9 +52,8 @@ class Property extends Node\Stmt
      *
      * @return bool
      */
-    public function isPrivate(): bool
-    {
-        return (bool)($this->flags & Class_::MODIFIER_PRIVATE);
+    public function isPrivate() : bool {
+        return (bool) ($this->flags & Class_::MODIFIER_PRIVATE);
     }
 
     /**
@@ -66,13 +61,11 @@ class Property extends Node\Stmt
      *
      * @return bool
      */
-    public function isStatic(): bool
-    {
-        return (bool)($this->flags & Class_::MODIFIER_STATIC);
+    public function isStatic() : bool {
+        return (bool) ($this->flags & Class_::MODIFIER_STATIC);
     }
-
-    public function getType(): string
-    {
+    
+    public function getType() : string {
         return 'Stmt_Property';
     }
 }

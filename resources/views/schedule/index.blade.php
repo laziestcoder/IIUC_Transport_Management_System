@@ -2,17 +2,16 @@
 
 
 @section('content')
-    <script>
-        $(document).ready(function () {
-            $('[data-toggle=confirmation]').confirmation({
-                rootSelector: '[data-toggle=confirmation]',
-                onConfirm: function (event, element) {
-                    element.closest('form').submit();
-                }
-            });
-        });
-
-    </script>
+    {{--<script>--}}
+    {{--$(document).ready(function () {--}}
+    {{--$('[data-toggle=confirmation]').confirmation({--}}
+    {{--rootSelector: '[data-toggle=confirmation]',--}}
+    {{--onConfirm: function (event, element) {--}}
+    {{--element.closest('form').submit();--}}
+    {{--}--}}
+    {{--});--}}
+    {{--});--}}
+    {{--</script>--}}
     <section class="content-header">
         @include('inc.messages')
         <h1>
@@ -20,60 +19,108 @@
             <small>{{$description}}</small>
         </h1>
     </section>
-    <br><br>
+    <br>
     <section class="content">
-        <h1>{{$titleinfo}}
+        <h2>{{$titleinfo}}
             <small>
                 {{'Before delete a schedule please ensure the schedule is not used in any other data.'}}
             </small>
-        </h1>
-        {{--<div class="" style="text-align: center">--}}
-        <h2>{{"Schedule by day"}}<br><br><b>{{"Saturday"}}</b> </h2>
-        @if( count($satday) > 0 )
-            <table class="table table-responsive table-hover">
-                <thead class="table">
-                <tr>
-                    <th>{{"ID"}}</th>
-                    <th>{{"To IIUC Campus"}}</th>
-                    <th>{{"From IIUC Campus"}}</th>
-                    <th>{{"Male"}}</th>
-                    <th>{{"Female"}}</th>
-                    <th>{{"Time"}}</th>
-                    <th>{{"Bus For"}}</th>
-                    <th>{{"Bus Route"}}</th>
-                    <th>{{"Added By"}}</th>
-                    <th>{{"Action"}}</th>
-                </tr>
-                </thead>
-                <tbody class="table">
-                @foreach($satday as $schedule)
-                    <tr>
-                        <td>{{$schedule->id}}</td>
-                        <td>{{$schedule->toiiuc?'YES':'NO'}}</td>
-                        <td>{{$schedule->fromiiuc?'YES':'NO'}}</td>
-                        <td>{{$schedule->male?'YES':'NO'}}</td>
-                        <td>{{$schedule->female?'YES':'NO'}}</td>
-                        <td>{{\Carbon\Carbon::parse(App\Time::where('id',$schedule->time)->first()->time)->format('g:i A')}}</td>
-                        <td>{{$schedule->user == 1 ? 'Students': ( $schedule->user == 2 ? 'Faculty':'Officer/Staff')}}</td>
-                        <td>{{App\BusRoute::where('id',$schedule->route)->first()->routename}}</td>
-                        <td>{{Admin::user()->where('id',$schedule->user_id)->first()->name}}</td>
-                        <td>
-                            <a href="" class="btn btn-primary">Edit</a>
-                            {!! Form::open(['action'=>['ScheduleController@destroy', $schedule->id],'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline' /* ,'onclick' => 'function deleteMe()' */]) !!} {{-- 'onclick' => 'return confirm("Are you sure?")' --}}
-                            {{Form::hidden('_method','DELETE')}}
-                            {{ csrf_field() }}
-                            {{Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top']) }}
-                            {!! Form::close() !!}
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-            {{--{{$schedules->links()}}--}}
+        </h2>
+        @if( count($days) > 0 )
+            @foreach($days as $day)
+                @if($day->id != 9)
+                    <h3><b>{{"$day->dayname"}}</b></h3>
+                    <table class="table table-hover table-bordered">
+                        <thead class="table">
+                        <tr>
+                            <th>{{"No."}}</th>
+                            <th>{{"Starting Time"}}</th>
+                            <th>{{"Gender"}}</th>
+                            <th>{{"Direction"}}</th>
+                            <th>{{"Starting Point"}}</th>
+                            <th>{{"Added By"}}</th>
+                            {{--<th>{{"Action"}}</th>--}}
+                        </tr>
+                        </thead>
+                        <tbody class="table">
+                        <?php $sl = 0; ?>
+                        @foreach($times as $time)
+                            <?php $schedules = App\Schedule::where('day', $day->id)
+                                ->where('time', $time->id)
+                                ->get();?>
+                            @if(count($schedules) > 0)
+                                <tr>
+
+                                    <td>{{$sl +=1}}</td>
+                                    <td>{{\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A')}}</td>
+
+                                    <?php $male = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->where('male', '1')
+                                        ->get();
+                                    $female = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->where('Female', '1')
+                                        ->get();?>
+
+                                    <td>
+                                        {{count($male)? 'Male':''}}
+                                        @if(count($male) && count($female))
+                                            {{","}}
+                                        @endif
+                                        {{count($female)? 'Female':''}}
+                                    </td>
+
+                                    <?php $toiiuc = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->where('toiiuc', '1')
+                                        ->get();
+                                    $fromiiuc = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->where('fromiiuc', '1')
+                                        ->get();?>
+
+                                    <td>
+                                        {{count($toiiuc)? 'To IIUC Campus':''}}
+                                        @if(count($toiiuc) && count($fromiiuc))
+                                            {{","}}
+                                        @endif
+                                        {{count($fromiiuc)? 'From IIUC Campus':''}}
+                                    </td>
+
+                                    <?php $routes = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->get();
+                                    if (count($routes) > 1) {
+                                        $routeFlag = count($routes) - 1;
+                                    } else {
+                                        $routeFlag = 0;
+                                    }?>
+
+                                    <td>
+                                        @foreach($routes as $route)
+                                            {{\App\BusRoute::where('id',$route->route)->first()->routename}}
+                                            @if($routeFlag)
+                                                {{", "}}
+                                            @endif
+                                            <?php $routeFlag -= 1;?>
+                                        @endforeach
+                                    </td>
+                                    <?php $userid = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->first(); ?>
+                                    <td>{{Admin::user()->where('id',$userid->user_id)->first()->name}}</td>
+
+                                </tr>
+                            @endif
+                        @endforeach
+                        </tbody>
+                    </table>
+                    {{--{{$schedules->links()}}--}}
+                @endif
+            @endforeach
         @else
             <p>No Schedule Found</p>
         @endif
-        {{--</div>--}}
-        {{--</div>--}}
     </section>
 @endsection

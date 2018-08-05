@@ -35,26 +35,6 @@ class Permission
     }
 
     /**
-     * If current user is administrator.
-     *
-     * @return mixed
-     */
-    public static function isAdministrator()
-    {
-        return Auth::guard('admin')->user()->isRole('administrator');
-    }
-
-    /**
-     * Send error response page.
-     */
-    public static function error()
-    {
-        $response = response(Admin::content()->withError(trans('admin.deny')));
-
-        Pjax::respond($response);
-    }
-
-    /**
      * Roles allowed to access.
      *
      * @param $roles
@@ -98,5 +78,25 @@ class Permission
         if (Auth::guard('admin')->user()->inRoles($roles)) {
             static::error();
         }
+    }
+
+    /**
+     * Send error response page.
+     */
+    public static function error()
+    {
+        $response = response(Admin::content()->withError(trans('admin.deny')));
+
+        Pjax::respond($response);
+    }
+
+    /**
+     * If current user is administrator.
+     *
+     * @return mixed
+     */
+    public static function isAdministrator()
+    {
+        return Auth::guard('admin')->user()->isRole('administrator');
     }
 }

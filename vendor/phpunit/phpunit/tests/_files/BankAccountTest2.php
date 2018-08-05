@@ -14,6 +14,11 @@ class BankAccountTest extends TestCase
 {
     private $ba;
 
+    protected function setUp(): void
+    {
+        $this->ba = new BankAccount;
+    }
+
     public function testBalanceIsInitiallyZero(): void
     {
         $ba = new BankAccount;
@@ -47,10 +52,5 @@ class BankAccountTest extends TestCase
         }
 
         $this->fail();
-    }
-
-    protected function setUp(): void
-    {
-        $this->ba = new BankAccount;
     }
 }

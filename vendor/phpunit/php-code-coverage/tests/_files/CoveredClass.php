@@ -1,10 +1,8 @@
 <?php
-
 class CoveredParentClass
 {
-    public function publicMethod()
+    private function privateMethod()
     {
-        $this->protectedMethod();
     }
 
     protected function protectedMethod()
@@ -12,17 +10,16 @@ class CoveredParentClass
         $this->privateMethod();
     }
 
-    private function privateMethod()
+    public function publicMethod()
     {
+        $this->protectedMethod();
     }
 }
 
 class CoveredClass extends CoveredParentClass
 {
-    public function publicMethod()
+    private function privateMethod()
     {
-        parent::publicMethod();
-        $this->protectedMethod();
     }
 
     protected function protectedMethod()
@@ -31,7 +28,9 @@ class CoveredClass extends CoveredParentClass
         $this->privateMethod();
     }
 
-    private function privateMethod()
+    public function publicMethod()
     {
+        parent::publicMethod();
+        $this->protectedMethod();
     }
 }

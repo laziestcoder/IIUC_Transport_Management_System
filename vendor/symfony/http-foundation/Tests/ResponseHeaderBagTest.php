@@ -116,12 +116,7 @@ class ResponseHeaderBagTest extends TestCase
 
         $bag->clearCookie('foo');
 
-        $this->assertSetCookieHeader('foo=deleted; expires=' . gmdate('D, d-M-Y H:i:s T', time() - 31536001) . '; Max-Age=0; path=/; httponly', $bag);
-    }
-
-    private function assertSetCookieHeader($expected, ResponseHeaderBag $actual)
-    {
-        $this->assertRegExp('#^Set-Cookie:\s+' . preg_quote($expected, '#') . '$#m', str_replace("\r\n", "\n", (string)$actual));
+        $this->assertSetCookieHeader('foo=deleted; expires='.gmdate('D, d-M-Y H:i:s T', time() - 31536001).'; Max-Age=0; path=/; httponly', $bag);
     }
 
     public function testClearCookieSecureNotHttpOnly()
@@ -130,7 +125,7 @@ class ResponseHeaderBagTest extends TestCase
 
         $bag->clearCookie('foo', '/', null, true, false);
 
-        $this->assertSetCookieHeader('foo=deleted; expires=' . gmdate('D, d-M-Y H:i:s T', time() - 31536001) . '; Max-Age=0; path=/; secure', $bag);
+        $this->assertSetCookieHeader('foo=deleted; expires='.gmdate('D, d-M-Y H:i:s T', time() - 31536001).'; Max-Age=0; path=/; secure', $bag);
     }
 
     public function testReplace()
@@ -282,7 +277,7 @@ class ResponseHeaderBagTest extends TestCase
         $headers->set('Location', 'http://www.symfony.com');
         $headers->set('Content-type', 'text/html');
 
-        (string)$headers;
+        (string) $headers;
 
         $allHeaders = $headers->allPreserveCase();
         $this->assertEquals(array('http://www.symfony.com'), $allHeaders['Location']);
@@ -292,12 +287,12 @@ class ResponseHeaderBagTest extends TestCase
     public function provideMakeDisposition()
     {
         return array(
-            array('attachment', 'foo.html', 'foo.html', 'attachment; filename="foo.html"'),
-            array('attachment', 'foo.html', '', 'attachment; filename="foo.html"'),
+            array('attachment', 'foo.html', 'foo.html', 'attachment; filename=foo.html'),
+            array('attachment', 'foo.html', '', 'attachment; filename=foo.html'),
             array('attachment', 'foo bar.html', '', 'attachment; filename="foo bar.html"'),
             array('attachment', 'foo "bar".html', '', 'attachment; filename="foo \\"bar\\".html"'),
             array('attachment', 'foo%20bar.html', 'foo bar.html', 'attachment; filename="foo bar.html"; filename*=utf-8\'\'foo%2520bar.html'),
-            array('attachment', 'föö.html', 'foo.html', 'attachment; filename="foo.html"; filename*=utf-8\'\'f%C3%B6%C3%B6.html'),
+            array('attachment', 'föö.html', 'foo.html', 'attachment; filename=foo.html; filename*=utf-8\'\'f%C3%B6%C3%B6.html'),
         );
     }
 
@@ -359,5 +354,10 @@ class ResponseHeaderBagTest extends TestCase
         $bag->replace(array());
 
         $this->assertTrue($bag->has('Date'));
+    }
+
+    private function assertSetCookieHeader($expected, ResponseHeaderBag $actual)
+    {
+        $this->assertRegExp('#^Set-Cookie:\s+'.preg_quote($expected, '#').'$#m', str_replace("\r\n", "\n", (string) $actual));
     }
 }

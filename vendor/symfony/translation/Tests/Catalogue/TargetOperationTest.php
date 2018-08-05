@@ -40,11 +40,6 @@ class TargetOperationTest extends AbstractOperationTest
         );
     }
 
-    protected function createOperation(MessageCatalogueInterface $source, MessageCatalogueInterface $target)
-    {
-        return new TargetOperation($source, $target);
-    }
-
     public function testGetResultFromSingleDomain()
     {
         $this->assertEquals(
@@ -78,5 +73,10 @@ class TargetOperationTest extends AbstractOperationTest
                 $rightCatalogue
             )->getResult()
         );
+    }
+
+    protected function createOperation(MessageCatalogueInterface $source, MessageCatalogueInterface $target)
+    {
+        return new TargetOperation($source, $target);
     }
 }

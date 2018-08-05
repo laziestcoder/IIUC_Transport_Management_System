@@ -85,7 +85,7 @@ class Content implements Renderable
     {
         $this->validateBreadcrumb($breadcrumb);
 
-        $this->breadcrumb = (array)$breadcrumb;
+        $this->breadcrumb = (array) $breadcrumb;
 
         return $this;
     }
@@ -153,48 +153,6 @@ class Content implements Renderable
     }
 
     /**
-     * Set error message for content.
-     *
-     * @param string $title
-     * @param string $message
-     *
-     * @return $this
-     */
-    public function withError($title = '', $message = '')
-    {
-        $error = new MessageBag(compact('title', 'message'));
-
-        session()->flash('error', $error);
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->render();
-    }
-
-    /**
-     * Render this content.
-     *
-     * @return string
-     */
-    public function render()
-    {
-        $items = [
-            'header' => $this->header,
-            'description' => $this->description,
-            'breadcrumb' => $this->breadcrumb,
-            'content' => $this->build(),
-        ];
-
-        return view('admin::content', $items)->render();
-    }
-
-    /**
      * Build html of content.
      *
      * @return string
@@ -212,5 +170,47 @@ class Content implements Renderable
         ob_end_clean();
 
         return $contents;
+    }
+
+    /**
+     * Set error message for content.
+     *
+     * @param string $title
+     * @param string $message
+     *
+     * @return $this
+     */
+    public function withError($title = '', $message = '')
+    {
+        $error = new MessageBag(compact('title', 'message'));
+
+        session()->flash('error', $error);
+
+        return $this;
+    }
+
+    /**
+     * Render this content.
+     *
+     * @return string
+     */
+    public function render()
+    {
+        $items = [
+            'header'      => $this->header,
+            'description' => $this->description,
+            'breadcrumb'  => $this->breadcrumb,
+            'content'     => $this->build(),
+        ];
+
+        return view('admin::content', $items)->render();
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->render();
     }
 }

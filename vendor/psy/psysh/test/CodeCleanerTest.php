@@ -27,12 +27,12 @@ class CodeCleanerTest extends \PHPUnit\Framework\TestCase
     public function semicolonCodeProvider()
     {
         return [
-            [['true'], false, 'return true;'],
+            [['true'],  false, 'return true;'],
             [['true;'], false, 'return true;'],
-            [['true;'], true, 'return true;'],
-            [['true'], true, false],
+            [['true;'], true,  'return true;'],
+            [['true'],  true,  false],
 
-            [['echo "foo";', 'true'], true, false],
+            [['echo "foo";', 'true'], true,  false],
 
             [['echo "foo";', 'true'], false, "echo \"foo\";\nreturn true;"],
         ];
@@ -43,7 +43,7 @@ class CodeCleanerTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnclosedStatements(array $lines, $isUnclosed)
     {
-        $cc = new CodeCleaner();
+        $cc  = new CodeCleaner();
         $res = $cc->clean($lines);
 
         if ($isUnclosed) {
@@ -56,17 +56,17 @@ class CodeCleanerTest extends \PHPUnit\Framework\TestCase
     public function unclosedStatementsProvider()
     {
         return [
-            [['echo "'], true],
-            [['echo \''], true],
+            [['echo "'],   true],
+            [['echo \''],  true],
             [['if (1) {'], true],
 
             [['echo "foo",'], true],
 
-            [['echo ""'], false],
-            [["echo ''"], false],
+            [['echo ""'],   false],
+            [["echo ''"],   false],
             [['if (1) {}'], false],
 
-            [['// closed comment'], false],
+            [['// closed comment'],    false],
             [['function foo() { /**'], true],
 
             [['var_dump(1, 2,'], true],
@@ -83,7 +83,7 @@ class CodeCleanerTest extends \PHPUnit\Framework\TestCase
             $this->markTestSkipped('HHVM not supported.');
         }
 
-        $cc = new CodeCleaner();
+        $cc  = new CodeCleaner();
         $res = $cc->clean($lines);
 
         $this->assertFalse($res);

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 use PHPUnit\Framework\TestCase;
 
 class FailureTest extends TestCase
@@ -24,10 +23,10 @@ class FailureTest extends TestCase
 
     public function testAssertObjectEqualsObject(): void
     {
-        $a = new stdClass;
+        $a      = new stdClass;
         $a->foo = 'bar';
 
-        $b = new stdClass;
+        $b      = new stdClass;
         $b->bar = 'foo';
 
         $this->assertEquals($a, $b, 'message');

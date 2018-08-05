@@ -35,11 +35,6 @@ class FragmentListenerTest extends TestCase
         $this->assertTrue($request->query->has('_path'));
     }
 
-    private function createGetResponseEvent(Request $request, $requestType = HttpKernelInterface::MASTER_REQUEST)
-    {
-        return new GetResponseEvent($this->getMockBuilder('Symfony\Component\HttpKernel\HttpKernelInterface')->getMock(), $request, $requestType);
-    }
-
     public function testOnlyTriggeredIfControllerWasNotDefinedYet()
     {
         $request = Request::create('http://example.com/_fragment?_path=foo%3Dbar%26_controller%3Dfoo');
@@ -118,5 +113,10 @@ class FragmentListenerTest extends TestCase
         $listener->onKernelRequest($event);
 
         $this->assertFalse($request->query->has('_path'));
+    }
+
+    private function createGetResponseEvent(Request $request, $requestType = HttpKernelInterface::MASTER_REQUEST)
+    {
+        return new GetResponseEvent($this->getMockBuilder('Symfony\Component\HttpKernel\HttpKernelInterface')->getMock(), $request, $requestType);
     }
 }

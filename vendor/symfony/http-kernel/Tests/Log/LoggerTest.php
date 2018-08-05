@@ -32,6 +32,36 @@ class LoggerTest extends TestCase
      */
     private $tmpFile;
 
+    protected function setUp()
+    {
+        $this->tmpFile = sys_get_temp_dir().\DIRECTORY_SEPARATOR.'log';
+        $this->logger = new Logger(LogLevel::DEBUG, $this->tmpFile);
+    }
+
+    protected function tearDown()
+    {
+        if (!@unlink($this->tmpFile)) {
+            file_put_contents($this->tmpFile, '');
+        }
+    }
+
+    public static function assertLogsMatch(array $expected, array $given)
+    {
+        foreach ($given as $k => $line) {
+            self::assertThat(1 === preg_match('/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[\+-][0-9]{2}:[0-9]{2} '.preg_quote($expected[$k]).'/', $line), self::isTrue(), "\"$line\" do not match expected pattern \"$expected[$k]\"");
+        }
+    }
+
+    /**
+     * Return the log messages in order.
+     *
+     * @return string[]
+     */
+    public function getLogs()
+    {
+        return file($this->tmpFile, FILE_IGNORE_NEW_LINES);
+    }
+
     public function testImplements()
     {
         $this->assertInstanceOf(LoggerInterface::class, $this->logger);
@@ -50,23 +80,6 @@ class LoggerTest extends TestCase
             "[$level] message of level $level with context: Bob",
         );
         $this->assertLogsMatch($expected, $this->getLogs());
-    }
-
-    public static function assertLogsMatch(array $expected, array $given)
-    {
-        foreach ($given as $k => $line) {
-            self::assertThat(1 === preg_match('/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[\+-][0-9]{2}:[0-9]{2} ' . preg_quote($expected[$k]) . '/', $line), self::isTrue(), "\"$line\" do not match expected pattern \"$expected[$k]\"");
-        }
-    }
-
-    /**
-     * Return the log messages in order.
-     *
-     * @return string[]
-     */
-    public function getLogs()
-    {
-        return file($this->tmpFile, FILE_IGNORE_NEW_LINES);
     }
 
     public function provideLevelsAndMessages()
@@ -179,7 +192,7 @@ class LoggerTest extends TestCase
     public function testFormatter()
     {
         $this->logger = new Logger(LogLevel::DEBUG, $this->tmpFile, function ($level, $message, $context) {
-            return json_encode(array('level' => $level, 'message' => $message, 'context' => $context)) . \PHP_EOL;
+            return json_encode(array('level' => $level, 'message' => $message, 'context' => $context)).\PHP_EOL;
         });
 
         $this->logger->error('An error', array('foo' => 'bar'));
@@ -188,19 +201,6 @@ class LoggerTest extends TestCase
             '{"level":"error","message":"An error","context":{"foo":"bar"}}',
             '{"level":"warning","message":"A warning","context":{"baz":"bar"}}',
         ), $this->getLogs());
-    }
-
-    protected function setUp()
-    {
-        $this->tmpFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'log';
-        $this->logger = new Logger(LogLevel::DEBUG, $this->tmpFile);
-    }
-
-    protected function tearDown()
-    {
-        if (!@unlink($this->tmpFile)) {
-            file_put_contents($this->tmpFile, '');
-        }
     }
 }
 

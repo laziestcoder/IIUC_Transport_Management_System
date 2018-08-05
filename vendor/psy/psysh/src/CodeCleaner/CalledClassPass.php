@@ -66,11 +66,6 @@ class CalledClassPass extends CodeCleanerPass
         }
     }
 
-    private function isNull(Node $node)
-    {
-        return $node->value instanceof ConstFetch && strtolower($node->value->name) === 'null';
-    }
-
     /**
      * @param Node $node
      */
@@ -79,5 +74,10 @@ class CalledClassPass extends CodeCleanerPass
         if ($node instanceof Class_) {
             $this->inClass = false;
         }
+    }
+
+    private function isNull(Node $node)
+    {
+        return $node->value instanceof ConstFetch && strtolower($node->value->name) === 'null';
     }
 }

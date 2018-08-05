@@ -31,12 +31,12 @@ class ShellTest extends \PHPUnit\Framework\TestCase
 
     public function testScopeVariables()
     {
-        $one = 'banana';
-        $two = 123;
-        $three = new \StdClass();
+        $one       = 'banana';
+        $two       = 123;
+        $three     = new \StdClass();
         $__psysh__ = 'ignore this';
-        $_ = 'ignore this';
-        $_e = 'ignore this';
+        $_         = 'ignore this';
+        $_e        = 'ignore this';
 
         $shell = new Shell($this->getConfig());
         $shell->setScopeVariables(compact('one', 'two', 'three', '__psysh__', '_', '_e', 'this'));
@@ -58,21 +58,6 @@ class ShellTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(['_' => null, 'this' => $this], $shell->getScopeVariables());
     }
 
-    private function getConfig(array $config = [])
-    {
-        // Mebbe there's a better way than this?
-        $dir = tempnam(sys_get_temp_dir(), 'psysh_shell_test_');
-        unlink($dir);
-
-        $defaults = [
-            'configDir' => $dir,
-            'dataDir' => $dir,
-            'runtimeDir' => $dir,
-        ];
-
-        return new Configuration(array_merge($defaults, $config));
-    }
-
     /**
      * @expectedException \InvalidArgumentException
      */
@@ -85,12 +70,12 @@ class ShellTest extends \PHPUnit\Framework\TestCase
 
     public function testIncludesWithScopeVariables()
     {
-        $one = 'banana';
-        $two = 123;
-        $three = new \StdClass();
+        $one       = 'banana';
+        $two       = 123;
+        $three     = new \StdClass();
         $__psysh__ = 'ignore this';
-        $_ = 'ignore this';
-        $_e = 'ignore this';
+        $_         = 'ignore this';
+        $_e        = 'ignore this';
 
         $config = $this->getConfig(['usePcntl' => false]);
 
@@ -109,16 +94,6 @@ class ShellTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($shell->getScopeVariable('_'));
     }
 
-    private function getOutput()
-    {
-        $stream = fopen('php://memory', 'w+');
-        $this->streams[] = $stream;
-
-        $output = new StreamOutput($stream, StreamOutput::VERBOSITY_NORMAL, false);
-
-        return $output;
-    }
-
     public function testIncludes()
     {
         $config = $this->getConfig(['configFile' => __DIR__ . '/fixtures/empty.php']);
@@ -133,7 +108,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $config = $this->getConfig([
             'defaultIncludes' => ['/file.php'],
-            'configFile' => __DIR__ . '/fixtures/empty.php',
+            'configFile'      => __DIR__ . '/fixtures/empty.php',
         ]);
 
         $shell = new Shell($config);
@@ -169,10 +144,10 @@ class ShellTest extends \PHPUnit\Framework\TestCase
 
     public function testRenderingExceptions()
     {
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $output = $this->getOutput();
         $stream = $output->getStream();
-        $e = new ParseErrorException('message', 13);
+        $e      = new ParseErrorException('message', 13);
 
         $shell->setOutput($output);
         $shell->addCode('code');
@@ -195,7 +170,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
 
     public function testHandlingErrors()
     {
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $output = $this->getOutput();
         $stream = $output->getStream();
         $shell->setOutput($output);
@@ -215,8 +190,8 @@ class ShellTest extends \PHPUnit\Framework\TestCase
         $streamContents = stream_get_contents($stream);
 
         $this->assertContains('PHP Notice:', $streamContents);
-        $this->assertContains('wheee', $streamContents);
-        $this->assertContains('line 13', $streamContents);
+        $this->assertContains('wheee',       $streamContents);
+        $this->assertContains('line 13',     $streamContents);
     }
 
     /**
@@ -224,7 +199,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
      */
     public function testNotHandlingErrors()
     {
-        $shell = new Shell($this->getConfig());
+        $shell    = new Shell($this->getConfig());
         $oldLevel = error_reporting();
         error_reporting($oldLevel | E_USER_NOTICE);
 
@@ -311,7 +286,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $output = $this->getOutput();
         $stream = $output->getStream();
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $shell->setOutput($output);
 
         $shell->writeStdout("{{stdout}}\n");
@@ -326,7 +301,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $output = $this->getOutput();
         $stream = $output->getStream();
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $shell->setOutput($output);
 
         $shell->writeStdout('{{stdout}}');
@@ -344,7 +319,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $output = $this->getOutput();
         $stream = $output->getStream();
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $shell->setOutput($output);
 
         $shell->writeReturnValue($input);
@@ -367,7 +342,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $output = $this->getOutput();
         $stream = $output->getStream();
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $shell->setOutput($output);
 
         $shell->writeException($exception);
@@ -389,7 +364,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $output = $this->getOutput();
         $stream = $output->getStream();
-        $shell = new Shell($this->getConfig());
+        $shell  = new Shell($this->getConfig());
         $shell->setOutput($output);
         $this->assertEquals($expected, $shell->execute($input));
         rewind($stream);
@@ -435,5 +410,30 @@ class ShellTest extends \PHPUnit\Framework\TestCase
             ['"q"', false],
             ['"q",', false],
         ];
+    }
+
+    private function getOutput()
+    {
+        $stream = fopen('php://memory', 'w+');
+        $this->streams[] = $stream;
+
+        $output = new StreamOutput($stream, StreamOutput::VERBOSITY_NORMAL, false);
+
+        return $output;
+    }
+
+    private function getConfig(array $config = [])
+    {
+        // Mebbe there's a better way than this?
+        $dir = tempnam(sys_get_temp_dir(), 'psysh_shell_test_');
+        unlink($dir);
+
+        $defaults = [
+            'configDir'  => $dir,
+            'dataDir'    => $dir,
+            'runtimeDir' => $dir,
+        ];
+
+        return new Configuration(array_merge($defaults, $config));
     }
 }

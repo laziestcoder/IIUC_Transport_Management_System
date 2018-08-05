@@ -42,26 +42,11 @@ class AutoCompleter
     }
 
     /**
-     * The readline_completion_function callback handler.
-     *
-     * @see processCallback
-     *
-     * @param string $input
-     * @param int $index
-     *
-     * @return array
-     */
-    public function callback($input, $index)
-    {
-        return $this->processCallback($input, $index, readline_info());
-    }
-
-    /**
      * Handle readline completion.
      *
      * @param string $input Readline current word
-     * @param int $index Current word index
-     * @param array $info readline_info() data
+     * @param int    $index Current word index
+     * @param array  $info  readline_info() data
      *
      * @return array
      */
@@ -97,14 +82,27 @@ class AutoCompleter
     }
 
     /**
+     * The readline_completion_function callback handler.
+     *
+     * @see processCallback
+     *
+     * @param string $input
+     * @param int    $index
+     *
+     * @return array
+     */
+    public function callback($input, $index)
+    {
+        return $this->processCallback($input, $index, readline_info());
+    }
+
+    /**
      * Remove readline callback handler on destruct.
      */
     public function __destruct()
     {
         // PHP didn't implement the whole readline API when they first switched
         // to libedit. And they still haven't.
-        //
-        // So this is a thing to make PsySH work on 5.3.x:
         if (function_exists('readline_callback_handler_remove')) {
             readline_callback_handler_remove();
         }

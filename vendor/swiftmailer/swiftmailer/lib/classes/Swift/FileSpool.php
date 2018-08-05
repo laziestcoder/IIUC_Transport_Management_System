@@ -92,10 +92,10 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
     public function queueMessage(Swift_Mime_SimpleMessage $message)
     {
         $ser = serialize($message);
-        $fileName = $this->path . '/' . $this->getRandomString(10);
+        $fileName = $this->path.'/'.$this->getRandomString(10);
         for ($i = 0; $i < $this->retryLimit; ++$i) {
             /* We try an exclusive creation of the file. This is an atomic operation, it avoid locking mechanism */
-            $fp = @fopen($fileName . '.message', 'xb');
+            $fp = @fopen($fileName.'.message', 'xb');
             if (false !== $fp) {
                 if (false === fwrite($fp, $ser)) {
                     return false;
@@ -109,6 +109,81 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
         }
 
         throw new Swift_IoException(sprintf('Unable to create a file for enqueuing Message in "%s".', $this->path));
+    }
+
+    /**
+     * Execute a recovery if for any reason a process is sending for too long.
+     *
+     * @param int $timeout in second Defaults is for very slow smtp responses
+     */
+    public function recover($timeout = 900)
+    {
+        foreach (new DirectoryIterator($this->path) as $file) {
+            $file = $file->getRealPath();
+
+            if ('.message.sending' == substr($file, -16)) {
+                $lockedtime = filectime($file);
+                if ((time() - $lockedtime) > $timeout) {
+                    rename($file, substr($file, 0, -8));
+                }
+            }
+        }
+    }
+
+    /**
+     * Sends messages using the given transport instance.
+     *
+     * @param Swift_Transport $transport        A transport instance
+     * @param string[]        $failedRecipients An array of failures by-reference
+     *
+     * @return int The number of sent e-mail's
+     */
+    public function flushQueue(Swift_Transport $transport, &$failedRecipients = null)
+    {
+        $directoryIterator = new DirectoryIterator($this->path);
+
+        /* Start the transport only if there are queued files to send */
+        if (!$transport->isStarted()) {
+            foreach ($directoryIterator as $file) {
+                if ('.message' == substr($file->getRealPath(), -8)) {
+                    $transport->start();
+                    break;
+                }
+            }
+        }
+
+        $failedRecipients = (array) $failedRecipients;
+        $count = 0;
+        $time = time();
+        foreach ($directoryIterator as $file) {
+            $file = $file->getRealPath();
+
+            if ('.message' != substr($file, -8)) {
+                continue;
+            }
+
+            /* We try a rename, it's an atomic operation, and avoid locking the file */
+            if (rename($file, $file.'.sending')) {
+                $message = unserialize(file_get_contents($file.'.sending'));
+
+                $count += $transport->send($message, $failedRecipients);
+
+                unlink($file.'.sending');
+            } else {
+                /* This message has just been catched by another process */
+                continue;
+            }
+
+            if ($this->getMessageLimit() && $count >= $this->getMessageLimit()) {
+                break;
+            }
+
+            if ($this->getTimeLimit() && (time() - $time) >= $this->getTimeLimit()) {
+                break;
+            }
+        }
+
+        return $count;
     }
 
     /**
@@ -129,80 +204,5 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
         }
 
         return $ret;
-    }
-
-    /**
-     * Execute a recovery if for any reason a process is sending for too long.
-     *
-     * @param int $timeout in second Defaults is for very slow smtp responses
-     */
-    public function recover($timeout = 900)
-    {
-        foreach (new DirectoryIterator($this->path) as $file) {
-            $file = $file->getRealPath();
-
-            if (substr($file, -16) == '.message.sending') {
-                $lockedtime = filectime($file);
-                if ((time() - $lockedtime) > $timeout) {
-                    rename($file, substr($file, 0, -8));
-                }
-            }
-        }
-    }
-
-    /**
-     * Sends messages using the given transport instance.
-     *
-     * @param Swift_Transport $transport A transport instance
-     * @param string[] $failedRecipients An array of failures by-reference
-     *
-     * @return int The number of sent e-mail's
-     */
-    public function flushQueue(Swift_Transport $transport, &$failedRecipients = null)
-    {
-        $directoryIterator = new DirectoryIterator($this->path);
-
-        /* Start the transport only if there are queued files to send */
-        if (!$transport->isStarted()) {
-            foreach ($directoryIterator as $file) {
-                if (substr($file->getRealPath(), -8) == '.message') {
-                    $transport->start();
-                    break;
-                }
-            }
-        }
-
-        $failedRecipients = (array)$failedRecipients;
-        $count = 0;
-        $time = time();
-        foreach ($directoryIterator as $file) {
-            $file = $file->getRealPath();
-
-            if (substr($file, -8) != '.message') {
-                continue;
-            }
-
-            /* We try a rename, it's an atomic operation, and avoid locking the file */
-            if (rename($file, $file . '.sending')) {
-                $message = unserialize(file_get_contents($file . '.sending'));
-
-                $count += $transport->send($message, $failedRecipients);
-
-                unlink($file . '.sending');
-            } else {
-                /* This message has just been catched by another process */
-                continue;
-            }
-
-            if ($this->getMessageLimit() && $count >= $this->getMessageLimit()) {
-                break;
-            }
-
-            if ($this->getTimeLimit() && (time() - $time) >= $this->getTimeLimit()) {
-                break;
-            }
-        }
-
-        return $count;
     }
 }

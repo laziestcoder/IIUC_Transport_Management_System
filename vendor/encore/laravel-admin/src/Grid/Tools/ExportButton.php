@@ -8,6 +8,11 @@ use Encore\Admin\Grid;
 class ExportButton extends AbstractTool
 {
     /**
+     * @var Grid
+     */
+    protected $grid;
+
+    /**
      * Create a new Export button instance.
      *
      * @param Grid $grid
@@ -15,6 +20,30 @@ class ExportButton extends AbstractTool
     public function __construct(Grid $grid)
     {
         $this->grid = $grid;
+    }
+
+    /**
+     * Set up script for export button.
+     */
+    protected function setUpScripts()
+    {
+        $script = <<<SCRIPT
+
+$('.{$this->grid->getExportSelectedName()}').click(function (e) {
+    e.preventDefault();
+    
+    var rows = {$this->grid->getSelectedRowsName()}().join(',');
+    if (!rows) {
+        return false;
+    }
+    
+    var href = $(this).attr('href').replace('__rows__', rows);
+    location.href = href;
+});
+
+SCRIPT;
+
+        Admin::script($script);
     }
 
     /**
@@ -46,37 +75,13 @@ class ExportButton extends AbstractTool
         <span class="sr-only">Toggle Dropdown</span>
     </button>
     <ul class="dropdown-menu" role="menu">
-        <li><a href="{$this->grid->exportUrl('all')}" target="_blank">{$all}</a></li>
-        <li><a href="{$this->grid->exportUrl('page', $page)}" target="_blank">{$currentPage}</a></li>
-        <li><a href="{$this->grid->exportUrl('selected', '__rows__')}" target="_blank" class='export-selected'>{$selectedRows}</a></li>
+        <li><a href="{$this->grid->getExportUrl('all')}" target="_blank">{$all}</a></li>
+        <li><a href="{$this->grid->getExportUrl('page', $page)}" target="_blank">{$currentPage}</a></li>
+        <li><a href="{$this->grid->getExportUrl('selected', '__rows__')}" target="_blank" class='{$this->grid->getExportSelectedName()}'>{$selectedRows}</a></li>
     </ul>
 </div>
 &nbsp;&nbsp;
 
 EOT;
-    }
-
-    /**
-     * Set up script for export button.
-     */
-    protected function setUpScripts()
-    {
-        $script = <<<'SCRIPT'
-
-$('.export-selected').click(function (e) {
-    e.preventDefault();
-    
-    var rows = selectedRows().join(',');
-    if (!rows) {
-        return false;
-    }
-    
-    var href = $(this).attr('href').replace('__rows__', rows);
-    location.href = href;
-});
-
-SCRIPT;
-
-        Admin::script($script);
     }
 }

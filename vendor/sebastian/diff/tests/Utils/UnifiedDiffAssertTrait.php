@@ -27,14 +27,15 @@ trait UnifiedDiffAssertTrait
 
         // test diff ends with a line break
         $last = \substr($diff, -1);
+
         if ("\n" !== $last && "\r" !== $last) {
             throw new \UnexpectedValueException(\sprintf('Expected diff to end with a line break, got "%s".', $last));
         }
 
-        $lines = \preg_split('/(.*\R)/', $diff, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        $lineCount = \count($lines);
-        $lineNumber = $diffLineFromNumber = $diffLineToNumber = 1;
-        $fromStart = $fromTillOffset = $toStart = $toTillOffset = -1;
+        $lines            = \preg_split('/(.*\R)/', $diff, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $lineCount        = \count($lines);
+        $lineNumber       = $diffLineFromNumber       = $diffLineToNumber       = 1;
+        $fromStart        = $fromTillOffset        = $toStart        = $toTillOffset        = -1;
         $expectHunkHeader = true;
 
         // check for header
@@ -55,7 +56,7 @@ trait UnifiedDiffAssertTrait
         }
 
         $endOfLineTypes = [];
-        $diffClosed = false;
+        $diffClosed     = false;
 
         // assert format of lines, get all hunks, test the line numbers
         for (; $lineNumber <= $lineCount; ++$lineNumber) {
@@ -95,8 +96,8 @@ trait UnifiedDiffAssertTrait
                 */
 
                 $diffLineFromNumber = $fromStart;
-                $diffLineToNumber = $toStart;
-                $expectHunkHeader = false;
+                $diffLineToNumber   = $toStart;
+                $expectHunkHeader   = false;
 
                 continue;
             }
@@ -130,12 +131,13 @@ trait UnifiedDiffAssertTrait
                 }
 
                 $previousType = $this->unifiedDiffAssertLinePrefix($lines[$lineNumber - 2], \sprintf('Preceding line of "\\ No newline at end of file" of unexpected format. Line %d.', $lineNumber));
+
                 if (isset($endOfLineTypes[$previousType])) {
                     throw new \UnexpectedValueException(\sprintf('Unexpected "\\ No newline at end of file", "%s" was already closed. Line %d.', $type, $lineNumber));
                 }
 
                 $endOfLineTypes[$previousType] = true;
-                $diffClosed = \count($endOfLineTypes) > 1;
+                $diffClosed                    = \count($endOfLineTypes) > 1;
             } else {
                 // internal state error
                 throw new \RuntimeException(\sprintf('Unexpected line type "%s" Line %d.', $type, $lineNumber));
@@ -143,7 +145,8 @@ trait UnifiedDiffAssertTrait
 
             $expectHunkHeader =
                 $diffLineFromNumber === ($fromStart + $fromTillOffset)
-                && $diffLineToNumber === ($toStart + $toTillOffset);
+                && $diffLineToNumber === ($toStart + $toTillOffset)
+            ;
         }
 
         if (
@@ -189,6 +192,7 @@ trait UnifiedDiffAssertTrait
     private function unifiedDiffAssertStrLength(string $line, int $min, string $message): void
     {
         $length = \strlen($line);
+
         if ($length < $min) {
             throw new \UnexpectedValueException(\sprintf('Expected string length of minimal %d, got %d. %s', $min, $length, $message));
         }
@@ -264,10 +268,10 @@ trait UnifiedDiffAssertTrait
         }
 
         return [
-            (int)$matches[1],
-            empty($matches[2]) ? 1 : (int)\substr($matches[2], 1),
-            (int)$matches[3],
-            empty($matches[4]) ? 1 : (int)\substr($matches[4], 1),
+            (int) $matches[1],
+            empty($matches[2]) ? 1 : (int) \substr($matches[2], 1),
+            (int) $matches[3],
+            empty($matches[4]) ? 1 : (int) \substr($matches[4], 1),
         ];
     }
 }

@@ -14,7 +14,8 @@ class FooSubnamespaced1Command extends Command
         $this
             ->setName('foo:bar:baz')
             ->setDescription('The foo:bar:baz command')
-            ->setAliases(array('foobarbaz'));
+            ->setAliases(array('foobarbaz'))
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

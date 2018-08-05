@@ -26,17 +26,6 @@ class SsiFragmentRendererTest extends TestCase
         $strategy->render('/', Request::create('/'));
     }
 
-    private function getInlineStrategy($called = false)
-    {
-        $inline = $this->getMockBuilder('Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer')->disableOriginalConstructor()->getMock();
-
-        if ($called) {
-            $inline->expects($this->once())->method('render');
-        }
-
-        return $inline;
-    }
-
     public function testRender()
     {
         $strategy = new SsiFragmentRenderer(new Ssi(), $this->getInlineStrategy());
@@ -93,5 +82,16 @@ class SsiFragmentRendererTest extends TestCase
         $request->headers->set('Surrogate-Capability', 'SSI/1.0');
 
         $strategy->render('/', $request, array('alt' => new ControllerReference('alt_controller')));
+    }
+
+    private function getInlineStrategy($called = false)
+    {
+        $inline = $this->getMockBuilder('Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer')->disableOriginalConstructor()->getMock();
+
+        if ($called) {
+            $inline->expects($this->once())->method('render');
+        }
+
+        return $inline;
     }
 }

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use SplObjectStorage;
@@ -34,17 +33,29 @@ class TraversableContains extends Constraint
     private $value;
 
     /**
-     * @param mixed $value
-     *
      * @throws \PHPUnit\Framework\Exception
      */
     public function __construct($value, bool $checkForObjectIdentity = true, bool $checkForNonObjectIdentity = false)
     {
         parent::__construct();
 
-        $this->checkForObjectIdentity = $checkForObjectIdentity;
+        $this->checkForObjectIdentity    = $checkForObjectIdentity;
         $this->checkForNonObjectIdentity = $checkForNonObjectIdentity;
-        $this->value = $value;
+        $this->value                     = $value;
+    }
+
+    /**
+     * Returns a string representation of the constraint.
+     *
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     */
+    public function toString(): string
+    {
+        if (\is_string($this->value) && \strpos($this->value, "\n") !== false) {
+            return 'contains "' . $this->value . '"';
+        }
+
+        return 'contains ' . $this->exporter->export($this->value);
     }
 
     /**
@@ -101,19 +112,5 @@ class TraversableContains extends Constraint
             \is_array($other) ? 'an array' : 'a traversable',
             $this->toString()
         );
-    }
-
-    /**
-     * Returns a string representation of the constraint.
-     *
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
-     */
-    public function toString(): string
-    {
-        if (\is_string($this->value) && \strpos($this->value, "\n") !== false) {
-            return 'contains "' . $this->value . '"';
-        }
-
-        return 'contains ' . $this->exporter->export($this->value);
     }
 }

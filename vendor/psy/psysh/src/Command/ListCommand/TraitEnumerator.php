@@ -32,11 +32,6 @@ class TraitEnumerator extends Enumerator
      */
     protected function listItems(InputInterface $input, \Reflector $reflector = null, $target = null)
     {
-        // bail early if current PHP doesn't know about traits.
-        if (!function_exists('trait_exists')) {
-            return;
-        }
-
         // only list traits when no Reflector is present.
         //
         // @todo make a NamespaceReflector and pass that in for commands like:
@@ -82,7 +77,7 @@ class TraitEnumerator extends Enumerator
         foreach ($traits as $name) {
             if ($this->showItem($name)) {
                 $ret[$name] = [
-                    'name' => $name,
+                    'name'  => $name,
                     'style' => self::IS_CLASS,
                     'value' => $this->presentSignature($name),
                 ];

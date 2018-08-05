@@ -31,6 +31,20 @@ abstract class AbstractEventDispatcherTest extends TestCase
 
     private $listener;
 
+    protected function setUp()
+    {
+        $this->dispatcher = $this->createEventDispatcher();
+        $this->listener = new TestEventListener();
+    }
+
+    protected function tearDown()
+    {
+        $this->dispatcher = null;
+        $this->listener = null;
+    }
+
+    abstract protected function createEventDispatcher();
+
     public function testInitialState()
     {
         $this->assertEquals(array(), $this->dispatcher->getListeners());
@@ -107,8 +121,7 @@ abstract class AbstractEventDispatcherTest extends TestCase
         $this->assertSame(-10, $this->dispatcher->getListenerPriority('pre.foo', $listener1));
         $this->assertSame(0, $this->dispatcher->getListenerPriority('pre.foo', $listener2));
         $this->assertNull($this->dispatcher->getListenerPriority('pre.bar', $listener2));
-        $this->assertNull($this->dispatcher->getListenerPriority('pre.foo', function () {
-        }));
+        $this->assertNull($this->dispatcher->getListenerPriority('pre.foo', function () {}));
     }
 
     public function testDispatch()
@@ -265,17 +278,13 @@ abstract class AbstractEventDispatcherTest extends TestCase
     {
         $dispatcher = $this->createEventDispatcher();
         $dispatcher->addListener('bug.62976', new CallableClass());
-        $dispatcher->removeListener('bug.62976', function () {
-        });
+        $dispatcher->removeListener('bug.62976', function () {});
         $this->assertTrue($dispatcher->hasListeners('bug.62976'));
     }
 
-    abstract protected function createEventDispatcher();
-
     public function testHasListenersWhenAddedCallbackListenerIsRemoved()
     {
-        $listener = function () {
-        };
+        $listener = function () {};
         $this->dispatcher->addListener('foo', $listener);
         $this->dispatcher->removeListener('foo', $listener);
         $this->assertFalse($this->dispatcher->hasListeners());
@@ -283,8 +292,7 @@ abstract class AbstractEventDispatcherTest extends TestCase
 
     public function testGetListenersWhenAddedCallbackListenerIsRemoved()
     {
-        $listener = function () {
-        };
+        $listener = function () {};
         $this->dispatcher->addListener('foo', $listener);
         $this->dispatcher->removeListener('foo', $listener);
         $this->assertSame(array(), $this->dispatcher->getListeners());
@@ -299,9 +307,7 @@ abstract class AbstractEventDispatcherTest extends TestCase
     public function testHasListenersIsLazy()
     {
         $called = 0;
-        $listener = array(function () use (&$called) {
-            ++$called;
-        }, 'onFoo');
+        $listener = array(function () use (&$called) { ++$called; }, 'onFoo');
         $this->dispatcher->addListener('foo', $listener);
         $this->assertTrue($this->dispatcher->hasListeners());
         $this->assertTrue($this->dispatcher->hasListeners('foo'));
@@ -326,9 +332,7 @@ abstract class AbstractEventDispatcherTest extends TestCase
     public function testRemoveFindsLazyListeners()
     {
         $test = new TestWithDispatcher();
-        $factory = function () use ($test) {
-            return $test;
-        };
+        $factory = function () use ($test) { return $test; };
 
         $this->dispatcher->addListener('foo', array($factory, 'foo'));
         $this->assertTrue($this->dispatcher->hasListeners('foo'));
@@ -344,9 +348,7 @@ abstract class AbstractEventDispatcherTest extends TestCase
     public function testPriorityFindsLazyListeners()
     {
         $test = new TestWithDispatcher();
-        $factory = function () use ($test) {
-            return $test;
-        };
+        $factory = function () use ($test) { return $test; };
 
         $this->dispatcher->addListener('foo', array($factory, 'foo'), 3);
         $this->assertSame(3, $this->dispatcher->getListenerPriority('foo', array($test, 'foo')));
@@ -359,9 +361,7 @@ abstract class AbstractEventDispatcherTest extends TestCase
     public function testGetLazyListeners()
     {
         $test = new TestWithDispatcher();
-        $factory = function () use ($test) {
-            return $test;
-        };
+        $factory = function () use ($test) { return $test; };
 
         $this->dispatcher->addListener('foo', array($factory, 'foo'), 3);
         $this->assertSame(array(array($test, 'foo')), $this->dispatcher->getListeners('foo'));
@@ -369,18 +369,6 @@ abstract class AbstractEventDispatcherTest extends TestCase
         $this->dispatcher->removeListener('foo', array($test, 'foo'));
         $this->dispatcher->addListener('bar', array($factory, 'foo'), 3);
         $this->assertSame(array('bar' => array(array($test, 'foo'))), $this->dispatcher->getListeners());
-    }
-
-    protected function setUp()
-    {
-        $this->dispatcher = $this->createEventDispatcher();
-        $this->listener = new TestEventListener();
-    }
-
-    protected function tearDown()
-    {
-        $this->dispatcher = null;
-        $this->listener = null;
     }
 }
 
@@ -438,7 +426,7 @@ class TestEventSubscriberWithPriorities implements EventSubscriberInterface
         return array(
             'pre.foo' => array('preFoo', 10),
             'post.foo' => array('postFoo'),
-        );
+            );
     }
 }
 

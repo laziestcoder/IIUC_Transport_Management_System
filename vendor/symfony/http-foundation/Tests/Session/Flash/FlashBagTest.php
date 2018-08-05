@@ -21,11 +21,26 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
  */
 class FlashBagTest extends TestCase
 {
-    protected $array = array();
     /**
      * @var \Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface
      */
     private $bag;
+
+    protected $array = array();
+
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->bag = new FlashBag();
+        $this->array = array('notice' => array('A previous flash message'));
+        $this->bag->initialize($this->array);
+    }
+
+    protected function tearDown()
+    {
+        $this->bag = null;
+        parent::tearDown();
+    }
 
     public function testInitialize()
     {
@@ -59,6 +74,18 @@ class FlashBagTest extends TestCase
         $this->assertEquals(array('A previous flash message'), $this->bag->peek('notice'));
     }
 
+    public function testAdd()
+    {
+        $tab = array('bar' => 'baz');
+        $this->bag->add('string_message', 'lorem');
+        $this->bag->add('object_message', new \stdClass());
+        $this->bag->add('array_message', $tab);
+
+        $this->assertEquals(array('lorem'), $this->bag->get('string_message'));
+        $this->assertEquals(array(new \stdClass()), $this->bag->get('object_message'));
+        $this->assertEquals(array($tab), $this->bag->get('array_message'));
+    }
+
     public function testGet()
     {
         $this->assertEquals(array(), $this->bag->get('non_existing'));
@@ -73,7 +100,7 @@ class FlashBagTest extends TestCase
         $this->bag->set('error', 'Bar');
         $this->assertEquals(array(
             'notice' => array('Foo'),
-            'error' => array('Bar'),), $this->bag->all()
+            'error' => array('Bar'), ), $this->bag->all()
         );
 
         $this->assertEquals(array(), $this->bag->all());
@@ -97,6 +124,19 @@ class FlashBagTest extends TestCase
         $this->assertEquals(array('notice'), $this->bag->keys());
     }
 
+    public function testSetAll()
+    {
+        $this->bag->add('one_flash', 'Foo');
+        $this->bag->add('another_flash', 'Bar');
+        $this->assertTrue($this->bag->has('one_flash'));
+        $this->assertTrue($this->bag->has('another_flash'));
+        $this->bag->setAll(array('unique_flash' => 'FooBar'));
+        $this->assertFalse($this->bag->has('one_flash'));
+        $this->assertFalse($this->bag->has('another_flash'));
+        $this->assertSame(array('unique_flash' => 'FooBar'), $this->bag->all());
+        $this->assertSame(array(), $this->bag->all());
+    }
+
     public function testPeekAll()
     {
         $this->bag->set('notice', 'Foo');
@@ -104,28 +144,14 @@ class FlashBagTest extends TestCase
         $this->assertEquals(array(
             'notice' => array('Foo'),
             'error' => array('Bar'),
-        ), $this->bag->peekAll()
+            ), $this->bag->peekAll()
         );
         $this->assertTrue($this->bag->has('notice'));
         $this->assertTrue($this->bag->has('error'));
         $this->assertEquals(array(
             'notice' => array('Foo'),
             'error' => array('Bar'),
-        ), $this->bag->peekAll()
+            ), $this->bag->peekAll()
         );
-    }
-
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->bag = new FlashBag();
-        $this->array = array('notice' => array('A previous flash message'));
-        $this->bag->initialize($this->array);
-    }
-
-    protected function tearDown()
-    {
-        $this->bag = null;
-        parent::tearDown();
     }
 }

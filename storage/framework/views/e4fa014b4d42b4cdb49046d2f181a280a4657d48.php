@@ -1,15 +1,14 @@
 <?php $__env->startSection('content'); ?>
-    <script>
-        $(document).ready(function () {
-            $('[data-toggle=confirmation]').confirmation({
-                rootSelector: '[data-toggle=confirmation]',
-                onConfirm: function (event, element) {
-                    element.closest('form').submit();
-                }
-            });
-        });
-
-    </script>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <section class="content-header">
         <?php echo $__env->make('inc.messages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         <h1>
@@ -18,67 +17,119 @@
             <small><?php echo e($description); ?></small>
         </h1>
     </section>
-    <br><br>
+    <br>
     <section class="content">
-        <h1><?php echo e($titleinfo); ?>
+        <h2><?php echo e($titleinfo); ?>
 
             <small>
                 <?php echo e('Before delete a schedule please ensure the schedule is not used in any other data.'); ?>
 
             </small>
-        </h1>
-        
-        <h2><?php echo e("Schedule by day"); ?><br><br><b><?php echo e("Saturday"); ?></b> </h2>
-        <?php if( count($satday) > 0 ): ?>
-            <table class="table table-responsive table-hover">
-                <thead class="table">
-                <tr>
-                    <th><?php echo e("ID"); ?></th>
-                    <th><?php echo e("To IIUC Campus"); ?></th>
-                    <th><?php echo e("From IIUC Campus"); ?></th>
-                    <th><?php echo e("Male"); ?></th>
-                    <th><?php echo e("Female"); ?></th>
-                    <th><?php echo e("Time"); ?></th>
-                    <th><?php echo e("Bus For"); ?></th>
-                    <th><?php echo e("Bus Route"); ?></th>
-                    <th><?php echo e("Added By"); ?></th>
-                    <th><?php echo e("Action"); ?></th>
-                </tr>
-                </thead>
-                <tbody class="table">
-                <?php $__currentLoopData = $satday; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $schedule): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <tr>
-                        <td><?php echo e($schedule->id); ?></td>
-                        <td><?php echo e($schedule->toiiuc?'YES':'NO'); ?></td>
-                        <td><?php echo e($schedule->fromiiuc?'YES':'NO'); ?></td>
-                        <td><?php echo e($schedule->male?'YES':'NO'); ?></td>
-                        <td><?php echo e($schedule->female?'YES':'NO'); ?></td>
-                        <td><?php echo e(\Carbon\Carbon::parse(App\Time::where('id',$schedule->time)->first()->time)->format('g:i A')); ?></td>
-                        <td><?php echo e($schedule->user == 1 ? 'Students': ( $schedule->user == 2 ? 'Faculty':'Officer/Staff')); ?></td>
-                        <td><?php echo e(App\BusRoute::where('id',$schedule->route)->first()->routename); ?></td>
-                        <td><?php echo e(Admin::user()->where('id',$schedule->user_id)->first()->name); ?></td>
-                        <td>
-                            <a href="" class="btn btn-primary">Edit</a>
-                            <?php echo Form::open(['action'=>['ScheduleController@destroy', $schedule->id],'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline' /* ,'onclick' => 'function deleteMe()' */]); ?> 
-                            <?php echo e(Form::hidden('_method','DELETE')); ?>
+        </h2>
+        <?php if( count($days) > 0 ): ?>
+            <?php $__currentLoopData = $days; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if($day->id != 9): ?>
+                    <h3><b><?php echo e("$day->dayname"); ?></b></h3>
+                    <table class="table table-hover table-bordered">
+                        <thead class="table">
+                        <tr>
+                            <th><?php echo e("No."); ?></th>
+                            <th><?php echo e("Starting Time"); ?></th>
+                            <th><?php echo e("Gender"); ?></th>
+                            <th><?php echo e("Direction"); ?></th>
+                            <th><?php echo e("Starting Point"); ?></th>
+                            <th><?php echo e("Added By"); ?></th>
+                            
+                        </tr>
+                        </thead>
+                        <tbody class="table">
+                        <?php $sl = 0; ?>
+                        <?php $__currentLoopData = $times; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $time): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php $schedules = App\Schedule::where('day', $day->id)
+                                ->where('time', $time->id)
+                                ->get();?>
+                            <?php if(count($schedules) > 0): ?>
+                                <tr>
 
-                            <?php echo e(csrf_field()); ?>
+                                    <td><?php echo e($sl +=1); ?></td>
+                                    <td><?php echo e(\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A')); ?></td>
 
-                            <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top'])); ?>
+                                    <?php $male = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->where('male', '1')
+                                        ->get();
+                                    $female = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->where('Female', '1')
+                                        ->get();?>
 
-                            <?php echo Form::close(); ?>
+                                    <td>
+                                        <?php echo e(count($male)? 'Male':''); ?>
 
-                        </td>
-                    </tr>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </tbody>
-            </table>
-            
+                                        <?php if(count($male) && count($female)): ?>
+                                            <?php echo e(","); ?>
+
+                                        <?php endif; ?>
+                                        <?php echo e(count($female)? 'Female':''); ?>
+
+                                    </td>
+
+                                    <?php $toiiuc = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->where('toiiuc', '1')
+                                        ->get();
+                                    $fromiiuc = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->where('fromiiuc', '1')
+                                        ->get();?>
+
+                                    <td>
+                                        <?php echo e(count($toiiuc)? 'To IIUC Campus':''); ?>
+
+                                        <?php if(count($toiiuc) && count($fromiiuc)): ?>
+                                            <?php echo e(","); ?>
+
+                                        <?php endif; ?>
+                                        <?php echo e(count($fromiiuc)? 'From IIUC Campus':''); ?>
+
+                                    </td>
+
+                                    <?php $routes = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->get();
+                                    if (count($routes) > 1) {
+                                        $routeFlag = count($routes) - 1;
+                                    } else {
+                                        $routeFlag = 0;
+                                    }?>
+
+                                    <td>
+                                        <?php $__currentLoopData = $routes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php echo e(\App\BusRoute::where('id',$route->route)->first()->routename); ?>
+
+                                            <?php if($routeFlag): ?>
+                                                <?php echo e(", "); ?>
+
+                                            <?php endif; ?>
+                                            <?php $routeFlag -= 1;?>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </td>
+                                    <?php $userid = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->first(); ?>
+                                    <td><?php echo e(Admin::user()->where('id',$userid->user_id)->first()->name); ?></td>
+
+                                </tr>
+                            <?php endif; ?>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </tbody>
+                    </table>
+                    
+                <?php endif; ?>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         <?php else: ?>
             <p>No Schedule Found</p>
         <?php endif; ?>
-        
-        
     </section>
 <?php $__env->stopSection(); ?>
 

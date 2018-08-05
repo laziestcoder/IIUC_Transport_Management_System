@@ -59,7 +59,7 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
      *
      * @param string|null $foreground The style foreground color name
      * @param string|null $background The style background color name
-     * @param array $options The style options
+     * @param array       $options    The style options
      */
     public function __construct(string $foreground = null, string $background = null, array $options = array())
     {
@@ -69,7 +69,7 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
         if (null !== $background) {
             $this->setBackground($background);
         }
-        if (count($options)) {
+        if (\count($options)) {
             $this->setOptions($options);
         }
     }
@@ -127,18 +127,6 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function setOptions(array $options)
-    {
-        $this->options = array();
-
-        foreach ($options as $option) {
-            $this->setOption($option);
-        }
-    }
-
-    /**
      * Sets some specific style option.
      *
      * @param string $option The option name
@@ -155,7 +143,7 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
             ));
         }
 
-        if (!in_array(static::$availableOptions[$option], $this->options)) {
+        if (!\in_array(static::$availableOptions[$option], $this->options)) {
             $this->options[] = static::$availableOptions[$option];
         }
     }
@@ -184,6 +172,18 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setOptions(array $options)
+    {
+        $this->options = array();
+
+        foreach ($options as $option) {
+            $this->setOption($option);
+        }
+    }
+
+    /**
      * Applies the style to a given text.
      *
      * @param string $text The text to style
@@ -203,14 +203,14 @@ class OutputFormatterStyle implements OutputFormatterStyleInterface
             $setCodes[] = $this->background['set'];
             $unsetCodes[] = $this->background['unset'];
         }
-        if (count($this->options)) {
+        if (\count($this->options)) {
             foreach ($this->options as $option) {
                 $setCodes[] = $option['set'];
                 $unsetCodes[] = $option['unset'];
             }
         }
 
-        if (0 === count($setCodes)) {
+        if (0 === \count($setCodes)) {
             return $text;
         }
 

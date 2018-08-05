@@ -52,6 +52,19 @@ class Person extends \Faker\Provider\Person
 
     private static $suffix = array('PhD');
 
+    public function title($gender = null)
+    {
+        return static::titleMale();
+    }
+
+    /**
+     * replaced by specific unisex hungarian title
+     */
+    public static function titleMale()
+    {
+        return static::randomElement(static::$title);
+    }
+
     /**
      * specific Hungarian name format for females after marriage
      */
@@ -69,23 +82,10 @@ class Person extends \Faker\Provider\Person
     }
 
     /**
-     * replaced by specific unisex hungarian title
-     */
-    public static function titleMale()
-    {
-        return static::randomElement(static::$title);
-    }
-
-    /**
      * @example 'PhD'
      */
     public static function suffix()
     {
         return static::randomElement(static::$suffix);
-    }
-
-    public function title($gender = null)
-    {
-        return static::titleMale();
     }
 }

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 class TestSuiteTest extends TestCase
@@ -16,6 +15,16 @@ class TestSuiteTest extends TestCase
      * @var TestResult
      */
     private $result;
+
+    protected function setUp(): void
+    {
+        $this->result = new TestResult;
+    }
+
+    protected function tearDown(): void
+    {
+        $this->result = null;
+    }
 
     public function testAddTestSuite(): void
     {
@@ -149,9 +158,9 @@ class TestSuiteTest extends TestCase
 
         $suite->run($this->result);
 
-        $skipped = $this->result->skipped();
+        $skipped           = $this->result->skipped();
         $lastSkippedResult = \array_pop($skipped);
-        $message = $lastSkippedResult->thrownException()->getMessage();
+        $message           = $lastSkippedResult->thrownException()->getMessage();
 
         $this->assertContains('Test for DataProviderDependencyTest::testDependency skipped by data provider', $message);
     }
@@ -182,7 +191,7 @@ class TestSuiteTest extends TestCase
             'DontSkipInheritedClass'
         );
 
-        $dir = \dirname(__DIR__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'Inheritance' . DIRECTORY_SEPARATOR;
+        $dir = \dirname(__DIR__) . \DIRECTORY_SEPARATOR . '_files' . \DIRECTORY_SEPARATOR . 'Inheritance' . \DIRECTORY_SEPARATOR;
 
         $suite->addTestFile($dir . 'InheritanceA.php');
         $suite->addTestFile($dir . 'InheritanceB.php');
@@ -192,13 +201,25 @@ class TestSuiteTest extends TestCase
         $this->assertCount(2, $result);
     }
 
-    protected function setUp(): void
+    /**
+     * @expectedException PHPUnit\Framework\Exception
+     * @expectedExceptionMessage No valid test provided.
+     */
+    public function testCreateTestForConstructorlessTestClass(): void
     {
-        $this->result = new TestResult;
-    }
+        $reflection = $this->getMockBuilder(\ReflectionClass::class)
+            ->setConstructorArgs([$this])
+            ->getMock();
 
-    protected function tearDown(): void
-    {
-        $this->result = null;
+        $reflection->expects($this->once())
+            ->method('getConstructor')
+            ->willReturn(null);
+        $reflection->expects($this->once())
+            ->method('isInstantiable')
+            ->willReturn(true);
+        $reflection->expects($this->once())
+            ->method('getName')
+            ->willReturn(__CLASS__);
+        TestSuite::createTest($reflection, 'TestForConstructorlessTestClass');
     }
 }

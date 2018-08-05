@@ -61,7 +61,8 @@ class TranslatorPass implements CompilerPassInterface
         $container
             ->findDefinition($this->translatorServiceId)
             ->replaceArgument(0, ServiceLocatorTagPass::register($container, $loaderRefs))
-            ->replaceArgument(3, $loaders);
+            ->replaceArgument(3, $loaders)
+        ;
 
         if (!$container->hasParameter('twig.default_path')) {
             return;

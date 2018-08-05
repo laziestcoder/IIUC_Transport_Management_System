@@ -70,10 +70,26 @@ class StringCodec implements CodecInterface
     }
 
     /**
+     * Decodes a string representation of a UUID into a UuidInterface object instance
+     *
+     * @param string $encodedUuid
+     * @return UuidInterface
+     * @throws \Ramsey\Uuid\Exception\InvalidUuidStringException
+     */
+    public function decode($encodedUuid)
+    {
+        $components = $this->extractComponents($encodedUuid);
+        $fields = $this->getFields($components);
+
+        return $this->builder->build($this, $fields);
+    }
+
+    /**
      * Decodes a binary representation of a UUID into a UuidInterface object instance
      *
      * @param string $bytes
      * @return UuidInterface
+     * @throws \InvalidArgumentException if string has not 16 characters
      */
     public function decodeBytes($bytes)
     {
@@ -87,17 +103,13 @@ class StringCodec implements CodecInterface
     }
 
     /**
-     * Decodes a string representation of a UUID into a UuidInterface object instance
+     * Returns the UUID builder
      *
-     * @param string $encodedUuid
-     * @return UuidInterface
+     * @return UuidBuilderInterface
      */
-    public function decode($encodedUuid)
+    protected function getBuilder()
     {
-        $components = $this->extractComponents($encodedUuid);
-        $fields = $this->getFields($components);
-
-        return $this->builder->build($this, $fields);
+        return $this->builder;
     }
 
     /**
@@ -105,6 +117,7 @@ class StringCodec implements CodecInterface
      *
      * @param string $encodedUuid
      * @return array
+     * @throws \Ramsey\Uuid\Exception\InvalidUuidStringException
      */
     protected function extractComponents($encodedUuid)
     {
@@ -153,15 +166,5 @@ class StringCodec implements CodecInterface
             'clock_seq_low' => str_pad(substr($components[3], 2), 2, '0', STR_PAD_LEFT),
             'node' => str_pad($components[4], 12, '0', STR_PAD_LEFT)
         );
-    }
-
-    /**
-     * Returns the UUID builder
-     *
-     * @return UuidBuilderInterface
-     */
-    protected function getBuilder()
-    {
-        return $this->builder;
     }
 }

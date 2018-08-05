@@ -61,7 +61,6 @@ class Swift_Transport_NullTransport implements Swift_Transport
     /**
      * Sends the given message.
      *
-     * @param Swift_Mime_SimpleMessage $message
      * @param string[] $failedRecipients An array of failures by-reference
      *
      * @return int The number of sent emails
@@ -81,18 +80,16 @@ class Swift_Transport_NullTransport implements Swift_Transport
         }
 
         $count = (
-            count((array)$message->getTo())
-            + count((array)$message->getCc())
-            + count((array)$message->getBcc())
-        );
+            count((array) $message->getTo())
+            + count((array) $message->getCc())
+            + count((array) $message->getBcc())
+            );
 
         return $count;
     }
 
     /**
      * Register a plugin.
-     *
-     * @param Swift_Events_EventListener $plugin
      */
     public function registerPlugin(Swift_Events_EventListener $plugin)
     {

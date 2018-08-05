@@ -26,6 +26,7 @@ class DescriptorCommandMbString extends Command
             ->addUsage('-o|--option_name <argument_name>')
             ->addUsage('<argument_name>')
             ->addArgument('argument_åèä', InputArgument::REQUIRED)
-            ->addOption('option_åèä', 'o', InputOption::VALUE_NONE);
+            ->addOption('option_åèä', 'o', InputOption::VALUE_NONE)
+        ;
     }
 }

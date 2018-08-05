@@ -2,9 +2,9 @@
 
 namespace Illuminate\Database\Query\Grammars;
 
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Database\Query\Builder;
 
 class SQLiteGrammar extends Grammar
 {
@@ -41,7 +41,7 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile a select query into SQL.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
+     * @param  \Illuminate\Database\Query\Builder  $query
      * @return string
      */
     public function compileSelect(Builder $query)
@@ -49,17 +49,105 @@ class SQLiteGrammar extends Grammar
         $sql = parent::compileSelect($query);
 
         if ($query->unions) {
-            $sql = 'select * from (' . $sql . ') ' . $this->compileUnions($query);
+            $sql = 'select * from ('.$sql.') '.$this->compileUnions($query);
         }
 
         return $sql;
     }
 
     /**
+     * Compile a single union statement.
+     *
+     * @param  array  $union
+     * @return string
+     */
+    protected function compileUnion(array $union)
+    {
+        $conjunction = $union['all'] ? ' union all ' : ' union ';
+
+        return $conjunction.'select * from ('.$union['query']->toSql().')';
+    }
+
+    /**
+     * Compile a "where date" clause.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereDate(Builder $query, $where)
+    {
+        return $this->dateBasedWhere('%Y-%m-%d', $query, $where);
+    }
+
+    /**
+     * Compile a "where day" clause.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereDay(Builder $query, $where)
+    {
+        return $this->dateBasedWhere('%d', $query, $where);
+    }
+
+    /**
+     * Compile a "where month" clause.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereMonth(Builder $query, $where)
+    {
+        return $this->dateBasedWhere('%m', $query, $where);
+    }
+
+    /**
+     * Compile a "where year" clause.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereYear(Builder $query, $where)
+    {
+        return $this->dateBasedWhere('%Y', $query, $where);
+    }
+
+    /**
+     * Compile a "where time" clause.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereTime(Builder $query, $where)
+    {
+        return $this->dateBasedWhere('%H:%M:%S', $query, $where);
+    }
+
+    /**
+     * Compile a date based where clause.
+     *
+     * @param  string  $type
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function dateBasedWhere($type, Builder $query, $where)
+    {
+        $value = $this->parameter($where['value']);
+
+        return "strftime('{$type}', {$this->wrap($where['column'])}) {$where['operator']} cast({$value} as text)";
+    }
+
+    /**
      * Compile an insert statement into SQL.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $values
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $values
      * @return string
      */
     public function compileInsert(Builder $query, array $values)
@@ -69,17 +157,17 @@ class SQLiteGrammar extends Grammar
         // basic routine regardless of an amount of records given to us to insert.
         $table = $this->wrapTable($query->from);
 
-        if (!is_array(reset($values))) {
+        if (! is_array(reset($values))) {
             $values = [$values];
         }
 
         // If there is only one record being inserted, we will just use the usual query
         // grammar insert builder because no special syntax is needed for the single
         // row inserts in SQLite. However, if there are multiples, we'll continue.
-        if (count($values) == 1) {
+        if (count($values) === 1) {
             return empty(reset($values))
-                ? "insert into $table default values"
-                : parent::compileInsert($query, reset($values));
+                    ? "insert into $table default values"
+                    : parent::compileInsert($query, reset($values));
         }
 
         $names = $this->columnize(array_keys(reset($values)));
@@ -90,19 +178,19 @@ class SQLiteGrammar extends Grammar
         // unions joining them together. So we'll build out this list of columns and
         // then join them all together with select unions to complete the queries.
         foreach (array_keys(reset($values)) as $column) {
-            $columns[] = '? as ' . $this->wrap($column);
+            $columns[] = '? as '.$this->wrap($column);
         }
 
         $columns = array_fill(0, count($values), implode(', ', $columns));
 
-        return "insert into $table ($names) select " . implode(' union all select ', $columns);
+        return "insert into $table ($names) select ".implode(' union all select ', $columns);
     }
 
     /**
      * Compile an update statement into SQL.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $values
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $values
      * @return string
      */
     public function compileUpdate(Builder $query, $values)
@@ -110,7 +198,7 @@ class SQLiteGrammar extends Grammar
         $table = $this->wrapTable($query->from);
 
         $columns = collect($values)->map(function ($value, $key) use ($query) {
-            return $this->wrap(Str::after($key, $query->from . '.')) . ' = ' . $this->parameter($value);
+            return $this->wrap(Str::after($key, $query->from.'.')).' = '.$this->parameter($value);
         })->implode(', ');
 
         if (isset($query->joins) || isset($query->limit)) {
@@ -125,8 +213,8 @@ class SQLiteGrammar extends Grammar
     /**
      * Prepare the bindings for an update statement.
      *
-     * @param  array $bindings
-     * @param  array $values
+     * @param  array  $bindings
+     * @param  array  $values
      * @return array
      */
     public function prepareBindingsForUpdate(array $bindings, array $values)
@@ -141,7 +229,7 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile a delete statement into SQL.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
+     * @param  \Illuminate\Database\Query\Builder  $query
      * @return string
      */
     public function compileDelete(Builder $query)
@@ -160,7 +248,7 @@ class SQLiteGrammar extends Grammar
     /**
      * Prepare the bindings for a delete statement.
      *
-     * @param  array $bindings
+     * @param  array  $bindings
      * @return array
      */
     public function prepareBindingsForDelete(array $bindings)
@@ -175,102 +263,14 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile a truncate table statement into SQL.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
+     * @param  \Illuminate\Database\Query\Builder  $query
      * @return array
      */
     public function compileTruncate(Builder $query)
     {
         return [
             'delete from sqlite_sequence where name = ?' => [$query->from],
-            'delete from ' . $this->wrapTable($query->from) => [],
+            'delete from '.$this->wrapTable($query->from) => [],
         ];
-    }
-
-    /**
-     * Compile a single union statement.
-     *
-     * @param  array $union
-     * @return string
-     */
-    protected function compileUnion(array $union)
-    {
-        $conjunction = $union['all'] ? ' union all ' : ' union ';
-
-        return $conjunction . 'select * from (' . $union['query']->toSql() . ')';
-    }
-
-    /**
-     * Compile a "where date" clause.
-     *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $where
-     * @return string
-     */
-    protected function whereDate(Builder $query, $where)
-    {
-        return $this->dateBasedWhere('%Y-%m-%d', $query, $where);
-    }
-
-    /**
-     * Compile a date based where clause.
-     *
-     * @param  string $type
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $where
-     * @return string
-     */
-    protected function dateBasedWhere($type, Builder $query, $where)
-    {
-        $value = $this->parameter($where['value']);
-
-        return "strftime('{$type}', {$this->wrap($where['column'])}) {$where['operator']} cast({$value} as text)";
-    }
-
-    /**
-     * Compile a "where day" clause.
-     *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $where
-     * @return string
-     */
-    protected function whereDay(Builder $query, $where)
-    {
-        return $this->dateBasedWhere('%d', $query, $where);
-    }
-
-    /**
-     * Compile a "where month" clause.
-     *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $where
-     * @return string
-     */
-    protected function whereMonth(Builder $query, $where)
-    {
-        return $this->dateBasedWhere('%m', $query, $where);
-    }
-
-    /**
-     * Compile a "where year" clause.
-     *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $where
-     * @return string
-     */
-    protected function whereYear(Builder $query, $where)
-    {
-        return $this->dateBasedWhere('%Y', $query, $where);
-    }
-
-    /**
-     * Compile a "where time" clause.
-     *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $where
-     * @return string
-     */
-    protected function whereTime(Builder $query, $where)
-    {
-        return $this->dateBasedWhere('%H:%M:%S', $query, $where);
     }
 }

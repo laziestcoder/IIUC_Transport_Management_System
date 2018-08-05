@@ -14,8 +14,8 @@
 
 namespace Ramsey\Uuid\Generator;
 
-use RandomLib\Factory;
 use RandomLib\Generator;
+use RandomLib\Factory;
 
 /**
  * RandomLibAdapter provides functionality to generate strings of random

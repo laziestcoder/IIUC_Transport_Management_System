@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 use PHPUnit\Framework\TestCase;
 
 class TemplateMethodsTest extends TestCase
@@ -22,6 +21,16 @@ class TemplateMethodsTest extends TestCase
         print __METHOD__ . "\n";
     }
 
+    protected function setUp(): void
+    {
+        print __METHOD__ . "\n";
+    }
+
+    protected function tearDown(): void
+    {
+        print __METHOD__ . "\n";
+    }
+
     public function testOne(): void
     {
         print __METHOD__ . "\n";
@@ -32,16 +41,6 @@ class TemplateMethodsTest extends TestCase
     {
         print __METHOD__ . "\n";
         $this->assertTrue(false);
-    }
-
-    protected function setUp(): void
-    {
-        print __METHOD__ . "\n";
-    }
-
-    protected function tearDown(): void
-    {
-        print __METHOD__ . "\n";
     }
 
     protected function assertPreConditions(): void

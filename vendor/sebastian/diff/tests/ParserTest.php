@@ -16,9 +16,9 @@ use SebastianBergmann\Diff\Utils\FileUtils;
 /**
  * @covers SebastianBergmann\Diff\Parser
  *
- * @uses   SebastianBergmann\Diff\Chunk
- * @uses   SebastianBergmann\Diff\Diff
- * @uses   SebastianBergmann\Diff\Line
+ * @uses SebastianBergmann\Diff\Chunk
+ * @uses SebastianBergmann\Diff\Diff
+ * @uses SebastianBergmann\Diff\Line
  */
 final class ParserTest extends TestCase
 {
@@ -26,6 +26,11 @@ final class ParserTest extends TestCase
      * @var Parser
      */
     private $parser;
+
+    protected function setUp(): void
+    {
+        $this->parser = new Parser;
+    }
 
     public function testParse(): void
     {
@@ -70,7 +75,7 @@ final class ParserTest extends TestCase
 
     public function testParseWithRemovedLines(): void
     {
-        $content = <<<A
+        $content = <<<END
 diff --git a/Test.txt b/Test.txt
 index abcdefg..abcdefh 100644
 --- a/Test.txt
@@ -78,7 +83,7 @@ index abcdefg..abcdefh 100644
 @@ -49,9 +49,8 @@
  A
 -B
-A;
+END;
         $diffs = $this->parser->parse($content);
         $this->assertInternalType('array', $diffs);
         $this->assertContainsOnlyInstancesOf(Diff::class, $diffs);
@@ -113,7 +118,7 @@ A;
 
     public function testParseDiffForMulitpleFiles(): void
     {
-        $content = <<<A
+        $content = <<<END
 diff --git a/Test.txt b/Test.txt
 index abcdefg..abcdefh 100644
 --- a/Test.txt
@@ -129,7 +134,7 @@ index abcdefg..abcdefh 100644
 @@ -1,2 +1,3 @@
  A
 +B
-A;
+END;
         $diffs = $this->parser->parse($content);
         $this->assertCount(2, $diffs);
 
@@ -166,10 +171,5 @@ A;
                 \unserialize(FileUtils::getFileContent(__DIR__ . '/fixtures/serialized_diff.bin')),
             ],
         ];
-    }
-
-    protected function setUp(): void
-    {
-        $this->parser = new Parser;
     }
 }

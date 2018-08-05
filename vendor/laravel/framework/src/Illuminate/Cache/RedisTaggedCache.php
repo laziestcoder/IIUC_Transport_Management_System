@@ -20,9 +20,9 @@ class RedisTaggedCache extends TaggedCache
     /**
      * Store an item in the cache.
      *
-     * @param  string $key
-     * @param  mixed $value
-     * @param  \DateTime|float|int|null $minutes
+     * @param  string  $key
+     * @param  mixed   $value
+     * @param  \DateTime|float|int|null  $minutes
      * @return void
      */
     public function put($key, $value, $minutes = null)
@@ -33,51 +33,10 @@ class RedisTaggedCache extends TaggedCache
     }
 
     /**
-     * Store standard key references into store.
-     *
-     * @param  string $namespace
-     * @param  string $key
-     * @return void
-     */
-    protected function pushStandardKeys($namespace, $key)
-    {
-        $this->pushKeys($namespace, $key, self::REFERENCE_KEY_STANDARD);
-    }
-
-    /**
-     * Store a reference to the cache key against the reference key.
-     *
-     * @param  string $namespace
-     * @param  string $key
-     * @param  string $reference
-     * @return void
-     */
-    protected function pushKeys($namespace, $key, $reference)
-    {
-        $fullKey = $this->store->getPrefix() . sha1($namespace) . ':' . $key;
-
-        foreach (explode('|', $namespace) as $segment) {
-            $this->store->connection()->sadd($this->referenceKey($segment, $reference), $fullKey);
-        }
-    }
-
-    /**
-     * Get the reference key for the segment.
-     *
-     * @param  string $segment
-     * @param  string $suffix
-     * @return string
-     */
-    protected function referenceKey($segment, $suffix)
-    {
-        return $this->store->getPrefix() . $segment . ':' . $suffix;
-    }
-
-    /**
      * Increment the value of an item in the cache.
      *
-     * @param  string $key
-     * @param  mixed $value
+     * @param  string  $key
+     * @param  mixed   $value
      * @return void
      */
     public function increment($key, $value = 1)
@@ -90,8 +49,8 @@ class RedisTaggedCache extends TaggedCache
     /**
      * Decrement the value of an item in the cache.
      *
-     * @param  string $key
-     * @param  mixed $value
+     * @param  string  $key
+     * @param  mixed   $value
      * @return void
      */
     public function decrement($key, $value = 1)
@@ -104,8 +63,8 @@ class RedisTaggedCache extends TaggedCache
     /**
      * Store an item in the cache indefinitely.
      *
-     * @param  string $key
-     * @param  mixed $value
+     * @param  string  $key
+     * @param  mixed   $value
      * @return void
      */
     public function forever($key, $value)
@@ -113,18 +72,6 @@ class RedisTaggedCache extends TaggedCache
         $this->pushForeverKeys($this->tags->getNamespace(), $key);
 
         parent::forever($key, $value);
-    }
-
-    /**
-     * Store forever key references into store.
-     *
-     * @param  string $namespace
-     * @param  string $key
-     * @return void
-     */
-    protected function pushForeverKeys($namespace, $key)
-    {
-        $this->pushKeys($namespace, $key, self::REFERENCE_KEY_FOREVER);
     }
 
     /**
@@ -141,6 +88,47 @@ class RedisTaggedCache extends TaggedCache
     }
 
     /**
+     * Store standard key references into store.
+     *
+     * @param  string  $namespace
+     * @param  string  $key
+     * @return void
+     */
+    protected function pushStandardKeys($namespace, $key)
+    {
+        $this->pushKeys($namespace, $key, self::REFERENCE_KEY_STANDARD);
+    }
+
+    /**
+     * Store forever key references into store.
+     *
+     * @param  string  $namespace
+     * @param  string  $key
+     * @return void
+     */
+    protected function pushForeverKeys($namespace, $key)
+    {
+        $this->pushKeys($namespace, $key, self::REFERENCE_KEY_FOREVER);
+    }
+
+    /**
+     * Store a reference to the cache key against the reference key.
+     *
+     * @param  string  $namespace
+     * @param  string  $key
+     * @param  string  $reference
+     * @return void
+     */
+    protected function pushKeys($namespace, $key, $reference)
+    {
+        $fullKey = $this->store->getPrefix().sha1($namespace).':'.$key;
+
+        foreach (explode('|', $namespace) as $segment) {
+            $this->store->connection()->sadd($this->referenceKey($segment, $reference), $fullKey);
+        }
+    }
+
+    /**
      * Delete all of the items that were stored forever.
      *
      * @return void
@@ -151,9 +139,19 @@ class RedisTaggedCache extends TaggedCache
     }
 
     /**
+     * Delete all standard items.
+     *
+     * @return void
+     */
+    protected function deleteStandardKeys()
+    {
+        $this->deleteKeysByReference(self::REFERENCE_KEY_STANDARD);
+    }
+
+    /**
      * Find and delete all of the items that were stored against a reference.
      *
-     * @param  string $reference
+     * @param  string  $reference
      * @return void
      */
     protected function deleteKeysByReference($reference)
@@ -168,7 +166,7 @@ class RedisTaggedCache extends TaggedCache
     /**
      * Delete item keys that have been stored against a reference.
      *
-     * @param  string $referenceKey
+     * @param  string  $referenceKey
      * @return void
      */
     protected function deleteValues($referenceKey)
@@ -183,12 +181,14 @@ class RedisTaggedCache extends TaggedCache
     }
 
     /**
-     * Delete all standard items.
+     * Get the reference key for the segment.
      *
-     * @return void
+     * @param  string  $segment
+     * @param  string  $suffix
+     * @return string
      */
-    protected function deleteStandardKeys()
+    protected function referenceKey($segment, $suffix)
     {
-        $this->deleteKeysByReference(self::REFERENCE_KEY_STANDARD);
+        return $this->store->getPrefix().$segment.':'.$suffix;
     }
 }

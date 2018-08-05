@@ -20,7 +20,7 @@ final class PHP
 {
     /**
      * @param CodeCoverage $coverage
-     * @param null|string $target
+     * @param null|string  $target
      *
      * @throws \SebastianBergmann\CodeCoverage\RuntimeException
      *

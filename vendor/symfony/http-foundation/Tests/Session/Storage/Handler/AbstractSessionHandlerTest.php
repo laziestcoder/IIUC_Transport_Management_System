@@ -23,7 +23,7 @@ class AbstractSessionHandlerTest extends TestCase
             1 => array('file', '/dev/null', 'w'),
             2 => array('file', '/dev/null', 'w'),
         );
-        if (!self::$server = @proc_open('exec php -S localhost:8053', $spec, $pipes, __DIR__ . '/Fixtures')) {
+        if (!self::$server = @proc_open('exec php -S localhost:8053', $spec, $pipes, __DIR__.'/Fixtures')) {
             self::markTestSkipped('PHP server unable to start.');
         }
         sleep(1);
@@ -46,12 +46,12 @@ class AbstractSessionHandlerTest extends TestCase
         $context = stream_context_create($context);
         $result = file_get_contents(sprintf('http://localhost:8053/%s.php', $fixture), false, $context);
 
-        $this->assertStringEqualsFile(__DIR__ . sprintf('/Fixtures/%s.expected', $fixture), $result);
+        $this->assertStringEqualsFile(__DIR__.sprintf('/Fixtures/%s.expected', $fixture), $result);
     }
 
     public function provideSession()
     {
-        foreach (glob(__DIR__ . '/Fixtures/*.php') as $file) {
+        foreach (glob(__DIR__.'/Fixtures/*.php') as $file) {
             yield array(pathinfo($file, PATHINFO_FILENAME));
         }
     }

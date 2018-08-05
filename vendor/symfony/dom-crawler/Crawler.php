@@ -55,8 +55,8 @@ class Crawler implements \Countable, \IteratorAggregate
     private $isHtml = true;
 
     /**
-     * @param mixed $node A Node to use as the base for the crawling
-     * @param string $uri The current URI
+     * @param mixed  $node     A Node to use as the base for the crawling
+     * @param string $uri      The current URI
      * @param string $baseHref The base href value
      */
     public function __construct($node = null, $uri = null, $baseHref = null)
@@ -65,6 +65,35 @@ class Crawler implements \Countable, \IteratorAggregate
         $this->baseHref = $baseHref ?: $uri;
 
         $this->add($node);
+    }
+
+    /**
+     * Returns the current URI.
+     *
+     * @return string
+     */
+    public function getUri()
+    {
+        return $this->uri;
+    }
+
+    /**
+     * Returns base href.
+     *
+     * @return string
+     */
+    public function getBaseHref()
+    {
+        return $this->baseHref;
+    }
+
+    /**
+     * Removes all the nodes.
+     */
+    public function clear()
+    {
+        $this->nodes = array();
+        $this->document = null;
     }
 
     /**
@@ -83,65 +112,12 @@ class Crawler implements \Countable, \IteratorAggregate
             $this->addNodeList($node);
         } elseif ($node instanceof \DOMNode) {
             $this->addNode($node);
-        } elseif (is_array($node)) {
+        } elseif (\is_array($node)) {
             $this->addNodes($node);
-        } elseif (is_string($node)) {
+        } elseif (\is_string($node)) {
             $this->addContent($node);
         } elseif (null !== $node) {
-            throw new \InvalidArgumentException(sprintf('Expecting a DOMNodeList or DOMNode instance, an array, a string, or null, but got "%s".', is_object($node) ? get_class($node) : gettype($node)));
-        }
-    }
-
-    /**
-     * Adds a \DOMNodeList to the list of nodes.
-     *
-     * @param \DOMNodeList $nodes A \DOMNodeList instance
-     */
-    public function addNodeList(\DOMNodeList $nodes)
-    {
-        foreach ($nodes as $node) {
-            if ($node instanceof \DOMNode) {
-                $this->addNode($node);
-            }
-        }
-    }
-
-    /**
-     * Adds a \DOMNode instance to the list of nodes.
-     *
-     * @param \DOMNode $node A \DOMNode instance
-     */
-    public function addNode(\DOMNode $node)
-    {
-        if ($node instanceof \DOMDocument) {
-            $node = $node->documentElement;
-        }
-
-        if (null !== $this->document && $this->document !== $node->ownerDocument) {
-            throw new \InvalidArgumentException('Attaching DOM nodes from multiple documents in the same crawler is forbidden.');
-        }
-
-        if (null === $this->document) {
-            $this->document = $node->ownerDocument;
-        }
-
-        // Don't add duplicate nodes in the Crawler
-        if (in_array($node, $this->nodes, true)) {
-            return;
-        }
-
-        $this->nodes[] = $node;
-    }
-
-    /**
-     * Adds an array of \DOMNode instances to the list of nodes.
-     *
-     * @param \DOMNode[] $nodes An array of \DOMNode instances
-     */
-    public function addNodes(array $nodes)
-    {
-        foreach ($nodes as $node) {
-            $this->add($node);
+            throw new \InvalidArgumentException(sprintf('Expecting a DOMNodeList or DOMNode instance, an array, a string, or null, but got "%s".', \is_object($node) ? \get_class($node) : \gettype($node)));
         }
     }
 
@@ -152,8 +128,8 @@ class Crawler implements \Countable, \IteratorAggregate
      * or ISO-8859-1 as a fallback, which is the default charset defined by the
      * HTTP 1.1 specification.
      *
-     * @param string $content A string to parse as HTML/XML
-     * @param null|string $type The content type of the string
+     * @param string      $content A string to parse as HTML/XML
+     * @param null|string $type    The content type of the string
      */
     public function addContent($content, $type = null)
     {
@@ -193,6 +169,61 @@ class Crawler implements \Countable, \IteratorAggregate
     }
 
     /**
+     * Adds an HTML content to the list of nodes.
+     *
+     * The libxml errors are disabled when the content is parsed.
+     *
+     * If you want to get parsing errors, be sure to enable
+     * internal errors via libxml_use_internal_errors(true)
+     * and then, get the errors via libxml_get_errors(). Be
+     * sure to clear errors with libxml_clear_errors() afterward.
+     *
+     * @param string $content The HTML content
+     * @param string $charset The charset
+     */
+    public function addHtmlContent($content, $charset = 'UTF-8')
+    {
+        $internalErrors = libxml_use_internal_errors(true);
+        $disableEntities = libxml_disable_entity_loader(true);
+
+        $dom = new \DOMDocument('1.0', $charset);
+        $dom->validateOnParse = true;
+
+        set_error_handler(function () { throw new \Exception(); });
+
+        try {
+            // Convert charset to HTML-entities to work around bugs in DOMDocument::loadHTML()
+            $content = mb_convert_encoding($content, 'HTML-ENTITIES', $charset);
+        } catch (\Exception $e) {
+        }
+
+        restore_error_handler();
+
+        if ('' !== trim($content)) {
+            @$dom->loadHTML($content);
+        }
+
+        libxml_use_internal_errors($internalErrors);
+        libxml_disable_entity_loader($disableEntities);
+
+        $this->addDocument($dom);
+
+        $base = $this->filterRelativeXPath('descendant-or-self::base')->extract(array('href'));
+
+        $baseHref = current($base);
+        if (\count($base) && !empty($baseHref)) {
+            if ($this->baseHref) {
+                $linkNode = $dom->createElement('a');
+                $linkNode->setAttribute('href', $baseHref);
+                $link = new Link($linkNode, $this->baseHref);
+                $this->baseHref = $link->getUri();
+            } else {
+                $this->baseHref = $baseHref;
+            }
+        }
+    }
+
+    /**
      * Adds an XML content to the list of nodes.
      *
      * The libxml errors are disabled when the content is parsed.
@@ -204,7 +235,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *
      * @param string $content The XML content
      * @param string $charset The charset
-     * @param int $options Bitwise OR of the libxml option constants
+     * @param int    $options Bitwise OR of the libxml option constants
      *                        LIBXML_PARSEHUGE is dangerous, see
      *                        http://symfony.com/blog/security-release-symfony-2-0-17-released
      */
@@ -246,222 +277,72 @@ class Crawler implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Adds an HTML content to the list of nodes.
+     * Adds a \DOMNodeList to the list of nodes.
      *
-     * The libxml errors are disabled when the content is parsed.
-     *
-     * If you want to get parsing errors, be sure to enable
-     * internal errors via libxml_use_internal_errors(true)
-     * and then, get the errors via libxml_get_errors(). Be
-     * sure to clear errors with libxml_clear_errors() afterward.
-     *
-     * @param string $content The HTML content
-     * @param string $charset The charset
+     * @param \DOMNodeList $nodes A \DOMNodeList instance
      */
-    public function addHtmlContent($content, $charset = 'UTF-8')
+    public function addNodeList(\DOMNodeList $nodes)
     {
-        $internalErrors = libxml_use_internal_errors(true);
-        $disableEntities = libxml_disable_entity_loader(true);
-
-        $dom = new \DOMDocument('1.0', $charset);
-        $dom->validateOnParse = true;
-
-        set_error_handler(function () {
-            throw new \Exception();
-        });
-
-        try {
-            // Convert charset to HTML-entities to work around bugs in DOMDocument::loadHTML()
-            $content = mb_convert_encoding($content, 'HTML-ENTITIES', $charset);
-        } catch (\Exception $e) {
-        }
-
-        restore_error_handler();
-
-        if ('' !== trim($content)) {
-            @$dom->loadHTML($content);
-        }
-
-        libxml_use_internal_errors($internalErrors);
-        libxml_disable_entity_loader($disableEntities);
-
-        $this->addDocument($dom);
-
-        $base = $this->filterRelativeXPath('descendant-or-self::base')->extract(array('href'));
-
-        $baseHref = current($base);
-        if (count($base) && !empty($baseHref)) {
-            if ($this->baseHref) {
-                $linkNode = $dom->createElement('a');
-                $linkNode->setAttribute('href', $baseHref);
-                $link = new Link($linkNode, $this->baseHref);
-                $this->baseHref = $link->getUri();
-            } else {
-                $this->baseHref = $baseHref;
+        foreach ($nodes as $node) {
+            if ($node instanceof \DOMNode) {
+                $this->addNode($node);
             }
         }
     }
 
     /**
-     * Extracts information from the list of nodes.
+     * Adds an array of \DOMNode instances to the list of nodes.
      *
-     * You can extract attributes or/and the node value (_text).
-     *
-     * Example:
-     *
-     * $crawler->filter('h1 a')->extract(array('_text', 'href'));
-     *
-     * @param array $attributes An array of attributes
-     *
-     * @return array An array of extracted values
+     * @param \DOMNode[] $nodes An array of \DOMNode instances
      */
-    public function extract($attributes)
+    public function addNodes(array $nodes)
     {
-        $attributes = (array)$attributes;
-        $count = count($attributes);
-
-        $data = array();
-        foreach ($this->nodes as $node) {
-            $elements = array();
-            foreach ($attributes as $attribute) {
-                if ('_text' === $attribute) {
-                    $elements[] = $node->nodeValue;
-                } else {
-                    $elements[] = $node->getAttribute($attribute);
-                }
-            }
-
-            $data[] = 1 === $count ? $elements[0] : $elements;
+        foreach ($nodes as $node) {
+            $this->add($node);
         }
-
-        return $data;
     }
 
     /**
-     * Filters the list of nodes with an XPath expression.
+     * Adds a \DOMNode instance to the list of nodes.
      *
-     * The XPath expression should already be processed to apply it in the context of each node.
+     * @param \DOMNode $node A \DOMNode instance
+     */
+    public function addNode(\DOMNode $node)
+    {
+        if ($node instanceof \DOMDocument) {
+            $node = $node->documentElement;
+        }
+
+        if (null !== $this->document && $this->document !== $node->ownerDocument) {
+            throw new \InvalidArgumentException('Attaching DOM nodes from multiple documents in the same crawler is forbidden.');
+        }
+
+        if (null === $this->document) {
+            $this->document = $node->ownerDocument;
+        }
+
+        // Don't add duplicate nodes in the Crawler
+        if (\in_array($node, $this->nodes, true)) {
+            return;
+        }
+
+        $this->nodes[] = $node;
+    }
+
+    /**
+     * Returns a node given its position in the node list.
      *
-     * @param string $xpath
+     * @param int $position The position
      *
      * @return self
      */
-    private function filterRelativeXPath($xpath)
+    public function eq($position)
     {
-        $prefixes = $this->findNamespacePrefixes($xpath);
-
-        $crawler = $this->createSubCrawler(null);
-
-        foreach ($this->nodes as $node) {
-            $domxpath = $this->createDOMXPath($node->ownerDocument, $prefixes);
-            $crawler->add($domxpath->query($xpath, $node));
+        if (isset($this->nodes[$position])) {
+            return $this->createSubCrawler($this->nodes[$position]);
         }
 
-        return $crawler;
-    }
-
-    /**
-     * @param string $xpath
-     *
-     * @return array
-     */
-    private function findNamespacePrefixes($xpath)
-    {
-        if (preg_match_all('/(?P<prefix>[a-z_][a-z_0-9\-\.]*+):[^"\/:]/i', $xpath, $matches)) {
-            return array_unique($matches['prefix']);
-        }
-
-        return array();
-    }
-
-    /**
-     * Creates a crawler for some subnodes.
-     *
-     * @param \DOMElement|\DOMElement[]|\DOMNodeList|null $nodes
-     *
-     * @return static
-     */
-    private function createSubCrawler($nodes)
-    {
-        $crawler = new static($nodes, $this->uri, $this->baseHref);
-        $crawler->isHtml = $this->isHtml;
-        $crawler->document = $this->document;
-        $crawler->namespaces = $this->namespaces;
-
-        return $crawler;
-    }
-
-    /**
-     * @param \DOMDocument $document
-     * @param array $prefixes
-     *
-     * @return \DOMXPath
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function createDOMXPath(\DOMDocument $document, array $prefixes = array())
-    {
-        $domxpath = new \DOMXPath($document);
-
-        foreach ($prefixes as $prefix) {
-            $namespace = $this->discoverNamespace($domxpath, $prefix);
-            if (null !== $namespace) {
-                $domxpath->registerNamespace($prefix, $namespace);
-            }
-        }
-
-        return $domxpath;
-    }
-
-    /**
-     * @param \DOMXPath $domxpath
-     * @param string $prefix
-     *
-     * @return string
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function discoverNamespace(\DOMXPath $domxpath, $prefix)
-    {
-        if (isset($this->namespaces[$prefix])) {
-            return $this->namespaces[$prefix];
-        }
-
-        // ask for one namespace, otherwise we'd get a collection with an item for each node
-        $namespaces = $domxpath->query(sprintf('(//namespace::*[name()="%s"])[last()]', $this->defaultNamespacePrefix === $prefix ? '' : $prefix));
-
-        if ($node = $namespaces->item(0)) {
-            return $node->nodeValue;
-        }
-    }
-
-    /**
-     * Returns the current URI.
-     *
-     * @return string
-     */
-    public function getUri()
-    {
-        return $this->uri;
-    }
-
-    /**
-     * Returns base href.
-     *
-     * @return string
-     */
-    public function getBaseHref()
-    {
-        return $this->baseHref;
-    }
-
-    /**
-     * Removes all the nodes.
-     */
-    public function clear()
-    {
-        $this->nodes = array();
-        $this->document = null;
+        return $this->createSubCrawler(null);
     }
 
     /**
@@ -500,7 +381,7 @@ class Crawler implements \Countable, \IteratorAggregate
      */
     public function slice($offset = 0, $length = null)
     {
-        return $this->createSubCrawler(array_slice($this->nodes, $offset, $length));
+        return $this->createSubCrawler(\array_slice($this->nodes, $offset, $length));
     }
 
     /**
@@ -535,29 +416,13 @@ class Crawler implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Returns a node given its position in the node list.
-     *
-     * @param int $position The position
-     *
-     * @return self
-     */
-    public function eq($position)
-    {
-        if (isset($this->nodes[$position])) {
-            return $this->createSubCrawler($this->nodes[$position]);
-        }
-
-        return $this->createSubCrawler(null);
-    }
-
-    /**
      * Returns the last node of the current selection.
      *
      * @return self
      */
     public function last()
     {
-        return $this->eq(count($this->nodes) - 1);
+        return $this->eq(\count($this->nodes) - 1);
     }
 
     /**
@@ -574,37 +439,6 @@ class Crawler implements \Countable, \IteratorAggregate
         }
 
         return $this->createSubCrawler($this->sibling($this->getNode(0)->parentNode->firstChild));
-    }
-
-    /**
-     * @param \DOMElement $node
-     * @param string $siblingDir
-     *
-     * @return array
-     */
-    protected function sibling($node, $siblingDir = 'nextSibling')
-    {
-        $nodes = array();
-
-        do {
-            if ($node !== $this->getNode(0) && 1 === $node->nodeType) {
-                $nodes[] = $node;
-            }
-        } while ($node = $node->$siblingDir);
-
-        return $nodes;
-    }
-
-    /**
-     * @param int $position
-     *
-     * @return \DOMElement|null
-     */
-    public function getNode($position)
-    {
-        if (isset($this->nodes[$position])) {
-            return $this->nodes[$position];
-        }
     }
 
     /**
@@ -786,6 +620,41 @@ class Crawler implements \Countable, \IteratorAggregate
     }
 
     /**
+     * Extracts information from the list of nodes.
+     *
+     * You can extract attributes or/and the node value (_text).
+     *
+     * Example:
+     *
+     * $crawler->filter('h1 a')->extract(array('_text', 'href'));
+     *
+     * @param array $attributes An array of attributes
+     *
+     * @return array An array of extracted values
+     */
+    public function extract($attributes)
+    {
+        $attributes = (array) $attributes;
+        $count = \count($attributes);
+
+        $data = array();
+        foreach ($this->nodes as $node) {
+            $elements = array();
+            foreach ($attributes as $attribute) {
+                if ('_text' === $attribute) {
+                    $elements[] = $node->nodeValue;
+                } else {
+                    $elements[] = $node->getAttribute($attribute);
+                }
+            }
+
+            $data[] = 1 === $count ? $elements[0] : $elements;
+        }
+
+        return $data;
+    }
+
+    /**
      * Filters the list of nodes with an XPath expression.
      *
      * The XPath expression is evaluated in the context of the crawler, which
@@ -807,100 +676,6 @@ class Crawler implements \Countable, \IteratorAggregate
         }
 
         return $this->filterRelativeXPath($xpath);
-    }
-
-    /**
-     * Make the XPath relative to the current context.
-     *
-     * The returned XPath will match elements matching the XPath inside the current crawler
-     * when running in the context of a node of the crawler.
-     *
-     * @param string $xpath
-     *
-     * @return string
-     */
-    private function relativize($xpath)
-    {
-        $expressions = array();
-
-        // An expression which will never match to replace expressions which cannot match in the crawler
-        // We cannot simply drop
-        $nonMatchingExpression = 'a[name() = "b"]';
-
-        $xpathLen = strlen($xpath);
-        $openedBrackets = 0;
-        $startPosition = strspn($xpath, " \t\n\r\0\x0B");
-
-        for ($i = $startPosition; $i <= $xpathLen; ++$i) {
-            $i += strcspn($xpath, '"\'[]|', $i);
-
-            if ($i < $xpathLen) {
-                switch ($xpath[$i]) {
-                    case '"':
-                    case "'":
-                        if (false === $i = strpos($xpath, $xpath[$i], $i + 1)) {
-                            return $xpath; // The XPath expression is invalid
-                        }
-                        continue 2;
-                    case '[':
-                        ++$openedBrackets;
-                        continue 2;
-                    case ']':
-                        --$openedBrackets;
-                        continue 2;
-                }
-            }
-            if ($openedBrackets) {
-                continue;
-            }
-
-            if ($startPosition < $xpathLen && '(' === $xpath[$startPosition]) {
-                // If the union is inside some braces, we need to preserve the opening braces and apply
-                // the change only inside it.
-                $j = 1 + strspn($xpath, "( \t\n\r\0\x0B", $startPosition + 1);
-                $parenthesis = substr($xpath, $startPosition, $j);
-                $startPosition += $j;
-            } else {
-                $parenthesis = '';
-            }
-            $expression = rtrim(substr($xpath, $startPosition, $i - $startPosition));
-
-            if (0 === strpos($expression, 'self::*/')) {
-                $expression = './' . substr($expression, 8);
-            }
-
-            // add prefix before absolute element selector
-            if ('' === $expression) {
-                $expression = $nonMatchingExpression;
-            } elseif (0 === strpos($expression, '//')) {
-                $expression = 'descendant-or-self::' . substr($expression, 2);
-            } elseif (0 === strpos($expression, './/')) {
-                $expression = 'descendant-or-self::' . substr($expression, 3);
-            } elseif (0 === strpos($expression, './')) {
-                $expression = 'self::' . substr($expression, 2);
-            } elseif (0 === strpos($expression, 'child::')) {
-                $expression = 'self::' . substr($expression, 7);
-            } elseif ('/' === $expression[0] || '.' === $expression[0] || 0 === strpos($expression, 'self::')) {
-                $expression = $nonMatchingExpression;
-            } elseif (0 === strpos($expression, 'descendant::')) {
-                $expression = 'descendant-or-self::' . substr($expression, 12);
-            } elseif (preg_match('/^(ancestor|ancestor-or-self|attribute|following|following-sibling|namespace|parent|preceding|preceding-sibling)::/', $expression)) {
-                // the fake root has no parent, preceding or following nodes and also no attributes (even no namespace attributes)
-                $expression = $nonMatchingExpression;
-            } elseif (0 !== strpos($expression, 'descendant-or-self::')) {
-                $expression = 'self::' . $expression;
-            }
-            $expressions[] = $parenthesis . $expression;
-
-            if ($i === $xpathLen) {
-                return implode(' | ', $expressions);
-            }
-
-            $i += strspn($xpath, " \t\n\r\0\x0B", $i + 1);
-            $startPosition = $i + 1;
-        }
-
-        return $xpath; // The XPath expression is invalid
     }
 
     /**
@@ -935,10 +710,177 @@ class Crawler implements \Countable, \IteratorAggregate
      */
     public function selectLink($value)
     {
-        $xpath = sprintf('descendant-or-self::a[contains(concat(\' \', normalize-space(string(.)), \' \'), %s) ', static::xpathLiteral(' ' . $value . ' ')) .
-            sprintf('or ./img[contains(concat(\' \', normalize-space(string(@alt)), \' \'), %s)]]', static::xpathLiteral(' ' . $value . ' '));
+        $xpath = sprintf('descendant-or-self::a[contains(concat(\' \', normalize-space(string(.)), \' \'), %s) ', static::xpathLiteral(' '.$value.' ')).
+                            sprintf('or ./img[contains(concat(\' \', normalize-space(string(@alt)), \' \'), %s)]]', static::xpathLiteral(' '.$value.' '));
 
         return $this->filterRelativeXPath($xpath);
+    }
+
+    /**
+     * Selects images by alt value.
+     *
+     * @param string $value The image alt
+     *
+     * @return self A new instance of Crawler with the filtered list of nodes
+     */
+    public function selectImage($value)
+    {
+        $xpath = sprintf('descendant-or-self::img[contains(normalize-space(string(@alt)), %s)]', static::xpathLiteral($value));
+
+        return $this->filterRelativeXPath($xpath);
+    }
+
+    /**
+     * Selects a button by name or alt value for images.
+     *
+     * @param string $value The button text
+     *
+     * @return self
+     */
+    public function selectButton($value)
+    {
+        $translate = 'translate(@type, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")';
+        $xpath = sprintf('descendant-or-self::input[((contains(%s, "submit") or contains(%1$s, "button")) and contains(concat(\' \', normalize-space(string(@value)), \' \'), %s)) ', $translate, static::xpathLiteral(' '.$value.' ')).
+                         sprintf('or (contains(%s, "image") and contains(concat(\' \', normalize-space(string(@alt)), \' \'), %s)) or @id=%s or @name=%s] ', $translate, static::xpathLiteral(' '.$value.' '), static::xpathLiteral($value), static::xpathLiteral($value)).
+                         sprintf('| descendant-or-self::button[contains(concat(\' \', normalize-space(string(.)), \' \'), %s) or @id=%s or @name=%s]', static::xpathLiteral(' '.$value.' '), static::xpathLiteral($value), static::xpathLiteral($value));
+
+        return $this->filterRelativeXPath($xpath);
+    }
+
+    /**
+     * Returns a Link object for the first node in the list.
+     *
+     * @param string $method The method for the link (get by default)
+     *
+     * @return Link A Link instance
+     *
+     * @throws \InvalidArgumentException If the current node list is empty or the selected node is not instance of DOMElement
+     */
+    public function link($method = 'get')
+    {
+        if (!$this->nodes) {
+            throw new \InvalidArgumentException('The current node list is empty.');
+        }
+
+        $node = $this->getNode(0);
+
+        if (!$node instanceof \DOMElement) {
+            throw new \InvalidArgumentException(sprintf('The selected node should be instance of DOMElement, got "%s".', \get_class($node)));
+        }
+
+        return new Link($node, $this->baseHref, $method);
+    }
+
+    /**
+     * Returns an array of Link objects for the nodes in the list.
+     *
+     * @return Link[] An array of Link instances
+     *
+     * @throws \InvalidArgumentException If the current node list contains non-DOMElement instances
+     */
+    public function links()
+    {
+        $links = array();
+        foreach ($this->nodes as $node) {
+            if (!$node instanceof \DOMElement) {
+                throw new \InvalidArgumentException(sprintf('The current node list should contain only DOMElement instances, "%s" found.', \get_class($node)));
+            }
+
+            $links[] = new Link($node, $this->baseHref, 'get');
+        }
+
+        return $links;
+    }
+
+    /**
+     * Returns an Image object for the first node in the list.
+     *
+     * @return Image An Image instance
+     *
+     * @throws \InvalidArgumentException If the current node list is empty
+     */
+    public function image()
+    {
+        if (!\count($this)) {
+            throw new \InvalidArgumentException('The current node list is empty.');
+        }
+
+        $node = $this->getNode(0);
+
+        if (!$node instanceof \DOMElement) {
+            throw new \InvalidArgumentException(sprintf('The selected node should be instance of DOMElement, got "%s".', \get_class($node)));
+        }
+
+        return new Image($node, $this->baseHref);
+    }
+
+    /**
+     * Returns an array of Image objects for the nodes in the list.
+     *
+     * @return Image[] An array of Image instances
+     */
+    public function images()
+    {
+        $images = array();
+        foreach ($this as $node) {
+            if (!$node instanceof \DOMElement) {
+                throw new \InvalidArgumentException(sprintf('The current node list should contain only DOMElement instances, "%s" found.', \get_class($node)));
+            }
+
+            $images[] = new Image($node, $this->baseHref);
+        }
+
+        return $images;
+    }
+
+    /**
+     * Returns a Form object for the first node in the list.
+     *
+     * @param array  $values An array of values for the form fields
+     * @param string $method The method for the form
+     *
+     * @return Form A Form instance
+     *
+     * @throws \InvalidArgumentException If the current node list is empty or the selected node is not instance of DOMElement
+     */
+    public function form(array $values = null, $method = null)
+    {
+        if (!$this->nodes) {
+            throw new \InvalidArgumentException('The current node list is empty.');
+        }
+
+        $node = $this->getNode(0);
+
+        if (!$node instanceof \DOMElement) {
+            throw new \InvalidArgumentException(sprintf('The selected node should be instance of DOMElement, got "%s".', \get_class($node)));
+        }
+
+        $form = new Form($node, $this->uri, $method, $this->baseHref);
+
+        if (null !== $values) {
+            $form->setValues($values);
+        }
+
+        return $form;
+    }
+
+    /**
+     * Overloads a default namespace prefix to be used with XPath and CSS expressions.
+     *
+     * @param string $prefix
+     */
+    public function setDefaultNamespacePrefix($prefix)
+    {
+        $this->defaultNamespacePrefix = $prefix;
+    }
+
+    /**
+     * @param string $prefix
+     * @param string $namespace
+     */
+    public function registerNamespace($prefix, $namespace)
+    {
+        $this->namespaces[$prefix] = $namespace;
     }
 
     /**
@@ -989,170 +931,132 @@ class Crawler implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Selects images by alt value.
+     * Filters the list of nodes with an XPath expression.
      *
-     * @param string $value The image alt
+     * The XPath expression should already be processed to apply it in the context of each node.
      *
-     * @return self A new instance of Crawler with the filtered list of nodes
-     */
-    public function selectImage($value)
-    {
-        $xpath = sprintf('descendant-or-self::img[contains(normalize-space(string(@alt)), %s)]', static::xpathLiteral($value));
-
-        return $this->filterRelativeXPath($xpath);
-    }
-
-    /**
-     * Selects a button by name or alt value for images.
-     *
-     * @param string $value The button text
+     * @param string $xpath
      *
      * @return self
      */
-    public function selectButton($value)
+    private function filterRelativeXPath($xpath)
     {
-        $translate = 'translate(@type, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")';
-        $xpath = sprintf('descendant-or-self::input[((contains(%s, "submit") or contains(%1$s, "button")) and contains(concat(\' \', normalize-space(string(@value)), \' \'), %s)) ', $translate, static::xpathLiteral(' ' . $value . ' ')) .
-            sprintf('or (contains(%s, "image") and contains(concat(\' \', normalize-space(string(@alt)), \' \'), %s)) or @id=%s or @name=%s] ', $translate, static::xpathLiteral(' ' . $value . ' '), static::xpathLiteral($value), static::xpathLiteral($value)) .
-            sprintf('| descendant-or-self::button[contains(concat(\' \', normalize-space(string(.)), \' \'), %s) or @id=%s or @name=%s]', static::xpathLiteral(' ' . $value . ' '), static::xpathLiteral($value), static::xpathLiteral($value));
+        $prefixes = $this->findNamespacePrefixes($xpath);
 
-        return $this->filterRelativeXPath($xpath);
-    }
+        $crawler = $this->createSubCrawler(null);
 
-    /**
-     * Returns a Link object for the first node in the list.
-     *
-     * @param string $method The method for the link (get by default)
-     *
-     * @return Link A Link instance
-     *
-     * @throws \InvalidArgumentException If the current node list is empty or the selected node is not instance of DOMElement
-     */
-    public function link($method = 'get')
-    {
-        if (!$this->nodes) {
-            throw new \InvalidArgumentException('The current node list is empty.');
-        }
-
-        $node = $this->getNode(0);
-
-        if (!$node instanceof \DOMElement) {
-            throw new \InvalidArgumentException(sprintf('The selected node should be instance of DOMElement, got "%s".', get_class($node)));
-        }
-
-        return new Link($node, $this->baseHref, $method);
-    }
-
-    /**
-     * Returns an array of Link objects for the nodes in the list.
-     *
-     * @return Link[] An array of Link instances
-     *
-     * @throws \InvalidArgumentException If the current node list contains non-DOMElement instances
-     */
-    public function links()
-    {
-        $links = array();
         foreach ($this->nodes as $node) {
-            if (!$node instanceof \DOMElement) {
-                throw new \InvalidArgumentException(sprintf('The current node list should contain only DOMElement instances, "%s" found.', get_class($node)));
+            $domxpath = $this->createDOMXPath($node->ownerDocument, $prefixes);
+            $crawler->add($domxpath->query($xpath, $node));
+        }
+
+        return $crawler;
+    }
+
+    /**
+     * Make the XPath relative to the current context.
+     *
+     * The returned XPath will match elements matching the XPath inside the current crawler
+     * when running in the context of a node of the crawler.
+     *
+     * @param string $xpath
+     *
+     * @return string
+     */
+    private function relativize($xpath)
+    {
+        $expressions = array();
+
+        // An expression which will never match to replace expressions which cannot match in the crawler
+        // We cannot simply drop
+        $nonMatchingExpression = 'a[name() = "b"]';
+
+        $xpathLen = \strlen($xpath);
+        $openedBrackets = 0;
+        $startPosition = strspn($xpath, " \t\n\r\0\x0B");
+
+        for ($i = $startPosition; $i <= $xpathLen; ++$i) {
+            $i += strcspn($xpath, '"\'[]|', $i);
+
+            if ($i < $xpathLen) {
+                switch ($xpath[$i]) {
+                    case '"':
+                    case "'":
+                        if (false === $i = strpos($xpath, $xpath[$i], $i + 1)) {
+                            return $xpath; // The XPath expression is invalid
+                        }
+                        continue 2;
+                    case '[':
+                        ++$openedBrackets;
+                        continue 2;
+                    case ']':
+                        --$openedBrackets;
+                        continue 2;
+                }
+            }
+            if ($openedBrackets) {
+                continue;
             }
 
-            $links[] = new Link($node, $this->baseHref, 'get');
-        }
+            if ($startPosition < $xpathLen && '(' === $xpath[$startPosition]) {
+                // If the union is inside some braces, we need to preserve the opening braces and apply
+                // the change only inside it.
+                $j = 1 + strspn($xpath, "( \t\n\r\0\x0B", $startPosition + 1);
+                $parenthesis = substr($xpath, $startPosition, $j);
+                $startPosition += $j;
+            } else {
+                $parenthesis = '';
+            }
+            $expression = rtrim(substr($xpath, $startPosition, $i - $startPosition));
 
-        return $links;
-    }
-
-    /**
-     * Returns an Image object for the first node in the list.
-     *
-     * @return Image An Image instance
-     *
-     * @throws \InvalidArgumentException If the current node list is empty
-     */
-    public function image()
-    {
-        if (!count($this)) {
-            throw new \InvalidArgumentException('The current node list is empty.');
-        }
-
-        $node = $this->getNode(0);
-
-        if (!$node instanceof \DOMElement) {
-            throw new \InvalidArgumentException(sprintf('The selected node should be instance of DOMElement, got "%s".', get_class($node)));
-        }
-
-        return new Image($node, $this->baseHref);
-    }
-
-    /**
-     * Returns an array of Image objects for the nodes in the list.
-     *
-     * @return Image[] An array of Image instances
-     */
-    public function images()
-    {
-        $images = array();
-        foreach ($this as $node) {
-            if (!$node instanceof \DOMElement) {
-                throw new \InvalidArgumentException(sprintf('The current node list should contain only DOMElement instances, "%s" found.', get_class($node)));
+            if (0 === strpos($expression, 'self::*/')) {
+                $expression = './'.substr($expression, 8);
             }
 
-            $images[] = new Image($node, $this->baseHref);
+            // add prefix before absolute element selector
+            if ('' === $expression) {
+                $expression = $nonMatchingExpression;
+            } elseif (0 === strpos($expression, '//')) {
+                $expression = 'descendant-or-self::'.substr($expression, 2);
+            } elseif (0 === strpos($expression, './/')) {
+                $expression = 'descendant-or-self::'.substr($expression, 3);
+            } elseif (0 === strpos($expression, './')) {
+                $expression = 'self::'.substr($expression, 2);
+            } elseif (0 === strpos($expression, 'child::')) {
+                $expression = 'self::'.substr($expression, 7);
+            } elseif ('/' === $expression[0] || '.' === $expression[0] || 0 === strpos($expression, 'self::')) {
+                $expression = $nonMatchingExpression;
+            } elseif (0 === strpos($expression, 'descendant::')) {
+                $expression = 'descendant-or-self::'.substr($expression, 12);
+            } elseif (preg_match('/^(ancestor|ancestor-or-self|attribute|following|following-sibling|namespace|parent|preceding|preceding-sibling)::/', $expression)) {
+                // the fake root has no parent, preceding or following nodes and also no attributes (even no namespace attributes)
+                $expression = $nonMatchingExpression;
+            } elseif (0 !== strpos($expression, 'descendant-or-self::')) {
+                $expression = 'self::'.$expression;
+            }
+            $expressions[] = $parenthesis.$expression;
+
+            if ($i === $xpathLen) {
+                return implode(' | ', $expressions);
+            }
+
+            $i += strspn($xpath, " \t\n\r\0\x0B", $i + 1);
+            $startPosition = $i + 1;
         }
 
-        return $images;
+        return $xpath; // The XPath expression is invalid
     }
 
     /**
-     * Returns a Form object for the first node in the list.
+     * @param int $position
      *
-     * @param array $values An array of values for the form fields
-     * @param string $method The method for the form
-     *
-     * @return Form A Form instance
-     *
-     * @throws \InvalidArgumentException If the current node list is empty or the selected node is not instance of DOMElement
+     * @return \DOMElement|null
      */
-    public function form(array $values = null, $method = null)
+    public function getNode($position)
     {
-        if (!$this->nodes) {
-            throw new \InvalidArgumentException('The current node list is empty.');
+        if (isset($this->nodes[$position])) {
+            return $this->nodes[$position];
         }
-
-        $node = $this->getNode(0);
-
-        if (!$node instanceof \DOMElement) {
-            throw new \InvalidArgumentException(sprintf('The selected node should be instance of DOMElement, got "%s".', get_class($node)));
-        }
-
-        $form = new Form($node, $this->uri, $method, $this->baseHref);
-
-        if (null !== $values) {
-            $form->setValues($values);
-        }
-
-        return $form;
-    }
-
-    /**
-     * Overloads a default namespace prefix to be used with XPath and CSS expressions.
-     *
-     * @param string $prefix
-     */
-    public function setDefaultNamespacePrefix($prefix)
-    {
-        $this->defaultNamespacePrefix = $prefix;
-    }
-
-    /**
-     * @param string $prefix
-     * @param string $namespace
-     */
-    public function registerNamespace($prefix, $namespace)
-    {
-        $this->namespaces[$prefix] = $namespace;
     }
 
     /**
@@ -1160,7 +1064,7 @@ class Crawler implements \Countable, \IteratorAggregate
      */
     public function count()
     {
-        return count($this->nodes);
+        return \count($this->nodes);
     }
 
     /**
@@ -1169,5 +1073,99 @@ class Crawler implements \Countable, \IteratorAggregate
     public function getIterator()
     {
         return new \ArrayIterator($this->nodes);
+    }
+
+    /**
+     * @param \DOMElement $node
+     * @param string      $siblingDir
+     *
+     * @return array
+     */
+    protected function sibling($node, $siblingDir = 'nextSibling')
+    {
+        $nodes = array();
+
+        do {
+            if ($node !== $this->getNode(0) && 1 === $node->nodeType) {
+                $nodes[] = $node;
+            }
+        } while ($node = $node->$siblingDir);
+
+        return $nodes;
+    }
+
+    /**
+     * @param \DOMDocument $document
+     * @param array        $prefixes
+     *
+     * @return \DOMXPath
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function createDOMXPath(\DOMDocument $document, array $prefixes = array())
+    {
+        $domxpath = new \DOMXPath($document);
+
+        foreach ($prefixes as $prefix) {
+            $namespace = $this->discoverNamespace($domxpath, $prefix);
+            if (null !== $namespace) {
+                $domxpath->registerNamespace($prefix, $namespace);
+            }
+        }
+
+        return $domxpath;
+    }
+
+    /**
+     * @param \DOMXPath $domxpath
+     * @param string    $prefix
+     *
+     * @return string
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function discoverNamespace(\DOMXPath $domxpath, $prefix)
+    {
+        if (isset($this->namespaces[$prefix])) {
+            return $this->namespaces[$prefix];
+        }
+
+        // ask for one namespace, otherwise we'd get a collection with an item for each node
+        $namespaces = $domxpath->query(sprintf('(//namespace::*[name()="%s"])[last()]', $this->defaultNamespacePrefix === $prefix ? '' : $prefix));
+
+        if ($node = $namespaces->item(0)) {
+            return $node->nodeValue;
+        }
+    }
+
+    /**
+     * @param string $xpath
+     *
+     * @return array
+     */
+    private function findNamespacePrefixes($xpath)
+    {
+        if (preg_match_all('/(?P<prefix>[a-z_][a-z_0-9\-\.]*+):[^"\/:]/i', $xpath, $matches)) {
+            return array_unique($matches['prefix']);
+        }
+
+        return array();
+    }
+
+    /**
+     * Creates a crawler for some subnodes.
+     *
+     * @param \DOMElement|\DOMElement[]|\DOMNodeList|null $nodes
+     *
+     * @return static
+     */
+    private function createSubCrawler($nodes)
+    {
+        $crawler = new static($nodes, $this->uri, $this->baseHref);
+        $crawler->isHtml = $this->isHtml;
+        $crawler->document = $this->document;
+        $crawler->namespaces = $this->namespaces;
+
+        return $crawler;
     }
 }

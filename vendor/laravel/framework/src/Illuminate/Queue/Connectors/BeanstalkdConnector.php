@@ -2,17 +2,17 @@
 
 namespace Illuminate\Queue\Connectors;
 
-use Illuminate\Queue\BeanstalkdQueue;
 use Pheanstalk\Connection;
 use Pheanstalk\Pheanstalk;
 use Pheanstalk\PheanstalkInterface;
+use Illuminate\Queue\BeanstalkdQueue;
 
 class BeanstalkdConnector implements ConnectorInterface
 {
     /**
      * Establish a queue connection.
      *
-     * @param  array $config
+     * @param  array  $config
      * @return \Illuminate\Contracts\Queue\Queue
      */
     public function connect(array $config)
@@ -25,7 +25,7 @@ class BeanstalkdConnector implements ConnectorInterface
     /**
      * Create a Pheanstalk instance.
      *
-     * @param  array $config
+     * @param  array  $config
      * @return \Pheanstalk\Pheanstalk
      */
     protected function pheanstalk(array $config)

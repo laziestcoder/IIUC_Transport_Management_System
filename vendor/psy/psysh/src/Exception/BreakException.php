@@ -28,6 +28,16 @@ class BreakException extends \Exception implements Exception
     }
 
     /**
+     * Return a raw (unformatted) version of the error message.
+     *
+     * @return string
+     */
+    public function getRawMessage()
+    {
+        return $this->rawMessage;
+    }
+
+    /**
      * Throws BreakException.
      *
      * Since `throw` can not be inserted into arbitrary expressions, it wraps with function call.
@@ -37,15 +47,5 @@ class BreakException extends \Exception implements Exception
     public static function exitShell()
     {
         throw new self('Goodbye');
-    }
-
-    /**
-     * Return a raw (unformatted) version of the error message.
-     *
-     * @return string
-     */
-    public function getRawMessage()
-    {
-        return $this->rawMessage;
     }
 }

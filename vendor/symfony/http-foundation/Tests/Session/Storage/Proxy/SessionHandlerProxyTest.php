@@ -34,6 +34,18 @@ class SessionHandlerProxyTest extends TestCase
      */
     private $proxy;
 
+    protected function setUp()
+    {
+        $this->mock = $this->getMockBuilder('SessionHandlerInterface')->getMock();
+        $this->proxy = new SessionHandlerProxy($this->mock);
+    }
+
+    protected function tearDown()
+    {
+        $this->mock = null;
+        $this->proxy = null;
+    }
+
     public function testOpenTrue()
     {
         $this->mock->expects($this->once())
@@ -110,15 +122,36 @@ class SessionHandlerProxyTest extends TestCase
         $this->proxy->gc(86400);
     }
 
-    protected function setUp()
+    /**
+     * @requires PHPUnit 5.1
+     */
+    public function testValidateId()
     {
-        $this->mock = $this->getMockBuilder('SessionHandlerInterface')->getMock();
-        $this->proxy = new SessionHandlerProxy($this->mock);
+        $mock = $this->getMockBuilder(array('SessionHandlerInterface', 'SessionUpdateTimestampHandlerInterface'))->getMock();
+        $mock->expects($this->once())
+            ->method('validateId');
+
+        $proxy = new SessionHandlerProxy($mock);
+        $proxy->validateId('id');
+
+        $this->assertTrue($this->proxy->validateId('id'));
     }
 
-    protected function tearDown()
+    /**
+     * @requires PHPUnit 5.1
+     */
+    public function testUpdateTimestamp()
     {
-        $this->mock = null;
-        $this->proxy = null;
+        $mock = $this->getMockBuilder(array('SessionHandlerInterface', 'SessionUpdateTimestampHandlerInterface'))->getMock();
+        $mock->expects($this->once())
+            ->method('updateTimestamp');
+
+        $proxy = new SessionHandlerProxy($mock);
+        $proxy->updateTimestamp('id', 'data');
+
+        $this->mock->expects($this->once())
+            ->method('write');
+
+        $this->proxy->updateTimestamp('id', 'data');
     }
 }

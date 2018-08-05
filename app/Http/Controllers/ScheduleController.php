@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use DB;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
+use Response;
 
 class ScheduleController extends Controller
 {
@@ -33,7 +34,8 @@ class ScheduleController extends Controller
     public function index()
     {
         $schedules = Schedule::all();
-        $saturday = Schedule::all();//->where('day', '1');
+        //$days = Day::all();//->where('day', '1');
+        //$times = Time::all();//->where('day', '1');
 
         $data = array(
             'schedules' => $schedules,
@@ -44,7 +46,8 @@ class ScheduleController extends Controller
             'times' => Time::all('id', 'time'),
             'days' => Day::all('id', 'dayname'),
             'points' => BusPoint::all('id', 'pointname'),
-            'satday' => $saturday,
+            //'days' => $days,
+            //'times' => $times,
         );
         return view("schedule.index")->with($data);
     }
@@ -71,12 +74,35 @@ class ScheduleController extends Controller
         return view("schedule.create")->with($data);
     }
 
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function all()
+    {
+        $schedules = Schedule::all()->sortBy('route');
+
+        $data = array(
+            'schedules' => $schedules,
+            'title' => 'Schedule Information',
+            'titleinfo' => 'All Individual Schedule',
+            'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
+            'times' => Time::all('id', 'time'),
+            'days' => Day::all('id', 'dayname'),
+            'points' => BusPoint::all('id', 'pointname'),
+        );
+        return view("schedule.allschedule")->with($data);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
+
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -90,9 +116,33 @@ class ScheduleController extends Controller
             'route' => 'required|int',
         ]);
 
-        $day = $request->input('day');
+        function dataCheck($day, $route, $time, $male, $female, $toiiuc, $fromiiuc,$user){
+            $data = Schedule::where('day',$day)
+                ->where('route',$route)
+                ->where('time',$time)
+                ->where('male',$male)
+                ->where('female',$female)
+                ->where('toiiuc',$toiiuc)
+                ->where('fromiiuc',$fromiiuc)
+                ->where('user',$user)
+                ->get();
+            if(count($data)>0)
+                return true;
+            else
+                return true;
+
+        }
+        $day= $request->input('day'); $route= $request->input('route'); $time= $request->input('time');
+        $male= $request->input('male'); $female= $request->input('female');
+        $toiiuc= $request->input('toiiuc'); $fromiiuc= $request->input('fromiiuc'); $user = $request->input('user');
+
+
+
         if ($day == '9') {
             for ($i = 1; $i <= 5; $i = $i + 1) {
+                if(dataCheck($i, $route, $time, $male, $female, $toiiuc, $fromiiuc,$user)){
+                    continue;
+                }
                 $schedule = new Schedule;
                 $schedule->day = $i;
                 $schedule->toiiuc = $request->input('toiiuc') ? $request->input('toiiuc') : 0;
@@ -108,7 +158,9 @@ class ScheduleController extends Controller
             }
 
         } else {
-
+            if(dataCheck($day, $route, $time, $male, $female, $toiiuc, $fromiiuc,$user)){
+                return redirect('/admin/auth/schedule/create')->with('error', 'Data Exist');
+            }
             //Create BusRoute
             $schedule = new Schedule;
             $schedule->day = $request->input('day');
@@ -192,30 +244,35 @@ class ScheduleController extends Controller
 
         //Check for correct user
 
-        if (Admin::user()->id !== $schedule->user_id) {
-            return redirect('/admin/auth/schedule/addtime')->with('error', 'Unauthorized Access Denied!');
-        }
-        /* if($BusRoute->cover_image != 'noimage.jpeg' ){
-            //Delete Image From Windows Directory
-            Storage::delete('public/cover_images/'.$BusRoute->cover_image);
-        } */
+        if((Admin::user()->id == $schedule->user_id)||(DB::table('admin_role_users')->where('user_id',(Admin::user()->id))->first()->role_id <= 4))
+//        if (Admin::user()->id !== $schedule->user_id)
+        {
+            /* if($BusRoute->cover_image != 'noimage.jpeg' ){
+                //Delete Image From Windows Directory
+                Storage::delete('public/cover_images/'.$BusRoute->cover_image);
+            } */
 
-        // Check other Tables if the time is used
-        $points = DB::table('points')->where('routeid', $id)->first();
-        $name = DB::table('day')->where('id', $schedule->day)->first()->dayname;
-        $time = Carbon::parse(DB::table('time')->where('time', $schedule->time)->first())->format('g:i A');
-        $route = $schedule->route ? 'AK Khan Shuttle' : 'All Route';
-        if ($points && !$points) {
-            if ($points->routeid == $id) {
-                return redirect('/admin/auth/schedule')->with('error', 'Day "' . $name . '" Time "' . $time . '" Route > "' . $route . '"<br>=> This Bus Schedule has assigned one or more students schedule.<br> Delete all students schedule related to the schedule.<br> Then delete the schedule.');
+            // Check other Tables if the time is used
+            $points = DB::table('points')->where('routeid', $id)->first();
+            $name = DB::table('day')->where('id', $schedule->day)->first()->dayname;
+            $time = Carbon::parse(DB::table('time')->where('time', $schedule->time)->first())->format('g:i A');
+            $route = $schedule->route ? 'AK Khan Shuttle' : 'All Route';
+            if ($points && !$points) {
+                if ($points->routeid == $id) {
+                    return redirect('/admin/auth/allschedule')->with('error', 'Day "' . $name . '" Time "' . $time . '" Route > "' . $route . '"<br>=> This Bus Schedule has assigned one or more students schedule.<br> Delete all students schedule related to the schedule.<br> Then delete the schedule.');
+                } else {
+                    return redirect('/admin/auth/allschedule')->with('error', 'Day "' . $name . '" Time "' . $time . '" Route > "' . $route . '"<br>=> Something went worng!!');
+
+                }
             } else {
-                return redirect('/admin/auth/schedule')->with('error', 'Day "' . $name . '" Time "' . $time . '" Route > "' . $route . '"<br>=> Something went worng!!');
-
+                $schedule->delete();
+                return redirect('/admin/auth/allschedule')->with('success', 'Day > "' . $name . '" Time > "' . $time . '" Route > "' . $route . '"<br>=> Bus Schedule Removed Successfully!');
+                //return redirect('/admin/auth/schedule')->with('success', 'Day '.$name.$time);
             }
-        } else {
-            $schedule->delete();
-            return redirect('/admin/auth/schedule')->with('success', 'Day > "' . $name . '" Time > "' . $time . '" Route > "' . $route . '"<br>=> Bus Schedule Removed Successfully!');
-            //return redirect('/admin/auth/schedule')->with('success', 'Day '.$name.$time);
+        }
+        else{
+            return redirect('/admin/auth/allschedule')->with('error', 'Unauthorized Access Denied!');
+
         }
     }
 }

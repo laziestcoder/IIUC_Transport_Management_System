@@ -17,6 +17,7 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Parser as YamlParser;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * YamlFileLoader loads Yaml routing files.
@@ -27,14 +28,14 @@ use Symfony\Component\Yaml\Parser as YamlParser;
 class YamlFileLoader extends FileLoader
 {
     private static $availableKeys = array(
-        'resource', 'type', 'prefix', 'path', 'host', 'schemes', 'methods', 'defaults', 'requirements', 'options', 'condition', 'controller',
+        'resource', 'type', 'prefix', 'path', 'host', 'schemes', 'methods', 'defaults', 'requirements', 'options', 'condition', 'controller', 'name_prefix', 'trailing_slash_on_root',
     );
     private $yamlParser;
 
     /**
      * Loads a Yaml file.
      *
-     * @param string $file A Yaml file path
+     * @param string      $file A Yaml file path
      * @param string|null $type The resource type
      *
      * @return RouteCollection A RouteCollection instance
@@ -58,7 +59,7 @@ class YamlFileLoader extends FileLoader
         }
 
         try {
-            $parsedConfig = $this->yamlParser->parseFile($path);
+            $parsedConfig = $this->yamlParser->parseFile($path, Yaml::PARSE_CONSTANT);
         } catch (ParseException $e) {
             throw new \InvalidArgumentException(sprintf('The file "%s" does not contain valid YAML.', $path), 0, $e);
         }
@@ -72,7 +73,7 @@ class YamlFileLoader extends FileLoader
         }
 
         // not an array
-        if (!is_array($parsedConfig)) {
+        if (!\is_array($parsedConfig)) {
             throw new \InvalidArgumentException(sprintf('The file "%s" must contain a YAML array.', $path));
         }
 
@@ -90,18 +91,156 @@ class YamlFileLoader extends FileLoader
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function supports($resource, $type = null)
+    {
+        return \is_string($resource) && \in_array(pathinfo($resource, PATHINFO_EXTENSION), array('yml', 'yaml'), true) && (!$type || 'yaml' === $type);
+    }
+
+    /**
+     * Parses a route and adds it to the RouteCollection.
+     *
+     * @param RouteCollection $collection A RouteCollection instance
+     * @param string          $name       Route name
+     * @param array           $config     Route definition
+     * @param string          $path       Full path of the YAML file being processed
+     */
+    protected function parseRoute(RouteCollection $collection, $name, array $config, $path)
+    {
+        $defaults = isset($config['defaults']) ? $config['defaults'] : array();
+        $requirements = isset($config['requirements']) ? $config['requirements'] : array();
+        $options = isset($config['options']) ? $config['options'] : array();
+        $host = isset($config['host']) ? $config['host'] : '';
+        $schemes = isset($config['schemes']) ? $config['schemes'] : array();
+        $methods = isset($config['methods']) ? $config['methods'] : array();
+        $condition = isset($config['condition']) ? $config['condition'] : null;
+
+        if (isset($config['controller'])) {
+            $defaults['_controller'] = $config['controller'];
+        }
+
+        if (\is_array($config['path'])) {
+            $route = new Route('', $defaults, $requirements, $options, $host, $schemes, $methods, $condition);
+
+            foreach ($config['path'] as $locale => $path) {
+                $localizedRoute = clone $route;
+                $localizedRoute->setDefault('_locale', $locale);
+                $localizedRoute->setDefault('_canonical_route', $name);
+                $localizedRoute->setPath($path);
+                $collection->add($name.'.'.$locale, $localizedRoute);
+            }
+        } else {
+            $route = new Route($config['path'], $defaults, $requirements, $options, $host, $schemes, $methods, $condition);
+            $collection->add($name, $route);
+        }
+    }
+
+    /**
+     * Parses an import and adds the routes in the resource to the RouteCollection.
+     *
+     * @param RouteCollection $collection A RouteCollection instance
+     * @param array           $config     Route definition
+     * @param string          $path       Full path of the YAML file being processed
+     * @param string          $file       Loaded file name
+     */
+    protected function parseImport(RouteCollection $collection, array $config, $path, $file)
+    {
+        $type = isset($config['type']) ? $config['type'] : null;
+        $prefix = isset($config['prefix']) ? $config['prefix'] : '';
+        $defaults = isset($config['defaults']) ? $config['defaults'] : array();
+        $requirements = isset($config['requirements']) ? $config['requirements'] : array();
+        $options = isset($config['options']) ? $config['options'] : array();
+        $host = isset($config['host']) ? $config['host'] : null;
+        $condition = isset($config['condition']) ? $config['condition'] : null;
+        $schemes = isset($config['schemes']) ? $config['schemes'] : null;
+        $methods = isset($config['methods']) ? $config['methods'] : null;
+        $trailingSlashOnRoot = $config['trailing_slash_on_root'] ?? true;
+
+        if (isset($config['controller'])) {
+            $defaults['_controller'] = $config['controller'];
+        }
+
+        $this->setCurrentDir(\dirname($path));
+
+        $imported = $this->import($config['resource'], $type, false, $file);
+
+        if (!\is_array($imported)) {
+            $imported = array($imported);
+        }
+
+        foreach ($imported as $subCollection) {
+            /* @var $subCollection RouteCollection */
+            if (!\is_array($prefix)) {
+                $subCollection->addPrefix($prefix);
+                if (!$trailingSlashOnRoot) {
+                    $rootPath = (new Route(trim(trim($prefix), '/').'/'))->getPath();
+                    foreach ($subCollection->all() as $route) {
+                        if ($route->getPath() === $rootPath) {
+                            $route->setPath(rtrim($rootPath, '/'));
+                        }
+                    }
+                }
+            } else {
+                foreach ($prefix as $locale => $localePrefix) {
+                    $prefix[$locale] = trim(trim($localePrefix), '/');
+                }
+                foreach ($subCollection->all() as $name => $route) {
+                    if (null === $locale = $route->getDefault('_locale')) {
+                        $subCollection->remove($name);
+                        foreach ($prefix as $locale => $localePrefix) {
+                            $localizedRoute = clone $route;
+                            $localizedRoute->setDefault('_locale', $locale);
+                            $localizedRoute->setDefault('_canonical_route', $name);
+                            $localizedRoute->setPath($localePrefix.(!$trailingSlashOnRoot && '/' === $route->getPath() ? '' : $route->getPath()));
+                            $subCollection->add($name.'.'.$locale, $localizedRoute);
+                        }
+                    } elseif (!isset($prefix[$locale])) {
+                        throw new \InvalidArgumentException(sprintf('Route "%s" with locale "%s" is missing a corresponding prefix when imported in "%s".', $name, $locale, $file));
+                    } else {
+                        $route->setPath($prefix[$locale].(!$trailingSlashOnRoot && '/' === $route->getPath() ? '' : $route->getPath()));
+                        $subCollection->add($name, $route);
+                    }
+                }
+            }
+
+            if (null !== $host) {
+                $subCollection->setHost($host);
+            }
+            if (null !== $condition) {
+                $subCollection->setCondition($condition);
+            }
+            if (null !== $schemes) {
+                $subCollection->setSchemes($schemes);
+            }
+            if (null !== $methods) {
+                $subCollection->setMethods($methods);
+            }
+            $subCollection->addDefaults($defaults);
+            $subCollection->addRequirements($requirements);
+            $subCollection->addOptions($options);
+
+            if (isset($config['name_prefix'])) {
+                $subCollection->addNamePrefix($config['name_prefix']);
+            }
+
+            $collection->addCollection($subCollection);
+        }
+    }
+
+    /**
      * Validates the route configuration.
      *
-     * @param array $config A resource config
-     * @param string $name The config key
-     * @param string $path The loaded file path
+     * @param array  $config A resource config
+     * @param string $name   The config key
+     * @param string $path   The loaded file path
      *
      * @throws \InvalidArgumentException If one of the provided config keys is not supported,
      *                                   something is missing or the combination is nonsense
      */
     protected function validate($config, $name, $path)
     {
-        if (!is_array($config)) {
+        if (!\is_array($config)) {
             throw new \InvalidArgumentException(sprintf('The definition of "%s" in "%s" must be a YAML array.', $name, $path));
         }
         if ($extraKeys = array_diff(array_keys($config), self::$availableKeys)) {
@@ -131,95 +270,5 @@ class YamlFileLoader extends FileLoader
         if (isset($config['controller']) && isset($config['defaults']['_controller'])) {
             throw new \InvalidArgumentException(sprintf('The routing file "%s" must not specify both the "controller" key and the defaults key "_controller" for "%s".', $path, $name));
         }
-    }
-
-    /**
-     * Parses an import and adds the routes in the resource to the RouteCollection.
-     *
-     * @param RouteCollection $collection A RouteCollection instance
-     * @param array $config Route definition
-     * @param string $path Full path of the YAML file being processed
-     * @param string $file Loaded file name
-     */
-    protected function parseImport(RouteCollection $collection, array $config, $path, $file)
-    {
-        $type = isset($config['type']) ? $config['type'] : null;
-        $prefix = isset($config['prefix']) ? $config['prefix'] : '';
-        $defaults = isset($config['defaults']) ? $config['defaults'] : array();
-        $requirements = isset($config['requirements']) ? $config['requirements'] : array();
-        $options = isset($config['options']) ? $config['options'] : array();
-        $host = isset($config['host']) ? $config['host'] : null;
-        $condition = isset($config['condition']) ? $config['condition'] : null;
-        $schemes = isset($config['schemes']) ? $config['schemes'] : null;
-        $methods = isset($config['methods']) ? $config['methods'] : null;
-
-        if (isset($config['controller'])) {
-            $defaults['_controller'] = $config['controller'];
-        }
-
-        $this->setCurrentDir(dirname($path));
-
-        $imported = $this->import($config['resource'], $type, false, $file);
-
-        if (!is_array($imported)) {
-            $imported = array($imported);
-        }
-
-        foreach ($imported as $subCollection) {
-            /* @var $subCollection RouteCollection */
-            $subCollection->addPrefix($prefix);
-            if (null !== $host) {
-                $subCollection->setHost($host);
-            }
-            if (null !== $condition) {
-                $subCollection->setCondition($condition);
-            }
-            if (null !== $schemes) {
-                $subCollection->setSchemes($schemes);
-            }
-            if (null !== $methods) {
-                $subCollection->setMethods($methods);
-            }
-            $subCollection->addDefaults($defaults);
-            $subCollection->addRequirements($requirements);
-            $subCollection->addOptions($options);
-
-            $collection->addCollection($subCollection);
-        }
-    }
-
-    /**
-     * Parses a route and adds it to the RouteCollection.
-     *
-     * @param RouteCollection $collection A RouteCollection instance
-     * @param string $name Route name
-     * @param array $config Route definition
-     * @param string $path Full path of the YAML file being processed
-     */
-    protected function parseRoute(RouteCollection $collection, $name, array $config, $path)
-    {
-        $defaults = isset($config['defaults']) ? $config['defaults'] : array();
-        $requirements = isset($config['requirements']) ? $config['requirements'] : array();
-        $options = isset($config['options']) ? $config['options'] : array();
-        $host = isset($config['host']) ? $config['host'] : '';
-        $schemes = isset($config['schemes']) ? $config['schemes'] : array();
-        $methods = isset($config['methods']) ? $config['methods'] : array();
-        $condition = isset($config['condition']) ? $config['condition'] : null;
-
-        if (isset($config['controller'])) {
-            $defaults['_controller'] = $config['controller'];
-        }
-
-        $route = new Route($config['path'], $defaults, $requirements, $options, $host, $schemes, $methods, $condition);
-
-        $collection->add($name, $route);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function supports($resource, $type = null)
-    {
-        return is_string($resource) && in_array(pathinfo($resource, PATHINFO_EXTENSION), array('yml', 'yaml'), true) && (!$type || 'yaml' === $type);
     }
 }

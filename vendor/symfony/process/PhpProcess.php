@@ -25,10 +25,10 @@ use Symfony\Component\Process\Exception\RuntimeException;
 class PhpProcess extends Process
 {
     /**
-     * @param string $script The PHP script to run (as a string)
-     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
-     * @param array|null $env The environment variables or null to use the same environment as the current PHP process
-     * @param int $timeout The timeout in seconds
+     * @param string      $script  The PHP script to run (as a string)
+     * @param string|null $cwd     The working directory or null to use the working dir of the current PHP process
+     * @param array|null  $env     The environment variables or null to use the same environment as the current PHP process
+     * @param int         $timeout The timeout in seconds
      */
     public function __construct(string $script, string $cwd = null, array $env = null, int $timeout = 60)
     {
@@ -38,7 +38,7 @@ class PhpProcess extends Process
         } else {
             $php = array_merge(array($php), $executableFinder->findArguments());
         }
-        if ('phpdbg' === PHP_SAPI) {
+        if ('phpdbg' === \PHP_SAPI) {
             $file = tempnam(sys_get_temp_dir(), 'dbg');
             file_put_contents($file, $script);
             register_shutdown_function('unlink', $file);

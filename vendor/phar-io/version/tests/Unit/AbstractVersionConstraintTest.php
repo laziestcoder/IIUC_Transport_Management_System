@@ -15,10 +15,8 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \PharIo\Version\AbstractVersionConstraint
  */
-class AbstractVersionConstraintTest extends TestCase
-{
-    public function testAsString()
-    {
+class AbstractVersionConstraintTest extends TestCase {
+    public function testAsString() {
         /** @var AbstractVersionConstraint|\PHPUnit_Framework_MockObject_MockObject $constraint */
         $constraint = $this->getMockForAbstractClass(AbstractVersionConstraint::class, ['foo']);
 

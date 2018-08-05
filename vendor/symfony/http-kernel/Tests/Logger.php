@@ -22,6 +22,11 @@ class Logger implements LoggerInterface
         $this->clear();
     }
 
+    public function getLogs($level = false)
+    {
+        return false === $level ? $this->logs : $this->logs[$level];
+    }
+
     public function clear()
     {
         $this->logs = array(
@@ -36,19 +41,14 @@ class Logger implements LoggerInterface
         );
     }
 
-    public function getLogs($level = false)
+    public function log($level, $message, array $context = array())
     {
-        return false === $level ? $this->logs : $this->logs[$level];
+        $this->logs[$level][] = $message;
     }
 
     public function emergency($message, array $context = array())
     {
         $this->log('emergency', $message, $context);
-    }
-
-    public function log($level, $message, array $context = array())
-    {
-        $this->logs[$level][] = $message;
     }
 
     public function alert($message, array $context = array())

@@ -8,101 +8,120 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Traits\Macroable;
 
 /**
  * Class Field.
  */
 class Field implements Renderable
 {
+    use Macroable;
+
     const FILE_DELETE_FLAG = '_file_del_';
-    /**
-     * Css required by this field.
-     *
-     * @var array
-     */
-    protected static $css = [];
-    /**
-     * Js required by this field.
-     *
-     * @var array
-     */
-    protected static $js = [];
+
     /**
      * Element id.
      *
      * @var array|string
      */
     protected $id;
+
     /**
      * Element value.
      *
      * @var mixed
      */
     protected $value;
+
     /**
      * Field original value.
      *
      * @var mixed
      */
     protected $original;
+
     /**
      * Field default value.
      *
      * @var mixed
      */
     protected $default;
+
     /**
      * Element label.
      *
      * @var string
      */
     protected $label = '';
+
     /**
      * Column name.
      *
      * @var string|array
      */
     protected $column = '';
+
     /**
      * Form element name.
      *
      * @var string
      */
     protected $elementName = [];
+
     /**
      * Form element classes.
      *
      * @var array
      */
     protected $elementClass = [];
+
     /**
      * Variables of elements.
      *
      * @var array
      */
     protected $variables = [];
+
     /**
      * Options for specify elements.
      *
      * @var array
      */
     protected $options = [];
+
     /**
      * Validation rules.
      *
      * @var string|\Closure
      */
     protected $rules = '';
+
     /**
      * @var callable
      */
     protected $validator;
+
     /**
      * Validation messages.
      *
      * @var array
      */
     protected $validationMessages = [];
+
+    /**
+     * Css required by this field.
+     *
+     * @var array
+     */
+    protected static $css = [];
+
+    /**
+     * Js required by this field.
+     *
+     * @var array
+     */
+    protected static $js = [];
+
     /**
      * Script for field.
      *
@@ -170,9 +189,19 @@ class Field implements Renderable
     protected $horizontal = true;
 
     /**
+     * @var bool
+     */
+    protected $display = true;
+
+    /**
+     * @var array
+     */
+    protected $labelClass = [];
+
+    /**
      * Field constructor.
      *
-     * @param $column
+     * @param       $column
      * @param array $arguments
      */
     public function __construct($column, $arguments = [])
@@ -180,6 +209,31 @@ class Field implements Renderable
         $this->column = $column;
         $this->label = $this->formatLabel($arguments);
         $this->id = $this->formatId($column);
+    }
+
+    /**
+     * Get assets required by this field.
+     *
+     * @return array
+     */
+    public static function getAssets()
+    {
+        return [
+            'css' => static::$css,
+            'js'  => static::$js,
+        ];
+    }
+
+    /**
+     * Format the field element id.
+     *
+     * @param string|array $column
+     *
+     * @return string|array
+     */
+    protected function formatId($column)
+    {
+        return str_replace('.', '_', $column);
     }
 
     /**
@@ -199,28 +253,39 @@ class Field implements Renderable
     }
 
     /**
-     * Format the field element id.
+     * Format the name of the field.
      *
-     * @param string|array $column
+     * @param string $column
      *
-     * @return string|array
+     * @return array|mixed|string
      */
-    protected function formatId($column)
+    protected function formatName($column)
     {
-        return str_replace('.', '_', $column);
-    }
+        if (is_string($column)) {
+            $name = explode('.', $column);
 
-    /**
-     * Get assets required by this field.
-     *
-     * @return array
-     */
-    public static function getAssets()
-    {
-        return [
-            'css' => static::$css,
-            'js' => static::$js,
-        ];
+            if (count($name) == 1) {
+                return $name[0];
+            }
+
+            $html = array_shift($name);
+            foreach ($name as $piece) {
+                $html .= "[$piece]";
+            }
+
+            return $html;
+        }
+
+        if (is_array($this->column)) {
+            $names = [];
+            foreach ($this->column as $key => $name) {
+                $names[$key] = $this->formatName($name);
+            }
+
+            return $names;
+        }
+
+        return '';
     }
 
     /**
@@ -335,7 +400,7 @@ class Field implements Renderable
     /**
      * Get or set rules.
      *
-     * @param null $rules
+     * @param null  $rules
      * @param array $messages
      *
      * @return $this
@@ -349,7 +414,7 @@ class Field implements Renderable
         if (is_array($rules)) {
             $thisRuleArr = array_filter(explode('|', $this->rules));
 
-            $this->rules = array_merge($thisRuleArr, explode('|', $this->rules));
+            $this->rules = array_merge($thisRuleArr, $rules);
         } elseif (is_string($rules)) {
             $rules = array_filter(explode('|', "{$this->rules}|$rules"));
 
@@ -359,6 +424,33 @@ class Field implements Renderable
         $this->validationMessages = $messages;
 
         return $this;
+    }
+
+    /**
+     * Get field validation rules.
+     *
+     * @return string
+     */
+    protected function getRules()
+    {
+        if ($this->rules instanceof \Closure) {
+            return $this->rules->call($this, $this->form);
+        }
+
+        return $this->rules;
+    }
+
+    /**
+     * Remove a specific rule by keyword.
+     *
+     * @param string $rule
+     *
+     * @return void
+     */
+    protected function removeRule($rule)
+    {
+        $pattern = "/{$rule}[^\|]?(\||$)/";
+        $this->rules = preg_replace($pattern, '', $this->rules, -1);
     }
 
     /**
@@ -376,6 +468,48 @@ class Field implements Renderable
     }
 
     /**
+     * Get key for error message.
+     *
+     * @return string
+     */
+    public function getErrorKey()
+    {
+        return $this->errorKey ?: $this->column;
+    }
+
+    /**
+     * Set key for error message.
+     *
+     * @param string $key
+     *
+     * @return $this
+     */
+    public function setErrorKey($key)
+    {
+        $this->errorKey = $key;
+
+        return $this;
+    }
+
+    /**
+     * Set or get value of the field.
+     *
+     * @param null $value
+     *
+     * @return mixed
+     */
+    public function value($value = null)
+    {
+        if (is_null($value)) {
+            return is_null($this->value) ? $this->getDefault() : $this->value;
+        }
+
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
      * Set default value for field.
      *
      * @param $default
@@ -387,6 +521,20 @@ class Field implements Renderable
         $this->default = $default;
 
         return $this;
+    }
+
+    /**
+     * Get default value.
+     *
+     * @return mixed
+     */
+    public function getDefault()
+    {
+        if ($this->default instanceof \Closure) {
+            return call_user_func($this->default, $this->form);
+        }
+
+        return $this->default;
     }
 
     /**
@@ -469,9 +617,9 @@ class Field implements Renderable
                 if (!array_key_exists($column, $input)) {
                     continue;
                 }
-                $input[$column . $key] = array_get($input, $column);
-                $rules[$column . $key] = $fieldRules;
-                $attributes[$column . $key] = $this->label . "[$column]";
+                $input[$column.$key] = array_get($input, $column);
+                $rules[$column.$key] = $fieldRules;
+                $attributes[$column.$key] = $this->label."[$column]";
             }
         }
 
@@ -479,23 +627,9 @@ class Field implements Renderable
     }
 
     /**
-     * Get field validation rules.
-     *
-     * @return string
-     */
-    protected function getRules()
-    {
-        if ($this->rules instanceof \Closure) {
-            return $this->rules->call($this, $this->form);
-        }
-
-        return $this->rules;
-    }
-
-    /**
      * Sanitize input data.
      *
-     * @param array $input
+     * @param array  $input
      * @param string $column
      *
      * @return array
@@ -511,20 +645,10 @@ class Field implements Renderable
     }
 
     /**
-     * Set the field as readonly mode.
-     *
-     * @return Field
-     */
-    public function readOnly()
-    {
-        return $this->attribute('disabled', true);
-    }
-
-    /**
      * Add html attributes to elements.
      *
      * @param array|string $attribute
-     * @param mixed $value
+     * @param mixed        $value
      *
      * @return $this
      */
@@ -533,10 +657,20 @@ class Field implements Renderable
         if (is_array($attribute)) {
             $this->attributes = array_merge($this->attributes, $attribute);
         } else {
-            $this->attributes[$attribute] = (string)$value;
+            $this->attributes[$attribute] = (string) $value;
         }
 
         return $this;
+    }
+
+    /**
+     * Set the field as readonly mode.
+     *
+     * @return Field
+     */
+    public function readOnly()
+    {
+        return $this->attribute('disabled', true);
     }
 
     /**
@@ -554,6 +688,16 @@ class Field implements Renderable
     }
 
     /**
+     * Get placeholder.
+     *
+     * @return string
+     */
+    public function getPlaceholder()
+    {
+        return $this->placeholder ?: trans('admin.input').' '.$this->label;
+    }
+
+    /**
      * Prepare for a field value before update or insert.
      *
      * @param $value
@@ -563,6 +707,22 @@ class Field implements Renderable
     public function prepare($value)
     {
         return $value;
+    }
+
+    /**
+     * Format the field attributes.
+     *
+     * @return string
+     */
+    protected function formatAttributes()
+    {
+        $html = [];
+
+        foreach ($this->attributes as $name => $value) {
+            $html[] = $name.'="'.e($value).'"';
+        }
+
+        return implode(' ', $html);
     }
 
     /**
@@ -576,149 +736,49 @@ class Field implements Renderable
     }
 
     /**
-     * Add the element class.
+     * @return array
+     */
+    public function getViewElementClasses()
+    {
+        if ($this->horizontal) {
+            return [
+                'label'      => "col-sm-{$this->width['label']} {$this->getLabelClass()}",
+                'field'      => "col-sm-{$this->width['field']}",
+                'form-group' => 'form-group ',
+            ];
+        }
+
+        return ['label' => "{$this->getLabelClass()}", 'field' => '', 'form-group' => ''];
+    }
+
+    /**
+     * Set form element class.
      *
-     * @param $class
+     * @param string|array $class
      *
      * @return $this
      */
-    public function addElementClass($class)
+    public function setElementClass($class)
     {
-        if (is_array($class) || is_string($class)) {
-            $this->elementClass = array_merge($this->elementClass, (array)$class);
-
-            $this->elementClass = array_unique($this->elementClass);
-        }
+        $this->elementClass = (array) $class;
 
         return $this;
     }
 
     /**
-     * Remove element class.
-     *
-     * @param $class
-     *
-     * @return $this
-     */
-    public function removeElementClass($class)
-    {
-        $delClass = [];
-
-        if (is_string($class) || is_array($class)) {
-            $delClass = (array)$class;
-        }
-
-        foreach ($delClass as $del) {
-            if (($key = array_search($del, $this->elementClass))) {
-                unset($this->elementClass[$key]);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get script of current field.
-     *
-     * @return string
-     */
-    public function getScript()
-    {
-        return $this->script;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->render()->render();
-    }
-
-    /**
-     * Render this filed.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function render()
-    {
-        Admin::script($this->script);
-
-        return view($this->getView(), $this->variables());
-    }
-
-    /**
-     * Get view of this field.
-     *
-     * @return string
-     */
-    public function getView()
-    {
-        if (!empty($this->view)) {
-            return $this->view;
-        }
-
-        $class = explode('\\', get_called_class());
-
-        return 'admin::form.' . strtolower(end($class));
-    }
-
-    /**
-     * Get the view variables of this field.
+     * Get element class.
      *
      * @return array
      */
-    protected function variables()
+    protected function getElementClass()
     {
-        return array_merge($this->variables, [
-            'id' => $this->id,
-            'name' => $this->elementName ?: $this->formatName($this->column),
-            'help' => $this->help,
-            'class' => $this->getElementClassString(),
-            'value' => $this->value(),
-            'label' => $this->label,
-            'viewClass' => $this->getViewElementClasses(),
-            'column' => $this->column,
-            'errorKey' => $this->getErrorKey(),
-            'attributes' => $this->formatAttributes(),
-            'placeholder' => $this->getPlaceholder(),
-        ]);
-    }
+        if (!$this->elementClass) {
+            $name = $this->elementName ?: $this->formatName($this->column);
 
-    /**
-     * Format the name of the field.
-     *
-     * @param string $column
-     *
-     * @return array|mixed|string
-     */
-    protected function formatName($column)
-    {
-        if (is_string($column)) {
-            $name = explode('.', $column);
-
-            if (count($name) == 1) {
-                return $name[0];
-            }
-
-            $html = array_shift($name);
-            foreach ($name as $piece) {
-                $html .= "[$piece]";
-            }
-
-            return $html;
+            $this->elementClass = (array) str_replace(['[', ']'], '_', $name);
         }
 
-        if (is_array($this->column)) {
-            $names = [];
-            foreach ($this->column as $key => $name) {
-                $names[$key] = $this->formatName($name);
-            }
-
-            return $names;
-        }
-
-        return '';
+        return $this->elementClass;
     }
 
     /**
@@ -744,146 +804,6 @@ class Field implements Renderable
     }
 
     /**
-     * Get element class.
-     *
-     * @return array
-     */
-    protected function getElementClass()
-    {
-        if (!$this->elementClass) {
-            $name = $this->elementName ?: $this->formatName($this->column);
-
-            $this->elementClass = (array)str_replace(['[', ']'], '_', $name);
-        }
-
-        return $this->elementClass;
-    }
-
-    /**
-     * Set form element class.
-     *
-     * @param string|array $class
-     *
-     * @return $this
-     */
-    public function setElementClass($class)
-    {
-        $this->elementClass = (array)$class;
-
-        return $this;
-    }
-
-    /**
-     * Set or get value of the field.
-     *
-     * @param null $value
-     *
-     * @return mixed
-     */
-    public function value($value = null)
-    {
-        if (is_null($value)) {
-            return is_null($this->value) ? $this->getDefault() : $this->value;
-        }
-
-        $this->value = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get default value.
-     *
-     * @return mixed
-     */
-    public function getDefault()
-    {
-        if ($this->default instanceof \Closure) {
-            return call_user_func($this->default, $this->form);
-        }
-
-        return $this->default;
-    }
-
-    /**
-     * @return array
-     */
-    public function getViewElementClasses()
-    {
-        if ($this->horizontal) {
-            return [
-                'label' => "col-sm-{$this->width['label']}",
-                'field' => "col-sm-{$this->width['field']}",
-                'form-group' => 'form-group ',
-            ];
-        }
-
-        return ['label' => '', 'field' => '', 'form-group' => ''];
-    }
-
-    /**
-     * Get key for error message.
-     *
-     * @return string
-     */
-    public function getErrorKey()
-    {
-        return $this->errorKey ?: $this->column;
-    }
-
-    /**
-     * Set key for error message.
-     *
-     * @param string $key
-     *
-     * @return $this
-     */
-    public function setErrorKey($key)
-    {
-        $this->errorKey = $key;
-
-        return $this;
-    }
-
-    /**
-     * Format the field attributes.
-     *
-     * @return string
-     */
-    protected function formatAttributes()
-    {
-        $html = [];
-
-        foreach ($this->attributes as $name => $value) {
-            $html[] = $name . '="' . e($value) . '"';
-        }
-
-        return implode(' ', $html);
-    }
-
-    /**
-     * Get placeholder.
-     *
-     * @return string
-     */
-    public function getPlaceholder()
-    {
-        return $this->placeholder ?: trans('admin.input') . ' ' . $this->label;
-    }
-
-    /**
-     * Remove a specific rule.
-     *
-     * @param string $rule
-     *
-     * @return void
-     */
-    protected function removeRule($rule)
-    {
-        $this->rules = str_replace($rule, '', $this->rules);
-    }
-
-    /**
      * Get element class selector.
      *
      * @return string
@@ -896,12 +816,162 @@ class Field implements Renderable
             $classes = [];
 
             foreach ($elementClass as $index => $class) {
-                $classes[$index] = '.' . (is_array($class) ? implode('.', $class) : $class);
+                $classes[$index] = '.'.(is_array($class) ? implode('.', $class) : $class);
             }
 
             return $classes;
         }
 
-        return '.' . implode('.', $elementClass);
+        return '.'.implode('.', $elementClass);
+    }
+
+    /**
+     * Add the element class.
+     *
+     * @param $class
+     *
+     * @return $this
+     */
+    public function addElementClass($class)
+    {
+        if (is_array($class) || is_string($class)) {
+            $this->elementClass = array_merge($this->elementClass, (array) $class);
+
+            $this->elementClass = array_unique($this->elementClass);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove element class.
+     *
+     * @param $class
+     *
+     * @return $this
+     */
+    public function removeElementClass($class)
+    {
+        $delClass = [];
+
+        if (is_string($class) || is_array($class)) {
+            $delClass = (array) $class;
+        }
+
+        foreach ($delClass as $del) {
+            if (($key = array_search($del, $this->elementClass))) {
+                unset($this->elementClass[$key]);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add variables to field view.
+     *
+     * @param array $variables
+     *
+     * @return $this
+     */
+    protected function addVariables(array $variables = [])
+    {
+        $this->variables = array_merge($this->variables, $variables);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabelClass()
+    : string
+    {
+        return implode(' ', $this->labelClass);
+    }
+
+    /**
+     * @param array $labelClass
+     *
+     * @return self
+     */
+    public function setLabelClass(array $labelClass)
+    : self
+    {
+        $this->labelClass = $labelClass;
+
+        return $this;
+    }
+
+    /**
+     * Get the view variables of this field.
+     *
+     * @return array
+     */
+    public function variables()
+    {
+        return array_merge($this->variables, [
+            'id'          => $this->id,
+            'name'        => $this->elementName ?: $this->formatName($this->column),
+            'help'        => $this->help,
+            'class'       => $this->getElementClassString(),
+            'value'       => $this->value(),
+            'label'       => $this->label,
+            'viewClass'   => $this->getViewElementClasses(),
+            'column'      => $this->column,
+            'errorKey'    => $this->getErrorKey(),
+            'attributes'  => $this->formatAttributes(),
+            'placeholder' => $this->getPlaceholder(),
+        ]);
+    }
+
+    /**
+     * Get view of this field.
+     *
+     * @return string
+     */
+    public function getView()
+    {
+        if (!empty($this->view)) {
+            return $this->view;
+        }
+
+        $class = explode('\\', get_called_class());
+
+        return 'admin::form.'.strtolower(end($class));
+    }
+
+    /**
+     * Get script of current field.
+     *
+     * @return string
+     */
+    public function getScript()
+    {
+        return $this->script;
+    }
+
+    /**
+     * Render this filed.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function render()
+    {
+        if (!$this->display) {
+            return '';
+        }
+
+        Admin::script($this->script);
+
+        return view($this->getView(), $this->variables());
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->render()->render();
     }
 }

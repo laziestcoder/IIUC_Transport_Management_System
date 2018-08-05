@@ -53,8 +53,7 @@ class DefaultTimeGenerator implements TimeGeneratorInterface
         NodeProviderInterface $nodeProvider,
         TimeConverterInterface $timeConverter,
         TimeProviderInterface $timeProvider
-    )
-    {
+    ) {
         $this->nodeProvider = $nodeProvider;
         $this->timeConverter = $timeConverter;
         $this->timeProvider = $timeProvider;
@@ -73,6 +72,10 @@ class DefaultTimeGenerator implements TimeGeneratorInterface
      *     could arise when the clock is set backwards in time or if the node ID
      *     changes.
      * @return string A binary string
+     * @throws \Ramsey\Uuid\Exception\UnsatisfiedDependencyException if called on a 32-bit system and
+     *     `Moontoast\Math\BigNumber` is not present
+     * @throws \InvalidArgumentException
+     * @throws \Exception if it was not possible to gather sufficient entropy
      */
     public function generate($node = null, $clockSeq = null)
     {
@@ -112,6 +115,8 @@ class DefaultTimeGenerator implements TimeGeneratorInterface
      *
      * @param string|int $node A node value that may be used to override the node provider
      * @return string Hexadecimal representation of the node ID
+     * @throws \InvalidArgumentException
+     * @throws \Exception
      */
     protected function getValidNode($node)
     {

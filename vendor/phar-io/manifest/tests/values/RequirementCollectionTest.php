@@ -17,11 +17,10 @@ use PHPUnit\Framework\TestCase;
  * @covers \PharIo\Manifest\RequirementCollection
  * @covers \PharIo\Manifest\RequirementCollectionIterator
  *
- * @uses   \PharIo\Manifest\PhpVersionRequirement
- * @uses   \PharIo\Version\VersionConstraint
+ * @uses \PharIo\Manifest\PhpVersionRequirement
+ * @uses \PharIo\Version\VersionConstraint
  */
-class RequirementCollectionTest extends TestCase
-{
+class RequirementCollectionTest extends TestCase {
     /**
      * @var RequirementCollection
      */
@@ -32,38 +31,33 @@ class RequirementCollectionTest extends TestCase
      */
     private $item;
 
-    public function testCanBeCreated()
-    {
+    protected function setUp() {
+        $this->collection = new RequirementCollection;
+        $this->item       = new PhpVersionRequirement(new ExactVersionConstraint('7.1.0'));
+    }
+
+    public function testCanBeCreated() {
         $this->assertInstanceOf(RequirementCollection::class, $this->collection);
     }
 
-    public function testCanBeCounted()
-    {
+    public function testCanBeCounted() {
         $this->collection->add($this->item);
 
         $this->assertCount(1, $this->collection);
     }
 
-    public function testCanBeIterated()
-    {
+    public function testCanBeIterated() {
         $this->collection->add(new PhpVersionRequirement(new ExactVersionConstraint('5.6.0')));
         $this->collection->add($this->item);
 
         $this->assertContains($this->item, $this->collection);
     }
 
-    public function testKeyPositionCanBeRetreived()
-    {
+    public function testKeyPositionCanBeRetreived() {
         $this->collection->add($this->item);
-        foreach ($this->collection as $key => $item) {
+        foreach($this->collection as $key => $item) {
             $this->assertEquals(0, $key);
         }
-    }
-
-    protected function setUp()
-    {
-        $this->collection = new RequirementCollection;
-        $this->item = new PhpVersionRequirement(new ExactVersionConstraint('7.1.0'));
     }
 
 }

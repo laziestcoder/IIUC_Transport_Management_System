@@ -18,98 +18,29 @@ use InvalidArgumentException;
 class Admin
 {
     /**
-     * @var array
-     */
-    public static $script = [];
-    /**
-     * @var array
-     */
-    public static $css = [];
-    /**
-     * @var array
-     */
-    public static $js = [];
-    /**
-     * @var array
-     */
-    public static $extensions = [];
-    /**
      * @var Navbar
      */
     protected $navbar;
 
     /**
-     * Add css or get all css.
-     *
-     * @param null $css
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
+     * @var array
      */
-    public static function css($css = null)
-    {
-        if (!is_null($css)) {
-            self::$css = array_merge(self::$css, (array)$css);
-
-            return;
-        }
-
-        $css = array_get(Form::collectFieldAssets(), 'css', []);
-
-        static::$css = array_merge(static::$css, $css);
-
-        return view('admin::partials.css', ['css' => array_unique(static::$css)]);
-    }
+    public static $script = [];
 
     /**
-     * Add js or get all js.
-     *
-     * @param null $js
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
+     * @var array
      */
-    public static function js($js = null)
-    {
-        if (!is_null($js)) {
-            self::$js = array_merge(self::$js, (array)$js);
-
-            return;
-        }
-
-        $js = array_get(Form::collectFieldAssets(), 'js', []);
-
-        static::$js = array_merge(static::$js, $js);
-
-        return view('admin::partials.js', ['js' => array_unique(static::$js)]);
-    }
+    public static $css = [];
 
     /**
-     * @param string $script
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
+     * @var array
      */
-    public static function script($script = '')
-    {
-        if (!empty($script)) {
-            self::$script = array_merge(self::$script, (array)$script);
-
-            return;
-        }
-
-        return view('admin::partials.script', ['script' => array_unique(self::$script)]);
-    }
+    public static $js = [];
 
     /**
-     * Extend a extension.
-     *
-     * @param string $name
-     * @param string $class
-     *
-     * @return void
+     * @var array
      */
-    public static function extend($name, $class)
-    {
-        static::$extensions[$name] = $class;
-    }
+    public static $extensions = [];
 
     /**
      * @param $model
@@ -120,24 +51,6 @@ class Admin
     public function grid($model, Closure $callable)
     {
         return new Grid($this->getModel($model), $callable);
-    }
-
-    /**
-     * @param $model
-     *
-     * @return mixed
-     */
-    public function getModel($model)
-    {
-        if ($model instanceof EloquentModel) {
-            return $model;
-        }
-
-        if (is_string($model) && class_exists($model)) {
-            return $this->getModel(new $model());
-        }
-
-        throw new InvalidArgumentException("$model is not a valid model");
     }
 
     /**
@@ -164,6 +77,19 @@ class Admin
     }
 
     /**
+     * Build show page.
+     *
+     * @param $model
+     * @param mixed $callable
+     *
+     * @return Show
+     */
+    public function show($model, $callable = null)
+    {
+        return new Show($this->getModel($model), $callable);
+    }
+
+    /**
      * @param Closure $callable
      *
      * @return \Encore\Admin\Layout\Content
@@ -171,6 +97,84 @@ class Admin
     public function content(Closure $callable = null)
     {
         return new Content($callable);
+    }
+
+    /**
+     * @param $model
+     *
+     * @return mixed
+     */
+    public function getModel($model)
+    {
+        if ($model instanceof EloquentModel) {
+            return $model;
+        }
+
+        if (is_string($model) && class_exists($model)) {
+            return $this->getModel(new $model());
+        }
+
+        throw new InvalidArgumentException("$model is not a valid model");
+    }
+
+    /**
+     * Add css or get all css.
+     *
+     * @param null $css
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
+     */
+    public static function css($css = null)
+    {
+        if (!is_null($css)) {
+            self::$css = array_merge(self::$css, (array) $css);
+
+            return;
+        }
+
+        $css = array_get(Form::collectFieldAssets(), 'css', []);
+
+        static::$css = array_merge(static::$css, $css);
+
+        return view('admin::partials.css', ['css' => array_unique(static::$css)]);
+    }
+
+    /**
+     * Add js or get all js.
+     *
+     * @param null $js
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
+     */
+    public static function js($js = null)
+    {
+        if (!is_null($js)) {
+            self::$js = array_merge(self::$js, (array) $js);
+
+            return;
+        }
+
+        $js = array_get(Form::collectFieldAssets(), 'js', []);
+
+        static::$js = array_merge(static::$js, $js);
+
+        return view('admin::partials.js', ['js' => array_unique(static::$js)]);
+    }
+
+    /**
+     * @param string $script
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
+     */
+    public static function script($script = '')
+    {
+        if (!empty($script)) {
+            self::$script = array_merge(self::$script, (array) $script);
+
+            return;
+        }
+
+        return view('admin::partials.script', ['script' => array_unique(self::$script)]);
     }
 
     /**
@@ -241,8 +245,8 @@ class Admin
     public function registerAuthRoutes()
     {
         $attributes = [
-            'prefix' => config('admin.route.prefix'),
-            'namespace' => 'Encore\Admin\Controllers',
+            'prefix'     => config('admin.route.prefix'),
+            'namespace'  => 'Encore\Admin\Controllers',
             'middleware' => config('admin.route.middleware'),
         ];
 
@@ -265,5 +269,18 @@ class Admin
             $router->get('auth/setting', 'AuthController@getSetting');
             $router->put('auth/setting', 'AuthController@putSetting');
         });
+    }
+
+    /**
+     * Extend a extension.
+     *
+     * @param string $name
+     * @param string $class
+     *
+     * @return void
+     */
+    public static function extend($name, $class)
+    {
+        static::$extensions[$name] = $class;
     }
 }

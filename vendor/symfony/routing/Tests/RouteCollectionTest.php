@@ -105,9 +105,9 @@ class RouteCollectionTest extends TestCase
     public function testAddCollectionWithResources()
     {
         $collection = new RouteCollection();
-        $collection->addResource($foo = new FileResource(__DIR__ . '/Fixtures/foo.xml'));
+        $collection->addResource($foo = new FileResource(__DIR__.'/Fixtures/foo.xml'));
         $collection1 = new RouteCollection();
-        $collection1->addResource($foo1 = new FileResource(__DIR__ . '/Fixtures/foo1.xml'));
+        $collection1->addResource($foo1 = new FileResource(__DIR__.'/Fixtures/foo1.xml'));
         $collection->addCollection($collection1);
         $this->assertEquals(array($foo, $foo1), $collection->getResources(), '->addCollection() merges resources');
     }
@@ -118,7 +118,7 @@ class RouteCollectionTest extends TestCase
         $collection->add('foo', new Route('/{placeholder}'));
         $collection1 = new RouteCollection();
         $collection1->add('bar', new Route('/{placeholder}',
-                array('_controller' => 'fixed', 'placeholder' => 'default'), array('placeholder' => '.+'), array('option' => 'value'))
+            array('_controller' => 'fixed', 'placeholder' => 'default'), array('placeholder' => '.+'), array('option' => 'value'))
         );
         $collection->addCollection($collection1);
 
@@ -176,9 +176,9 @@ class RouteCollectionTest extends TestCase
     public function testResource()
     {
         $collection = new RouteCollection();
-        $collection->addResource($foo = new FileResource(__DIR__ . '/Fixtures/foo.xml'));
-        $collection->addResource($bar = new FileResource(__DIR__ . '/Fixtures/bar.xml'));
-        $collection->addResource(new FileResource(__DIR__ . '/Fixtures/foo.xml'));
+        $collection->addResource($foo = new FileResource(__DIR__.'/Fixtures/foo.xml'));
+        $collection->addResource($bar = new FileResource(__DIR__.'/Fixtures/bar.xml'));
+        $collection->addResource(new FileResource(__DIR__.'/Fixtures/foo.xml'));
 
         $this->assertEquals(array($foo, $bar), $collection->getResources(),
             '->addResource() adds a resource and getResources() only returns unique ones by comparing the string representation');
@@ -301,5 +301,33 @@ class RouteCollectionTest extends TestCase
 
         $this->assertEquals(array('PUT'), $routea->getMethods());
         $this->assertEquals(array('PUT'), $routeb->getMethods());
+    }
+
+    public function testAddNamePrefix()
+    {
+        $collection = new RouteCollection();
+        $collection->add('foo', $foo = new Route('/foo'));
+        $collection->add('bar', $bar = new Route('/bar'));
+        $collection->add('api_foo', $apiFoo = new Route('/api/foo'));
+        $collection->addNamePrefix('api_');
+
+        $this->assertEquals($foo, $collection->get('api_foo'));
+        $this->assertEquals($bar, $collection->get('api_bar'));
+        $this->assertEquals($apiFoo, $collection->get('api_api_foo'));
+        $this->assertNull($collection->get('foo'));
+        $this->assertNull($collection->get('bar'));
+    }
+
+    public function testAddNamePrefixCanonicalRouteName()
+    {
+        $collection = new RouteCollection();
+        $collection->add('foo', new Route('/foo', array('_canonical_route' => 'foo')));
+        $collection->add('bar', new Route('/bar', array('_canonical_route' => 'bar')));
+        $collection->add('api_foo', new Route('/api/foo', array('_canonical_route' => 'api_foo')));
+        $collection->addNamePrefix('api_');
+
+        $this->assertEquals('api_foo', $collection->get('api_foo')->getDefault('_canonical_route'));
+        $this->assertEquals('api_bar', $collection->get('api_bar')->getDefault('_canonical_route'));
+        $this->assertEquals('api_api_foo', $collection->get('api_api_foo')->getDefault('_canonical_route'));
     }
 }

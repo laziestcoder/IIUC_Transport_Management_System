@@ -63,13 +63,15 @@ class RegisterListenersPass implements CompilerPassInterface
                 }
 
                 if (!isset($event['method'])) {
-                    $event['method'] = 'on' . preg_replace_callback(array(
-                            '/(?<=\b)[a-z]/i',
-                            '/[^a-z0-9]/i',
-                        ), function ($matches) {
-                            return strtoupper($matches[0]);
-                        }, $event['event']);
+                    $event['method'] = 'on'.preg_replace_callback(array(
+                        '/(?<=\b)[a-z]/i',
+                        '/[^a-z0-9]/i',
+                    ), function ($matches) { return strtoupper($matches[0]); }, $event['event']);
                     $event['method'] = preg_replace('/[^a-z0-9]/i', '', $event['method']);
+
+                    if (null !== ($class = $container->getDefinition($id)->getClass()) && ($r = $container->getReflectionClass($class, false)) && !$r->hasMethod($event['method']) && $r->hasMethod('__invoke')) {
+                        $event['method'] = '__invoke';
+                    }
                 }
 
                 $definition->addMethodCall('addListener', array($event['event'], array(new ServiceClosureArgument(new Reference($id)), $event['method']), $priority));
@@ -116,18 +118,19 @@ class RegisterListenersPass implements CompilerPassInterface
  */
 class ExtractingEventDispatcher extends EventDispatcher implements EventSubscriberInterface
 {
-    public static $subscriber;
     public $listeners = array();
+
+    public static $subscriber;
+
+    public function addListener($eventName, $listener, $priority = 0)
+    {
+        $this->listeners[] = array($eventName, $listener[1], $priority);
+    }
 
     public static function getSubscribedEvents()
     {
         $callback = array(self::$subscriber, 'getSubscribedEvents');
 
         return $callback();
-    }
-
-    public function addListener($eventName, $listener, $priority = 0)
-    {
-        $this->listeners[] = array($eventName, $listener[1], $priority);
     }
 }

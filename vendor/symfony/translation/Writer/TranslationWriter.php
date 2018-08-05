@@ -28,7 +28,7 @@ class TranslationWriter implements TranslationWriterInterface
     /**
      * Adds a dumper to the writer.
      *
-     * @param string $format The format of the dumper
+     * @param string          $format The format of the dumper
      * @param DumperInterface $dumper The dumper
      */
     public function addDumper($format, DumperInterface $dumper)
@@ -38,10 +38,13 @@ class TranslationWriter implements TranslationWriterInterface
 
     /**
      * Disables dumper backup.
+     *
+     * @deprecated since Symfony 4.1
      */
     public function disableBackup()
     {
-        // to be deprecated in 4.1
+        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 4.1.', __METHOD__), E_USER_DEPRECATED);
+
         foreach ($this->dumpers as $dumper) {
             if (method_exists($dumper, 'setBackup')) {
                 $dumper->setBackup(false);
@@ -63,8 +66,8 @@ class TranslationWriter implements TranslationWriterInterface
      * Writes translation from the catalogue according to the selected format.
      *
      * @param MessageCatalogue $catalogue The message catalogue to write
-     * @param string $format The format to use to dump the messages
-     * @param array $options Options that are passed to the dumper
+     * @param string           $format    The format to use to dump the messages
+     * @param array            $options   Options that are passed to the dumper
      *
      * @throws InvalidArgumentException
      */

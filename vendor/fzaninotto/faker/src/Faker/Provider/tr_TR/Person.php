@@ -2,6 +2,8 @@
 
 namespace Faker\Provider\tr_TR;
 
+use Faker\Calculator\TCNo;
+
 class Person extends \Faker\Provider\Person
 {
     /**
@@ -74,10 +76,7 @@ class Person extends \Faker\Provider\Person
 
     protected static $title = array('Doç. Dr.', 'Dr.', 'Prof. Dr.');
 
-    /**
-     * replaced by specific unisex Turkish title
-     */
-    public static function titleFemale()
+    public function title($gender = null)
     {
         return static::titleMale();
     }
@@ -90,8 +89,24 @@ class Person extends \Faker\Provider\Person
         return static::randomElement(static::$title);
     }
 
-    public function title($gender = null)
+    /**
+     * replaced by specific unisex Turkish title
+     */
+    public static function titleFemale()
     {
         return static::titleMale();
+    }
+
+    /**
+     * National Personal Identity number (tc kimlik no)
+     * @link https://en.wikipedia.org/wiki/Turkish_Identification_Number
+     * @return string on format XXXXXXXXXXX
+     */
+    public function tcNo()
+    {
+        $randomDigits = static::numerify('#########');
+        $checksum = TCNo::checksum($randomDigits);
+
+        return $randomDigits . $checksum;
     }
 }

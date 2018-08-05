@@ -11,7 +11,6 @@
  * @link https://packagist.org/packages/ramsey/uuid Packagist
  * @link https://github.com/ramsey/uuid GitHub
  */
-
 namespace Ramsey\Uuid\Codec;
 
 /**

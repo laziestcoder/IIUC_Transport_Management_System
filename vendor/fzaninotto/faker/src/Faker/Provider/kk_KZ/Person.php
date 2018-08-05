@@ -2,7 +2,7 @@
 
 namespace Faker\Provider\kk_KZ;
 
-use Faker\Provider\DateTime;
+use \Faker\Provider\DateTime;
 
 class Person extends \Faker\Provider\Person
 {
@@ -36,7 +36,7 @@ class Person extends \Faker\Provider\Person
      * @var array
      */
     public static $genderCenturyMap = array(
-        self::GENDER_MALE => array(
+        self::GENDER_MALE   => array(
             self::CENTURY_19TH => self::MALE_CENTURY_19TH,
             self::CENTURY_20TH => self::MALE_CENTURY_20TH,
             self::CENTURY_21ST => self::MALE_CENTURY_21ST,
@@ -177,33 +177,6 @@ class Person extends \Faker\Provider\Person
     );
 
     /**
-     * National Individual Identification Numbers
-     *
-     * @link   http://egov.kz/wps/portal/Content?contentPath=%2Fegovcontent%2Fcitizen_migration%2Fpassport_id_card%2Farticle%2Fiin_info&lang=en
-     * @link   https://ru.wikipedia.org/wiki/%D0%98%D0%BD%D0%B4%D0%B8%D0%B2%D0%B8%D0%B4%D1%83%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BD%D0%BE%D0%BC%D0%B5%D1%80
-     *
-     * @param  \DateTime $birthDate
-     * @param  integer $gender
-     *
-     * @return string 12 digits, like 780322300455
-     */
-    public static function individualIdentificationNumber(\DateTime $birthDate = null, $gender = self::GENDER_MALE)
-    {
-        if (!$birthDate) {
-            $birthDate = DateTime::dateTimeBetween();
-        }
-
-        $population = mt_rand(1000, 2000);
-        $century = self::getCenturyByYear((int)$birthDate->format('Y'));
-
-        $iin = $birthDate->format('ymd');
-        $iin .= (string)self::$genderCenturyMap[$gender][$century];
-        $iin .= (string)$population;
-
-        return $iin . (string)self::checkSum($iin);
-    }
-
-    /**
      * @param  integer $year
      *
      * @return integer|null
@@ -217,6 +190,36 @@ class Person extends \Faker\Provider\Person
         } elseif ($year >= 1800) {
             return self::CENTURY_19TH;
         }
+    }
+
+    /**
+     * National Individual Identification Numbers
+     *
+     * @link   http://egov.kz/wps/portal/Content?contentPath=%2Fegovcontent%2Fcitizen_migration%2Fpassport_id_card%2Farticle%2Fiin_info&lang=en
+     * @link   https://ru.wikipedia.org/wiki/%D0%98%D0%BD%D0%B4%D0%B8%D0%B2%D0%B8%D0%B4%D1%83%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BD%D0%BE%D0%BC%D0%B5%D1%80
+     *
+     * @param  \DateTime $birthDate
+     * @param  integer   $gender
+     *
+     * @return string 12 digits, like 780322300455
+     */
+    public static function individualIdentificationNumber(\DateTime $birthDate = null, $gender = self::GENDER_MALE)
+    {
+        if (!$birthDate) {
+            $birthDate = DateTime::dateTimeBetween();
+        }
+
+        do {
+            $population = mt_rand(1000, 2000);
+            $century = self::getCenturyByYear((int) $birthDate->format('Y'));
+
+            $iin = $birthDate->format('ymd');
+            $iin .= (string) self::$genderCenturyMap[$gender][$century];
+            $iin .= (string) $population;
+            $checksum = self::checkSum($iin);
+        } while ($checksum === 10);
+
+        return $iin . (string) $checksum;
     }
 
     /**
@@ -246,7 +249,7 @@ class Person extends \Faker\Provider\Person
         $sum = 0;
 
         for ($i = 0; $i <= 10; $i++) {
-            $sum += (int)$iinValue[$i] * $sequence[$i];
+            $sum += (int) $iinValue[$i] * $sequence[$i];
         }
 
         return $sum % 11;

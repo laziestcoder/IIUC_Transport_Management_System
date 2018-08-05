@@ -26,24 +26,28 @@ class StoreTest extends TestCase
      */
     protected $store;
 
+    protected function setUp()
+    {
+        $this->request = Request::create('/');
+        $this->response = new Response('hello world', 200, array());
+
+        HttpCacheTestCase::clearDirectory(sys_get_temp_dir().'/http_cache');
+
+        $this->store = new Store(sys_get_temp_dir().'/http_cache');
+    }
+
+    protected function tearDown()
+    {
+        $this->store = null;
+        $this->request = null;
+        $this->response = null;
+
+        HttpCacheTestCase::clearDirectory(sys_get_temp_dir().'/http_cache');
+    }
+
     public function testReadsAnEmptyArrayWithReadWhenNothingCachedAtKey()
     {
         $this->assertEmpty($this->getStoreMetadata('/nothing'));
-    }
-
-    protected function getStoreMetadata($key)
-    {
-        $r = new \ReflectionObject($this->store);
-        $m = $r->getMethod('getMetadata');
-        $m->setAccessible(true);
-
-        if ($key instanceof Request) {
-            $m1 = $r->getMethod('getCacheKey');
-            $m1->setAccessible(true);
-            $key = $m1->invoke($this->store, $key);
-        }
-
-        return $m->invoke($this->store, $key);
     }
 
     public function testUnlockFileThatDoesExist()
@@ -52,18 +56,6 @@ class StoreTest extends TestCase
         $this->store->lock($this->request);
 
         $this->assertTrue($this->store->unlock($this->request));
-    }
-
-    protected function storeSimpleEntry($path = null, $headers = array())
-    {
-        if (null === $path) {
-            $path = '/test';
-        }
-
-        $this->request = Request::create($path, 'get', array(), array(), array(), $headers);
-        $this->response = new Response('test', 200, array('Cache-Control' => 'max-age=420'));
-
-        return $this->store->write($this->request, $this->response);
     }
 
     public function testUnlockFileThatDoesNotExist()
@@ -140,15 +132,6 @@ class StoreTest extends TestCase
         $this->assertNull($this->store->lookup($this->request));
     }
 
-    protected function getStorePath($key)
-    {
-        $r = new \ReflectionObject($this->store);
-        $m = $r->getMethod('getPath');
-        $m->setAccessible(true);
-
-        return $m->invoke($this->store, $key);
-    }
-
     public function testRestoresResponseHeadersProperlyWithLookup()
     {
         $this->storeSimpleEntry();
@@ -161,7 +144,7 @@ class StoreTest extends TestCase
     {
         $this->storeSimpleEntry();
         $response = $this->store->lookup($this->request);
-        $this->assertEquals($this->getStorePath('en' . hash('sha256', 'test')), $response->getContent());
+        $this->assertEquals($this->getStorePath('en'.hash('sha256', 'test')), $response->getContent());
     }
 
     public function testInvalidatesMetaAndEntityStoreEntriesWithInvalidate()
@@ -214,9 +197,9 @@ class StoreTest extends TestCase
         $res3 = new Response('test 3', 200, array('Vary' => 'Foo Bar'));
         $this->store->write($req3, $res3);
 
-        $this->assertEquals($this->getStorePath('en' . hash('sha256', 'test 3')), $this->store->lookup($req3)->getContent());
-        $this->assertEquals($this->getStorePath('en' . hash('sha256', 'test 2')), $this->store->lookup($req2)->getContent());
-        $this->assertEquals($this->getStorePath('en' . hash('sha256', 'test 1')), $this->store->lookup($req1)->getContent());
+        $this->assertEquals($this->getStorePath('en'.hash('sha256', 'test 3')), $this->store->lookup($req3)->getContent());
+        $this->assertEquals($this->getStorePath('en'.hash('sha256', 'test 2')), $this->store->lookup($req2)->getContent());
+        $this->assertEquals($this->getStorePath('en'.hash('sha256', 'test 1')), $this->store->lookup($req1)->getContent());
 
         $this->assertCount(3, $this->getStoreMetadata($key));
     }
@@ -226,17 +209,17 @@ class StoreTest extends TestCase
         $req1 = Request::create('/test', 'get', array(), array(), array(), array('HTTP_FOO' => 'Foo', 'HTTP_BAR' => 'Bar'));
         $res1 = new Response('test 1', 200, array('Vary' => 'Foo Bar'));
         $key = $this->store->write($req1, $res1);
-        $this->assertEquals($this->getStorePath('en' . hash('sha256', 'test 1')), $this->store->lookup($req1)->getContent());
+        $this->assertEquals($this->getStorePath('en'.hash('sha256', 'test 1')), $this->store->lookup($req1)->getContent());
 
         $req2 = Request::create('/test', 'get', array(), array(), array(), array('HTTP_FOO' => 'Bling', 'HTTP_BAR' => 'Bam'));
         $res2 = new Response('test 2', 200, array('Vary' => 'Foo Bar'));
         $this->store->write($req2, $res2);
-        $this->assertEquals($this->getStorePath('en' . hash('sha256', 'test 2')), $this->store->lookup($req2)->getContent());
+        $this->assertEquals($this->getStorePath('en'.hash('sha256', 'test 2')), $this->store->lookup($req2)->getContent());
 
         $req3 = Request::create('/test', 'get', array(), array(), array(), array('HTTP_FOO' => 'Foo', 'HTTP_BAR' => 'Bar'));
         $res3 = new Response('test 3', 200, array('Vary' => 'Foo Bar'));
         $key = $this->store->write($req3, $res3);
-        $this->assertEquals($this->getStorePath('en' . hash('sha256', 'test 3')), $this->store->lookup($req3)->getContent());
+        $this->assertEquals($this->getStorePath('en'.hash('sha256', 'test 3')), $this->store->lookup($req3)->getContent());
 
         $this->assertCount(2, $this->getStoreMetadata($key));
     }
@@ -280,22 +263,39 @@ class StoreTest extends TestCase
         $this->assertEmpty($this->getStoreMetadata($requestHttps));
     }
 
-    protected function setUp()
+    protected function storeSimpleEntry($path = null, $headers = array())
     {
-        $this->request = Request::create('/');
-        $this->response = new Response('hello world', 200, array());
+        if (null === $path) {
+            $path = '/test';
+        }
 
-        HttpCacheTestCase::clearDirectory(sys_get_temp_dir() . '/http_cache');
+        $this->request = Request::create($path, 'get', array(), array(), array(), $headers);
+        $this->response = new Response('test', 200, array('Cache-Control' => 'max-age=420'));
 
-        $this->store = new Store(sys_get_temp_dir() . '/http_cache');
+        return $this->store->write($this->request, $this->response);
     }
 
-    protected function tearDown()
+    protected function getStoreMetadata($key)
     {
-        $this->store = null;
-        $this->request = null;
-        $this->response = null;
+        $r = new \ReflectionObject($this->store);
+        $m = $r->getMethod('getMetadata');
+        $m->setAccessible(true);
 
-        HttpCacheTestCase::clearDirectory(sys_get_temp_dir() . '/http_cache');
+        if ($key instanceof Request) {
+            $m1 = $r->getMethod('getCacheKey');
+            $m1->setAccessible(true);
+            $key = $m1->invoke($this->store, $key);
+        }
+
+        return $m->invoke($this->store, $key);
+    }
+
+    protected function getStorePath($key)
+    {
+        $r = new \ReflectionObject($this->store);
+        $m = $r->getMethod('getPath');
+        $m->setAccessible(true);
+
+        return $m->invoke($this->store, $key);
     }
 }

@@ -17,9 +17,9 @@ use SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
  * @covers SebastianBergmann\Diff\Differ
  * @covers SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder
  *
- * @uses   SebastianBergmann\Diff\MemoryEfficientLongestCommonSubsequenceCalculator
- * @uses   SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
- * @uses   SebastianBergmann\Diff\Output\AbstractChunkOutputBuilder
+ * @uses SebastianBergmann\Diff\MemoryEfficientLongestCommonSubsequenceCalculator
+ * @uses SebastianBergmann\Diff\TimeEfficientLongestCommonSubsequenceCalculator
+ * @uses SebastianBergmann\Diff\Output\AbstractChunkOutputBuilder
  */
 final class DifferTest extends TestCase
 {
@@ -28,8 +28,13 @@ final class DifferTest extends TestCase
      */
     private $differ;
 
+    protected function setUp(): void
+    {
+        $this->differ = new Differ;
+    }
+
     /**
-     * @param array $expected
+     * @param array        $expected
      * @param array|string $from
      * @param array|string $to
      *
@@ -53,7 +58,7 @@ final class DifferTest extends TestCase
     }
 
     /**
-     * @param array $expected
+     * @param array        $expected
      * @param array|string $from
      * @param array|string $to
      *
@@ -291,7 +296,7 @@ final class DifferTest extends TestCase
  k
 
 EOF
-                ,
+            ,
                 "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\n",
                 "a\np\nc\nd\ne\nf\ng\nh\ni\nw\nk\n",
             ],
@@ -307,7 +312,7 @@ EOF
  3
 
 EOF
-                ,
+            ,
                 "A\n1\n2\n3\n4\n5\n6\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n",
                 "B\n1\n2\n3\n4\n5\n6\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n",
             ],
@@ -341,7 +346,7 @@ EOF
     }
 
     /**
-     * @param array $expected
+     * @param array  $expected
      * @param string $input
      *
      * @dataProvider provideSplitStringByLinesCases
@@ -349,7 +354,7 @@ EOF
     public function testSplitStringByLines(array $expected, string $input): void
     {
         $reflection = new \ReflectionObject($this->differ);
-        $method = $reflection->getMethod('splitStringByLines');
+        $method     = $reflection->getMethod('splitStringByLines');
         $method->setAccessible(true);
 
         $this->assertSame($expected, $method->invoke($this->differ, $input));
@@ -453,10 +458,5 @@ EOF
         $this->expectExceptionMessageRegExp('/^Expected builder to be an instance of DiffOutputBuilderInterface, <null> or a string, got instance of "SplFileInfo"\.$/');
 
         new Differ(new \SplFileInfo(__FILE__));
-    }
-
-    protected function setUp(): void
-    {
-        $this->differ = new Differ;
     }
 }

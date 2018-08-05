@@ -33,6 +33,35 @@ class ConsoleLoggerTest extends TestCase
     protected $output;
 
     /**
+     * @return LoggerInterface
+     */
+    public function getLogger()
+    {
+        $this->output = new DummyOutput(OutputInterface::VERBOSITY_VERBOSE);
+
+        return new ConsoleLogger($this->output, array(
+            LogLevel::EMERGENCY => OutputInterface::VERBOSITY_NORMAL,
+            LogLevel::ALERT => OutputInterface::VERBOSITY_NORMAL,
+            LogLevel::CRITICAL => OutputInterface::VERBOSITY_NORMAL,
+            LogLevel::ERROR => OutputInterface::VERBOSITY_NORMAL,
+            LogLevel::WARNING => OutputInterface::VERBOSITY_NORMAL,
+            LogLevel::NOTICE => OutputInterface::VERBOSITY_NORMAL,
+            LogLevel::INFO => OutputInterface::VERBOSITY_NORMAL,
+            LogLevel::DEBUG => OutputInterface::VERBOSITY_NORMAL,
+        ));
+    }
+
+    /**
+     * Return the log messages in order.
+     *
+     * @return string[]
+     */
+    public function getLogs()
+    {
+        return $this->output->getLogs();
+    }
+
+    /**
      * @dataProvider provideOutputMappingParams
      */
     public function testOutputMapping($logLevel, $outputVerbosity, $isOutput, $addVerbosityLevelMap = array())
@@ -41,7 +70,7 @@ class ConsoleLoggerTest extends TestCase
         $logger = new ConsoleLogger($out, $addVerbosityLevelMap);
         $logger->log($logLevel, 'foo bar');
         $logs = $out->fetch();
-        $this->assertEquals($isOutput ? "[$logLevel] foo bar" . PHP_EOL : '', $logs);
+        $this->assertEquals($isOutput ? "[$logLevel] foo bar".PHP_EOL : '', $logs);
     }
 
     public function provideOutputMappingParams()
@@ -83,25 +112,6 @@ class ConsoleLoggerTest extends TestCase
     }
 
     /**
-     * @return LoggerInterface
-     */
-    public function getLogger()
-    {
-        $this->output = new DummyOutput(OutputInterface::VERBOSITY_VERBOSE);
-
-        return new ConsoleLogger($this->output, array(
-            LogLevel::EMERGENCY => OutputInterface::VERBOSITY_NORMAL,
-            LogLevel::ALERT => OutputInterface::VERBOSITY_NORMAL,
-            LogLevel::CRITICAL => OutputInterface::VERBOSITY_NORMAL,
-            LogLevel::ERROR => OutputInterface::VERBOSITY_NORMAL,
-            LogLevel::WARNING => OutputInterface::VERBOSITY_NORMAL,
-            LogLevel::NOTICE => OutputInterface::VERBOSITY_NORMAL,
-            LogLevel::INFO => OutputInterface::VERBOSITY_NORMAL,
-            LogLevel::DEBUG => OutputInterface::VERBOSITY_NORMAL,
-        ));
-    }
-
-    /**
      * @dataProvider provideLevelsAndMessages
      */
     public function testLogsAtAllLevels($level, $message)
@@ -111,20 +121,10 @@ class ConsoleLoggerTest extends TestCase
         $logger->log($level, $message, array('user' => 'Bob'));
 
         $expected = array(
-            $level . ' message of level ' . $level . ' with context: Bob',
-            $level . ' message of level ' . $level . ' with context: Bob',
+            $level.' message of level '.$level.' with context: Bob',
+            $level.' message of level '.$level.' with context: Bob',
         );
         $this->assertEquals($expected, $this->getLogs());
-    }
-
-    /**
-     * Return the log messages in order.
-     *
-     * @return string[]
-     */
-    public function getLogs()
-    {
-        return $this->output->getLogs();
     }
 
     public function provideLevelsAndMessages()

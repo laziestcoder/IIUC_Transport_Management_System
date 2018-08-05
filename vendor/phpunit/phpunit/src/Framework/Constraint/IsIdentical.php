@@ -7,11 +7,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\ExpectationFailedException;
-use SebastianBergmann;
+use SebastianBergmann\Comparator\ComparisonFailure;
 
 /**
  * Constraint that asserts that one value is identical to another.
@@ -36,9 +35,6 @@ class IsIdentical extends Constraint
      */
     private $value;
 
-    /**
-     * @param mixed $value
-     */
     public function __construct($value)
     {
         parent::__construct();
@@ -56,14 +52,12 @@ class IsIdentical extends Constraint
      * a boolean value instead: true in case of success, false in case of a
      * failure.
      *
-     * @param mixed $other value or object to evaluate
-     * @param string $description Additional information about the test
-     * @param bool $returnResult Whether to return a result or throw an exception
+     * @param mixed  $other        value or object to evaluate
+     * @param string $description  Additional information about the test
+     * @param bool   $returnResult Whether to return a result or throw an exception
      *
      * @throws ExpectationFailedException
      * @throws SebastianBergmann\RecursionContext\InvalidArgumentException
-     *
-     * @return mixed
      */
     public function evaluate($other, $description = '', $returnResult = false)
     {
@@ -84,7 +78,7 @@ class IsIdentical extends Constraint
 
             // if both values are strings, make sure a diff is generated
             if (\is_string($this->value) && \is_string($other)) {
-                $f = new SebastianBergmann\Comparator\ComparisonFailure(
+                $f = new ComparisonFailure(
                     $this->value,
                     $other,
                     \sprintf("'%s'", $this->value),
@@ -94,7 +88,7 @@ class IsIdentical extends Constraint
 
             // if both values are array, make sure a diff is generated
             if (\is_array($this->value) && \is_array($other)) {
-                $f = new SebastianBergmann\Comparator\ComparisonFailure(
+                $f = new ComparisonFailure(
                     $this->value,
                     $other,
                     $this->exporter->export($this->value),

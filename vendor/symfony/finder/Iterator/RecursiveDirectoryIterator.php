@@ -48,8 +48,8 @@ class RecursiveDirectoryIterator extends \RecursiveDirectoryIterator
         parent::__construct($path, $flags);
         $this->ignoreUnreadableDirs = $ignoreUnreadableDirs;
         $this->rootPath = $path;
-        if ('/' !== DIRECTORY_SEPARATOR && !($flags & self::UNIX_PATHS)) {
-            $this->directorySeparator = DIRECTORY_SEPARATOR;
+        if ('/' !== \DIRECTORY_SEPARATOR && !($flags & self::UNIX_PATHS)) {
+            $this->directorySeparator = \DIRECTORY_SEPARATOR;
         }
     }
 
@@ -63,14 +63,14 @@ class RecursiveDirectoryIterator extends \RecursiveDirectoryIterator
         // the logic here avoids redoing the same work in all iterations
 
         if (null === $subPathname = $this->subPath) {
-            $subPathname = $this->subPath = (string)$this->getSubPath();
+            $subPathname = $this->subPath = (string) $this->getSubPath();
         }
         if ('' !== $subPathname) {
             $subPathname .= $this->directorySeparator;
         }
         $subPathname .= $this->getFilename();
 
-        return new SplFileInfo($this->rootPath . $this->directorySeparator . $subPathname, $this->subPath, $subPathname);
+        return new SplFileInfo($this->rootPath.$this->directorySeparator.$subPathname, $this->subPath, $subPathname);
     }
 
     /**

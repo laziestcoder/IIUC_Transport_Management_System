@@ -15,9 +15,9 @@ use Psy\Util\Mirror;
 
 class MirrorTest extends \PHPUnit\Framework\TestCase
 {
-    const FOO = 1;
+    const FOO           = 1;
+    private $bar        = 2;
     private static $baz = 3;
-    private $bar = 2;
 
     public function aPublicMethod()
     {
@@ -36,7 +36,14 @@ class MirrorTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf('ReflectionObject', $refl);
 
         $refl = Mirror::get($this, 'FOO');
-        $this->assertInstanceOf('Psy\Reflection\ReflectionConstant', $refl);
+        if (version_compare(PHP_VERSION, '7.1.0', '>=')) {
+            $this->assertInstanceOf('ReflectionClassConstant', $refl);
+        } else {
+            $this->assertInstanceOf('Psy\Reflection\ReflectionClassConstant', $refl);
+        }
+
+        $refl = Mirror::get('PHP_VERSION');
+        $this->assertInstanceOf('Psy\Reflection\ReflectionConstant_', $refl);
 
         $refl = Mirror::get($this, 'bar');
         $this->assertInstanceOf('ReflectionProperty', $refl);

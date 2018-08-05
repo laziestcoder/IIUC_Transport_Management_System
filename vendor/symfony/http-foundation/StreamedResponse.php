@@ -32,8 +32,8 @@ class StreamedResponse extends Response
 
     /**
      * @param callable|null $callback A valid PHP callback or null to set it later
-     * @param int $status The response status code
-     * @param array $headers An array of response headers
+     * @param int           $status   The response status code
+     * @param array         $headers  An array of response headers
      */
     public function __construct(callable $callback = null, int $status = 200, array $headers = array())
     {
@@ -44,6 +44,20 @@ class StreamedResponse extends Response
         }
         $this->streamed = false;
         $this->headersSent = false;
+    }
+
+    /**
+     * Factory method for chainability.
+     *
+     * @param callable|null $callback A valid PHP callback or null to set it later
+     * @param int           $status   The response status code
+     * @param array         $headers  An array of response headers
+     *
+     * @return static
+     */
+    public static function create($callback = null, $status = 200, $headers = array())
+    {
+        return new static($callback, $status, $headers);
     }
 
     /**
@@ -58,20 +72,6 @@ class StreamedResponse extends Response
         $this->callback = $callback;
 
         return $this;
-    }
-
-    /**
-     * Factory method for chainability.
-     *
-     * @param callable|null $callback A valid PHP callback or null to set it later
-     * @param int $status The response status code
-     * @param array $headers An array of response headers
-     *
-     * @return static
-     */
-    public static function create($callback = null, $status = 200, $headers = array())
-    {
-        return new static($callback, $status, $headers);
     }
 
     /**
@@ -111,7 +111,7 @@ class StreamedResponse extends Response
             throw new \LogicException('The Response callback must not be null.');
         }
 
-        call_user_func($this->callback);
+        \call_user_func($this->callback);
 
         return $this;
     }
@@ -140,5 +140,17 @@ class StreamedResponse extends Response
     public function getContent()
     {
         return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return $this
+     */
+    public function setNotModified()
+    {
+        $this->setCallback(function () {});
+
+        return parent::setNotModified();
     }
 }

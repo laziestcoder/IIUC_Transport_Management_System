@@ -2,11 +2,11 @@ Swiftmailer
 ===========
 
 .. toctree::
-:maxdepth: 2
+    :maxdepth: 2
 
-        introduction
-        messages
-        headers
-        sending
-        plugins
-        japanese
+    introduction
+    messages
+    headers
+    sending
+    plugins
+    japanese

@@ -12,15 +12,28 @@
 namespace Symfony\Component\Console\Tests\Helper;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Helper\TableStyle;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\StreamOutput;
 
 class TableTest extends TestCase
 {
     protected $stream;
+
+    protected function setUp()
+    {
+        $this->stream = fopen('php://memory', 'r+');
+    }
+
+    protected function tearDown()
+    {
+        fclose($this->stream);
+        $this->stream = null;
+    }
 
     /**
      * @dataProvider renderProvider
@@ -31,22 +44,11 @@ class TableTest extends TestCase
         $table
             ->setHeaders($headers)
             ->setRows($rows)
-            ->setStyle($style);
+            ->setStyle($style)
+        ;
         $table->render();
 
         $this->assertEquals($expected, $this->getOutputContent($output));
-    }
-
-    protected function getOutputStream($decorated = false)
-    {
-        return new StreamOutput($this->stream, StreamOutput::VERBOSITY_NORMAL, $decorated);
-    }
-
-    protected function getOutputContent(StreamOutput $output)
-    {
-        rewind($output->getStream());
-
-        return str_replace(PHP_EOL, "\n", stream_get_contents($output->getStream()));
     }
 
     /**
@@ -58,7 +60,8 @@ class TableTest extends TestCase
         $table
             ->setHeaders($headers)
             ->addRows($rows)
-            ->setStyle($style);
+            ->setStyle($style)
+        ;
         $table->render();
 
         $this->assertEquals($expected, $this->getOutputContent($output));
@@ -72,7 +75,8 @@ class TableTest extends TestCase
         $table = new Table($output = $this->getOutputStream($decorated));
         $table
             ->setHeaders($headers)
-            ->setStyle($style);
+            ->setStyle($style)
+        ;
         foreach ($rows as $row) {
             $table->addRow($row);
         }
@@ -95,7 +99,7 @@ class TableTest extends TestCase
                 array('ISBN', 'Title', 'Author'),
                 $books,
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +---------------+--------------------------+------------------+
 | ISBN          | Title                    | Author           |
 +---------------+--------------------------+------------------+
@@ -111,7 +115,7 @@ TABLE
                 array('ISBN', 'Title', 'Author'),
                 $books,
                 'compact',
-                <<<'TABLE'
+<<<'TABLE'
  ISBN          Title                    Author           
  99921-58-10-7 Divine Comedy            Dante Alighieri  
  9971-5-0210-0 A Tale of Two Cities     Charles Dickens  
@@ -124,7 +128,7 @@ TABLE
                 array('ISBN', 'Title', 'Author'),
                 $books,
                 'borderless',
-                <<<'TABLE'
+<<<'TABLE'
  =============== ========================== ================== 
   ISBN            Title                      Author            
  =============== ========================== ================== 
@@ -137,6 +141,45 @@ TABLE
 TABLE
             ),
             array(
+                array('ISBN', 'Title', 'Author'),
+                $books,
+                'box',
+                <<<'TABLE'
+┌───────────────┬──────────────────────────┬──────────────────┐
+│ ISBN          │ Title                    │ Author           │
+├───────────────┼──────────────────────────┼──────────────────┤
+│ 99921-58-10-7 │ Divine Comedy            │ Dante Alighieri  │
+│ 9971-5-0210-0 │ A Tale of Two Cities     │ Charles Dickens  │
+│ 960-425-059-0 │ The Lord of the Rings    │ J. R. R. Tolkien │
+│ 80-902734-1-6 │ And Then There Were None │ Agatha Christie  │
+└───────────────┴──────────────────────────┴──────────────────┘
+
+TABLE
+            ),
+            array(
+                array('ISBN', 'Title', 'Author'),
+                array(
+                    array('99921-58-10-7', 'Divine Comedy', 'Dante Alighieri'),
+                    array('9971-5-0210-0', 'A Tale of Two Cities', 'Charles Dickens'),
+                    new TableSeparator(),
+                    array('960-425-059-0', 'The Lord of the Rings', 'J. R. R. Tolkien'),
+                    array('80-902734-1-6', 'And Then There Were None', 'Agatha Christie'),
+                ),
+                'box-double',
+                <<<'TABLE'
+╔═══════════════╤══════════════════════════╤══════════════════╗
+║ ISBN          │ Title                    │ Author           ║
+╠═══════════════╪══════════════════════════╪══════════════════╣
+║ 99921-58-10-7 │ Divine Comedy            │ Dante Alighieri  ║
+║ 9971-5-0210-0 │ A Tale of Two Cities     │ Charles Dickens  ║
+╟───────────────┼──────────────────────────┼──────────────────╢
+║ 960-425-059-0 │ The Lord of the Rings    │ J. R. R. Tolkien ║
+║ 80-902734-1-6 │ And Then There Were None │ Agatha Christie  ║
+╚═══════════════╧══════════════════════════╧══════════════════╝
+
+TABLE
+            ),
+            array(
                 array('ISBN', 'Title'),
                 array(
                     array('99921-58-10-7', 'Divine Comedy', 'Dante Alighieri'),
@@ -145,7 +188,7 @@ TABLE
                     array('80-902734-1-6', 'And Then There Were None', 'Agatha Christie'),
                 ),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +---------------+--------------------------+------------------+
 | ISBN          | Title                    |                  |
 +---------------+--------------------------+------------------+
@@ -166,7 +209,7 @@ TABLE
                     array('80-902734-1-6', 'And Then There Were None', 'Agatha Christie'),
                 ),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +---------------+--------------------------+------------------+
 | 99921-58-10-7 | Divine Comedy            | Dante Alighieri  |
 | 9971-5-0210-0 |                          |                  |
@@ -185,7 +228,7 @@ TABLE
                     array('960-425-059-0', 'The Lord of the Rings', "J. R. R.\nTolkien"),
                 ),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +---------------+----------------------------+-----------------+
 | ISBN          | Title                      | Author          |
 +---------------+----------------------------+-----------------+
@@ -205,7 +248,7 @@ TABLE
                 array('ISBN', 'Title'),
                 array(),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +------+-------+
 | ISBN | Title |
 +------+-------+
@@ -225,7 +268,7 @@ TABLE
                     array('9971-5-0210-0', 'A Tale of Two Cities', '<info>Charles Dickens</>'),
                 ),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +---------------+----------------------+-----------------+
 | ISBN          | Title                | Author          |
 +---------------+----------------------+-----------------+
@@ -242,7 +285,7 @@ TABLE
                     array('9971-5-0210-0', 'A Tale of Two Cities', 'Charles Dickens'),
                 ),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +----------------------------------+----------------------+-----------------+
 | ISBN                             | Title                | Author          |
 +----------------------------------+----------------------+-----------------+
@@ -274,7 +317,7 @@ TABLE
                     ),
                 ),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +-------------------------------+-------------------------------+-----------------------------+
 | ISBN                          | Title                         | Author                      |
 +-------------------------------+-------------------------------+-----------------------------+
@@ -307,7 +350,7 @@ TABLE
                     array('80-902734-1-7', 'Test'),
                 ),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +---------------+---------------+-----------------+
 | ISBN          | Title         | Author          |
 +---------------+---------------+-----------------+
@@ -340,7 +383,7 @@ TABLE
                     array('J. R. R'),
                 ),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +------------------+---------+-----------------+
 | ISBN             | Title   | Author          |
 +------------------+---------+-----------------+
@@ -375,7 +418,7 @@ TABLE
                     ),
                 ),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +-----------------+-------+-----------------+
 | ISBN            | Title | Author          |
 +-----------------+-------+-----------------+
@@ -412,7 +455,7 @@ TABLE
                     array('Charles Dickens'),
                 ),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +-----------------+-------+-----------------+
 | ISBN            | Title | Author          |
 +-----------------+-------+-----------------+
@@ -439,7 +482,7 @@ TABLE
                     array('Charles Dickens'),
                 ),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +---------------+-----------------+
 | ISBN          | Author          |
 +---------------+-----------------+
@@ -457,7 +500,7 @@ TABLE
                 ),
                 array(),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +------+-------+--------+
 | Main title            |
 +------+-------+--------+
@@ -475,9 +518,9 @@ TABLE
                         new TableCell('3', array('colspan' => 2)),
                         new TableCell('4', array('colspan' => 2)),
                     ),
-                ),
+        ),
                 'default',
-                <<<'TABLE'
+<<<'TABLE'
 +---+--+--+---+--+---+--+---+--+
 | 1       | 2    | 3    | 4    |
 +---+--+--+---+--+---+--+---+--+
@@ -517,12 +560,12 @@ TABLE
                 array(),
                 array(
                     array(
-                        new TableCell('<error>Dont break' . "\n" . 'here</error>', array('colspan' => 2)),
+                        new TableCell('<error>Dont break'."\n".'here</error>', array('colspan' => 2)),
                     ),
                     new TableSeparator(),
                     array(
                         'foo',
-                        new TableCell('<error>Dont break' . "\n" . 'here</error>', array('rowspan' => 2)),
+                         new TableCell('<error>Dont break'."\n".'here</error>', array('rowspan' => 2)),
                     ),
                     array(
                         'bar',
@@ -551,11 +594,12 @@ TABLE
         $table
             ->setHeaders(array('■■'))
             ->setRows(array(array(1234)))
-            ->setStyle('default');
+            ->setStyle('default')
+        ;
         $table->render();
 
         $expected =
-            <<<'TABLE'
+<<<'TABLE'
 +------+
 | ■■   |
 +------+
@@ -575,7 +619,7 @@ TABLE;
         $table->render();
 
         $expected =
-            <<<'TABLE'
+<<<'TABLE'
 +-------+
 | 12345 |
 +-------+
@@ -593,7 +637,7 @@ TABLE;
         $table->render();
 
         $expected =
-            <<<'TABLE'
+<<<'TABLE'
 +----------+
 | 12345.01 |
 +----------+
@@ -607,9 +651,10 @@ TABLE;
     {
         $style = new TableStyle();
         $style
-            ->setHorizontalBorderChar('.')
-            ->setVerticalBorderChar('.')
-            ->setCrossingChar('.');
+            ->setHorizontalBorderChars('.')
+            ->setVerticalBorderChars('.')
+            ->setDefaultCrossingChar('.')
+        ;
 
         Table::setStyleDefinition('dotfull', $style);
         $table = new Table($output = $this->getOutputStream());
@@ -620,7 +665,7 @@ TABLE;
         $table->render();
 
         $expected =
-            <<<'TABLE'
+<<<'TABLE'
 .......
 . Foo .
 .......
@@ -647,7 +692,7 @@ TABLE;
         $table->render();
 
         $expected =
-            <<<'TABLE'
+<<<'TABLE'
 +------+
 | Foo  |
 +------+
@@ -676,7 +721,7 @@ TABLE;
         $table->render();
 
         $expected =
-            <<<TABLE
+<<<TABLE
 +----+---+
 | foo    |
 +----+---+
@@ -801,6 +846,115 @@ TABLE;
         $this->assertEquals($expected, $this->getOutputContent($output));
     }
 
+    public function testSectionOutput()
+    {
+        $sections = array();
+        $stream = $this->getOutputStream(true);
+        $output = new ConsoleSectionOutput($stream->getStream(), $sections, $stream->getVerbosity(), $stream->isDecorated(), new OutputFormatter());
+        $table = new Table($output);
+        $table
+            ->setHeaders(array('ISBN', 'Title', 'Author', 'Price'))
+            ->setRows(array(
+                array('99921-58-10-7', 'Divine Comedy', 'Dante Alighieri', '9.95'),
+            ));
+
+        $table->render();
+
+        $table->appendRow(array('9971-5-0210-0', 'A Tale of Two Cities', 'Charles Dickens', '139.25'));
+
+        $expected =
+            <<<TABLE
++---------------+---------------+-----------------+-------+
+|\033[32m ISBN          \033[39m|\033[32m Title         \033[39m|\033[32m Author          \033[39m|\033[32m Price \033[39m|
++---------------+---------------+-----------------+-------+
+| 99921-58-10-7 | Divine Comedy | Dante Alighieri | 9.95  |
++---------------+---------------+-----------------+-------+
+\x1b[5A\x1b[0J+---------------+----------------------+-----------------+--------+
+|\033[32m ISBN          \033[39m|\033[32m Title                \033[39m|\033[32m Author          \033[39m|\033[32m Price  \033[39m|
++---------------+----------------------+-----------------+--------+
+| 99921-58-10-7 | Divine Comedy        | Dante Alighieri | 9.95   |
+| 9971-5-0210-0 | A Tale of Two Cities | Charles Dickens | 139.25 |
++---------------+----------------------+-----------------+--------+
+
+TABLE;
+
+        $this->assertEquals($expected, $this->getOutputContent($output));
+    }
+
+    public function testSectionOutputDoesntClearIfTableIsntRendered()
+    {
+        $sections = array();
+        $stream = $this->getOutputStream(true);
+        $output = new ConsoleSectionOutput($stream->getStream(), $sections, $stream->getVerbosity(), $stream->isDecorated(), new OutputFormatter());
+        $table = new Table($output);
+        $table
+            ->setHeaders(array('ISBN', 'Title', 'Author', 'Price'))
+            ->setRows(array(
+                array('99921-58-10-7', 'Divine Comedy', 'Dante Alighieri', '9.95'),
+            ));
+
+        $table->appendRow(array('9971-5-0210-0', 'A Tale of Two Cities', 'Charles Dickens', '139.25'));
+
+        $expected =
+            <<<TABLE
++---------------+----------------------+-----------------+--------+
+|\033[32m ISBN          \033[39m|\033[32m Title                \033[39m|\033[32m Author          \033[39m|\033[32m Price  \033[39m|
++---------------+----------------------+-----------------+--------+
+| 99921-58-10-7 | Divine Comedy        | Dante Alighieri | 9.95   |
+| 9971-5-0210-0 | A Tale of Two Cities | Charles Dickens | 139.25 |
++---------------+----------------------+-----------------+--------+
+
+TABLE;
+
+        $this->assertEquals($expected, $this->getOutputContent($output));
+    }
+
+    public function testSectionOutputWithoutDecoration()
+    {
+        $sections = array();
+        $stream = $this->getOutputStream();
+        $output = new ConsoleSectionOutput($stream->getStream(), $sections, $stream->getVerbosity(), $stream->isDecorated(), new OutputFormatter());
+        $table = new Table($output);
+        $table
+            ->setHeaders(array('ISBN', 'Title', 'Author', 'Price'))
+            ->setRows(array(
+                array('99921-58-10-7', 'Divine Comedy', 'Dante Alighieri', '9.95'),
+            ));
+
+        $table->render();
+
+        $table->appendRow(array('9971-5-0210-0', 'A Tale of Two Cities', 'Charles Dickens', '139.25'));
+
+        $expected =
+            <<<TABLE
++---------------+---------------+-----------------+-------+
+| ISBN          | Title         | Author          | Price |
++---------------+---------------+-----------------+-------+
+| 99921-58-10-7 | Divine Comedy | Dante Alighieri | 9.95  |
++---------------+---------------+-----------------+-------+
++---------------+----------------------+-----------------+--------+
+| ISBN          | Title                | Author          | Price  |
++---------------+----------------------+-----------------+--------+
+| 99921-58-10-7 | Divine Comedy        | Dante Alighieri | 9.95   |
+| 9971-5-0210-0 | A Tale of Two Cities | Charles Dickens | 139.25 |
++---------------+----------------------+-----------------+--------+
+
+TABLE;
+
+        $this->assertEquals($expected, $this->getOutputContent($output));
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Console\Exception\RuntimeException
+     * @expectedExceptionMessage Output should be an instance of "Symfony\Component\Console\Output\ConsoleSectionOutput" when calling "Symfony\Component\Console\Helper\Table::appendRow".
+     */
+    public function testAppendRowWithoutSectionOutput()
+    {
+        $table = new Table($this->getOutputStream());
+
+        $table->appendRow(array('9971-5-0210-0', 'A Tale of Two Cities', 'Charles Dickens', '139.25'));
+    }
+
     /**
      * @expectedException \Symfony\Component\Console\Exception\InvalidArgumentException
      * @expectedExceptionMessage Style "absent" is not defined.
@@ -820,14 +974,15 @@ TABLE;
         Table::getStyleDefinition('absent');
     }
 
-    protected function setUp()
+    protected function getOutputStream($decorated = false)
     {
-        $this->stream = fopen('php://memory', 'r+');
+        return new StreamOutput($this->stream, StreamOutput::VERBOSITY_NORMAL, $decorated);
     }
 
-    protected function tearDown()
+    protected function getOutputContent(StreamOutput $output)
     {
-        fclose($this->stream);
-        $this->stream = null;
+        rewind($output->getStream());
+
+        return str_replace(PHP_EOL, "\n", stream_get_contents($output->getStream()));
     }
 }

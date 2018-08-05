@@ -58,7 +58,7 @@ class AttributeMatchingExtension extends AbstractExtension
         return $xpath->addCondition($value ? sprintf(
             '%1$s and contains(concat(\' \', normalize-space(%1$s), \' \'), %2$s)',
             $attribute,
-            Translator::getXpathLiteral(' ' . $value . ' ')
+            Translator::getXpathLiteral(' '.$value.' ')
         ) : '0');
     }
 
@@ -68,7 +68,7 @@ class AttributeMatchingExtension extends AbstractExtension
             '%1$s and (%1$s = %2$s or starts-with(%1$s, %3$s))',
             $attribute,
             Translator::getXpathLiteral($value),
-            Translator::getXpathLiteral($value . '-')
+            Translator::getXpathLiteral($value.'-')
         ));
     }
 
@@ -86,7 +86,7 @@ class AttributeMatchingExtension extends AbstractExtension
         return $xpath->addCondition($value ? sprintf(
             '%1$s and substring(%1$s, string-length(%1$s)-%2$s) = %3$s',
             $attribute,
-            strlen($value) - 1,
+            \strlen($value) - 1,
             Translator::getXpathLiteral($value)
         ) : '0');
     }

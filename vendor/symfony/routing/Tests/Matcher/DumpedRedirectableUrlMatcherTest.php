@@ -23,9 +23,9 @@ class DumpedRedirectableUrlMatcherTest extends RedirectableUrlMatcherTest
     {
         static $i = 0;
 
-        $class = 'DumpedRedirectableUrlMatcher' . ++$i;
+        $class = 'DumpedRedirectableUrlMatcher'.++$i;
         $dumper = new PhpMatcherDumper($routes);
-        eval('?>' . $dumper->dump(array('class' => $class, 'base_class' => 'Symfony\Component\Routing\Tests\Matcher\TestDumpedRedirectableUrlMatcher')));
+        eval('?>'.$dumper->dump(array('class' => $class, 'base_class' => 'Symfony\Component\Routing\Tests\Matcher\TestDumpedRedirectableUrlMatcher')));
 
         return $this->getMockBuilder($class)
             ->setConstructorArgs(array($context ?: new RequestContext()))

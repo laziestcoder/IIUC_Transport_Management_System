@@ -3,10 +3,10 @@
 namespace Illuminate\Database\Console\Seeds;
 
 use Illuminate\Console\Command;
-use Illuminate\Console\ConfirmableTrait;
-use Illuminate\Database\ConnectionResolverInterface as Resolver;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Console\ConfirmableTrait;
 use Symfony\Component\Console\Input\InputOption;
+use Illuminate\Database\ConnectionResolverInterface as Resolver;
 
 class SeedCommand extends Command
 {
@@ -36,7 +36,7 @@ class SeedCommand extends Command
     /**
      * Create a new database seed command instance.
      *
-     * @param  \Illuminate\Database\ConnectionResolverInterface $resolver
+     * @param  \Illuminate\Database\ConnectionResolverInterface  $resolver
      * @return void
      */
     public function __construct(Resolver $resolver)
@@ -53,7 +53,7 @@ class SeedCommand extends Command
      */
     public function handle()
     {
-        if (!$this->confirmToProceed()) {
+        if (! $this->confirmToProceed()) {
             return;
         }
 
@@ -62,18 +62,6 @@ class SeedCommand extends Command
         Model::unguarded(function () {
             $this->getSeeder()->__invoke();
         });
-    }
-
-    /**
-     * Get the name of the database connection to use.
-     *
-     * @return string
-     */
-    protected function getDatabase()
-    {
-        $database = $this->input->getOption('database');
-
-        return $database ?: $this->laravel['config']['database.default'];
     }
 
     /**
@@ -86,6 +74,18 @@ class SeedCommand extends Command
         $class = $this->laravel->make($this->input->getOption('class'));
 
         return $class->setContainer($this->laravel)->setCommand($this);
+    }
+
+    /**
+     * Get the name of the database connection to use.
+     *
+     * @return string
+     */
+    protected function getDatabase()
+    {
+        $database = $this->input->getOption('database');
+
+        return $database ?: $this->laravel['config']['database.default'];
     }
 
     /**

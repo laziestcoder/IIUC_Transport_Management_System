@@ -28,25 +28,6 @@ class UrlGeneratorTest extends TestCase
         $this->assertEquals('http://localhost/app.php/testing', $url);
     }
 
-    protected function getRoutes($name, Route $route)
-    {
-        $routes = new RouteCollection();
-        $routes->add($name, $route);
-
-        return $routes;
-    }
-
-    protected function getGenerator(RouteCollection $routes, array $parameters = array(), $logger = null)
-    {
-        $context = new RequestContext('/app.php');
-        foreach ($parameters as $key => $value) {
-            $method = 'set' . $key;
-            $context->$method($value);
-        }
-
-        return new UrlGenerator($routes, $context, $logger);
-    }
-
     public function testAbsoluteSecureUrlWithPort443()
     {
         $routes = $this->getRoutes('test', new Route('/testing'));
@@ -355,8 +336,8 @@ class UrlGeneratorTest extends TestCase
     public function testUrlEncoding()
     {
         $expectedPath = '/app.php/@:%5B%5D/%28%29*%27%22%20+,;-._~%26%24%3C%3E|%7B%7D%25%5C%5E%60!%3Ffoo=bar%23id'
-            . '/@:%5B%5D/%28%29*%27%22%20+,;-._~%26%24%3C%3E|%7B%7D%25%5C%5E%60!%3Ffoo=bar%23id'
-            . '?query=%40%3A%5B%5D/%28%29%2A%27%22%20%2B%2C%3B-._~%26%24%3C%3E%7C%7B%7D%25%5C%5E%60%21%3Ffoo%3Dbar%23id';
+            .'/@:%5B%5D/%28%29*%27%22%20+,;-._~%26%24%3C%3E|%7B%7D%25%5C%5E%60!%3Ffoo=bar%23id'
+            .'?query=%40%3A%5B%5D/%28%29%2A%27%22%20%2B%2C%3B-._~%26%24%3C%3E%7C%7B%7D%25%5C%5E%60%21%3Ffoo%3Dbar%23id';
 
         // This tests the encoding of reserved characters that are used for delimiting of URI components (defined in RFC 3986)
         // and other special ASCII chars. These chars are tested as static text path, variable path and query param.
@@ -574,7 +555,7 @@ class UrlGeneratorTest extends TestCase
             array('author' => 'bernhard', 'article' => 'forms-are-great'), UrlGeneratorInterface::RELATIVE_PATH)
         );
         $this->assertSame('https://example.com/app.php/bernhard/blog', $generator->generate('scheme',
-            array('author' => 'bernhard'), UrlGeneratorInterface::RELATIVE_PATH)
+                array('author' => 'bernhard'), UrlGeneratorInterface::RELATIVE_PATH)
         );
         $this->assertSame('../../about', $generator->generate('unrelated',
             array(), UrlGeneratorInterface::RELATIVE_PATH)
@@ -720,5 +701,24 @@ class UrlGeneratorTest extends TestCase
         $url = $this->getGenerator($routes)->generate('test', array(), UrlGeneratorInterface::ABSOLUTE_PATH);
 
         $this->assertEquals('/app.php/testing#fragment', $url);
+    }
+
+    protected function getGenerator(RouteCollection $routes, array $parameters = array(), $logger = null)
+    {
+        $context = new RequestContext('/app.php');
+        foreach ($parameters as $key => $value) {
+            $method = 'set'.$key;
+            $context->$method($value);
+        }
+
+        return new UrlGenerator($routes, $context, $logger);
+    }
+
+    protected function getRoutes($name, Route $route)
+    {
+        $routes = new RouteCollection();
+        $routes->add($name, $route);
+
+        return $routes;
     }
 }

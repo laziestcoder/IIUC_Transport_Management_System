@@ -11,8 +11,8 @@
 
 namespace Prophecy\Doubler\Generator;
 
-use Prophecy\Exception\Doubler\ClassMirrorException;
 use Prophecy\Exception\InvalidArgumentException;
+use Prophecy\Exception\Doubler\ClassMirrorException;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
@@ -38,7 +38,7 @@ class ClassMirror
     /**
      * Reflects provided arguments into class node.
      *
-     * @param ReflectionClass $class
+     * @param ReflectionClass   $class
      * @param ReflectionClass[] $interfaces
      *
      * @return Node\ClassNode
@@ -52,7 +52,7 @@ class ClassMirror
         if (null !== $class) {
             if (true === $class->isInterface()) {
                 throw new InvalidArgumentException(sprintf(
-                    "Could not reflect %s as a class, because it\n" .
+                    "Could not reflect %s as a class, because it\n".
                     "is interface - use the second argument instead.",
                     $class->getName()
                 ));
@@ -64,14 +64,14 @@ class ClassMirror
         foreach ($interfaces as $interface) {
             if (!$interface instanceof ReflectionClass) {
                 throw new InvalidArgumentException(sprintf(
-                    "[ReflectionClass \$interface1 [, ReflectionClass \$interface2]] array expected as\n" .
+                    "[ReflectionClass \$interface1 [, ReflectionClass \$interface2]] array expected as\n".
                     "a second argument to `ClassMirror::reflect(...)`, but got %s.",
-                    is_object($interface) ? get_class($interface) . ' class' : gettype($interface)
+                    is_object($interface) ? get_class($interface).' class' : gettype($interface)
                 ));
             }
             if (false === $interface->isInterface()) {
                 throw new InvalidArgumentException(sprintf(
-                    "Could not reflect %s as an interface, because it\n" .
+                    "Could not reflect %s as an interface, because it\n".
                     "is class - use the first argument instead.",
                     $interface->getName()
                 ));
@@ -118,6 +118,15 @@ class ClassMirror
         }
     }
 
+    private function reflectInterfaceToNode(ReflectionClass $interface, Node\ClassNode $node)
+    {
+        $node->addInterface($interface->getName());
+
+        foreach ($interface->getMethods() as $method) {
+            $this->reflectMethodToNode($method, $node);
+        }
+    }
+
     private function reflectMethodToNode(ReflectionMethod $method, Node\ClassNode $classNode)
     {
         $node = new Node\MethodNode($method->getName());
@@ -135,7 +144,7 @@ class ClassMirror
         }
 
         if (version_compare(PHP_VERSION, '7.0', '>=') && $method->hasReturnType()) {
-            $returnType = (string)$method->getReturnType();
+            $returnType = (string) $method->getReturnType();
             $returnTypeLower = strtolower($returnType);
 
             if ('self' === $returnTypeLower) {
@@ -180,7 +189,31 @@ class ClassMirror
             $node->setAsPassedByReference();
         }
 
+        $node->setAsNullable($this->isNullable($parameter));
+
         $methodNode->addArgument($node);
+    }
+
+    private function hasDefaultValue(ReflectionParameter $parameter)
+    {
+        if ($this->isVariadic($parameter)) {
+            return false;
+        }
+
+        if ($parameter->isDefaultValueAvailable()) {
+            return true;
+        }
+
+        return $parameter->isOptional() || $this->isNullable($parameter);
+    }
+
+    private function getDefaultValue(ReflectionParameter $parameter)
+    {
+        if (!$parameter->isDefaultValueAvailable()) {
+            return null;
+        }
+
+        return $parameter->getDefaultValue();
     }
 
     private function getTypeHint(ReflectionParameter $parameter)
@@ -198,10 +231,20 @@ class ClassMirror
         }
 
         if (version_compare(PHP_VERSION, '7.0', '>=') && true === $parameter->hasType()) {
-            return (string)$parameter->getType();
+            return (string) $parameter->getType();
         }
 
         return null;
+    }
+
+    private function isVariadic(ReflectionParameter $parameter)
+    {
+        return PHP_VERSION_ID >= 50600 && $parameter->isVariadic();
+    }
+
+    private function isNullable(ReflectionParameter $parameter)
+    {
+        return $parameter->allowsNull() && null !== $this->getTypeHint($parameter);
     }
 
     private function getParameterClassName(ReflectionParameter $parameter)
@@ -212,47 +255,6 @@ class ClassMirror
             preg_match('/\[\s\<\w+?>\s([\w,\\\]+)/s', $parameter, $matches);
 
             return isset($matches[1]) ? $matches[1] : null;
-        }
-    }
-
-    private function isVariadic(ReflectionParameter $parameter)
-    {
-        return PHP_VERSION_ID >= 50600 && $parameter->isVariadic();
-    }
-
-    private function hasDefaultValue(ReflectionParameter $parameter)
-    {
-        if ($this->isVariadic($parameter)) {
-            return false;
-        }
-
-        if ($parameter->isDefaultValueAvailable()) {
-            return true;
-        }
-
-        return $parameter->isOptional() || $this->isNullable($parameter);
-    }
-
-    private function isNullable(ReflectionParameter $parameter)
-    {
-        return $parameter->allowsNull() && null !== $this->getTypeHint($parameter);
-    }
-
-    private function getDefaultValue(ReflectionParameter $parameter)
-    {
-        if (!$parameter->isDefaultValueAvailable()) {
-            return null;
-        }
-
-        return $parameter->getDefaultValue();
-    }
-
-    private function reflectInterfaceToNode(ReflectionClass $interface, Node\ClassNode $node)
-    {
-        $node->addInterface($interface->getName());
-
-        foreach ($interface->getMethods() as $method) {
-            $this->reflectMethodToNode($method, $node);
         }
     }
 }

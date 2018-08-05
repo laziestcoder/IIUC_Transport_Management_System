@@ -34,9 +34,9 @@ class FilterOptions
     public static function getOptions()
     {
         return [
-            new InputOption('grep', 'G', InputOption::VALUE_REQUIRED, 'Limit to items matching the given pattern (string or regex).'),
-            new InputOption('insensitive', 'i', InputOption::VALUE_NONE, 'Case-insensitive search (requires --grep).'),
-            new InputOption('invert', 'v', InputOption::VALUE_NONE, 'Inverted search (requires --grep).'),
+            new InputOption('grep',        'G', InputOption::VALUE_REQUIRED, 'Limit to items matching the given pattern (string or regex).'),
+            new InputOption('insensitive', 'i', InputOption::VALUE_NONE,     'Case-insensitive search (requires --grep).'),
+            new InputOption('invert',      'v', InputOption::VALUE_NONE,     'Inverted search (requires --grep).'),
         ];
     }
 
@@ -65,10 +65,33 @@ class FilterOptions
 
         $this->validateRegex($pattern);
 
-        $this->filter = true;
-        $this->pattern = $pattern;
+        $this->filter      = true;
+        $this->pattern     = $pattern;
         $this->insensitive = $insensitive;
-        $this->invert = $input->getOption('invert');
+        $this->invert      = $input->getOption('invert');
+    }
+
+    /**
+     * Check whether the bound input has filter options.
+     *
+     * @return bool
+     */
+    public function hasFilter()
+    {
+        return $this->filter;
+    }
+
+    /**
+     * Check whether a string matches the current filter options.
+     *
+     * @param string $string
+     * @param array  $matches
+     *
+     * @return bool
+     */
+    public function match($string, array &$matches = null)
+    {
+        return $this->filter === false || (preg_match($this->pattern, $string, $matches) xor $this->invert);
     }
 
     /**
@@ -114,31 +137,9 @@ class FilterOptions
         try {
             preg_match($pattern, '');
         } catch (ErrorException $e) {
+            restore_error_handler();
             throw new RuntimeException(str_replace('preg_match(): ', 'Invalid regular expression: ', $e->getRawMessage()));
         }
         restore_error_handler();
-    }
-
-    /**
-     * Check whether the bound input has filter options.
-     *
-     * @return bool
-     */
-    public function hasFilter()
-    {
-        return $this->filter;
-    }
-
-    /**
-     * Check whether a string matches the current filter options.
-     *
-     * @param string $string
-     * @param array $matches
-     *
-     * @return bool
-     */
-    public function match($string, array &$matches = null)
-    {
-        return $this->filter === false || (preg_match($this->pattern, $string, $matches) xor $this->invert);
     }
 }

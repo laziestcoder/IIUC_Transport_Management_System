@@ -31,14 +31,6 @@ class ErrorListener implements EventSubscriberInterface
         $this->logger = $logger;
     }
 
-    public static function getSubscribedEvents()
-    {
-        return array(
-            ConsoleEvents::ERROR => array('onConsoleError', -128),
-            ConsoleEvents::TERMINATE => array('onConsoleTerminate', -128),
-        );
-    }
-
     public function onConsoleError(ConsoleErrorEvent $event)
     {
         if (null === $this->logger) {
@@ -52,22 +44,6 @@ class ErrorListener implements EventSubscriberInterface
         }
 
         $this->logger->error('Error thrown while running command "{command}". Message: "{message}"', array('exception' => $error, 'command' => $inputString, 'message' => $error->getMessage()));
-    }
-
-    private static function getInputString(ConsoleEvent $event)
-    {
-        $commandName = $event->getCommand() ? $event->getCommand()->getName() : null;
-        $input = $event->getInput();
-
-        if (method_exists($input, '__toString')) {
-            if ($commandName) {
-                return str_replace(array("'$commandName'", "\"$commandName\""), $commandName, (string)$input);
-            }
-
-            return (string)$input;
-        }
-
-        return $commandName;
     }
 
     public function onConsoleTerminate(ConsoleTerminateEvent $event)
@@ -87,5 +63,29 @@ class ErrorListener implements EventSubscriberInterface
         }
 
         $this->logger->debug('Command "{command}" exited with code "{code}"', array('command' => $inputString, 'code' => $exitCode));
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array(
+            ConsoleEvents::ERROR => array('onConsoleError', -128),
+            ConsoleEvents::TERMINATE => array('onConsoleTerminate', -128),
+        );
+    }
+
+    private static function getInputString(ConsoleEvent $event)
+    {
+        $commandName = $event->getCommand() ? $event->getCommand()->getName() : null;
+        $input = $event->getInput();
+
+        if (method_exists($input, '__toString')) {
+            if ($commandName) {
+                return str_replace(array("'$commandName'", "\"$commandName\""), $commandName, (string) $input);
+            }
+
+            return (string) $input;
+        }
+
+        return $commandName;
     }
 }

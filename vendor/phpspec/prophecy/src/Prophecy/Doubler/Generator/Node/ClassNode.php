@@ -22,14 +22,27 @@ use Prophecy\Exception\InvalidArgumentException;
 class ClassNode
 {
     private $parentClass = 'stdClass';
-    private $interfaces = array();
-    private $properties = array();
+    private $interfaces  = array();
+    private $properties  = array();
     private $unextendableMethods = array();
 
     /**
      * @var MethodNode[]
      */
-    private $methods = array();
+    private $methods     = array();
+
+    public function getParentClass()
+    {
+        return $this->parentClass;
+    }
+
+    /**
+     * @param string $class
+     */
+    public function setParentClass($class)
+    {
+        $this->parentClass = $class ?: 'stdClass';
+    }
 
     /**
      * @return string[]
@@ -87,37 +100,18 @@ class ClassNode
         return $this->methods;
     }
 
-    public function addMethod(MethodNode $method)
+    public function addMethod(MethodNode $method, $force = false)
     {
-        if (!$this->isExtendable($method->getName())) {
+        if (!$this->isExtendable($method->getName())){
             $message = sprintf(
                 'Method `%s` is not extendable, so can not be added.', $method->getName()
             );
             throw new MethodNotExtendableException($message, $this->getParentClass(), $method->getName());
         }
-        $this->methods[$method->getName()] = $method;
-    }
 
-    /**
-     * @param string $method
-     * @return bool
-     */
-    public function isExtendable($method)
-    {
-        return !in_array($method, $this->unextendableMethods);
-    }
-
-    public function getParentClass()
-    {
-        return $this->parentClass;
-    }
-
-    /**
-     * @param string $class
-     */
-    public function setParentClass($class)
-    {
-        $this->parentClass = $class ?: 'stdClass';
+        if ($force || !isset($this->methods[$method->getName()])) {
+            $this->methods[$method->getName()] = $method;
+        }
     }
 
     public function removeMethod($name)
@@ -158,9 +152,18 @@ class ClassNode
      */
     public function addUnextendableMethod($unextendableMethod)
     {
-        if (!$this->isExtendable($unextendableMethod)) {
+        if (!$this->isExtendable($unextendableMethod)){
             return;
         }
         $this->unextendableMethods[] = $unextendableMethod;
+    }
+
+    /**
+     * @param string $method
+     * @return bool
+     */
+    public function isExtendable($method)
+    {
+        return !in_array($method, $this->unextendableMethods);
     }
 }

@@ -6,17 +6,24 @@ class Swift_Transport_StreamBufferTest extends \PHPUnit\Framework\TestCase
     {
         $factory = $this->createFactory();
         $factory->expects($this->once())
-            ->method('createFilter')
-            ->with('a', 'b')
-            ->will($this->returnCallback(array($this, 'createFilter')));
+                ->method('createFilter')
+                ->with('a', 'b')
+                ->will($this->returnCallback([$this, 'createFilter']));
 
         $buffer = $this->createBuffer($factory);
-        $buffer->setWriteTranslations(array('a' => 'b'));
+        $buffer->setWriteTranslations(['a' => 'b']);
     }
 
-    private function createFactory()
+    public function testOverridingTranslationsOnlyAddsNeededFilters()
     {
-        return $this->getMockBuilder('Swift_ReplacementFilterFactory')->getMock();
+        $factory = $this->createFactory();
+        $factory->expects($this->exactly(2))
+                ->method('createFilter')
+                ->will($this->returnCallback([$this, 'createFilter']));
+
+        $buffer = $this->createBuffer($factory);
+        $buffer->setWriteTranslations(['a' => 'b']);
+        $buffer->setWriteTranslations(['x' => 'y', 'a' => 'b']);
     }
 
     private function createBuffer($replacementFactory)
@@ -24,16 +31,9 @@ class Swift_Transport_StreamBufferTest extends \PHPUnit\Framework\TestCase
         return new Swift_Transport_StreamBuffer($replacementFactory);
     }
 
-    public function testOverridingTranslationsOnlyAddsNeededFilters()
+    private function createFactory()
     {
-        $factory = $this->createFactory();
-        $factory->expects($this->exactly(2))
-            ->method('createFilter')
-            ->will($this->returnCallback(array($this, 'createFilter')));
-
-        $buffer = $this->createBuffer($factory);
-        $buffer->setWriteTranslations(array('a' => 'b'));
-        $buffer->setWriteTranslations(array('x' => 'y', 'a' => 'b'));
+        return $this->getMockBuilder('Swift_ReplacementFilterFactory')->getMock();
     }
 
     public function createFilter()

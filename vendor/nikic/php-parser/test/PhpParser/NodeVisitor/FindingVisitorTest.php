@@ -9,10 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class FindingVisitorTest extends TestCase
 {
-    public function testFindVariables()
-    {
+    public function testFindVariables() {
         $traverser = new NodeTraverser();
-        $visitor = new FindingVisitor(function (Node $node) {
+        $visitor = new FindingVisitor(function(Node $node) {
             return $node instanceof Node\Expr\Variable;
         });
         $traverser->addVisitor($visitor);
@@ -30,10 +29,9 @@ class FindingVisitorTest extends TestCase
         ], $visitor->getFoundNodes());
     }
 
-    public function testFindAll()
-    {
+    public function testFindAll() {
         $traverser = new NodeTraverser();
-        $visitor = new FindingVisitor(function (Node $node) {
+        $visitor = new FindingVisitor(function(Node $node) {
             return true; // All nodes
         });
         $traverser->addVisitor($visitor);

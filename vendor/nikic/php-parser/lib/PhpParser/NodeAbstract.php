@@ -2,6 +2,8 @@
 
 namespace PhpParser;
 
+use PhpParser\Node;
+
 abstract class NodeAbstract implements Node, \JsonSerializable
 {
     protected $attributes;
@@ -11,8 +13,7 @@ abstract class NodeAbstract implements Node, \JsonSerializable
      *
      * @param array $attributes Array of attributes
      */
-    public function __construct(array $attributes = [])
-    {
+    public function __construct(array $attributes = []) {
         $this->attributes = $attributes;
     }
 
@@ -21,8 +22,7 @@ abstract class NodeAbstract implements Node, \JsonSerializable
      *
      * @return int Start line (or -1 if not available)
      */
-    public function getLine(): int
-    {
+    public function getLine() : int {
         return $this->attributes['startLine'] ?? -1;
     }
 
@@ -33,8 +33,7 @@ abstract class NodeAbstract implements Node, \JsonSerializable
      *
      * @return int Start line (or -1 if not available)
      */
-    public function getStartLine(): int
-    {
+    public function getStartLine() : int {
         return $this->attributes['startLine'] ?? -1;
     }
 
@@ -45,8 +44,7 @@ abstract class NodeAbstract implements Node, \JsonSerializable
      *
      * @return int End line (or -1 if not available)
      */
-    public function getEndLine(): int
-    {
+    public function getEndLine() : int {
         return $this->attributes['endLine'] ?? -1;
     }
 
@@ -59,8 +57,7 @@ abstract class NodeAbstract implements Node, \JsonSerializable
      *
      * @return int Token start position (or -1 if not available)
      */
-    public function getStartTokenPos(): int
-    {
+    public function getStartTokenPos() : int {
         return $this->attributes['startTokenPos'] ?? -1;
     }
 
@@ -73,8 +70,7 @@ abstract class NodeAbstract implements Node, \JsonSerializable
      *
      * @return int Token end position (or -1 if not available)
      */
-    public function getEndTokenPos(): int
-    {
+    public function getEndTokenPos() : int {
         return $this->attributes['endTokenPos'] ?? -1;
     }
 
@@ -85,8 +81,7 @@ abstract class NodeAbstract implements Node, \JsonSerializable
      *
      * @return int File start position (or -1 if not available)
      */
-    public function getStartFilePos(): int
-    {
+    public function getStartFilePos() : int {
         return $this->attributes['startFilePos'] ?? -1;
     }
 
@@ -97,9 +92,19 @@ abstract class NodeAbstract implements Node, \JsonSerializable
      *
      * @return int File end position (or -1 if not available)
      */
-    public function getEndFilePos(): int
-    {
+    public function getEndFilePos() : int {
         return $this->attributes['endFilePos'] ?? -1;
+    }
+
+    /**
+     * Gets all comments directly preceding this node.
+     *
+     * The comments are also available through the "comments" attribute.
+     *
+     * @return Comment[]
+     */
+    public function getComments() : array {
+        return $this->attributes['comments'] ?? [];
     }
 
     /**
@@ -109,8 +114,7 @@ abstract class NodeAbstract implements Node, \JsonSerializable
      *
      * @return null|Comment\Doc Doc comment object or null
      */
-    public function getDocComment()
-    {
+    public function getDocComment() {
         $comments = $this->getComments();
         if (!$comments) {
             return null;
@@ -125,26 +129,13 @@ abstract class NodeAbstract implements Node, \JsonSerializable
     }
 
     /**
-     * Gets all comments directly preceding this node.
-     *
-     * The comments are also available through the "comments" attribute.
-     *
-     * @return Comment[]
-     */
-    public function getComments(): array
-    {
-        return $this->attributes['comments'] ?? [];
-    }
-
-    /**
      * Sets the doc comment of the node.
      *
      * This will either replace an existing doc comment or add it to the comments array.
      *
      * @param Comment\Doc $docComment Doc comment to set
      */
-    public function setDocComment(Comment\Doc $docComment)
-    {
+    public function setDocComment(Comment\Doc $docComment) {
         $comments = $this->getComments();
 
         $numComments = count($comments);
@@ -159,18 +150,15 @@ abstract class NodeAbstract implements Node, \JsonSerializable
         $this->setAttribute('comments', $comments);
     }
 
-    public function setAttribute(string $key, $value)
-    {
+    public function setAttribute(string $key, $value) {
         $this->attributes[$key] = $value;
     }
 
-    public function hasAttribute(string $key): bool
-    {
+    public function hasAttribute(string $key) : bool {
         return array_key_exists($key, $this->attributes);
     }
 
-    public function getAttribute(string $key, $default = null)
-    {
+    public function getAttribute(string $key, $default = null) {
         if (!array_key_exists($key, $this->attributes)) {
             return $default;
         } else {
@@ -178,21 +166,18 @@ abstract class NodeAbstract implements Node, \JsonSerializable
         }
     }
 
-    public function getAttributes(): array
-    {
+    public function getAttributes() : array {
         return $this->attributes;
     }
 
-    public function setAttributes(array $attributes)
-    {
+    public function setAttributes(array $attributes) {
         $this->attributes = $attributes;
     }
 
     /**
      * @return array
      */
-    public function jsonSerialize(): array
-    {
+    public function jsonSerialize() : array {
         return ['nodeType' => $this->getType()] + get_object_vars($this);
     }
 }

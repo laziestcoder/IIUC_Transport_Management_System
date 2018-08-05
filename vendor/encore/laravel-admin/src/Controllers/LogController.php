@@ -41,7 +41,7 @@ class LogController extends Controller
                         return '<code>{}</code>';
                     }
 
-                    return '<pre>' . json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
+                    return '<pre>'.json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE).'</pre>';
                 });
 
                 $grid->created_at(trans('admin.created_at'));
@@ -70,12 +70,12 @@ class LogController extends Controller
 
         if (OperationLog::destroy(array_filter($ids))) {
             return response()->json([
-                'status' => true,
+                'status'  => true,
                 'message' => trans('admin.delete_succeeded'),
             ]);
         } else {
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => trans('admin.delete_failed'),
             ]);
         }

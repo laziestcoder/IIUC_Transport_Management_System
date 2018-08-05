@@ -32,6 +32,7 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
     private $called;
     private $dispatcher;
     private $wrappedListeners;
+    private $orphanedEvents;
 
     public function __construct(EventDispatcherInterface $dispatcher, Stopwatch $stopwatch, LoggerInterface $logger = null)
     {
@@ -40,6 +41,7 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
         $this->logger = $logger;
         $this->called = array();
         $this->wrappedListeners = array();
+        $this->orphanedEvents = array();
     }
 
     /**
@@ -87,6 +89,32 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
     /**
      * {@inheritdoc}
      */
+    public function getListeners($eventName = null)
+    {
+        return $this->dispatcher->getListeners($eventName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListenerPriority($eventName, $listener)
+    {
+        // we might have wrapped listeners for the event (if called while dispatching)
+        // in that case get the priority by wrapper
+        if (isset($this->wrappedListeners[$eventName])) {
+            foreach ($this->wrappedListeners[$eventName] as $index => $wrappedListener) {
+                if ($wrappedListener->getWrappedListener() === $listener) {
+                    return $this->dispatcher->getListenerPriority($eventName, $wrappedListener);
+                }
+            }
+        }
+
+        return $this->dispatcher->getListenerPriority($eventName, $listener);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function hasListeners($eventName = null)
     {
         return $this->dispatcher->hasListeners($eventName);
@@ -122,40 +150,94 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
         return $event;
     }
 
-    private function preProcess($eventName)
+    /**
+     * {@inheritdoc}
+     */
+    public function getCalledListeners()
     {
-        foreach ($this->dispatcher->getListeners($eventName) as $listener) {
-            $priority = $this->getListenerPriority($eventName, $listener);
-            $wrappedListener = new WrappedListener($listener, null, $this->stopwatch, $this);
-            $this->wrappedListeners[$eventName][] = $wrappedListener;
-            $this->dispatcher->removeListener($eventName, $listener);
-            $this->dispatcher->addListener($eventName, $wrappedListener, $priority);
+        $called = array();
+        foreach ($this->called as $eventName => $listeners) {
+            foreach ($listeners as $listener) {
+                $called[$eventName.'.'.$listener->getPretty()] = $listener->getInfo($eventName);
+            }
         }
+
+        return $called;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getListenerPriority($eventName, $listener)
+    public function getNotCalledListeners()
     {
-        // we might have wrapped listeners for the event (if called while dispatching)
-        // in that case get the priority by wrapper
-        if (isset($this->wrappedListeners[$eventName])) {
-            foreach ($this->wrappedListeners[$eventName] as $index => $wrappedListener) {
-                if ($wrappedListener->getWrappedListener() === $listener) {
-                    return $this->dispatcher->getListenerPriority($eventName, $wrappedListener);
+        try {
+            $allListeners = $this->getListeners();
+        } catch (\Exception $e) {
+            if (null !== $this->logger) {
+                $this->logger->info('An exception was thrown while getting the uncalled listeners.', array('exception' => $e));
+            }
+
+            // unable to retrieve the uncalled listeners
+            return array();
+        }
+
+        $notCalled = array();
+        foreach ($allListeners as $eventName => $listeners) {
+            foreach ($listeners as $listener) {
+                $called = false;
+                if (isset($this->called[$eventName])) {
+                    foreach ($this->called[$eventName] as $l) {
+                        if ($l->getWrappedListener() === $listener) {
+                            $called = true;
+
+                            break;
+                        }
+                    }
+                }
+
+                if (!$called) {
+                    if (!$listener instanceof WrappedListener) {
+                        $listener = new WrappedListener($listener, null, $this->stopwatch, $this);
+                    }
+                    $notCalled[$eventName.'.'.$listener->getPretty()] = $listener->getInfo($eventName);
                 }
             }
         }
 
-        return $this->dispatcher->getListenerPriority($eventName, $listener);
+        uasort($notCalled, array($this, 'sortListenersByPriority'));
+
+        return $notCalled;
+    }
+
+    public function getOrphanedEvents(): array
+    {
+        return $this->orphanedEvents;
+    }
+
+    public function reset()
+    {
+        $this->called = array();
+        $this->orphanedEvents = array();
+    }
+
+    /**
+     * Proxies all method calls to the original event dispatcher.
+     *
+     * @param string $method    The method name
+     * @param array  $arguments The method arguments
+     *
+     * @return mixed
+     */
+    public function __call($method, $arguments)
+    {
+        return \call_user_func_array(array($this->dispatcher, $method), $arguments);
     }
 
     /**
      * Called before dispatching the event.
      *
      * @param string $eventName The event name
-     * @param Event $event The event
+     * @param Event  $event     The event
      */
     protected function preDispatch($eventName, Event $event)
     {
@@ -165,10 +247,27 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
      * Called after dispatching the event.
      *
      * @param string $eventName The event name
-     * @param Event $event The event
+     * @param Event  $event     The event
      */
     protected function postDispatch($eventName, Event $event)
     {
+    }
+
+    private function preProcess($eventName)
+    {
+        if (!$this->dispatcher->hasListeners($eventName)) {
+            $this->orphanedEvents[] = $eventName;
+
+            return;
+        }
+
+        foreach ($this->dispatcher->getListeners($eventName) as $listener) {
+            $priority = $this->getListenerPriority($eventName, $listener);
+            $wrappedListener = new WrappedListener($listener, null, $this->stopwatch, $this);
+            $this->wrappedListeners[$eventName][] = $wrappedListener;
+            $this->dispatcher->removeListener($eventName, $listener);
+            $this->dispatcher->addListener($eventName, $wrappedListener, $priority);
+        }
     }
 
     private function postProcess($eventName)
@@ -214,98 +313,13 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCalledListeners()
-    {
-        $called = array();
-        foreach ($this->called as $eventName => $listeners) {
-            foreach ($listeners as $listener) {
-                $called[$eventName . '.' . $listener->getPretty()] = $listener->getInfo($eventName);
-            }
-        }
-
-        return $called;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getNotCalledListeners()
-    {
-        try {
-            $allListeners = $this->getListeners();
-        } catch (\Exception $e) {
-            if (null !== $this->logger) {
-                $this->logger->info('An exception was thrown while getting the uncalled listeners.', array('exception' => $e));
-            }
-
-            // unable to retrieve the uncalled listeners
-            return array();
-        }
-
-        $notCalled = array();
-        foreach ($allListeners as $eventName => $listeners) {
-            foreach ($listeners as $listener) {
-                $called = false;
-                if (isset($this->called[$eventName])) {
-                    foreach ($this->called[$eventName] as $l) {
-                        if ($l->getWrappedListener() === $listener) {
-                            $called = true;
-
-                            break;
-                        }
-                    }
-                }
-
-                if (!$called) {
-                    if (!$listener instanceof WrappedListener) {
-                        $listener = new WrappedListener($listener, null, $this->stopwatch, $this);
-                    }
-                    $notCalled[$eventName . '.' . $listener->getPretty()] = $listener->getInfo($eventName);
-                }
-            }
-        }
-
-        uasort($notCalled, array($this, 'sortListenersByPriority'));
-
-        return $notCalled;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getListeners($eventName = null)
-    {
-        return $this->dispatcher->getListeners($eventName);
-    }
-
-    public function reset()
-    {
-        $this->called = array();
-    }
-
-    /**
-     * Proxies all method calls to the original event dispatcher.
-     *
-     * @param string $method The method name
-     * @param array $arguments The method arguments
-     *
-     * @return mixed
-     */
-    public function __call($method, $arguments)
-    {
-        return call_user_func_array(array($this->dispatcher, $method), $arguments);
-    }
-
     private function sortListenersByPriority($a, $b)
     {
-        if (is_int($a['priority']) && !is_int($b['priority'])) {
+        if (\is_int($a['priority']) && !\is_int($b['priority'])) {
             return 1;
         }
 
-        if (!is_int($a['priority']) && is_int($b['priority'])) {
+        if (!\is_int($a['priority']) && \is_int($b['priority'])) {
             return -1;
         }
 

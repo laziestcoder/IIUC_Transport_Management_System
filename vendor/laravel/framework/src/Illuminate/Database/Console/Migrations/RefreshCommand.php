@@ -31,7 +31,7 @@ class RefreshCommand extends Command
      */
     public function handle()
     {
-        if (!$this->confirmToProceed()) {
+        if (! $this->confirmToProceed()) {
             return;
         }
 
@@ -61,6 +61,7 @@ class RefreshCommand extends Command
         $this->call('migrate', [
             '--database' => $database,
             '--path' => $path,
+            '--realpath' => $this->input->getOption('realpath'),
             '--force' => $force,
         ]);
 
@@ -72,10 +73,10 @@ class RefreshCommand extends Command
     /**
      * Run the rollback command.
      *
-     * @param  string $database
-     * @param  string $path
-     * @param  bool $step
-     * @param  bool $force
+     * @param  string  $database
+     * @param  string  $path
+     * @param  bool  $step
+     * @param  bool  $force
      * @return void
      */
     protected function runRollback($database, $path, $step, $force)
@@ -83,6 +84,7 @@ class RefreshCommand extends Command
         $this->call('migrate:rollback', [
             '--database' => $database,
             '--path' => $path,
+            '--realpath' => $this->input->getOption('realpath'),
             '--step' => $step,
             '--force' => $force,
         ]);
@@ -91,9 +93,9 @@ class RefreshCommand extends Command
     /**
      * Run the reset command.
      *
-     * @param  string $database
-     * @param  string $path
-     * @param  bool $force
+     * @param  string  $database
+     * @param  string  $path
+     * @param  bool  $force
      * @return void
      */
     protected function runReset($database, $path, $force)
@@ -101,6 +103,7 @@ class RefreshCommand extends Command
         $this->call('migrate:reset', [
             '--database' => $database,
             '--path' => $path,
+            '--realpath' => $this->input->getOption('realpath'),
             '--force' => $force,
         ]);
     }
@@ -118,7 +121,7 @@ class RefreshCommand extends Command
     /**
      * Run the database seeder command.
      *
-     * @param  string $database
+     * @param  string  $database
      * @return void
      */
     protected function runSeeder($database)

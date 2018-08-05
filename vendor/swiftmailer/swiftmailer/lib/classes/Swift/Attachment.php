@@ -21,16 +21,16 @@ class Swift_Attachment extends Swift_Mime_Attachment
      * Details may be optionally provided to the constructor.
      *
      * @param string|Swift_OutputByteStream $data
-     * @param string $filename
-     * @param string $contentType
+     * @param string                        $filename
+     * @param string                        $contentType
      */
     public function __construct($data = null, $filename = null, $contentType = null)
     {
         call_user_func_array(
-            array($this, 'Swift_Mime_Attachment::__construct'),
+            [$this, 'Swift_Mime_Attachment::__construct'],
             Swift_DependencyContainer::getInstance()
                 ->createDependenciesFor('mime.attachment')
-        );
+            );
 
         $this->setBody($data);
         $this->setFilename($filename);

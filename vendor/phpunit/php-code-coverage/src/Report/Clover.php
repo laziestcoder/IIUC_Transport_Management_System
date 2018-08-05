@@ -24,15 +24,15 @@ final class Clover
      */
     public function process(CodeCoverage $coverage, ?string $target = null, ?string $name = null): string
     {
-        $xmlDocument = new \DOMDocument('1.0', 'UTF-8');
+        $xmlDocument               = new \DOMDocument('1.0', 'UTF-8');
         $xmlDocument->formatOutput = true;
 
         $xmlCoverage = $xmlDocument->createElement('coverage');
-        $xmlCoverage->setAttribute('generated', (int)$_SERVER['REQUEST_TIME']);
+        $xmlCoverage->setAttribute('generated', (int) $_SERVER['REQUEST_TIME']);
         $xmlDocument->appendChild($xmlCoverage);
 
         $xmlProject = $xmlDocument->createElement('project');
-        $xmlProject->setAttribute('timestamp', (int)$_SERVER['REQUEST_TIME']);
+        $xmlProject->setAttribute('timestamp', (int) $_SERVER['REQUEST_TIME']);
 
         if (\is_string($name)) {
             $xmlProject->setAttribute('name', $name);
@@ -41,7 +41,7 @@ final class Clover
         $xmlCoverage->appendChild($xmlProject);
 
         $packages = [];
-        $report = $coverage->getReport();
+        $report   = $coverage->getReport();
 
         foreach ($report as $item) {
             if (!$item instanceof File) {
@@ -53,16 +53,16 @@ final class Clover
             $xmlFile = $xmlDocument->createElement('file');
             $xmlFile->setAttribute('name', $item->getPath());
 
-            $classes = $item->getClassesAndTraits();
+            $classes      = $item->getClassesAndTraits();
             $coverageData = $item->getCoverageData();
-            $lines = [];
-            $namespace = 'global';
+            $lines        = [];
+            $namespace    = 'global';
 
             foreach ($classes as $className => $class) {
-                $classStatements = 0;
+                $classStatements        = 0;
                 $coveredClassStatements = 0;
-                $coveredMethods = 0;
-                $classMethods = 0;
+                $coveredMethods         = 0;
+                $classMethods           = 0;
 
                 foreach ($class['methods'] as $methodName => $method) {
                     if ($method['executableLines'] == 0) {
@@ -86,12 +86,12 @@ final class Clover
                     }
 
                     $lines[$method['startLine']] = [
-                        'ccn' => $method['ccn'],
-                        'count' => $methodCount,
-                        'crap' => $method['crap'],
-                        'type' => 'method',
-                        'visibility' => $method['visibility'],
-                        'name' => $methodName
+                        'ccn'         => $method['ccn'],
+                        'count'       => $methodCount,
+                        'crap'        => $method['crap'],
+                        'type'        => 'method',
+                        'visibility'  => $method['visibility'],
+                        'name'        => $methodName
                     ];
                 }
 
@@ -235,7 +235,7 @@ final class Clover
         $buffer = $xmlDocument->saveXML();
 
         if ($target !== null) {
-            if (!@\mkdir(\dirname($target), 0777, true) && !\is_dir(\dirname($target))) {
+            if (!$this->createDirectory(\dirname($target))) {
                 throw new \RuntimeException(\sprintf('Directory "%s" was not created', \dirname($target)));
             }
 
@@ -250,5 +250,10 @@ final class Clover
         }
 
         return $buffer;
+    }
+
+    private function createDirectory(string $directory): bool
+    {
+        return !(!\is_dir($directory) && !@\mkdir($directory, 0777, true) && !\is_dir($directory));
     }
 }

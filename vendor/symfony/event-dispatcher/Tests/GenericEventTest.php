@@ -26,6 +26,28 @@ class GenericEventTest extends TestCase
 
     private $subject;
 
+    /**
+     * Prepares the environment before running a test.
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->subject = new \stdClass();
+        $this->event = new GenericEvent($this->subject, array('name' => 'Event'));
+    }
+
+    /**
+     * Cleans up the environment after running a test.
+     */
+    protected function tearDown()
+    {
+        $this->subject = null;
+        $this->event = null;
+
+        parent::tearDown();
+    }
+
     public function testConstruct()
     {
         $this->assertEquals($this->event, new GenericEvent($this->subject, array('name' => 'Event')));
@@ -114,27 +136,5 @@ class GenericEventTest extends TestCase
             $data[$key] = $value;
         }
         $this->assertEquals(array('name' => 'Event'), $data);
-    }
-
-    /**
-     * Prepares the environment before running a test.
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->subject = new \stdClass();
-        $this->event = new GenericEvent($this->subject, array('name' => 'Event'));
-    }
-
-    /**
-     * Cleans up the environment after running a test.
-     */
-    protected function tearDown()
-    {
-        $this->subject = null;
-        $this->event = null;
-
-        parent::tearDown();
     }
 }

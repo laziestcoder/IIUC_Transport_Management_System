@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util;
 
 final class RegularExpression
@@ -20,7 +19,7 @@ final class RegularExpression
     public static function safeMatch(string $pattern, string $subject, ?array $matches = null, int $flags = 0, int $offset = 0)
     {
         $handler_terminator = ErrorHandler::handleErrorOnce();
-        $match = \preg_match($pattern, $subject, $matches, $flags, $offset);
+        $match              = \preg_match($pattern, $subject, $matches, $flags, $offset);
         $handler_terminator();
 
         return $match;

@@ -38,7 +38,7 @@ use Illuminate\Support\Collection;
  * @method Field\Number         number($column, $label = '')
  * @method Field\Currency       currency($column, $label = '')
  * @method Field\HasMany        hasMany($relationName, $callback)
- * @method Field\SwitchField    switch ($column, $label = '')
+ * @method Field\SwitchField    switch($column, $label = '')
  * @method Field\Display        display($column, $label = '')
  * @method Field\Rate           rate($column, $label = '')
  * @method Field\Divide         divider()
@@ -94,7 +94,7 @@ class NestedForm
      * NestedForm constructor.
      *
      * @param string $relation
-     * @param null $key
+     * @param null   $key
      */
     public function __construct($relation, $key = null)
     {
@@ -103,16 +103,6 @@ class NestedForm
         $this->key = $key;
 
         $this->fields = new Collection();
-    }
-
-    /**
-     * Get form.
-     *
-     * @return Form
-     */
-    public function getForm()
-    {
-        return $this->form;
     }
 
     /**
@@ -130,9 +120,19 @@ class NestedForm
     }
 
     /**
+     * Get form.
+     *
+     * @return Form
+     */
+    public function getForm()
+    {
+        return $this->form;
+    }
+
+    /**
      * Set original values for fields.
      *
-     * @param array $data
+     * @param array  $data
      * @param string $relatedKeyName
      *
      * @return $this
@@ -236,7 +236,7 @@ class NestedForm
     /**
      * Fetch value in input data by column name.
      *
-     * @param array $data
+     * @param array        $data
      * @param string|array $columns
      *
      * @return array|mixed
@@ -261,6 +261,28 @@ class NestedForm
     }
 
     /**
+     * @param Field $field
+     *
+     * @return $this
+     */
+    public function pushField(Field $field)
+    {
+        $this->fields->push($field);
+
+        return $this;
+    }
+
+    /**
+     * Get fields of this form.
+     *
+     * @return Collection
+     */
+    public function fields()
+    {
+        return $this->fields;
+    }
+
+    /**
      * Fill data to all fields in form.
      *
      * @param array $data
@@ -275,16 +297,6 @@ class NestedForm
         }
 
         return $this;
-    }
-
-    /**
-     * Get fields of this form.
-     *
-     * @return Collection
-     */
-    public function fields()
-    {
-        return $this->fields;
     }
 
     /**
@@ -315,34 +327,6 @@ class NestedForm
     }
 
     /**
-     * Add nested-form fields dynamically.
-     *
-     * @param string $method
-     * @param array $arguments
-     *
-     * @return mixed
-     */
-    public function __call($method, $arguments)
-    {
-        if ($className = Form::findFieldClass($method)) {
-            $column = array_get($arguments, 0, '');
-
-            /* @var Field $field */
-            $field = new $className($column, array_slice($arguments, 1));
-
-            $field->setForm($this->form);
-
-            $field = $this->formatField($field);
-
-            $this->pushField($field);
-
-            return $field;
-        }
-
-        return $this;
-    }
-
-    /**
      * Set `errorKey` `elementName` `elementClass` for fields inside hasmany fields.
      *
      * @param Field $field
@@ -355,7 +339,7 @@ class NestedForm
 
         $elementName = $elementClass = $errorKey = [];
 
-        $key = $this->key ?: 'new_' . static::DEFAULT_KEY_NAME;
+        $key = $this->key ?: 'new_'.static::DEFAULT_KEY_NAME;
 
         if (is_array($column)) {
             foreach ($column as $k => $name) {
@@ -375,13 +359,29 @@ class NestedForm
     }
 
     /**
-     * @param Field $field
+     * Add nested-form fields dynamically.
      *
-     * @return $this
+     * @param string $method
+     * @param array  $arguments
+     *
+     * @return mixed
      */
-    public function pushField(Field $field)
+    public function __call($method, $arguments)
     {
-        $this->fields->push($field);
+        if ($className = Form::findFieldClass($method)) {
+            $column = array_get($arguments, 0, '');
+
+            /* @var Field $field */
+            $field = new $className($column, array_slice($arguments, 1));
+
+            $field->setForm($this->form);
+
+            $field = $this->formatField($field);
+
+            $this->pushField($field);
+
+            return $field;
+        }
 
         return $this;
     }

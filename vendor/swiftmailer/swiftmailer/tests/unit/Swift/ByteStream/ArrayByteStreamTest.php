@@ -4,131 +4,126 @@ class Swift_ByteStream_ArrayByteStreamTest extends \PHPUnit\Framework\TestCase
 {
     public function testReadingSingleBytesFromBaseInput()
     {
-        $input = array('a', 'b', 'c');
+        $input = ['a', 'b', 'c'];
         $bs = $this->createArrayStream($input);
-        $output = array();
+        $output = [];
         while (false !== $bytes = $bs->read(1)) {
             $output[] = $bytes;
         }
         $this->assertEquals($input, $output,
             '%s: Bytes read from stream should be the same as bytes in constructor'
-        );
-    }
-
-    private function createArrayStream($input)
-    {
-        return new Swift_ByteStream_ArrayByteStream($input);
+            );
     }
 
     public function testReadingMultipleBytesFromBaseInput()
     {
-        $input = array('a', 'b', 'c', 'd');
+        $input = ['a', 'b', 'c', 'd'];
         $bs = $this->createArrayStream($input);
-        $output = array();
+        $output = [];
         while (false !== $bytes = $bs->read(2)) {
             $output[] = $bytes;
         }
-        $this->assertEquals(array('ab', 'cd'), $output,
+        $this->assertEquals(['ab', 'cd'], $output,
             '%s: Bytes read from stream should be in pairs'
-        );
+            );
     }
 
     public function testReadingOddOffsetOnLastByte()
     {
-        $input = array('a', 'b', 'c', 'd', 'e');
+        $input = ['a', 'b', 'c', 'd', 'e'];
         $bs = $this->createArrayStream($input);
-        $output = array();
+        $output = [];
         while (false !== $bytes = $bs->read(2)) {
             $output[] = $bytes;
         }
-        $this->assertEquals(array('ab', 'cd', 'e'), $output,
+        $this->assertEquals(['ab', 'cd', 'e'], $output,
             '%s: Bytes read from stream should be in pairs except final read'
-        );
+            );
     }
 
     public function testSettingPointerPartway()
     {
-        $input = array('a', 'b', 'c');
+        $input = ['a', 'b', 'c'];
         $bs = $this->createArrayStream($input);
         $bs->setReadPointer(1);
         $this->assertEquals('b', $bs->read(1),
             '%s: Byte should be second byte since pointer as at offset 1'
-        );
+            );
     }
 
     public function testResettingPointerAfterExhaustion()
     {
-        $input = array('a', 'b', 'c');
+        $input = ['a', 'b', 'c'];
 
         $bs = $this->createArrayStream($input);
-        while (false !== $bs->read(1)) ;
+        while (false !== $bs->read(1));
 
         $bs->setReadPointer(0);
         $this->assertEquals('a', $bs->read(1),
             '%s: Byte should be first byte since pointer as at offset 0'
-        );
+            );
     }
 
     public function testPointerNeverSetsBelowZero()
     {
-        $input = array('a', 'b', 'c');
+        $input = ['a', 'b', 'c'];
         $bs = $this->createArrayStream($input);
 
         $bs->setReadPointer(-1);
         $this->assertEquals('a', $bs->read(1),
             '%s: Byte should be first byte since pointer should be at offset 0'
-        );
+            );
     }
 
     public function testPointerNeverSetsAboveStackSize()
     {
-        $input = array('a', 'b', 'c');
+        $input = ['a', 'b', 'c'];
         $bs = $this->createArrayStream($input);
 
         $bs->setReadPointer(3);
         $this->assertFalse($bs->read(1),
             '%s: Stream should be at end and thus return false'
-        );
+            );
     }
 
     public function testBytesCanBeWrittenToStream()
     {
-        $input = array('a', 'b', 'c');
+        $input = ['a', 'b', 'c'];
         $bs = $this->createArrayStream($input);
 
         $bs->write('de');
 
-        $output = array();
+        $output = [];
         while (false !== $bytes = $bs->read(1)) {
             $output[] = $bytes;
         }
-        $this->assertEquals(array('a', 'b', 'c', 'd', 'e'), $output,
+        $this->assertEquals(['a', 'b', 'c', 'd', 'e'], $output,
             '%s: Bytes read from stream should be from initial stack + written'
-        );
+            );
     }
 
     public function testContentsCanBeFlushed()
     {
-        $input = array('a', 'b', 'c');
+        $input = ['a', 'b', 'c'];
         $bs = $this->createArrayStream($input);
 
         $bs->flushBuffers();
 
         $this->assertFalse($bs->read(1),
             '%s: Contents have been flushed so read() should return false'
-        );
+            );
     }
 
     public function testConstructorCanTakeStringArgument()
     {
         $bs = $this->createArrayStream('abc');
-        $output = array();
+        $output = [];
         while (false !== $bytes = $bs->read(1)) {
             $output[] = $bytes;
         }
-        $this->assertEquals(array('a', 'b', 'c'), $output,
+        $this->assertEquals(['a', 'b', 'c'], $output,
             '%s: Bytes read from stream should be the same as bytes in constructor'
-        );
+            );
     }
 
     public function testBindingOtherStreamsMirrorsWriteOperations()
@@ -198,5 +193,10 @@ class Swift_ByteStream_ArrayByteStreamTest extends \PHPUnit\Framework\TestCase
         $bs->unbind($is2);
 
         $bs->write('y');
+    }
+
+    private function createArrayStream($input)
+    {
+        return new Swift_ByteStream_ArrayByteStream($input);
     }
 }

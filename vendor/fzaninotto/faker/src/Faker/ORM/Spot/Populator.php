@@ -41,8 +41,7 @@ class Populator
         $customColumnFormatters = array(),
         $customModifiers = array(),
         $useExistingData = false
-    )
-    {
+    ) {
         $mapper = $this->locator->mapper($entityName);
         if (null === $mapper) {
             throw new \InvalidArgumentException("No mapper can be found for entity " . $entityName);

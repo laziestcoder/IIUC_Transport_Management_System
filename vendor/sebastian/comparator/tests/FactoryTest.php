@@ -7,19 +7,18 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass SebastianBergmann\Comparator\Factory
+ * @covers \SebastianBergmann\Comparator\Factory
  *
- * @uses SebastianBergmann\Comparator\Comparator
- * @uses SebastianBergmann\Comparator\Factory
- * @uses SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
-class FactoryTest extends TestCase
+final class FactoryTest extends TestCase
 {
     public function instanceProvider()
     {
@@ -70,43 +69,31 @@ class FactoryTest extends TestCase
 
     /**
      * @dataProvider instanceProvider
-     * @covers       ::getComparatorFor
-     * @covers       ::__construct
-     *
-     * @param mixed $a
-     * @param mixed $b
-     * @param mixed $expected
      */
-    public function testGetComparatorFor($a, $b, $expected)
+    public function testGetComparatorFor($a, $b, $expected): void
     {
         $factory = new Factory;
-        $actual = $factory->getComparatorFor($a, $b);
+        $actual  = $factory->getComparatorFor($a, $b);
         $this->assertInstanceOf($expected, $actual);
     }
 
-    /**
-     * @covers ::register
-     */
-    public function testRegister()
+    public function testRegister(): void
     {
         $comparator = new TestClassComparator;
 
         $factory = new Factory;
         $factory->register($comparator);
 
-        $a = new TestClass;
-        $b = new TestClass;
+        $a        = new TestClass;
+        $b        = new TestClass;
         $expected = 'SebastianBergmann\\Comparator\\TestClassComparator';
-        $actual = $factory->getComparatorFor($a, $b);
+        $actual   = $factory->getComparatorFor($a, $b);
 
         $factory->unregister($comparator);
         $this->assertInstanceOf($expected, $actual);
     }
 
-    /**
-     * @covers ::unregister
-     */
-    public function testUnregister()
+    public function testUnregister(): void
     {
         $comparator = new TestClassComparator;
 
@@ -114,15 +101,15 @@ class FactoryTest extends TestCase
         $factory->register($comparator);
         $factory->unregister($comparator);
 
-        $a = new TestClass;
-        $b = new TestClass;
+        $a        = new TestClass;
+        $b        = new TestClass;
         $expected = 'SebastianBergmann\\Comparator\\ObjectComparator';
-        $actual = $factory->getComparatorFor($a, $b);
+        $actual   = $factory->getComparatorFor($a, $b);
 
         $this->assertInstanceOf($expected, $actual);
     }
 
-    public function testIsSingleton()
+    public function testIsSingleton(): void
     {
         $f = Factory::getInstance();
         $this->assertSame($f, Factory::getInstance());

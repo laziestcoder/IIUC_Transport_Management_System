@@ -1,10 +1,10 @@
 <?php
 /**
- * Whoops - php errors for cool kids
- * @author Filipe Dobreira <http://github.com/filp>
- * Plaintext handler for command line and logs.
- * @author Pierre-Yves Landuré <https://howto.biapy.com/>
- */
+* Whoops - php errors for cool kids
+* @author Filipe Dobreira <http://github.com/filp>
+* Plaintext handler for command line and logs.
+* @author Pierre-Yves Landuré <https://howto.biapy.com/>
+*/
 
 namespace Whoops\Handler;
 
@@ -13,10 +13,10 @@ use Psr\Log\LoggerInterface;
 use Whoops\Exception\Frame;
 
 /**
- * Handler outputing plaintext error messages. Can be used
- * directly, or will be instantiated automagically by Whoops\Run
- * if passed to Run::pushHandler
- */
+* Handler outputing plaintext error messages. Can be used
+* directly, or will be instantiated automagically by Whoops\Run
+* if passed to Run::pushHandler
+*/
 class PlainTextHandler extends Handler
 {
     const VAR_DUMP_PREFIX = '   | ';
@@ -62,6 +62,33 @@ class PlainTextHandler extends Handler
     }
 
     /**
+     * Set the output logger interface.
+     * @throws InvalidArgumentException     If argument is not null or a LoggerInterface
+     * @param  \Psr\Log\LoggerInterface|null $logger
+     */
+    public function setLogger($logger = null)
+    {
+        if (! (is_null($logger)
+            || $logger instanceof LoggerInterface)) {
+            throw new InvalidArgumentException(
+                'Argument to ' . __METHOD__ .
+                " must be a valid Logger Interface (aka. Monolog), " .
+                get_class($logger) . ' given.'
+            );
+        }
+
+        $this->logger = $logger;
+    }
+
+    /**
+     * @return \Psr\Log\LoggerInterface|null
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
      * Set var dumper callback function.
      *
      * @param  callable $dumper
@@ -73,23 +100,48 @@ class PlainTextHandler extends Handler
     }
 
     /**
-     * @return int
+     * Add error trace to output.
+     * @param  bool|null  $addTraceToOutput
+     * @return bool|$this
      */
-    public function handle()
+    public function addTraceToOutput($addTraceToOutput = null)
     {
-        $response = $this->generateResponse();
-
-        if ($this->getLogger()) {
-            $this->getLogger()->error($response);
+        if (func_num_args() == 0) {
+            return $this->addTraceToOutput;
         }
 
-        if (!$this->canOutput()) {
-            return Handler::DONE;
+        $this->addTraceToOutput = (bool) $addTraceToOutput;
+        return $this;
+    }
+
+    /**
+     * Add error trace function arguments to output.
+     * Set to True for all frame args, or integer for the n first frame args.
+     * @param  bool|integer|null $addTraceFunctionArgsToOutput
+     * @return null|bool|integer
+     */
+    public function addTraceFunctionArgsToOutput($addTraceFunctionArgsToOutput = null)
+    {
+        if (func_num_args() == 0) {
+            return $this->addTraceFunctionArgsToOutput;
         }
 
-        echo $response;
+        if (! is_integer($addTraceFunctionArgsToOutput)) {
+            $this->addTraceFunctionArgsToOutput = (bool) $addTraceFunctionArgsToOutput;
+        } else {
+            $this->addTraceFunctionArgsToOutput = $addTraceFunctionArgsToOutput;
+        }
+    }
 
-        return Handler::QUIT;
+    /**
+     * Set the size limit in bytes of frame arguments var_dump output.
+     * If the limit is reached, the var_dump output is discarded.
+     * Prevent memory limit errors.
+     * @var integer
+     */
+    public function setTraceFunctionArgsOutputLimit($traceFunctionArgsOutputLimit)
+    {
+        $this->traceFunctionArgsOutputLimit = (integer) $traceFunctionArgsOutputLimit;
     }
 
     /**
@@ -110,65 +162,43 @@ class PlainTextHandler extends Handler
     }
 
     /**
-     * Get the exception trace as plain text.
-     * @return string
+     * Get the size limit in bytes of frame arguments var_dump output.
+     * If the limit is reached, the var_dump output is discarded.
+     * Prevent memory limit errors.
+     * @return integer
      */
-    private function getTraceOutput()
+    public function getTraceFunctionArgsOutputLimit()
     {
-        if (!$this->addTraceToOutput()) {
-            return '';
-        }
-        $inspector = $this->getInspector();
-        $frames = $inspector->getFrames();
-
-        $response = "\nStack trace:";
-
-        $line = 1;
-        foreach ($frames as $frame) {
-            /** @var Frame $frame */
-            $class = $frame->getClass();
-
-            $template = "\n%3d. %s->%s() %s:%d%s";
-            if (!$class) {
-                // Remove method arrow (->) from output.
-                $template = "\n%3d. %s%s() %s:%d%s";
-            }
-
-            $response .= sprintf(
-                $template,
-                $line,
-                $class,
-                $frame->getFunction(),
-                $frame->getFile(),
-                $frame->getLine(),
-                $this->getFrameArgsOutput($frame, $line)
-            );
-
-            $line++;
-        }
-
-        return $response;
+        return $this->traceFunctionArgsOutputLimit;
     }
 
     /**
-     * Add error trace to output.
-     * @param  bool|null $addTraceToOutput
-     * @return bool|$this
+     * Only output to logger.
+     * @param  bool|null $loggerOnly
+     * @return null|bool
      */
-    public function addTraceToOutput($addTraceToOutput = null)
+    public function loggerOnly($loggerOnly = null)
     {
         if (func_num_args() == 0) {
-            return $this->addTraceToOutput;
+            return $this->loggerOnly;
         }
 
-        $this->addTraceToOutput = (bool)$addTraceToOutput;
-        return $this;
+        $this->loggerOnly = (bool) $loggerOnly;
+    }
+
+    /**
+     * Test if handler can output to stdout.
+     * @return bool
+     */
+    private function canOutput()
+    {
+        return !$this->loggerOnly();
     }
 
     /**
      * Get the frame args var_dump.
      * @param  \Whoops\Exception\Frame $frame [description]
-     * @param  integer $line [description]
+     * @param  integer                 $line  [description]
      * @return string
      */
     private function getFrameArgsOutput(Frame $frame, $line)
@@ -199,25 +229,6 @@ class PlainTextHandler extends Handler
     }
 
     /**
-     * Add error trace function arguments to output.
-     * Set to True for all frame args, or integer for the n first frame args.
-     * @param  bool|integer|null $addTraceFunctionArgsToOutput
-     * @return null|bool|integer
-     */
-    public function addTraceFunctionArgsToOutput($addTraceFunctionArgsToOutput = null)
-    {
-        if (func_num_args() == 0) {
-            return $this->addTraceFunctionArgsToOutput;
-        }
-
-        if (!is_integer($addTraceFunctionArgsToOutput)) {
-            $this->addTraceFunctionArgsToOutput = (bool)$addTraceFunctionArgsToOutput;
-        } else {
-            $this->addTraceFunctionArgsToOutput = $addTraceFunctionArgsToOutput;
-        }
-    }
-
-    /**
      * Dump variable.
      *
      * @param mixed $var
@@ -233,75 +244,64 @@ class PlainTextHandler extends Handler
     }
 
     /**
-     * Get the size limit in bytes of frame arguments var_dump output.
-     * If the limit is reached, the var_dump output is discarded.
-     * Prevent memory limit errors.
-     * @return integer
+     * Get the exception trace as plain text.
+     * @return string
      */
-    public function getTraceFunctionArgsOutputLimit()
+    private function getTraceOutput()
     {
-        return $this->traceFunctionArgsOutputLimit;
-    }
+        if (! $this->addTraceToOutput()) {
+            return '';
+        }
+        $inspector = $this->getInspector();
+        $frames = $inspector->getFrames();
 
-    /**
-     * Set the size limit in bytes of frame arguments var_dump output.
-     * If the limit is reached, the var_dump output is discarded.
-     * Prevent memory limit errors.
-     * @var integer
-     */
-    public function setTraceFunctionArgsOutputLimit($traceFunctionArgsOutputLimit)
-    {
-        $this->traceFunctionArgsOutputLimit = (integer)$traceFunctionArgsOutputLimit;
-    }
+        $response = "\nStack trace:";
 
-    /**
-     * @return \Psr\Log\LoggerInterface|null
-     */
-    public function getLogger()
-    {
-        return $this->logger;
-    }
+        $line = 1;
+        foreach ($frames as $frame) {
+            /** @var Frame $frame */
+            $class = $frame->getClass();
 
-    /**
-     * Set the output logger interface.
-     * @throws InvalidArgumentException     If argument is not null or a LoggerInterface
-     * @param  \Psr\Log\LoggerInterface|null $logger
-     */
-    public function setLogger($logger = null)
-    {
-        if (!(is_null($logger)
-            || $logger instanceof LoggerInterface)) {
-            throw new InvalidArgumentException(
-                'Argument to ' . __METHOD__ .
-                " must be a valid Logger Interface (aka. Monolog), " .
-                get_class($logger) . ' given.'
+            $template = "\n%3d. %s->%s() %s:%d%s";
+            if (! $class) {
+                // Remove method arrow (->) from output.
+                $template = "\n%3d. %s%s() %s:%d%s";
+            }
+
+            $response .= sprintf(
+                $template,
+                $line,
+                $class,
+                $frame->getFunction(),
+                $frame->getFile(),
+                $frame->getLine(),
+                $this->getFrameArgsOutput($frame, $line)
             );
+
+            $line++;
         }
 
-        $this->logger = $logger;
+        return $response;
     }
 
     /**
-     * Test if handler can output to stdout.
-     * @return bool
+     * @return int
      */
-    private function canOutput()
+    public function handle()
     {
-        return !$this->loggerOnly();
-    }
+        $response = $this->generateResponse();
 
-    /**
-     * Only output to logger.
-     * @param  bool|null $loggerOnly
-     * @return null|bool
-     */
-    public function loggerOnly($loggerOnly = null)
-    {
-        if (func_num_args() == 0) {
-            return $this->loggerOnly;
+        if ($this->getLogger()) {
+            $this->getLogger()->error($response);
         }
 
-        $this->loggerOnly = (bool)$loggerOnly;
+        if (! $this->canOutput()) {
+            return Handler::DONE;
+        }
+
+        echo $response;
+
+        return Handler::QUIT;
     }
 
     /**

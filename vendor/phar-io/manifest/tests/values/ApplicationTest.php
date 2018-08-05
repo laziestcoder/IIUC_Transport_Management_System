@@ -16,35 +16,29 @@ use PHPUnit\Framework\TestCase;
  * @covers PharIo\Manifest\Application
  * @covers PharIo\Manifest\Type
  */
-class ApplicationTest extends TestCase
-{
+class ApplicationTest extends TestCase {
     /**
      * @var Application
      */
     private $type;
 
-    public function testCanBeCreated()
-    {
+    protected function setUp() {
+        $this->type = Type::application();
+    }
+
+    public function testCanBeCreated() {
         $this->assertInstanceOf(Application::class, $this->type);
     }
 
-    public function testIsApplication()
-    {
+    public function testIsApplication() {
         $this->assertTrue($this->type->isApplication());
     }
 
-    public function testIsNotLibrary()
-    {
+    public function testIsNotLibrary() {
         $this->assertFalse($this->type->isLibrary());
     }
 
-    public function testIsNotExtension()
-    {
+    public function testIsNotExtension() {
         $this->assertFalse($this->type->isExtension());
-    }
-
-    protected function setUp()
-    {
-        $this->type = Type::application();
     }
 }

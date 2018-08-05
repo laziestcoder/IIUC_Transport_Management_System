@@ -9,25 +9,23 @@ use PHPUnit\Framework\TestCase;
 
 class ParamTest extends TestCase
 {
+    public function createParamBuilder($name) {
+        return new Param($name);
+    }
+
     /**
      * @dataProvider provideTestDefaultValues
      */
-    public function testDefaultValues($value, $expectedValueNode)
-    {
+    public function testDefaultValues($value, $expectedValueNode) {
         $node = $this->createParamBuilder('test')
             ->setDefault($value)
-            ->getNode();
+            ->getNode()
+        ;
 
         $this->assertEquals($expectedValueNode, $node->default);
     }
 
-    public function createParamBuilder($name)
-    {
-        return new Param($name);
-    }
-
-    public function provideTestDefaultValues()
-    {
+    public function provideTestDefaultValues() {
         return [
             [
                 null,
@@ -84,11 +82,11 @@ class ParamTest extends TestCase
     /**
      * @dataProvider provideTestTypeHints
      */
-    public function testTypeHints($typeHint, $expectedType)
-    {
+    public function testTypeHints($typeHint, $expectedType) {
         $node = $this->createParamBuilder('test')
             ->setTypeHint($typeHint)
-            ->getNode();
+            ->getNode()
+        ;
         $type = $node->type;
 
         /* Manually implement comparison to avoid __toString stupidity */
@@ -102,8 +100,7 @@ class ParamTest extends TestCase
         $this->assertEquals($expectedType, $type);
     }
 
-    public function provideTestTypeHints()
-    {
+    public function provideTestTypeHints() {
         return [
             ['array', new Node\Identifier('array')],
             ['callable', new Node\Identifier('callable')],
@@ -136,8 +133,7 @@ class ParamTest extends TestCase
      * @expectedException \LogicException
      * @expectedExceptionMessage Parameter type cannot be void
      */
-    public function testVoidTypeError()
-    {
+    public function testVoidTypeError() {
         $this->createParamBuilder('test')->setTypeHint('void');
     }
 
@@ -145,16 +141,15 @@ class ParamTest extends TestCase
      * @expectedException \LogicException
      * @expectedExceptionMessage Type must be a string, or an instance of Name, Identifier or NullableType
      */
-    public function testInvalidTypeError()
-    {
+    public function testInvalidTypeError() {
         $this->createParamBuilder('test')->setTypeHint(new \stdClass);
     }
 
-    public function testByRef()
-    {
+    public function testByRef() {
         $node = $this->createParamBuilder('test')
             ->makeByRef()
-            ->getNode();
+            ->getNode()
+        ;
 
         $this->assertEquals(
             new Node\Param(new Expr\Variable('test'), null, null, true),
@@ -162,11 +157,11 @@ class ParamTest extends TestCase
         );
     }
 
-    public function testVariadic()
-    {
+    public function testVariadic() {
         $node = $this->createParamBuilder('test')
             ->makeVariadic()
-            ->getNode();
+            ->getNode()
+        ;
 
         $this->assertEquals(
             new Node\Param(new Expr\Variable('test'), null, null, false, true),

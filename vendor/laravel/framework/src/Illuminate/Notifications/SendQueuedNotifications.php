@@ -3,8 +3,8 @@
 namespace Illuminate\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class SendQueuedNotifications implements ShouldQueue
 {
@@ -25,7 +25,7 @@ class SendQueuedNotifications implements ShouldQueue
     public $notification;
 
     /**
-     * All of the channels to send the notification too.
+     * All of the channels to send the notification to.
      *
      * @var array
      */
@@ -34,9 +34,9 @@ class SendQueuedNotifications implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param  \Illuminate\Support\Collection $notifiables
-     * @param  \Illuminate\Notifications\Notification $notification
-     * @param  array $channels
+     * @param  \Illuminate\Support\Collection  $notifiables
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @param  array  $channels
      * @return void
      */
     public function __construct($notifiables, $notification, array $channels = null)
@@ -49,7 +49,7 @@ class SendQueuedNotifications implements ShouldQueue
     /**
      * Send the notifications.
      *
-     * @param  \Illuminate\Notifications\ChannelManager $manager
+     * @param  \Illuminate\Notifications\ChannelManager  $manager
      * @return void
      */
     public function handle(ChannelManager $manager)
@@ -70,7 +70,7 @@ class SendQueuedNotifications implements ShouldQueue
     /**
      * Call the failed method on the notification instance.
      *
-     * @param  \Exception $e
+     * @param  \Exception  $e
      * @return void
      */
     public function failed($e)

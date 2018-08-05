@@ -4,8 +4,9 @@ namespace Faker\Test\Provider;
 
 use Faker\Generator;
 use Faker\Provider\HtmlLorem;
+use PHPUnit\Framework\TestCase;
 
-class HtmlLoremTest extends \PHPUnit_Framework_TestCase
+class HtmlLoremTest extends TestCase
 {
 
     public function testProvider()
@@ -17,8 +18,7 @@ class HtmlLoremTest extends \PHPUnit_Framework_TestCase
         $this->assertStringEndsWith("</html>\n", $node);
     }
 
-    public function testRandomHtmlReturnsValidHTMLString()
-    {
+    public function testRandomHtmlReturnsValidHTMLString(){
         $faker = new Generator();
         $faker->addProvider(new HtmlLorem($faker));
         $node = $faker->randomHtml(6, 10);

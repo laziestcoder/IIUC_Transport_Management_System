@@ -20,11 +20,10 @@ use PHPUnit\Framework\TestCase;
  * @covers \PharIo\Manifest\Extension
  * @covers \PharIo\Manifest\Type
  *
- * @uses   \PharIo\Version\VersionConstraint
- * @uses   \PharIo\Manifest\ApplicationName
+ * @uses \PharIo\Version\VersionConstraint
+ * @uses \PharIo\Manifest\ApplicationName
  */
-class ExtensionTest extends TestCase
-{
+class ExtensionTest extends TestCase {
     /**
      * @var Extension
      */
@@ -35,23 +34,24 @@ class ExtensionTest extends TestCase
      */
     private $name;
 
-    public function testCanBeCreated()
-    {
+    protected function setUp() {
+        $this->name = $this->createMock(ApplicationName::class);
+        $this->type = Type::extension($this->name, new AnyVersionConstraint);
+    }
+
+    public function testCanBeCreated() {
         $this->assertInstanceOf(Extension::class, $this->type);
     }
 
-    public function testIsNotApplication()
-    {
+    public function testIsNotApplication() {
         $this->assertFalse($this->type->isApplication());
     }
 
-    public function testIsNotLibrary()
-    {
+    public function testIsNotLibrary() {
         $this->assertFalse($this->type->isLibrary());
     }
 
-    public function testIsExtension()
-    {
+    public function testIsExtension() {
         $this->assertTrue($this->type->isExtension());
     }
 
@@ -60,8 +60,7 @@ class ExtensionTest extends TestCase
         $this->assertInstanceOf(ApplicationName::class, $this->type->getApplicationName());
     }
 
-    public function testVersionConstraintCanBeRetrieved()
-    {
+    public function testVersionConstraintCanBeRetrieved() {
         $this->assertInstanceOf(
             VersionConstraint::class,
             $this->type->getVersionConstraint()
@@ -76,8 +75,7 @@ class ExtensionTest extends TestCase
         );
     }
 
-    public function testCompatibleWithReturnsTrueForMatchingVersionConstraintAndApplicaiton()
-    {
+    public function testCompatibleWithReturnsTrueForMatchingVersionConstraintAndApplicaiton() {
         $app = new ApplicationName('foo/bar');
         $extension = Type::extension($app, (new VersionConstraintParser)->parse('^1.0'));
         $version = new Version('1.0.0');
@@ -87,8 +85,7 @@ class ExtensionTest extends TestCase
         );
     }
 
-    public function testCompatibleWithReturnsFalseForNotMatchingVersionConstraint()
-    {
+    public function testCompatibleWithReturnsFalseForNotMatchingVersionConstraint() {
         $app = new ApplicationName('foo/bar');
         $extension = Type::extension($app, (new VersionConstraintParser)->parse('^1.0'));
         $version = new Version('2.0.0');
@@ -98,8 +95,7 @@ class ExtensionTest extends TestCase
         );
     }
 
-    public function testCompatibleWithReturnsFalseForNotMatchingApplication()
-    {
+    public function testCompatibleWithReturnsFalseForNotMatchingApplication() {
         $app1 = new ApplicationName('foo/bar');
         $app2 = new ApplicationName('foo/foo');
         $extension = Type::extension($app1, (new VersionConstraintParser)->parse('^1.0'));
@@ -108,12 +104,6 @@ class ExtensionTest extends TestCase
         $this->assertFalse(
             $extension->isCompatibleWith($app2, $version)
         );
-    }
-
-    protected function setUp()
-    {
-        $this->name = $this->createMock(ApplicationName::class);
-        $this->type = Type::extension($this->name, new AnyVersionConstraint);
     }
 
 }

@@ -87,8 +87,8 @@ abstract class AnnotationClassLoader implements LoaderInterface
     /**
      * Loads from annotations from a class.
      *
-     * @param string $class A class name
-     * @param string|null $type The resource type
+     * @param string      $class A class name
+     * @param string|null $type  The resource type
      *
      * @return RouteCollection A RouteCollection instance
      *
@@ -124,6 +124,7 @@ abstract class AnnotationClassLoader implements LoaderInterface
                 if ($annot instanceof $this->routeAnnotationClass) {
                     $globals['path'] = '';
                     $globals['name'] = '';
+                    $globals['localized_paths'] = array();
 
                     $this->addRoute($collection, $annot, $globals, $class, $class->getMethod('__invoke'));
                 }
@@ -133,10 +134,129 @@ abstract class AnnotationClassLoader implements LoaderInterface
         return $collection;
     }
 
+    protected function addRoute(RouteCollection $collection, $annot, $globals, \ReflectionClass $class, \ReflectionMethod $method)
+    {
+        $name = $annot->getName();
+        if (null === $name) {
+            $name = $this->getDefaultRouteName($class, $method);
+        }
+        $name = $globals['name'].$name;
+
+        $defaults = array_replace($globals['defaults'], $annot->getDefaults());
+        $requirements = array_replace($globals['requirements'], $annot->getRequirements());
+        $options = array_replace($globals['options'], $annot->getOptions());
+        $schemes = array_merge($globals['schemes'], $annot->getSchemes());
+        $methods = array_merge($globals['methods'], $annot->getMethods());
+
+        $host = $annot->getHost();
+        if (null === $host) {
+            $host = $globals['host'];
+        }
+
+        $condition = $annot->getCondition();
+        if (null === $condition) {
+            $condition = $globals['condition'];
+        }
+
+        $path = $annot->getLocalizedPaths() ?: $annot->getPath();
+        $prefix = $globals['localized_paths'] ?: $globals['path'];
+        $paths = array();
+
+        if (\is_array($path)) {
+            if (!\is_array($prefix)) {
+                foreach ($path as $locale => $localePath) {
+                    $paths[$locale] = $prefix.$localePath;
+                }
+            } elseif ($missing = array_diff_key($prefix, $path)) {
+                throw new \LogicException(sprintf('Route to "%s" is missing paths for locale(s) "%s".', $class->name.'::'.$method->name, implode('", "', array_keys($missing))));
+            } else {
+                foreach ($path as $locale => $localePath) {
+                    if (!isset($prefix[$locale])) {
+                        throw new \LogicException(sprintf('Route to "%s" with locale "%s" is missing a corresponding prefix in class "%s".', $method->name, $locale, $class->name));
+                    }
+
+                    $paths[$locale] = $prefix[$locale].$localePath;
+                }
+            }
+        } elseif (\is_array($prefix)) {
+            foreach ($prefix as $locale => $localePrefix) {
+                $paths[$locale] = $localePrefix.$path;
+            }
+        } else {
+            $paths[] = $prefix.$path;
+        }
+
+        foreach ($method->getParameters() as $param) {
+            if (isset($defaults[$param->name]) || !$param->isDefaultValueAvailable()) {
+                continue;
+            }
+            foreach ($paths as $locale => $path) {
+                if (false !== strpos($path, sprintf('{%s}', $param->name))) {
+                    $defaults[$param->name] = $param->getDefaultValue();
+                    break;
+                }
+            }
+        }
+
+        foreach ($paths as $locale => $path) {
+            $route = $this->createRoute($path, $defaults, $requirements, $options, $host, $schemes, $methods, $condition);
+            $this->configureRoute($route, $class, $method, $annot);
+            if (0 !== $locale) {
+                $route->setDefault('_locale', $locale);
+                $route->setDefault('_canonical_route', $name);
+                $collection->add($name.'.'.$locale, $route);
+            } else {
+                $collection->add($name, $route);
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports($resource, $type = null)
+    {
+        return \is_string($resource) && preg_match('/^(?:\\\\?[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)+$/', $resource) && (!$type || 'annotation' === $type);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setResolver(LoaderResolverInterface $resolver)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getResolver()
+    {
+    }
+
+    /**
+     * Gets the default route name for a class method.
+     *
+     * @param \ReflectionClass  $class
+     * @param \ReflectionMethod $method
+     *
+     * @return string
+     */
+    protected function getDefaultRouteName(\ReflectionClass $class, \ReflectionMethod $method)
+    {
+        $name = strtolower(str_replace('\\', '_', $class->name).'_'.$method->name);
+        if ($this->defaultRouteIndex > 0) {
+            $name .= '_'.$this->defaultRouteIndex;
+        }
+        ++$this->defaultRouteIndex;
+
+        return $name;
+    }
+
     protected function getGlobals(\ReflectionClass $class)
     {
         $globals = array(
-            'path' => '',
+            'path' => null,
+            'localized_paths' => array(),
             'requirements' => array(),
             'options' => array(),
             'defaults' => array(),
@@ -155,6 +275,8 @@ abstract class AnnotationClassLoader implements LoaderInterface
             if (null !== $annot->getPath()) {
                 $globals['path'] = $annot->getPath();
             }
+
+            $globals['localized_paths'] = $annot->getLocalizedPaths();
 
             if (null !== $annot->getRequirements()) {
                 $globals['requirements'] = $annot->getRequirements();
@@ -188,87 +310,10 @@ abstract class AnnotationClassLoader implements LoaderInterface
         return $globals;
     }
 
-    protected function addRoute(RouteCollection $collection, $annot, $globals, \ReflectionClass $class, \ReflectionMethod $method)
-    {
-        $name = $annot->getName();
-        if (null === $name) {
-            $name = $this->getDefaultRouteName($class, $method);
-        }
-        $name = $globals['name'] . $name;
-
-        $defaults = array_replace($globals['defaults'], $annot->getDefaults());
-        foreach ($method->getParameters() as $param) {
-            if (false !== strpos($globals['path'] . $annot->getPath(), sprintf('{%s}', $param->getName())) && !isset($defaults[$param->getName()]) && $param->isDefaultValueAvailable()) {
-                $defaults[$param->getName()] = $param->getDefaultValue();
-            }
-        }
-        $requirements = array_replace($globals['requirements'], $annot->getRequirements());
-        $options = array_replace($globals['options'], $annot->getOptions());
-        $schemes = array_merge($globals['schemes'], $annot->getSchemes());
-        $methods = array_merge($globals['methods'], $annot->getMethods());
-
-        $host = $annot->getHost();
-        if (null === $host) {
-            $host = $globals['host'];
-        }
-
-        $condition = $annot->getCondition();
-        if (null === $condition) {
-            $condition = $globals['condition'];
-        }
-
-        $route = $this->createRoute($globals['path'] . $annot->getPath(), $defaults, $requirements, $options, $host, $schemes, $methods, $condition);
-
-        $this->configureRoute($route, $class, $method, $annot);
-
-        $collection->add($name, $route);
-    }
-
-    /**
-     * Gets the default route name for a class method.
-     *
-     * @param \ReflectionClass $class
-     * @param \ReflectionMethod $method
-     *
-     * @return string
-     */
-    protected function getDefaultRouteName(\ReflectionClass $class, \ReflectionMethod $method)
-    {
-        $name = strtolower(str_replace('\\', '_', $class->name) . '_' . $method->name);
-        if ($this->defaultRouteIndex > 0) {
-            $name .= '_' . $this->defaultRouteIndex;
-        }
-        ++$this->defaultRouteIndex;
-
-        return $name;
-    }
-
     protected function createRoute($path, $defaults, $requirements, $options, $host, $schemes, $methods, $condition)
     {
         return new Route($path, $defaults, $requirements, $options, $host, $schemes, $methods, $condition);
     }
 
     abstract protected function configureRoute(Route $route, \ReflectionClass $class, \ReflectionMethod $method, $annot);
-
-    /**
-     * {@inheritdoc}
-     */
-    public function supports($resource, $type = null)
-    {
-        return is_string($resource) && preg_match('/^(?:\\\\?[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)+$/', $resource) && (!$type || 'annotation' === $type);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setResolver(LoaderResolverInterface $resolver)
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getResolver()
-    {
-    }
 }

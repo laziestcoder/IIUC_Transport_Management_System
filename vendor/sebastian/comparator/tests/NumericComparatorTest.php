@@ -7,21 +7,28 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass SebastianBergmann\Comparator\NumericComparator
+ * @covers \SebastianBergmann\Comparator\NumericComparator<extended>
  *
- * @uses SebastianBergmann\Comparator\Comparator
- * @uses SebastianBergmann\Comparator\Factory
- * @uses SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
-class NumericComparatorTest extends TestCase
+final class NumericComparatorTest extends TestCase
 {
+    /**
+     * @var NumericComparator
+     */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new NumericComparator;
+    }
 
     public function acceptsSucceedsProvider()
     {
@@ -69,42 +76,29 @@ class NumericComparatorTest extends TestCase
     }
 
     /**
-     * @covers       ::accepts
      * @dataProvider acceptsSucceedsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAcceptsSucceeds($expected, $actual)
+    public function testAcceptsSucceeds($expected, $actual): void
     {
         $this->assertTrue(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
     /**
-     * @covers       ::accepts
      * @dataProvider acceptsFailsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAcceptsFails($expected, $actual)
+    public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
     /**
-     * @covers       ::assertEquals
      * @dataProvider assertEqualsSucceedsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
-     * @param mixed $delta
      */
-    public function testAssertEqualsSucceeds($expected, $actual, $delta = 0.0)
+    public function testAssertEqualsSucceeds($expected, $actual, $delta = 0.0): void
     {
         $exception = null;
 
@@ -117,23 +111,13 @@ class NumericComparatorTest extends TestCase
     }
 
     /**
-     * @covers       ::assertEquals
      * @dataProvider assertEqualsFailsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
-     * @param mixed $delta
      */
-    public function testAssertEqualsFails($expected, $actual, $delta = 0.0)
+    public function testAssertEqualsFails($expected, $actual, $delta = 0.0): void
     {
         $this->expectException(ComparisonFailure::class);
         $this->expectExceptionMessage('matches expected');
 
         $this->comparator->assertEquals($expected, $actual, $delta);
-    }
-
-    protected function setUp()
-    {
-        $this->comparator = new NumericComparator;
     }
 }

@@ -31,18 +31,18 @@ class MessageFormatter implements MessageFormatterInterface, ChoiceMessageFormat
     /**
      * {@inheritdoc}
      */
-    public function choiceFormat($message, $number, $locale, array $parameters = array())
+    public function format($message, $locale, array $parameters = array())
     {
-        $parameters = array_merge(array('%count%' => $number), $parameters);
-
-        return $this->format($this->selector->choose($message, (int)$number, $locale), $locale, $parameters);
+        return strtr($message, $parameters);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function format($message, $locale, array $parameters = array())
+    public function choiceFormat($message, $number, $locale, array $parameters = array())
     {
-        return strtr($message, $parameters);
+        $parameters = array_merge(array('%count%' => $number), $parameters);
+
+        return $this->format($this->selector->choose($message, (int) $number, $locale), $locale, $parameters);
     }
 }

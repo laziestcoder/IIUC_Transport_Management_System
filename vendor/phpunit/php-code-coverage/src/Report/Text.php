@@ -73,10 +73,10 @@ final class Text
 
     public function __construct(int $lowUpperBound = 50, int $highLowerBound = 90, bool $showUncoveredFiles = false, bool $showOnlySummary = false)
     {
-        $this->lowUpperBound = $lowUpperBound;
-        $this->highLowerBound = $highLowerBound;
+        $this->lowUpperBound      = $lowUpperBound;
+        $this->highLowerBound     = $highLowerBound;
         $this->showUncoveredFiles = $showUncoveredFiles;
-        $this->showOnlySummary = $showOnlySummary;
+        $this->showOnlySummary    = $showOnlySummary;
     }
 
     public function process(CodeCoverage $coverage, bool $showColors = false): string
@@ -85,12 +85,12 @@ final class Text
         $report = $coverage->getReport();
 
         $colors = [
-            'header' => '',
+            'header'  => '',
             'classes' => '',
             'methods' => '',
-            'lines' => '',
-            'reset' => '',
-            'eol' => ''
+            'lines'   => '',
+            'reset'   => '',
+            'eol'     => ''
         ];
 
         if ($showColors) {
@@ -104,14 +104,14 @@ final class Text
                 $report->getNumMethods()
             );
 
-            $colors['lines'] = $this->getCoverageColor(
+            $colors['lines']   = $this->getCoverageColor(
                 $report->getNumExecutedLines(),
                 $report->getNumExecutableLines()
             );
 
-            $colors['reset'] = self::COLOR_RESET;
+            $colors['reset']  = self::COLOR_RESET;
             $colors['header'] = self::COLOR_HEADER;
-            $colors['eol'] = self::COLOR_EOL;
+            $colors['eol']    = self::COLOR_EOL;
         }
 
         $classes = \sprintf(
@@ -150,12 +150,12 @@ final class Text
         $padding = \max(\array_map('strlen', [$classes, $methods, $lines]));
 
         if ($this->showOnlySummary) {
-            $title = 'Code Coverage Report Summary:';
+            $title   = 'Code Coverage Report Summary:';
             $padding = \max($padding, \strlen($title));
 
             $output .= $this->format($colors['header'], $padding, $title);
         } else {
-            $date = \date('  Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
+            $date  = \date('  Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
             $title = 'Code Coverage Report:';
 
             $output .= $this->format($colors['header'], $padding, $title);
@@ -182,10 +182,10 @@ final class Text
             $classes = $item->getClassesAndTraits();
 
             foreach ($classes as $className => $class) {
-                $classStatements = 0;
+                $classStatements        = 0;
                 $coveredClassStatements = 0;
-                $coveredMethods = 0;
-                $classMethods = 0;
+                $coveredMethods         = 0;
+                $classMethods           = 0;
 
                 foreach ($class['methods'] as $method) {
                     if ($method['executableLines'] == 0) {
@@ -210,12 +210,12 @@ final class Text
                 }
 
                 $classCoverage[$namespace . $className] = [
-                    'namespace' => $namespace,
-                    'className ' => $className,
-                    'methodsCovered' => $coveredMethods,
-                    'methodCount' => $classMethods,
+                    'namespace'         => $namespace,
+                    'className '        => $className,
+                    'methodsCovered'    => $coveredMethods,
+                    'methodCount'       => $classMethods,
                     'statementsCovered' => $coveredClassStatements,
-                    'statementCount' => $classStatements,
+                    'statementCount'    => $classStatements,
                 ];
             }
         }
@@ -223,20 +223,21 @@ final class Text
         \ksort($classCoverage);
 
         $methodColor = '';
-        $linesColor = '';
-        $resetColor = '';
+        $linesColor  = '';
+        $resetColor  = '';
 
         foreach ($classCoverage as $fullQualifiedPath => $classInfo) {
             if ($this->showUncoveredFiles || $classInfo['statementsCovered'] != 0) {
                 if ($showColors) {
                     $methodColor = $this->getCoverageColor($classInfo['methodsCovered'], $classInfo['methodCount']);
-                    $linesColor = $this->getCoverageColor($classInfo['statementsCovered'], $classInfo['statementCount']);
-                    $resetColor = $colors['reset'];
+                    $linesColor  = $this->getCoverageColor($classInfo['statementsCovered'], $classInfo['statementCount']);
+                    $resetColor  = $colors['reset'];
                 }
 
                 $output .= PHP_EOL . $fullQualifiedPath . PHP_EOL
                     . '  ' . $methodColor . 'Methods: ' . $this->printCoverageCounts($classInfo['methodsCovered'], $classInfo['methodCount'], 2) . $resetColor . ' '
-                    . '  ' . $linesColor . 'Lines: ' . $this->printCoverageCounts($classInfo['statementsCovered'], $classInfo['statementCount'], 3) . $resetColor;
+                    . '  ' . $linesColor . 'Lines: ' . $this->printCoverageCounts($classInfo['statementsCovered'], $classInfo['statementCount'], 3) . $resetColor
+                ;
             }
         }
 
@@ -261,24 +262,24 @@ final class Text
         return self::COLOR_RED;
     }
 
-    private function format($color, $padding, $string): string
-    {
-        $reset = $color ? self::COLOR_RESET : '';
-
-        return $color . \str_pad($string, $padding) . $reset . PHP_EOL;
-    }
-
     private function printCoverageCounts(int $numberOfCoveredElements, int $totalNumberOfElements, int $precision): string
     {
         $format = '%' . $precision . 's';
 
         return Util::percent(
-                $numberOfCoveredElements,
-                $totalNumberOfElements,
-                true,
-                true
-            ) .
-            ' (' . \sprintf($format, $numberOfCoveredElements) . '/' .
-            \sprintf($format, $totalNumberOfElements) . ')';
+            $numberOfCoveredElements,
+            $totalNumberOfElements,
+            true,
+            true
+        ) .
+        ' (' . \sprintf($format, $numberOfCoveredElements) . '/' .
+        \sprintf($format, $totalNumberOfElements) . ')';
+    }
+
+    private function format($color, $padding, $string): string
+    {
+        $reset = $color ? self::COLOR_RESET : '';
+
+        return $color . \str_pad($string, $padding) . $reset . PHP_EOL;
     }
 }

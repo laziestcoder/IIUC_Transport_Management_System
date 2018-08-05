@@ -42,19 +42,6 @@ class AcceptHeader
     }
 
     /**
-     * Adds an item.
-     *
-     * @return $this
-     */
-    public function add(AcceptHeaderItem $item)
-    {
-        $this->items[$item->getValue()] = $item;
-        $this->sorted = false;
-
-        return $this;
-    }
-
-    /**
      * Builds an AcceptHeader instance from a string.
      *
      * @param string $headerValue
@@ -65,12 +52,17 @@ class AcceptHeader
     {
         $index = 0;
 
-        return new self(array_map(function ($itemValue) use (&$index) {
-            $item = AcceptHeaderItem::fromString($itemValue);
+        $parts = HeaderUtils::split((string) $headerValue, ',;=');
+
+        return new self(array_map(function ($subParts) use (&$index) {
+            $part = array_shift($subParts);
+            $attributes = HeaderUtils::combine($subParts);
+
+            $item = new AcceptHeaderItem($part[0], $attributes);
             $item->setIndex($index++);
 
             return $item;
-        }, preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/', $headerValue, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)));
+        }, $parts));
     }
 
     /**
@@ -104,7 +96,20 @@ class AcceptHeader
      */
     public function get($value)
     {
-        return isset($this->items[$value]) ? $this->items[$value] : null;
+        return $this->items[$value] ?? $this->items[explode('/', $value)[0].'/*'] ?? $this->items['*/*'] ?? $this->items['*'] ?? null;
+    }
+
+    /**
+     * Adds an item.
+     *
+     * @return $this
+     */
+    public function add(AcceptHeaderItem $item)
+    {
+        $this->items[$item->getValue()] = $item;
+        $this->sorted = false;
+
+        return $this;
     }
 
     /**
@@ -117,27 +122,6 @@ class AcceptHeader
         $this->sort();
 
         return $this->items;
-    }
-
-    /**
-     * Sorts items by descending quality.
-     */
-    private function sort()
-    {
-        if (!$this->sorted) {
-            uasort($this->items, function (AcceptHeaderItem $a, AcceptHeaderItem $b) {
-                $qA = $a->getQuality();
-                $qB = $b->getQuality();
-
-                if ($qA === $qB) {
-                    return $a->getIndex() > $b->getIndex() ? 1 : -1;
-                }
-
-                return $qA > $qB ? -1 : 1;
-            });
-
-            $this->sorted = true;
-        }
     }
 
     /**
@@ -164,5 +148,26 @@ class AcceptHeader
         $this->sort();
 
         return !empty($this->items) ? reset($this->items) : null;
+    }
+
+    /**
+     * Sorts items by descending quality.
+     */
+    private function sort()
+    {
+        if (!$this->sorted) {
+            uasort($this->items, function (AcceptHeaderItem $a, AcceptHeaderItem $b) {
+                $qA = $a->getQuality();
+                $qB = $b->getQuality();
+
+                if ($qA === $qB) {
+                    return $a->getIndex() > $b->getIndex() ? 1 : -1;
+                }
+
+                return $qA > $qB ? -1 : 1;
+            });
+
+            $this->sorted = true;
+        }
     }
 }

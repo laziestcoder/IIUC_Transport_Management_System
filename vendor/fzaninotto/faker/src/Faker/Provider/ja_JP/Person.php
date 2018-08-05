@@ -9,7 +9,7 @@ class Person extends \Faker\Provider\Person
     );
 
     protected static $femaleNameFormats = array(
-        '{{lastName}} {{firstNameFemale}}',
+         '{{lastName}} {{firstNameFemale}}',
     );
 
     /**
@@ -82,14 +82,6 @@ class Person extends \Faker\Provider\Person
     );
 
     /**
-     * @example 'アオタ'
-     */
-    public static function lastKanaName()
-    {
-        return static::randomElement(static::$lastKanaName);
-    }
-
-    /**
      * @param string|null $gender 'male', 'female' or null for any
      * @return string
      * @example 'アオタ アキラ'
@@ -137,5 +129,13 @@ class Person extends \Faker\Provider\Person
     public static function firstKanaNameFemale()
     {
         return static::randomElement(static::$firstKanaNameFemale);
+    }
+
+    /**
+     * @example 'アオタ'
+     */
+    public static function lastKanaName()
+    {
+        return static::randomElement(static::$lastKanaName);
     }
 }

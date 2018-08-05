@@ -35,10 +35,10 @@ class ArgsStub extends EnumStub
 
             return;
         }
-        if (count($values) < count($params)) {
-            $params = array_slice($params, 0, count($values));
-        } elseif (count($values) > count($params)) {
-            $values[] = new EnumStub(array_splice($values, count($params)), false);
+        if (\count($values) < \count($params)) {
+            $params = \array_slice($params, 0, \count($values));
+        } elseif (\count($values) > \count($params)) {
+            $values[] = new EnumStub(array_splice($values, \count($params)), false);
             $params[] = $variadic;
         }
         if (array('...') === $params) {
@@ -51,7 +51,7 @@ class ArgsStub extends EnumStub
 
     private static function getParameters($function, $class)
     {
-        if (isset(self::$parameters[$k = $class . '::' . $function])) {
+        if (isset(self::$parameters[$k = $class.'::'.$function])) {
             return self::$parameters[$k];
         }
 
@@ -64,9 +64,9 @@ class ArgsStub extends EnumStub
         $variadic = '...';
         $params = array();
         foreach ($r->getParameters() as $v) {
-            $k = '$' . $v->name;
+            $k = '$'.$v->name;
             if ($v->isPassedByReference()) {
-                $k = '&' . $k;
+                $k = '&'.$k;
             }
             if ($v->isVariadic()) {
                 $variadic .= $k;

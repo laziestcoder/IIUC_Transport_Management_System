@@ -4,6 +4,7 @@ namespace Encore\Admin\Grid;
 
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Grid\Filter\AbstractFilter;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 
@@ -26,7 +27,7 @@ use Illuminate\Support\Facades\Request;
  * @method AbstractFilter     year($column, $label = '')
  * @method AbstractFilter     hidden($name, $value)
  */
-class Filter
+class Filter implements Renderable
 {
     /**
      * @var Model
@@ -78,6 +79,11 @@ class Filter
     protected $filterModalId = 'filter-modal';
 
     /**
+     * @var string
+     */
+    protected $name = '';
+
+    /**
      * Create a new filter instance.
      *
      * @param Model $model
@@ -106,6 +112,16 @@ class Filter
     }
 
     /**
+     * Get grid model.
+     *
+     * @return Model
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
      * Set modalId of search form.
      *
      * @param string $filterModalId
@@ -120,6 +136,28 @@ class Filter
     }
 
     /**
+     * @param $name
+     *
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        $this->setModalId("{$this->name}-{$this->filterModalId}");
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
      * Disable Id filter.
      */
     public function disableIdFilter()
@@ -128,39 +166,14 @@ class Filter
     }
 
     /**
-     * Use a custom filter.
-     *
-     * @param AbstractFilter $filter
-     *
-     * @return AbstractFilter
+     * Remove ID filter if needed.
      */
-    public function use(AbstractFilter $filter)
+    public function removeIDFilterIfNeeded()
     {
-        return $this->addFilter($filter);
-    }
-
-    /**
-     * Add a filter to grid.
-     *
-     * @param AbstractFilter $filter
-     *
-     * @return AbstractFilter
-     */
-    protected function addFilter(AbstractFilter $filter)
-    {
-        $filter->setParent($this);
-
-        return $this->filters[] = $filter;
-    }
-
-    /**
-     * Execute the filter with conditions.
-     *
-     * @return array
-     */
-    public function execute()
-    {
-        return $this->model->addConditions($this->conditions())->buildData();
+        if (!$this->useIdFilter && !$this->idFilterRemoved) {
+            array_shift($this->filters);
+            $this->idFilterRemoved = true;
+        }
     }
 
     /**
@@ -175,6 +188,8 @@ class Filter
         $inputs = array_filter($inputs, function ($input) {
             return $input !== '' && !is_null($input);
         });
+
+        $this->sanitizeInputs($inputs);
 
         if (empty($inputs)) {
             return [];
@@ -198,14 +213,49 @@ class Filter
     }
 
     /**
-     * Remove ID filter if needed.
+     * @param $inputs
+     *
+     * @return array
      */
-    public function removeIDFilterIfNeeded()
+    protected function sanitizeInputs(&$inputs)
     {
-        if (!$this->useIdFilter && !$this->idFilterRemoved) {
-            array_shift($this->filters);
-            $this->idFilterRemoved = true;
+        if (!$this->name) {
+            return $inputs;
         }
+
+        $inputs = collect($inputs)->filter(function ($input, $key) {
+            return starts_with($key, "{$this->name}_");
+        })->mapWithKeys(function ($val, $key) {
+            $key = str_replace("{$this->name}_", '', $key);
+
+            return [$key => $val];
+        })->toArray();
+    }
+
+    /**
+     * Add a filter to grid.
+     *
+     * @param AbstractFilter $filter
+     *
+     * @return AbstractFilter
+     */
+    protected function addFilter(AbstractFilter $filter)
+    {
+        $filter->setParent($this);
+
+        return $this->filters[] = $filter;
+    }
+
+    /**
+     * Use a custom filter.
+     *
+     * @param AbstractFilter $filter
+     *
+     * @return AbstractFilter
+     */
+    public function use(AbstractFilter $filter)
+    {
+        return $this->addFilter($filter);
     }
 
     /**
@@ -219,43 +269,24 @@ class Filter
     }
 
     /**
+     * Execute the filter with conditions.
+     *
+     * @return array
+     */
+    public function execute()
+    {
+        return $this->model->addConditions($this->conditions())->buildData();
+    }
+
+    /**
      * @param callable $callback
-     * @param int $count
+     * @param int      $count
      *
      * @return bool
      */
     public function chunk(callable $callback, $count = 100)
     {
         return $this->model->addConditions($this->conditions())->chunk($callback, $count);
-    }
-
-    /**
-     * Generate a filter object and add to grid.
-     *
-     * @param string $method
-     * @param array $arguments
-     *
-     * @return AbstractFilter|$this
-     */
-    public function __call($method, $arguments)
-    {
-        if (in_array($method, $this->supports)) {
-            $className = '\\Encore\\Admin\\Grid\\Filter\\' . ucfirst($method);
-
-            return $this->addFilter(new $className(...$arguments));
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get the string contents of the filter view.
-     *
-     * @return \Illuminate\View\View|string
-     */
-    public function __toString()
-    {
-        return $this->render();
     }
 
     /**
@@ -271,10 +302,10 @@ class Filter
             return '';
         }
 
-        $script = <<<'EOT'
+        $script = <<<EOT
 
-$("#filter-modal .submit").click(function () {
-    $("#filter-modal").modal('toggle');
+$("#{$this->filterModalId} .submit").click(function () {
+    $("#{$this->filterModalId}").modal('toggle');
     $('body').removeClass('modal-open');
     $('.modal-backdrop').remove();
 });
@@ -283,10 +314,10 @@ EOT;
         Admin::script($script);
 
         return view($this->view)->with([
-            'action' => $this->action ?: $this->urlWithoutFilters(),
-            'filters' => $this->filters,
-            'modalId' => $this->filterModalId,
-        ]);
+            'action'   => $this->action ?: $this->urlWithoutFilters(),
+            'filters'  => $this->filters,
+            'modalID'  => $this->filterModalId,
+        ])->render();
     }
 
     /**
@@ -309,10 +340,29 @@ EOT;
         $query = $request->query();
         array_forget($query, $columns);
 
-        $question = $request->getBaseUrl() . $request->getPathInfo() == '/' ? '/?' : '?';
+        $question = $request->getBaseUrl().$request->getPathInfo() == '/' ? '/?' : '?';
 
         return count($request->query()) > 0
-            ? $request->url() . $question . http_build_query($query)
+            ? $request->url().$question.http_build_query($query)
             : $request->fullUrl();
+    }
+
+    /**
+     * Generate a filter object and add to grid.
+     *
+     * @param string $method
+     * @param array  $arguments
+     *
+     * @return AbstractFilter|$this
+     */
+    public function __call($method, $arguments)
+    {
+        if (in_array($method, $this->supports)) {
+            $className = '\\Encore\\Admin\\Grid\\Filter\\'.ucfirst($method);
+
+            return $this->addFilter(new $className(...$arguments));
+        }
+
+        return $this;
     }
 }

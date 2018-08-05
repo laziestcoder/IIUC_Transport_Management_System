@@ -2,9 +2,8 @@
 
 namespace Illuminate\Database\Query\Grammars;
 
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
+use Illuminate\Database\Query\Builder;
 
 class PostgresGrammar extends Grammar
 {
@@ -22,20 +21,76 @@ class PostgresGrammar extends Grammar
     ];
 
     /**
-     * Compile an insert and get ID statement into SQL.
+     * Compile a "where date" clause.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $values
-     * @param  string $sequence
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $where
      * @return string
      */
-    public function compileInsertGetId(Builder $query, $values, $sequence)
+    protected function whereDate(Builder $query, $where)
     {
-        if (is_null($sequence)) {
-            $sequence = 'id';
+        $value = $this->parameter($where['value']);
+
+        return $this->wrap($where['column']).'::date '.$where['operator'].' '.$value;
+    }
+
+    /**
+     * Compile a "where time" clause.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereTime(Builder $query, $where)
+    {
+        $value = $this->parameter($where['value']);
+
+        return $this->wrap($where['column']).'::time '.$where['operator'].' '.$value;
+    }
+
+    /**
+     * Compile a date based where clause.
+     *
+     * @param  string  $type
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function dateBasedWhere($type, Builder $query, $where)
+    {
+        $value = $this->parameter($where['value']);
+
+        return 'extract('.$type.' from '.$this->wrap($where['column']).') '.$where['operator'].' '.$value;
+    }
+
+    /**
+     * Compile a "JSON contains" statement into SQL.
+     *
+     * @param  string  $column
+     * @param  string  $value
+     * @return string
+     */
+    protected function compileJsonContains($column, $value)
+    {
+        $column = str_replace('->>', '->', $this->wrap($column));
+
+        return '('.$column.')::jsonb @> '.$value;
+    }
+
+    /**
+     * Compile the lock into SQL.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  bool|string  $value
+     * @return string
+     */
+    protected function compileLock(Builder $query, $value)
+    {
+        if (! is_string($value)) {
+            return $value ? 'for update' : 'for share';
         }
 
-        return $this->compileInsert($query, $values) . ' returning ' . $this->wrap($sequence);
+        return $value;
     }
 
     /**
@@ -46,15 +101,32 @@ class PostgresGrammar extends Grammar
         $table = $this->wrapTable($query->from);
 
         return empty($values)
-            ? "insert into {$table} DEFAULT VALUES"
-            : parent::compileInsert($query, $values);
+                ? "insert into {$table} DEFAULT VALUES"
+                : parent::compileInsert($query, $values);
+    }
+
+    /**
+     * Compile an insert and get ID statement into SQL.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array   $values
+     * @param  string  $sequence
+     * @return string
+     */
+    public function compileInsertGetId(Builder $query, $values, $sequence)
+    {
+        if (is_null($sequence)) {
+            $sequence = 'id';
+        }
+
+        return $this->compileInsert($query, $values).' returning '.$this->wrap($sequence);
     }
 
     /**
      * Compile an update statement into SQL.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $values
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $values
      * @return string
      */
     public function compileUpdate(Builder $query, $values)
@@ -76,7 +148,7 @@ class PostgresGrammar extends Grammar
     /**
      * Compile the columns for the update statement.
      *
-     * @param  array $values
+     * @param  array   $values
      * @return string
      */
     protected function compileUpdateColumns($values)
@@ -85,19 +157,19 @@ class PostgresGrammar extends Grammar
         // columns and convert it to a parameter value. Then we will concatenate a
         // list of the columns that can be added into this update query clauses.
         return collect($values)->map(function ($value, $key) {
-            return $this->wrap($key) . ' = ' . $this->parameter($value);
+            return $this->wrap($key).' = '.$this->parameter($value);
         })->implode(', ');
     }
 
     /**
      * Compile the "from" clause for an update with a join.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
+     * @param  \Illuminate\Database\Query\Builder  $query
      * @return string|null
      */
     protected function compileUpdateFrom(Builder $query)
     {
-        if (!isset($query->joins)) {
+        if (! isset($query->joins)) {
             return '';
         }
 
@@ -109,21 +181,21 @@ class PostgresGrammar extends Grammar
         })->all();
 
         if (count($froms) > 0) {
-            return ' from ' . implode(', ', $froms);
+            return ' from '.implode(', ', $froms);
         }
     }
 
     /**
      * Compile the additional where clauses for updates with joins.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
+     * @param  \Illuminate\Database\Query\Builder  $query
      * @return string
      */
     protected function compileUpdateWheres(Builder $query)
     {
         $baseWheres = $this->compileWheres($query);
 
-        if (!isset($query->joins)) {
+        if (! isset($query->joins)) {
             return $baseWheres;
         }
 
@@ -133,16 +205,16 @@ class PostgresGrammar extends Grammar
         $joinWheres = $this->compileUpdateJoinWheres($query);
 
         if (trim($baseWheres) == '') {
-            return 'where ' . $this->removeLeadingBoolean($joinWheres);
+            return 'where '.$this->removeLeadingBoolean($joinWheres);
         }
 
-        return $baseWheres . ' ' . $joinWheres;
+        return $baseWheres.' '.$joinWheres;
     }
 
     /**
      * Compile the "join" clause where clauses for an update.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
+     * @param  \Illuminate\Database\Query\Builder  $query
      * @return string
      */
     protected function compileUpdateJoinWheres(Builder $query)
@@ -156,7 +228,7 @@ class PostgresGrammar extends Grammar
             foreach ($join->wheres as $where) {
                 $method = "where{$where['type']}";
 
-                $joinWheres[] = $where['boolean'] . ' ' . $this->$method($query, $where);
+                $joinWheres[] = $where['boolean'].' '.$this->$method($query, $where);
             }
         }
 
@@ -166,8 +238,8 @@ class PostgresGrammar extends Grammar
     /**
      * Prepare the bindings for an update statement.
      *
-     * @param  array $bindings
-     * @param  array $values
+     * @param  array  $bindings
+     * @param  array  $values
      * @return array
      */
     public function prepareBindingsForUpdate(array $bindings, array $values)
@@ -185,7 +257,7 @@ class PostgresGrammar extends Grammar
     /**
      * Compile a delete statement into SQL.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
+     * @param  \Illuminate\Database\Query\Builder  $query
      * @return string
      */
     public function compileDelete(Builder $query)
@@ -200,17 +272,17 @@ class PostgresGrammar extends Grammar
     /**
      * Compile a delete query that uses joins.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  string $table
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  string  $table
      * @return string
      */
     protected function compileDeleteWithJoins($query, $table)
     {
-        $using = ' USING ' . collect($query->joins)->map(function ($join) {
-                return $this->wrapTable($join->table);
-            })->implode(', ');
+        $using = ' USING '.collect($query->joins)->map(function ($join) {
+            return $this->wrapTable($join->table);
+        })->implode(', ');
 
-        $where = count($query->wheres) > 0 ? ' ' . $this->compileUpdateWheres($query) : '';
+        $where = count($query->wheres) > 0 ? ' '.$this->compileUpdateWheres($query) : '';
 
         return trim("delete from {$table}{$using}{$where}");
     }
@@ -218,122 +290,41 @@ class PostgresGrammar extends Grammar
     /**
      * Compile a truncate table statement into SQL.
      *
-     * @param  \Illuminate\Database\Query\Builder $query
+     * @param  \Illuminate\Database\Query\Builder  $query
      * @return array
      */
     public function compileTruncate(Builder $query)
     {
-        return ['truncate ' . $this->wrapTable($query->from) . ' restart identity' => []];
-    }
-
-    /**
-     * Compile a "where date" clause.
-     *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $where
-     * @return string
-     */
-    protected function whereDate(Builder $query, $where)
-    {
-        $value = $this->parameter($where['value']);
-
-        return $this->wrap($where['column']) . '::date ' . $where['operator'] . ' ' . $value;
-    }
-
-    /**
-     * Compile a "where time" clause.
-     *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $where
-     * @return string
-     */
-    protected function whereTime(Builder $query, $where)
-    {
-        $value = $this->parameter($where['value']);
-
-        return $this->wrap($where['column']) . '::time ' . $where['operator'] . ' ' . $value;
-    }
-
-    /**
-     * Compile a date based where clause.
-     *
-     * @param  string $type
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  array $where
-     * @return string
-     */
-    protected function dateBasedWhere($type, Builder $query, $where)
-    {
-        $value = $this->parameter($where['value']);
-
-        return 'extract(' . $type . ' from ' . $this->wrap($where['column']) . ') ' . $where['operator'] . ' ' . $value;
-    }
-
-    /**
-     * Compile the lock into SQL.
-     *
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  bool|string $value
-     * @return string
-     */
-    protected function compileLock(Builder $query, $value)
-    {
-        if (!is_string($value)) {
-            return $value ? 'for update' : 'for share';
-        }
-
-        return $value;
-    }
-
-    /**
-     * Wrap a single string in keyword identifiers.
-     *
-     * @param  string $value
-     * @return string
-     */
-    protected function wrapValue($value)
-    {
-        if ($value === '*') {
-            return $value;
-        }
-
-        // If the given value is a JSON selector we will wrap it differently than a
-        // traditional value. We will need to split this path and wrap each part
-        // wrapped, etc. Otherwise, we will simply wrap the value as a string.
-        if (Str::contains($value, '->')) {
-            return $this->wrapJsonSelector($value);
-        }
-
-        return '"' . str_replace('"', '""', $value) . '"';
+        return ['truncate '.$this->wrapTable($query->from).' restart identity' => []];
     }
 
     /**
      * Wrap the given JSON selector.
      *
-     * @param  string $value
+     * @param  string  $value
      * @return string
      */
     protected function wrapJsonSelector($value)
     {
         $path = explode('->', $value);
 
-        $field = $this->wrapValue(array_shift($path));
+        $field = $this->wrapSegments(explode('.', array_shift($path)));
 
         $wrappedPath = $this->wrapJsonPathAttributes($path);
 
         $attribute = array_pop($wrappedPath);
 
-        if (!empty($wrappedPath)) {
-            return $field . '->' . implode('->', $wrappedPath) . '->>' . $attribute;
+        if (! empty($wrappedPath)) {
+            return $field.'->'.implode('->', $wrappedPath).'->>'.$attribute;
         }
 
-        return $field . '->>' . $attribute;
+        return $field.'->>'.$attribute;
     }
 
     /**
      * Wrap the attributes of the give JSON path.
      *
-     * @param  array $path
+     * @param  array  $path
      * @return array
      */
     protected function wrapJsonPathAttributes($path)

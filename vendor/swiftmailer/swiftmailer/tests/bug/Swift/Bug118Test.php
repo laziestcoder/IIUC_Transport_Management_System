@@ -4,6 +4,11 @@ class Swift_Bug118Test extends \PHPUnit\Framework\TestCase
 {
     private $message;
 
+    protected function setUp()
+    {
+        $this->message = new Swift_Message();
+    }
+
     public function testCallingGenerateIdChangesTheMessageId()
     {
         $currentId = $this->message->getId();
@@ -11,10 +16,5 @@ class Swift_Bug118Test extends \PHPUnit\Framework\TestCase
         $newId = $this->message->getId();
 
         $this->assertNotEquals($currentId, $newId);
-    }
-
-    protected function setUp()
-    {
-        $this->message = new Swift_Message();
     }
 }

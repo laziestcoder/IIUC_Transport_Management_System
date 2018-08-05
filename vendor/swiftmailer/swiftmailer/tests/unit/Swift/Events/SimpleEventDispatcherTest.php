@@ -4,6 +4,11 @@ class Swift_Events_SimpleEventDispatcherTest extends \PHPUnit\Framework\TestCase
 {
     private $dispatcher;
 
+    protected function setUp()
+    {
+        $this->dispatcher = new Swift_Events_SimpleEventDispatcher();
+    }
+
     public function testSendEventCanBeCreated()
     {
         $transport = $this->getMockBuilder('Swift_Transport')->getMock();
@@ -17,11 +22,11 @@ class Swift_Events_SimpleEventDispatcherTest extends \PHPUnit\Framework\TestCase
     public function testCommandEventCanBeCreated()
     {
         $buf = $this->getMockBuilder('Swift_Transport')->getMock();
-        $evt = $this->dispatcher->createCommandEvent($buf, "FOO\r\n", array(250));
+        $evt = $this->dispatcher->createCommandEvent($buf, "FOO\r\n", [250]);
         $this->assertInstanceOf('Swift_Events_CommandEvent', $evt);
         $this->assertSame($buf, $evt->getSource());
         $this->assertEquals("FOO\r\n", $evt->getCommand());
-        $this->assertEquals(array(250), $evt->getSuccessCodes());
+        $this->assertEquals([250], $evt->getSuccessCodes());
     }
 
     public function testResponseEventCanBeCreated()
@@ -65,11 +70,11 @@ class Swift_Events_SimpleEventDispatcherTest extends \PHPUnit\Framework\TestCase
         $this->dispatcher->bindEventListener($listenerB);
 
         $listenerA->expects($this->once())
-            ->method('transportStarted')
-            ->with($evt);
+                  ->method('transportStarted')
+                  ->with($evt);
         $listenerB->expects($this->once())
-            ->method('transportStarted')
-            ->with($evt);
+                  ->method('transportStarted')
+                  ->with($evt);
 
         $this->dispatcher->dispatchEvent($evt, 'transportStarted');
     }
@@ -88,10 +93,10 @@ class Swift_Events_SimpleEventDispatcherTest extends \PHPUnit\Framework\TestCase
         $this->dispatcher->bindEventListener($otherListener);
 
         $targetListener->expects($this->once())
-            ->method('sendPerformed')
-            ->with($evt);
+                       ->method('sendPerformed')
+                       ->with($evt);
         $otherListener->expects($this->never())
-            ->method('sendPerformed');
+                    ->method('sendPerformed');
 
         $this->dispatcher->dispatchEvent($evt, 'sendPerformed');
     }
@@ -110,22 +115,17 @@ class Swift_Events_SimpleEventDispatcherTest extends \PHPUnit\Framework\TestCase
         $this->dispatcher->bindEventListener($listenerB);
 
         $listenerA->expects($this->once())
-            ->method('sendPerformed')
-            ->with($evt)
-            ->will($this->returnCallback(function ($object) {
-                $object->cancelBubble(true);
-            }));
+                  ->method('sendPerformed')
+                  ->with($evt)
+                  ->will($this->returnCallback(function ($object) {
+                      $object->cancelBubble(true);
+                  }));
         $listenerB->expects($this->never())
-            ->method('sendPerformed');
+                  ->method('sendPerformed');
 
         $this->dispatcher->dispatchEvent($evt, 'sendPerformed');
 
         $this->assertTrue($evt->bubbleCancelled());
-    }
-
-    protected function setUp()
-    {
-        $this->dispatcher = new Swift_Events_SimpleEventDispatcher();
     }
 
     private function createDispatcher(array $map)

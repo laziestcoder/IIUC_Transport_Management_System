@@ -21,38 +21,32 @@ class ExecutableFinderTest extends TestCase
 {
     private $path;
 
+    protected function tearDown()
+    {
+        if ($this->path) {
+            // Restore path if it was changed.
+            putenv('PATH='.$this->path);
+        }
+    }
+
+    private function setPath($path)
+    {
+        $this->path = getenv('PATH');
+        putenv('PATH='.$path);
+    }
+
     public function testFind()
     {
         if (ini_get('open_basedir')) {
             $this->markTestSkipped('Cannot test when open_basedir is set');
         }
 
-        $this->setPath(dirname(PHP_BINARY));
+        $this->setPath(\dirname(PHP_BINARY));
 
         $finder = new ExecutableFinder();
         $result = $finder->find($this->getPhpBinaryName());
 
         $this->assertSamePath(PHP_BINARY, $result);
-    }
-
-    private function setPath($path)
-    {
-        $this->path = getenv('PATH');
-        putenv('PATH=' . $path);
-    }
-
-    private function getPhpBinaryName()
-    {
-        return basename(PHP_BINARY, '\\' === DIRECTORY_SEPARATOR ? '.exe' : '');
-    }
-
-    private function assertSamePath($expected, $tested)
-    {
-        if ('\\' === DIRECTORY_SEPARATOR) {
-            $this->assertEquals(strtolower($expected), strtolower($tested));
-        } else {
-            $this->assertEquals($expected, $tested);
-        }
     }
 
     public function testFindWithDefault()
@@ -79,7 +73,7 @@ class ExecutableFinderTest extends TestCase
 
         $this->setPath('');
 
-        $extraDirs = array(dirname(PHP_BINARY));
+        $extraDirs = array(\dirname(PHP_BINARY));
 
         $finder = new ExecutableFinder();
         $result = $finder->find($this->getPhpBinaryName(), null, $extraDirs);
@@ -89,7 +83,7 @@ class ExecutableFinderTest extends TestCase
 
     public function testFindWithOpenBaseDir()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             $this->markTestSkipped('Cannot run test on windows');
         }
 
@@ -97,7 +91,7 @@ class ExecutableFinderTest extends TestCase
             $this->markTestSkipped('Cannot test when open_basedir is set');
         }
 
-        $this->iniSet('open_basedir', dirname(PHP_BINARY) . PATH_SEPARATOR . '/');
+        $this->iniSet('open_basedir', \dirname(PHP_BINARY).PATH_SEPARATOR.'/');
 
         $finder = new ExecutableFinder();
         $result = $finder->find($this->getPhpBinaryName());
@@ -110,12 +104,12 @@ class ExecutableFinderTest extends TestCase
         if (ini_get('open_basedir')) {
             $this->markTestSkipped('Cannot test when open_basedir is set');
         }
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             $this->markTestSkipped('Cannot run test on windows');
         }
 
         $this->setPath('');
-        $this->iniSet('open_basedir', PHP_BINARY . PATH_SEPARATOR . '/');
+        $this->iniSet('open_basedir', PHP_BINARY.PATH_SEPARATOR.'/');
 
         $finder = new ExecutableFinder();
         $result = $finder->find($this->getPhpBinaryName(), false);
@@ -123,11 +117,47 @@ class ExecutableFinderTest extends TestCase
         $this->assertSamePath(PHP_BINARY, $result);
     }
 
-    protected function tearDown()
+    /**
+     * @requires PHP 5.4
+     */
+    public function testFindBatchExecutableOnWindows()
     {
-        if ($this->path) {
-            // Restore path if it was changed.
-            putenv('PATH=' . $this->path);
+        if (ini_get('open_basedir')) {
+            $this->markTestSkipped('Cannot test when open_basedir is set');
         }
+        if ('\\' !== \DIRECTORY_SEPARATOR) {
+            $this->markTestSkipped('Can be only tested on windows');
+        }
+
+        $target = tempnam(sys_get_temp_dir(), 'example-windows-executable');
+
+        touch($target);
+        touch($target.'.BAT');
+
+        $this->assertFalse(is_executable($target));
+
+        $this->setPath(sys_get_temp_dir());
+
+        $finder = new ExecutableFinder();
+        $result = $finder->find(basename($target), false);
+
+        unlink($target);
+        unlink($target.'.BAT');
+
+        $this->assertSamePath($target.'.BAT', $result);
+    }
+
+    private function assertSamePath($expected, $tested)
+    {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
+            $this->assertEquals(strtolower($expected), strtolower($tested));
+        } else {
+            $this->assertEquals($expected, $tested);
+        }
+    }
+
+    private function getPhpBinaryName()
+    {
+        return basename(PHP_BINARY, '\\' === \DIRECTORY_SEPARATOR ? '.exe' : '');
     }
 }

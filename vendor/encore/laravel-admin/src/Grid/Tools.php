@@ -123,7 +123,7 @@ class Tools implements Renderable
                 return $tool->setGrid($this->grid)->render();
             }
 
-            return (string)$tool;
+            return (string) $tool;
         })->implode(' ');
     }
 }

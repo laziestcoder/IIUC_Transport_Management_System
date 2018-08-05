@@ -26,11 +26,6 @@ class HelpCommand extends Command
 {
     private $command;
 
-    public function setCommand(Command $command)
-    {
-        $this->command = $command;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -57,7 +52,13 @@ You can also output the help in other formats by using the <comment>--format</co
 
 To display the list of available commands, please use the <info>list</info> command.
 EOF
-            );
+            )
+        ;
+    }
+
+    public function setCommand(Command $command)
+    {
+        $this->command = $command;
     }
 
     /**

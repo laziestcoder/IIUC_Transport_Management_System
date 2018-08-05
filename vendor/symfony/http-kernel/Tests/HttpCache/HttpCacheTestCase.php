@@ -35,6 +35,42 @@ class HttpCacheTestCase extends TestCase
      */
     protected $store;
 
+    protected function setUp()
+    {
+        $this->kernel = null;
+
+        $this->cache = null;
+        $this->esi = null;
+        $this->caches = array();
+        $this->cacheConfig = array();
+
+        $this->request = null;
+        $this->response = null;
+        $this->responses = array();
+
+        $this->catch = false;
+
+        $this->clearDirectory(sys_get_temp_dir().'/http_cache');
+    }
+
+    protected function tearDown()
+    {
+        if ($this->cache) {
+            $this->cache->getStore()->cleanup();
+        }
+        $this->kernel = null;
+        $this->cache = null;
+        $this->caches = null;
+        $this->request = null;
+        $this->response = null;
+        $this->responses = null;
+        $this->cacheConfig = null;
+        $this->catch = null;
+        $this->esi = null;
+
+        $this->clearDirectory(sys_get_temp_dir().'/http_cache');
+    }
+
     public function assertHttpKernelIsCalled()
     {
         $this->assertTrue($this->kernel->hasBeenCalled());
@@ -55,7 +91,7 @@ class HttpCacheTestCase extends TestCase
         $traces = $this->cache->getTraces();
         $traces = current($traces);
 
-        $this->assertRegExp('/' . $trace . '/', implode(', ', $traces));
+        $this->assertRegExp('/'.$trace.'/', implode(', ', $traces));
     }
 
     public function assertTraceNotContains($trace)
@@ -63,7 +99,7 @@ class HttpCacheTestCase extends TestCase
         $traces = $this->cache->getTraces();
         $traces = current($traces);
 
-        $this->assertNotRegExp('/' . $trace . '/', implode(', ', $traces));
+        $this->assertNotRegExp('/'.$trace.'/', implode(', ', $traces));
     }
 
     public function assertExceptionsAreCaught()
@@ -84,7 +120,7 @@ class HttpCacheTestCase extends TestCase
 
         $this->kernel->reset();
 
-        $this->store = new Store(sys_get_temp_dir() . '/http_cache');
+        $this->store = new Store(sys_get_temp_dir().'/http_cache');
 
         $this->cacheConfig['debug'] = true;
 
@@ -101,13 +137,14 @@ class HttpCacheTestCase extends TestCase
     public function getMetaStorageValues()
     {
         $values = array();
-        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(sys_get_temp_dir() . '/http_cache/md', \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::LEAVES_ONLY) as $file) {
+        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(sys_get_temp_dir().'/http_cache/md', \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::LEAVES_ONLY) as $file) {
             $values[] = file_get_contents($file);
         }
 
         return $values;
     }
 
+    // A basic response with 200 status code and a tiny body.
     public function setNextResponse($statusCode = 200, array $headers = array(), $body = 'Hello World', \Closure $customizer = null)
     {
         $this->kernel = new TestHttpKernel($body, $statusCode, $headers, $customizer);
@@ -118,29 +155,9 @@ class HttpCacheTestCase extends TestCase
         $this->kernel = new TestMultipleHttpKernel($responses);
     }
 
-    // A basic response with 200 status code and a tiny body.
-
     public function catchExceptions($catch = true)
     {
         $this->catch = $catch;
-    }
-
-    protected function setUp()
-    {
-        $this->kernel = null;
-
-        $this->cache = null;
-        $this->esi = null;
-        $this->caches = array();
-        $this->cacheConfig = array();
-
-        $this->request = null;
-        $this->response = null;
-        $this->responses = array();
-
-        $this->catch = false;
-
-        $this->clearDirectory(sys_get_temp_dir() . '/http_cache');
     }
 
     public static function clearDirectory($directory)
@@ -151,36 +168,18 @@ class HttpCacheTestCase extends TestCase
 
         $fp = opendir($directory);
         while (false !== $file = readdir($fp)) {
-            if (!in_array($file, array('.', '..'))) {
-                if (is_link($directory . '/' . $file)) {
-                    unlink($directory . '/' . $file);
-                } elseif (is_dir($directory . '/' . $file)) {
-                    self::clearDirectory($directory . '/' . $file);
-                    rmdir($directory . '/' . $file);
+            if (!\in_array($file, array('.', '..'))) {
+                if (is_link($directory.'/'.$file)) {
+                    unlink($directory.'/'.$file);
+                } elseif (is_dir($directory.'/'.$file)) {
+                    self::clearDirectory($directory.'/'.$file);
+                    rmdir($directory.'/'.$file);
                 } else {
-                    unlink($directory . '/' . $file);
+                    unlink($directory.'/'.$file);
                 }
             }
         }
 
         closedir($fp);
-    }
-
-    protected function tearDown()
-    {
-        if ($this->cache) {
-            $this->cache->getStore()->cleanup();
-        }
-        $this->kernel = null;
-        $this->cache = null;
-        $this->caches = null;
-        $this->request = null;
-        $this->response = null;
-        $this->responses = null;
-        $this->cacheConfig = null;
-        $this->catch = null;
-        $this->esi = null;
-
-        $this->clearDirectory(sys_get_temp_dir() . '/http_cache');
     }
 }

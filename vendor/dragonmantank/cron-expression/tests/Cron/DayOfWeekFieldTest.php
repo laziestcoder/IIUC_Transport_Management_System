@@ -18,6 +18,8 @@ class DayOfWeekFieldTest extends TestCase
     {
         $f = new DayOfWeekField();
         $this->assertTrue($f->validate('1'));
+        $this->assertTrue($f->validate('01'));
+        $this->assertTrue($f->validate('00'));
         $this->assertTrue($f->validate('*'));
         $this->assertFalse($f->validate('*/3,1,1-12'));
         $this->assertTrue($f->validate('SUN-2'));
@@ -104,8 +106,7 @@ class DayOfWeekFieldTest extends TestCase
     /**
      * @see https://github.com/mtdowling/cron-expression/issues/47
      */
-    public function testIssue47()
-    {
+    public function testIssue47() {
         $f = new DayOfWeekField();
         $this->assertFalse($f->validate('mon,'));
         $this->assertFalse($f->validate('mon-'));
@@ -123,6 +124,6 @@ class DayOfWeekFieldTest extends TestCase
     {
         $f = new DayOfWeekField();
         $this->assertTrue($f->validate('MON-FRI'));
-        $this->assertSame([1, 2, 3, 4, 5], $f->getRangeForExpression('MON-FRI', 7));
+        $this->assertSame([1,2,3,4,5], $f->getRangeForExpression('MON-FRI', 7));
     }
 }

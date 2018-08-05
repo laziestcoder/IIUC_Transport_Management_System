@@ -10,6 +10,8 @@
 
 namespace SebastianBergmann\CodeCoverage;
 
+use SebastianBergmann\FileIterator\Facade as FileIteratorFacade;
+
 /**
  * Filter for whitelisting of code coverage information.
  */
@@ -27,8 +29,8 @@ final class Filter
      */
     public function addDirectoryToWhitelist(string $directory, string $suffix = '.php', string $prefix = ''): void
     {
-        $facade = new \File_Iterator_Facade;
-        $files = $facade->getFilesAsArray($directory, $suffix, $prefix);
+        $facade = new FileIteratorFacade;
+        $files  = $facade->getFilesAsArray($directory, $suffix, $prefix);
 
         foreach ($files as $file) {
             $this->addFileToWhitelist($file);
@@ -60,8 +62,8 @@ final class Filter
      */
     public function removeDirectoryFromWhitelist(string $directory, string $suffix = '.php', string $prefix = ''): void
     {
-        $facade = new \File_Iterator_Facade;
-        $files = $facade->getFilesAsArray($directory, $suffix, $prefix);
+        $facade = new FileIteratorFacade;
+        $files  = $facade->getFilesAsArray($directory, $suffix, $prefix);
 
         foreach ($files as $file) {
             $this->removeFileFromWhitelist($file);
@@ -76,20 +78,6 @@ final class Filter
         $filename = \realpath($filename);
 
         unset($this->whitelistedFiles[$filename]);
-    }
-
-    /**
-     * Checks whether or not a file is filtered.
-     */
-    public function isFiltered(string $filename): bool
-    {
-        if (!$this->isFile($filename)) {
-            return true;
-        }
-
-        $filename = \realpath($filename);
-
-        return !isset($this->whitelistedFiles[$filename]);
     }
 
     /**
@@ -109,6 +97,20 @@ final class Filter
         }
 
         return \file_exists($filename);
+    }
+
+    /**
+     * Checks whether or not a file is filtered.
+     */
+    public function isFiltered(string $filename): bool
+    {
+        if (!$this->isFile($filename)) {
+            return true;
+        }
+
+        $filename = \realpath($filename);
+
+        return !isset($this->whitelistedFiles[$filename]);
     }
 
     /**

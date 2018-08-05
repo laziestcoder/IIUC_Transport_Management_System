@@ -39,7 +39,6 @@ class PhoneNumber extends \Faker\Provider\PhoneNumber
         '0937#######',
         '0937#######',
     );
-
     public static function mobileNumber()
     {
         return static::numerify(static::randomElement(static::$mobileNumberPrefixes));

@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 use PHPUnit\Framework\Constraint\Count;
@@ -72,7 +71,7 @@ EOF
 
     public function testConstraintFileNotExists(): void
     {
-        $file = \dirname(__DIR__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'ClassWithNonPublicAttributes.php';
+        $file = \dirname(__DIR__) . \DIRECTORY_SEPARATOR . '_files' . \DIRECTORY_SEPARATOR . 'ClassWithNonPublicAttributes.php';
 
         $constraint = Assert::logicalNot(
             Assert::fileExists()
@@ -102,7 +101,7 @@ EOF
 
     public function testConstraintFileNotExists2(): void
     {
-        $file = \dirname(__DIR__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'ClassWithNonPublicAttributes.php';
+        $file = \dirname(__DIR__) . \DIRECTORY_SEPARATOR . '_files' . \DIRECTORY_SEPARATOR . 'ClassWithNonPublicAttributes.php';
 
         $constraint = Assert::logicalNot(
             Assert::fileExists()
@@ -405,18 +404,6 @@ EOF
         }
 
         $this->fail();
-    }
-
-    /**
-     * Removes spaces in front of newlines
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    private function trimnl($string)
-    {
-        return \preg_replace('/[ ]*\n/', "\n", $string);
     }
 
     public function testConstraintIsNotIdentical2(): void
@@ -1155,7 +1142,7 @@ EOF
         $this->assertFalse($constraint->evaluate('ORYGINAŁ', '', true));
         $this->assertFalse($constraint->evaluate('oryginał', '', true));
         $this->assertEquals('does not contain "oryginał"', $constraint->toString());
-        $this->assertEquals(1, \count($constraint));
+        $this->assertCount(1, $constraint);
 
         $this->expectException(ExpectationFailedException::class);
 
@@ -1172,7 +1159,7 @@ EOF
         $this->assertTrue($constraint->evaluate('ORYGINAŁ', '', true));
         $this->assertFalse($constraint->evaluate('oryginał', '', true));
         $this->assertEquals('does not contain "oryginał"', $constraint->toString());
-        $this->assertEquals(1, \count($constraint));
+        $this->assertCount(1, $constraint);
 
         $this->expectException(ExpectationFailedException::class);
 
@@ -1314,7 +1301,7 @@ EOF
 
     public function testAttributeNotEqualTo(): void
     {
-        $object = new \ClassWithNonPublicAttributes;
+        $object     = new \ClassWithNonPublicAttributes;
         $constraint = Assert::logicalNot(
             Assert::attributeEqualTo('foo', 2)
         );
@@ -1349,7 +1336,7 @@ EOF
 
     public function testAttributeNotEqualTo2(): void
     {
-        $object = new \ClassWithNonPublicAttributes;
+        $object     = new \ClassWithNonPublicAttributes;
         $constraint = Assert::logicalNot(
             Assert::attributeEqualTo('foo', 1)
         );
@@ -1469,7 +1456,7 @@ EOF
     public function testConstraintException(): void
     {
         $constraint = new Constraint\Exception('FoobarException');
-        $exception = new \DummyException('Test');
+        $exception  = new \DummyException('Test');
         $stackTrace = Filter::getFilteredStacktrace($exception);
 
         try {
@@ -1489,5 +1476,17 @@ EOF
         }
 
         $this->fail();
+    }
+
+    /**
+     * Removes spaces in front of newlines
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    private function trimnl($string)
+    {
+        return \preg_replace('/[ ]*\n/', "\n", $string);
     }
 }

@@ -54,30 +54,6 @@ class MimeTypeGuesser implements MimeTypeGuesserInterface
     protected $guessers = array();
 
     /**
-     * Registers all natively provided mime type guessers.
-     */
-    private function __construct()
-    {
-        if (FileBinaryMimeTypeGuesser::isSupported()) {
-            $this->register(new FileBinaryMimeTypeGuesser());
-        }
-
-        if (FileinfoMimeTypeGuesser::isSupported()) {
-            $this->register(new FileinfoMimeTypeGuesser());
-        }
-    }
-
-    /**
-     * Registers a new mime type guesser.
-     *
-     * When guessing, this guesser is preferred over previously registered ones.
-     */
-    public function register(MimeTypeGuesserInterface $guesser)
-    {
-        array_unshift($this->guessers, $guesser);
-    }
-
-    /**
      * Returns the singleton instance.
      *
      * @return self
@@ -97,6 +73,25 @@ class MimeTypeGuesser implements MimeTypeGuesserInterface
     public static function reset()
     {
         self::$instance = null;
+    }
+
+    /**
+     * Registers all natively provided mime type guessers.
+     */
+    private function __construct()
+    {
+        $this->register(new FileBinaryMimeTypeGuesser());
+        $this->register(new FileinfoMimeTypeGuesser());
+    }
+
+    /**
+     * Registers a new mime type guesser.
+     *
+     * When guessing, this guesser is preferred over previously registered ones.
+     */
+    public function register(MimeTypeGuesserInterface $guesser)
+    {
+        array_unshift($this->guessers, $guesser);
     }
 
     /**
@@ -125,18 +120,14 @@ class MimeTypeGuesser implements MimeTypeGuesserInterface
             throw new AccessDeniedException($path);
         }
 
-        if (!$this->guessers) {
-            $msg = 'Unable to guess the mime type as no guessers are available';
-            if (!FileinfoMimeTypeGuesser::isSupported()) {
-                $msg .= ' (Did you enable the php_fileinfo extension?)';
-            }
-            throw new \LogicException($msg);
-        }
-
         foreach ($this->guessers as $guesser) {
             if (null !== $mimeType = $guesser->guess($path)) {
                 return $mimeType;
             }
+        }
+
+        if (2 === \count($this->guessers) && !FileBinaryMimeTypeGuesser::isSupported() && !FileinfoMimeTypeGuesser::isSupported()) {
+            throw new \LogicException('Unable to guess the mime type as no guessers are available (Did you enable the php_fileinfo extension?)');
         }
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Faker\ORM\Propel;
 
-use ColumnMap;
-use PropelColumnTypes;
+use \PropelColumnTypes;
+use \ColumnMap;
 
 class ColumnTypeGuesser
 {
@@ -29,11 +29,11 @@ class ColumnTypeGuesser
                 return function () use ($generator) {
                     return $generator->dateTime;
                 };
-            } else {
-                return function () use ($generator) {
-                    return $generator->dateTimeAD;
-                };
             }
+
+            return function () use ($generator) {
+                return $generator->dateTimeAD;
+            };
         }
         $type = $column->getType();
         switch ($type) {
@@ -67,12 +67,12 @@ class ColumnTypeGuesser
                 };
             case PropelColumnTypes::FLOAT:
                 return function () {
-                    return mt_rand(0, intval('2147483647')) / mt_rand(1, intval('2147483647'));
+                    return mt_rand(0, intval('2147483647'))/mt_rand(1, intval('2147483647'));
                 };
             case PropelColumnTypes::DOUBLE:
             case PropelColumnTypes::REAL:
                 return function () {
-                    return mt_rand(0, intval('9223372036854775807')) / mt_rand(1, intval('9223372036854775807'));
+                    return mt_rand(0, intval('9223372036854775807'))/mt_rand(1, intval('9223372036854775807'));
                 };
             case PropelColumnTypes::CHAR:
             case PropelColumnTypes::VARCHAR:
@@ -100,7 +100,7 @@ class ColumnTypeGuesser
             case PropelColumnTypes::OBJECT:
             case PropelColumnTypes::PHP_ARRAY:
             default:
-                // no smart way to guess what the user expects here
+            // no smart way to guess what the user expects here
                 return null;
         }
     }

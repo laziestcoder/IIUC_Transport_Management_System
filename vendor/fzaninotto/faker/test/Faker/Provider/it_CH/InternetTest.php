@@ -3,11 +3,12 @@
 namespace Faker\Test\Provider\it_CH;
 
 use Faker\Generator;
-use Faker\Provider\it_CH\Company;
-use Faker\Provider\it_CH\Internet;
 use Faker\Provider\it_CH\Person;
+use Faker\Provider\it_CH\Internet;
+use Faker\Provider\it_CH\Company;
+use PHPUnit\Framework\TestCase;
 
-class InternetTest extends \PHPUnit_Framework_TestCase
+class InternetTest extends TestCase
 {
 
     /**

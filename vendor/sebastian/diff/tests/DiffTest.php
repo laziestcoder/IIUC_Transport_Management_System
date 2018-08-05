@@ -15,14 +15,14 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers SebastianBergmann\Diff\Diff
  *
- * @uses   SebastianBergmann\Diff\Chunk
+ * @uses SebastianBergmann\Diff\Chunk
  */
 final class DiffTest extends TestCase
 {
     public function testGettersAfterConstructionWithDefault(): void
     {
         $from = 'line1a';
-        $to = 'line2a';
+        $to   = 'line2a';
         $diff = new Diff($from, $to);
 
         $this->assertSame($from, $diff->getFrom());
@@ -32,8 +32,8 @@ final class DiffTest extends TestCase
 
     public function testGettersAfterConstructionWithChunks(): void
     {
-        $from = 'line1b';
-        $to = 'line2b';
+        $from   = 'line1b';
+        $to     = 'line2b';
         $chunks = [new Chunk(), new Chunk(2, 3)];
 
         $diff = new Diff($from, $to, $chunks);

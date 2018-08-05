@@ -74,37 +74,11 @@ class SymfonyQuestionHelperTest extends AbstractQuestionHelperTest
         $this->assertOutputContains('What is your favorite superhero? [Superman, Batman]', $output);
     }
 
-    protected function getInputStream($input)
-    {
-        $stream = fopen('php://memory', 'r+', false);
-        fwrite($stream, $input);
-        rewind($stream);
-
-        return $stream;
-    }
-
-    protected function createOutputInterface()
-    {
-        $output = new StreamOutput(fopen('php://memory', 'r+', false));
-        $output->setDecorated(false);
-
-        return $output;
-    }
-
-    private function assertOutputContains($expected, StreamOutput $output)
-    {
-        rewind($output->getStream());
-        $stream = stream_get_contents($output->getStream());
-        $this->assertContains($expected, $stream);
-    }
-
     public function testAskReturnsNullIfValidatorAllowsIt()
     {
         $questionHelper = new SymfonyQuestionHelper();
         $question = new Question('What is your favorite superhero?');
-        $question->setValidator(function ($value) {
-            return $value;
-        });
+        $question->setValidator(function ($value) { return $value; });
         $input = $this->createStreamableInputInterfaceMock($this->getInputStream("\n"));
         $this->assertNull($questionHelper->ask($input, $this->createOutputInterface(), $question));
     }
@@ -146,6 +120,23 @@ class SymfonyQuestionHelperTest extends AbstractQuestionHelperTest
         $dialog->ask($this->createStreamableInputInterfaceMock($this->getInputStream('')), $this->createOutputInterface(), new Question('What\'s your name?'));
     }
 
+    protected function getInputStream($input)
+    {
+        $stream = fopen('php://memory', 'r+', false);
+        fwrite($stream, $input);
+        rewind($stream);
+
+        return $stream;
+    }
+
+    protected function createOutputInterface()
+    {
+        $output = new StreamOutput(fopen('php://memory', 'r+', false));
+        $output->setDecorated(false);
+
+        return $output;
+    }
+
     protected function createInputInterfaceMock($interactive = true)
     {
         $mock = $this->getMockBuilder('Symfony\Component\Console\Input\InputInterface')->getMock();
@@ -154,5 +145,12 @@ class SymfonyQuestionHelperTest extends AbstractQuestionHelperTest
             ->will($this->returnValue($interactive));
 
         return $mock;
+    }
+
+    private function assertOutputContains($expected, StreamOutput $output)
+    {
+        rewind($output->getStream());
+        $stream = stream_get_contents($output->getStream());
+        $this->assertContains($expected, $stream);
     }
 }

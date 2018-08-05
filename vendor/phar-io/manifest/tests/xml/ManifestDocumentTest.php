@@ -2,24 +2,20 @@
 
 namespace PharIo\Manifest;
 
-class ManifestDocumentTest extends \PHPUnit_Framework_TestCase
-{
-    public function testThrowsExceptionWhenFileDoesNotExist()
-    {
+class ManifestDocumentTest extends \PHPUnit\Framework\TestCase {
+    public function testThrowsExceptionWhenFileDoesNotExist() {
         $this->expectException(ManifestDocumentException::class);
         ManifestDocument::fromFile('/does/not/exist');
     }
 
-    public function testCanBeCreatedFromFile()
-    {
+    public function testCanBeCreatedFromFile() {
         $this->assertInstanceOf(
             ManifestDocument::class,
             ManifestDocument::fromFile(__DIR__ . '/../_fixture/phpunit-5.6.5.xml')
         );
     }
 
-    public function testCaneBeConstructedFromString()
-    {
+    public function testCaneBeConstructedFromString() {
         $content = file_get_contents(__DIR__ . '/../_fixture/phpunit-5.6.5.xml');
         $this->assertInstanceOf(
             ManifestDocument::class,
@@ -27,103 +23,88 @@ class ManifestDocumentTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testThrowsExceptionOnInvalidXML()
-    {
+    public function testThrowsExceptionOnInvalidXML() {
         $this->expectException(ManifestDocumentLoadingException::class);
         ManifestDocument::fromString('<?xml version="1.0" ?><root>');
     }
 
-    public function testLoadingDocumentWithWrongRootNameThrowsException()
-    {
+    public function testLoadingDocumentWithWrongRootNameThrowsException() {
         $this->expectException(ManifestDocumentException::class);
         ManifestDocument::fromString('<?xml version="1.0" ?><root />');
     }
 
-    public function testLoadingDocumentWithWrongNamespaceThrowsException()
-    {
+    public function testLoadingDocumentWithWrongNamespaceThrowsException() {
         $this->expectException(ManifestDocumentException::class);
         ManifestDocument::fromString('<?xml version="1.0" ?><phar xmlns="foo:bar" />');
     }
 
-    public function testContainsElementCanBeRetrieved()
-    {
+    public function testContainsElementCanBeRetrieved() {
         $this->assertInstanceOf(
             ContainsElement::class,
             $this->loadFixture()->getContainsElement()
         );
     }
 
-    private function loadFixture()
-    {
-        return ManifestDocument::fromFile(__DIR__ . '/../_fixture/phpunit-5.6.5.xml');
-    }
-
-    public function testRequiresElementCanBeRetrieved()
-    {
+    public function testRequiresElementCanBeRetrieved() {
         $this->assertInstanceOf(
             RequiresElement::class,
             $this->loadFixture()->getRequiresElement()
         );
     }
 
-    public function testCopyrightElementCanBeRetrieved()
-    {
+    public function testCopyrightElementCanBeRetrieved() {
         $this->assertInstanceOf(
             CopyrightElement::class,
             $this->loadFixture()->getCopyrightElement()
         );
     }
 
-    public function testBundlesElementCanBeRetrieved()
-    {
+    public function testBundlesElementCanBeRetrieved() {
         $this->assertInstanceOf(
             BundlesElement::class,
             $this->loadFixture()->getBundlesElement()
         );
     }
 
-    public function testThrowsExceptionWhenContainsIsMissing()
-    {
+    public function testThrowsExceptionWhenContainsIsMissing() {
         $this->expectException(ManifestDocumentException::class);
         $this->loadEmptyFixture()->getContainsElement();
     }
 
-    private function loadEmptyFixture()
-    {
-        return ManifestDocument::fromString(
-            '<?xml version="1.0" ?><phar xmlns="https://phar.io/xml/manifest/1.0" />'
-        );
-    }
-
-    public function testThrowsExceptionWhenCopyirhgtIsMissing()
-    {
+    public function testThrowsExceptionWhenCopyirhgtIsMissing() {
         $this->expectException(ManifestDocumentException::class);
         $this->loadEmptyFixture()->getCopyrightElement();
     }
 
-    public function testThrowsExceptionWhenRequiresIsMissing()
-    {
+    public function testThrowsExceptionWhenRequiresIsMissing() {
         $this->expectException(ManifestDocumentException::class);
         $this->loadEmptyFixture()->getRequiresElement();
     }
 
-    public function testThrowsExceptionWhenBundlesIsMissing()
-    {
+    public function testThrowsExceptionWhenBundlesIsMissing() {
         $this->expectException(ManifestDocumentException::class);
         $this->loadEmptyFixture()->getBundlesElement();
     }
 
-    public function testHasBundlesReturnsTrueWhenBundlesNodeIsPresent()
-    {
+    public function testHasBundlesReturnsTrueWhenBundlesNodeIsPresent() {
         $this->assertTrue(
             $this->loadFixture()->hasBundlesElement()
         );
     }
 
-    public function testHasBundlesReturnsFalseWhenBundlesNoNodeIsPresent()
-    {
+    public function testHasBundlesReturnsFalseWhenBundlesNoNodeIsPresent() {
         $this->assertFalse(
             $this->loadEmptyFixture()->hasBundlesElement()
+        );
+    }
+
+    private function loadFixture() {
+        return ManifestDocument::fromFile(__DIR__ . '/../_fixture/phpunit-5.6.5.xml');
+    }
+
+    private function loadEmptyFixture() {
+        return ManifestDocument::fromString(
+            '<?xml version="1.0" ?><phar xmlns="https://phar.io/xml/manifest/1.0" />'
         );
     }
 }

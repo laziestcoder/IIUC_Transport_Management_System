@@ -7,20 +7,34 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 class DataProviderTestSuite extends TestSuite
 {
     /**
-     * Sets the dependencies of a TestCase.
-     *
+     * @var string[]
+     */
+    private $dependencies = [];
+
+    /**
      * @param string[] $dependencies
      */
     public function setDependencies(array $dependencies): void
     {
+        $this->dependencies = $dependencies;
+
         foreach ($this->tests as $test) {
             $test->setDependencies($dependencies);
         }
+    }
+
+    public function getDependencies(): array
+    {
+        return $this->dependencies;
+    }
+
+    public function hasDependencies(): bool
+    {
+        return \count($this->dependencies) > 0;
     }
 }

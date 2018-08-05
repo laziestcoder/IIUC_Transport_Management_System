@@ -2,14 +2,14 @@
 
 namespace Illuminate\Support\Facades;
 
-use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\ChannelManager;
+use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Testing\Fakes\NotificationFake;
 
 /**
- * @method static void send(\Illuminate\Support\Collection | array | mixed $notifiables, $notification)
- * @method static void sendNow(\Illuminate\Support\Collection | array | mixed $notifiables, $notification)
- * @method static mixed channel(string | null $name = null)
+ * @method static void send(\Illuminate\Support\Collection|array|mixed $notifiables, $notification)
+ * @method static void sendNow(\Illuminate\Support\Collection|array|mixed $notifiables, $notification)
+ * @method static mixed channel(string|null $name = null)
  *
  * @see \Illuminate\Notifications\ChannelManager
  */
@@ -30,8 +30,8 @@ class Notification extends Facade
     /**
      * Begin sending a notification to an anonymous notifiable.
      *
-     * @param  string $channel
-     * @param  mixed $route
+     * @param  string  $channel
+     * @param  mixed  $route
      * @return \Illuminate\Notifications\AnonymousNotifiable
      */
     public static function route($channel, $route)

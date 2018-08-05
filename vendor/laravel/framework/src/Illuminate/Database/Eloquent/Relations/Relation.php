@@ -3,12 +3,12 @@
 namespace Illuminate\Database\Eloquent\Relations;
 
 use Closure;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Arr;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Traits\Macroable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Expression;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Builder
@@ -20,29 +20,19 @@ abstract class Relation
     }
 
     /**
-     * An array to map class names to their morph names in database.
-     *
-     * @var array
-     */
-    public static $morphMap = [];
-    /**
-     * Indicates if the relation is adding constraints.
-     *
-     * @var bool
-     */
-    protected static $constraints = true;
-    /**
      * The Eloquent query builder instance.
      *
      * @var \Illuminate\Database\Eloquent\Builder
      */
     protected $query;
+
     /**
      * The parent model instance.
      *
      * @var \Illuminate\Database\Eloquent\Model
      */
     protected $parent;
+
     /**
      * The related model instance.
      *
@@ -51,10 +41,24 @@ abstract class Relation
     protected $related;
 
     /**
+     * Indicates if the relation is adding constraints.
+     *
+     * @var bool
+     */
+    protected static $constraints = true;
+
+    /**
+     * An array to map class names to their morph names in database.
+     *
+     * @var array
+     */
+    public static $morphMap = [];
+
+    /**
      * Create a new relation instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @param  \Illuminate\Database\Eloquent\Model $parent
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Model  $parent
      * @return void
      */
     public function __construct(Builder $query, Model $parent)
@@ -67,16 +71,9 @@ abstract class Relation
     }
 
     /**
-     * Set the base constraints on the relation query.
-     *
-     * @return void
-     */
-    abstract public function addConstraints();
-
-    /**
      * Run a callback with constraints disabled on the relation.
      *
-     * @param  \Closure $callback
+     * @param  \Closure  $callback
      * @return mixed
      */
     public static function noConstraints(Closure $callback)
@@ -96,58 +93,16 @@ abstract class Relation
     }
 
     /**
-     * Set or get the morph map for polymorphic relations.
+     * Set the base constraints on the relation query.
      *
-     * @param  array|null $map
-     * @param  bool $merge
-     * @return array
+     * @return void
      */
-    public static function morphMap(array $map = null, $merge = true)
-    {
-        $map = static::buildMorphMapFromModels($map);
-
-        if (is_array($map)) {
-            static::$morphMap = $merge && static::$morphMap
-                ? $map + static::$morphMap : $map;
-        }
-
-        return static::$morphMap;
-    }
-
-    /**
-     * Builds a table-keyed array from model class names.
-     *
-     * @param  string[]|null $models
-     * @return array|null
-     */
-    protected static function buildMorphMapFromModels(array $models = null)
-    {
-        if (is_null($models) || Arr::isAssoc($models)) {
-            return $models;
-        }
-
-        return array_combine(array_map(function ($model) {
-            return (new $model)->getTable();
-        }, $models), $models);
-    }
-
-    /**
-     * Get the model associated with a custom polymorphic type.
-     *
-     * @param  string $alias
-     * @return string|null
-     */
-    public static function getMorphedModel($alias)
-    {
-        return array_key_exists($alias, self::$morphMap)
-            ? self::$morphMap[$alias]
-            : null;
-    }
+    abstract public function addConstraints();
 
     /**
      * Set the constraints for an eager load of the relation.
      *
-     * @param  array $models
+     * @param  array  $models
      * @return void
      */
     abstract public function addEagerConstraints(array $models);
@@ -155,8 +110,8 @@ abstract class Relation
     /**
      * Initialize the relation on a set of models.
      *
-     * @param  array $models
-     * @param  string $relation
+     * @param  array   $models
+     * @param  string  $relation
      * @return array
      */
     abstract public function initRelation(array $models, $relation);
@@ -164,9 +119,9 @@ abstract class Relation
     /**
      * Match the eagerly loaded results to their parents.
      *
-     * @param  array $models
-     * @param  \Illuminate\Database\Eloquent\Collection $results
-     * @param  string $relation
+     * @param  array   $models
+     * @param  \Illuminate\Database\Eloquent\Collection  $results
+     * @param  string  $relation
      * @return array
      */
     abstract public function match(array $models, Collection $results, $relation);
@@ -191,7 +146,7 @@ abstract class Relation
     /**
      * Execute the query as a "select" statement.
      *
-     * @param  array $columns
+     * @param  array  $columns
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function get($columns = ['*'])
@@ -206,25 +161,19 @@ abstract class Relation
      */
     public function touch()
     {
-        $column = $this->getRelated()->getUpdatedAtColumn();
+        $model = $this->getRelated();
 
-        $this->rawUpdate([$column => $this->getRelated()->freshTimestampString()]);
-    }
-
-    /**
-     * Get the related model of the relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function getRelated()
-    {
-        return $this->related;
+        if (! $model::isIgnoringTouch()) {
+            $this->rawUpdate([
+                $model->getUpdatedAtColumn() => $model->freshTimestampString(),
+            ]);
+        }
     }
 
     /**
      * Run a raw update against the base query.
      *
-     * @param  array $attributes
+     * @param  array  $attributes
      * @return int
      */
     public function rawUpdate(array $attributes = [])
@@ -235,8 +184,8 @@ abstract class Relation
     /**
      * Add the constraints for a relationship count query.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @param  \Illuminate\Database\Eloquent\Builder $parentQuery
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $parentQuery
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function getRelationExistenceCountQuery(Builder $query, Builder $parentQuery)
@@ -251,8 +200,8 @@ abstract class Relation
      *
      * Essentially, these queries compare on column names like whereColumn.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @param  \Illuminate\Database\Eloquent\Builder $parentQuery
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $parentQuery
      * @param  array|mixed $columns
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -264,13 +213,17 @@ abstract class Relation
     }
 
     /**
-     * Get the fully qualified parent key name.
+     * Get all of the primary keys for an array of models.
      *
-     * @return string
+     * @param  array   $models
+     * @param  string  $key
+     * @return array
      */
-    public function getQualifiedParentKeyName()
+    protected function getKeys(array $models, $key = null)
     {
-        return $this->parent->getQualifiedKeyName();
+        return collect($models)->map(function ($value) use ($key) {
+            return $key ? $value->getAttribute($key) : $value->getKey();
+        })->values()->unique()->sort()->all();
     }
 
     /**
@@ -304,6 +257,26 @@ abstract class Relation
     }
 
     /**
+     * Get the fully qualified parent key name.
+     *
+     * @return string
+     */
+    public function getQualifiedParentKeyName()
+    {
+        return $this->parent->getQualifiedKeyName();
+    }
+
+    /**
+     * Get the related model of the relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function getRelated()
+    {
+        return $this->related;
+    }
+
+    /**
      * Get the name of the "created at" column.
      *
      * @return string
@@ -334,10 +307,57 @@ abstract class Relation
     }
 
     /**
+     * Set or get the morph map for polymorphic relations.
+     *
+     * @param  array|null  $map
+     * @param  bool  $merge
+     * @return array
+     */
+    public static function morphMap(array $map = null, $merge = true)
+    {
+        $map = static::buildMorphMapFromModels($map);
+
+        if (is_array($map)) {
+            static::$morphMap = $merge && static::$morphMap
+                            ? $map + static::$morphMap : $map;
+        }
+
+        return static::$morphMap;
+    }
+
+    /**
+     * Builds a table-keyed array from model class names.
+     *
+     * @param  string[]|null  $models
+     * @return array|null
+     */
+    protected static function buildMorphMapFromModels(array $models = null)
+    {
+        if (is_null($models) || Arr::isAssoc($models)) {
+            return $models;
+        }
+
+        return array_combine(array_map(function ($model) {
+            return (new $model)->getTable();
+        }, $models), $models);
+    }
+
+    /**
+     * Get the model associated with a custom polymorphic type.
+     *
+     * @param  string  $alias
+     * @return string|null
+     */
+    public static function getMorphedModel($alias)
+    {
+        return self::$morphMap[$alias] ?? null;
+    }
+
+    /**
      * Handle dynamic method calls to the relationship.
      *
-     * @param  string $method
-     * @param  array $parameters
+     * @param  string  $method
+     * @param  array   $parameters
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -363,19 +383,5 @@ abstract class Relation
     public function __clone()
     {
         $this->query = clone $this->query;
-    }
-
-    /**
-     * Get all of the primary keys for an array of models.
-     *
-     * @param  array $models
-     * @param  string $key
-     * @return array
-     */
-    protected function getKeys(array $models, $key = null)
-    {
-        return collect($models)->map(function ($value) use ($key) {
-            return $key ? $value->getAttribute($key) : $value->getKey();
-        })->values()->unique()->sort()->all();
     }
 }

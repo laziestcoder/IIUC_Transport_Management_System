@@ -33,11 +33,11 @@ class InputOption
     private $description;
 
     /**
-     * @param string $name The option name
-     * @param string|array $shortcut The shortcuts, can be null, a string of shortcuts delimited by | or an array of shortcuts
-     * @param int $mode The option mode: One of the VALUE_* constants
-     * @param string $description A description text
-     * @param mixed $default The default value (must be null for self::VALUE_NONE)
+     * @param string       $name        The option name
+     * @param string|array $shortcut    The shortcuts, can be null, a string of shortcuts delimited by | or an array of shortcuts
+     * @param int          $mode        The option mode: One of the VALUE_* constants
+     * @param string       $description A description text
+     * @param mixed        $default     The default value (must be null for self::VALUE_NONE)
      *
      * @throws InvalidArgumentException If option mode is invalid or incompatible
      */
@@ -56,7 +56,7 @@ class InputOption
         }
 
         if (null !== $shortcut) {
-            if (is_array($shortcut)) {
+            if (\is_array($shortcut)) {
                 $shortcut = implode('|', $shortcut);
             }
             $shortcuts = preg_split('{(\|)-?}', ltrim($shortcut, '-'));
@@ -87,13 +87,23 @@ class InputOption
     }
 
     /**
-     * Returns true if the option can take multiple values.
+     * Returns the option shortcut.
      *
-     * @return bool true if mode is self::VALUE_IS_ARRAY, false otherwise
+     * @return string The shortcut
      */
-    public function isArray()
+    public function getShortcut()
     {
-        return self::VALUE_IS_ARRAY === (self::VALUE_IS_ARRAY & $this->mode);
+        return $this->shortcut;
+    }
+
+    /**
+     * Returns the option name.
+     *
+     * @return string The name
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -127,6 +137,50 @@ class InputOption
     }
 
     /**
+     * Returns true if the option can take multiple values.
+     *
+     * @return bool true if mode is self::VALUE_IS_ARRAY, false otherwise
+     */
+    public function isArray()
+    {
+        return self::VALUE_IS_ARRAY === (self::VALUE_IS_ARRAY & $this->mode);
+    }
+
+    /**
+     * Sets the default value.
+     *
+     * @param mixed $default The default value
+     *
+     * @throws LogicException When incorrect default value is given
+     */
+    public function setDefault($default = null)
+    {
+        if (self::VALUE_NONE === (self::VALUE_NONE & $this->mode) && null !== $default) {
+            throw new LogicException('Cannot set a default value when using InputOption::VALUE_NONE mode.');
+        }
+
+        if ($this->isArray()) {
+            if (null === $default) {
+                $default = array();
+            } elseif (!\is_array($default)) {
+                throw new LogicException('A default value for an array option must be an array.');
+            }
+        }
+
+        $this->default = $this->acceptValue() ? $default : false;
+    }
+
+    /**
+     * Returns the default value.
+     *
+     * @return mixed The default value
+     */
+    public function getDefault()
+    {
+        return $this->default;
+    }
+
+    /**
      * Returns the description text.
      *
      * @return string The description text
@@ -148,60 +202,7 @@ class InputOption
             && $option->getDefault() === $this->getDefault()
             && $option->isArray() === $this->isArray()
             && $option->isValueRequired() === $this->isValueRequired()
-            && $option->isValueOptional() === $this->isValueOptional();
-    }
-
-    /**
-     * Returns the option name.
-     *
-     * @return string The name
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Returns the option shortcut.
-     *
-     * @return string The shortcut
-     */
-    public function getShortcut()
-    {
-        return $this->shortcut;
-    }
-
-    /**
-     * Returns the default value.
-     *
-     * @return mixed The default value
-     */
-    public function getDefault()
-    {
-        return $this->default;
-    }
-
-    /**
-     * Sets the default value.
-     *
-     * @param mixed $default The default value
-     *
-     * @throws LogicException When incorrect default value is given
-     */
-    public function setDefault($default = null)
-    {
-        if (self::VALUE_NONE === (self::VALUE_NONE & $this->mode) && null !== $default) {
-            throw new LogicException('Cannot set a default value when using InputOption::VALUE_NONE mode.');
-        }
-
-        if ($this->isArray()) {
-            if (null === $default) {
-                $default = array();
-            } elseif (!is_array($default)) {
-                throw new LogicException('A default value for an array option must be an array.');
-            }
-        }
-
-        $this->default = $this->acceptValue() ? $default : false;
+            && $option->isValueOptional() === $this->isValueOptional()
+        ;
     }
 }

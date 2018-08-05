@@ -72,7 +72,7 @@ abstract class Bundle implements BundleInterface
 
             if (null !== $extension) {
                 if (!$extension instanceof ExtensionInterface) {
-                    throw new \LogicException(sprintf('Extension %s must implement Symfony\Component\DependencyInjection\Extension\ExtensionInterface.', get_class($extension)));
+                    throw new \LogicException(sprintf('Extension %s must implement Symfony\Component\DependencyInjection\Extension\ExtensionInterface.', \get_class($extension)));
                 }
 
                 // check naming convention
@@ -94,53 +94,6 @@ abstract class Bundle implements BundleInterface
 
         if ($this->extension) {
             return $this->extension;
-        }
-    }
-
-    /**
-     * Creates the bundle's container extension.
-     *
-     * @return ExtensionInterface|null
-     */
-    protected function createContainerExtension()
-    {
-        if (class_exists($class = $this->getContainerExtensionClass())) {
-            return new $class();
-        }
-    }
-
-    /**
-     * Returns the bundle's container extension class.
-     *
-     * @return string
-     */
-    protected function getContainerExtensionClass()
-    {
-        $basename = preg_replace('/Bundle$/', '', $this->getName());
-
-        return $this->getNamespace() . '\\DependencyInjection\\' . $basename . 'Extension';
-    }
-
-    /**
-     * Returns the bundle name (the class short name).
-     *
-     * @return string The Bundle name
-     */
-    final public function getName()
-    {
-        if (null === $this->name) {
-            $this->parseClassName();
-        }
-
-        return $this->name;
-    }
-
-    private function parseClassName()
-    {
-        $pos = strrpos(static::class, '\\');
-        $this->namespace = false === $pos ? '' : substr(static::class, 0, $pos);
-        if (null === $this->name) {
-            $this->name = false === $pos ? static::class : substr(static::class, $pos + 1);
         }
     }
 
@@ -167,13 +120,60 @@ abstract class Bundle implements BundleInterface
     {
         if (null === $this->path) {
             $reflected = new \ReflectionObject($this);
-            $this->path = dirname($reflected->getFileName());
+            $this->path = \dirname($reflected->getFileName());
         }
 
         return $this->path;
     }
 
+    /**
+     * Returns the bundle name (the class short name).
+     *
+     * @return string The Bundle name
+     */
+    final public function getName()
+    {
+        if (null === $this->name) {
+            $this->parseClassName();
+        }
+
+        return $this->name;
+    }
+
     public function registerCommands(Application $application)
     {
+    }
+
+    /**
+     * Returns the bundle's container extension class.
+     *
+     * @return string
+     */
+    protected function getContainerExtensionClass()
+    {
+        $basename = preg_replace('/Bundle$/', '', $this->getName());
+
+        return $this->getNamespace().'\\DependencyInjection\\'.$basename.'Extension';
+    }
+
+    /**
+     * Creates the bundle's container extension.
+     *
+     * @return ExtensionInterface|null
+     */
+    protected function createContainerExtension()
+    {
+        if (class_exists($class = $this->getContainerExtensionClass())) {
+            return new $class();
+        }
+    }
+
+    private function parseClassName()
+    {
+        $pos = strrpos(static::class, '\\');
+        $this->namespace = false === $pos ? '' : substr(static::class, 0, $pos);
+        if (null === $this->name) {
+            $this->name = false === $pos ? static::class : substr(static::class, $pos + 1);
+        }
     }
 }

@@ -20,19 +20,20 @@ use Symfony\Component\VarDumper\Dumper\CliDumper;
  */
 class Dumper extends CliDumper
 {
-    protected static $onlyControlCharsRx = '/^[\x00-\x1F\x7F]+$/';
-    protected static $controlCharsRx = '/([\x00-\x1F\x7F]+)/';
-    protected static $controlCharsMap = [
-        "\0" => '\0',
-        "\t" => '\t',
-        "\n" => '\n',
-        "\v" => '\v',
-        "\f" => '\f',
-        "\r" => '\r',
-        "\033" => '\e',
-    ];
     private $formatter;
     private $forceArrayIndexes;
+
+    protected static $onlyControlCharsRx = '/^[\x00-\x1F\x7F]+$/';
+    protected static $controlCharsRx     = '/([\x00-\x1F\x7F]+)/';
+    protected static $controlCharsMap    = [
+        "\0"   => '\0',
+        "\t"   => '\t',
+        "\n"   => '\n',
+        "\v"   => '\v',
+        "\f"   => '\f',
+        "\r"   => '\r',
+        "\033" => '\e',
+    ];
 
     public function __construct(OutputFormatter $formatter, $forceArrayIndexes = false)
     {

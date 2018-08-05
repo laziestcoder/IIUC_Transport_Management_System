@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Runner\Filter;
 
 use FilterIterator;
@@ -24,9 +23,6 @@ class Factory
     private $filters = [];
 
     /**
-     * @param ReflectionClass $filter
-     * @param mixed $args
-     *
      * @throws InvalidArgumentException
      */
     public function addFilter(ReflectionClass $filter, $args): void
@@ -47,7 +43,7 @@ class Factory
     {
         foreach ($this->filters as $filter) {
             [$class, $args] = $filter;
-            $iterator = $class->newInstance($iterator, $args, $suite);
+            $iterator       = $class->newInstance($iterator, $args, $suite);
         }
 
         return $iterator;

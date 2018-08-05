@@ -15,6 +15,13 @@ class Footer extends AbstractTool
         $this->grid = $grid;
     }
 
+    public function td($content = '', $colspan = 1)
+    {
+        $this->tds[] = get_defined_vars();
+
+        return $this;
+    }
+
     public function colspan($colspan)
     {
         if ($td = array_pop($this->tds)) {
@@ -31,6 +38,22 @@ class Footer extends AbstractTool
         $data = $this->grid->model()->buildData();
 
         return collect(array_column($data, $column));
+    }
+
+    protected function hasRowSelectorColumn()
+    {
+        return $this->grid->columns()->first()->getName() == Grid\Column::SELECT_COLUMN_NAME;
+    }
+
+    protected function fillTds()
+    {
+        $columnCount = $this->grid->columns()->count();
+
+        $tdCount = array_sum(array_column($this->tds, 'colspan'));
+
+        foreach (range(1, $columnCount - $tdCount) as $_) {
+            $this->td();
+        }
     }
 
     public function render()
@@ -50,28 +73,5 @@ class Footer extends AbstractTool
         }
 
         return "<tr>$tr</tr>";
-    }
-
-    protected function hasRowSelectorColumn()
-    {
-        return $this->grid->columns()->first()->getName() == Grid\Column::SELECT_COLUMN_NAME;
-    }
-
-    public function td($content = '', $colspan = 1)
-    {
-        $this->tds[] = get_defined_vars();
-
-        return $this;
-    }
-
-    protected function fillTds()
-    {
-        $columnCount = $this->grid->columns()->count();
-
-        $tdCount = array_sum(array_column($this->tds, 'colspan'));
-
-        foreach (range(1, $columnCount - $tdCount) as $_) {
-            $this->td();
-        }
     }
 }

@@ -37,8 +37,8 @@ trait ManagesComponents
     /**
      * Start a component rendering process.
      *
-     * @param  string $name
-     * @param  array $data
+     * @param  string  $name
+     * @param  array  $data
      * @return void
      */
     public function startComponent($name, array $data = [])
@@ -50,16 +50,6 @@ trait ManagesComponents
 
             $this->slots[$this->currentComponent()] = [];
         }
-    }
-
-    /**
-     * Get the index for the current component.
-     *
-     * @return int
-     */
-    protected function currentComponent()
-    {
-        return count($this->componentStack) - 1;
     }
 
     /**
@@ -77,7 +67,7 @@ trait ManagesComponents
     /**
      * Get the data for the given component.
      *
-     * @param  string $name
+     * @param  string  $name
      * @return array
      */
     protected function componentData($name)
@@ -92,13 +82,13 @@ trait ManagesComponents
     /**
      * Start the slot rendering process.
      *
-     * @param  string $name
-     * @param  string|null $content
+     * @param  string  $name
+     * @param  string|null  $content
      * @return void
      */
     public function slot($name, $content = null)
     {
-        if (count(func_get_args()) == 2) {
+        if (func_num_args() === 2) {
             $this->slots[$this->currentComponent()][$name] = $content;
         } else {
             if (ob_start()) {
@@ -123,6 +113,16 @@ trait ManagesComponents
         );
 
         $this->slots[$this->currentComponent()]
-        [$currentSlot] = new HtmlString(trim(ob_get_clean()));
+                    [$currentSlot] = new HtmlString(trim(ob_get_clean()));
+    }
+
+    /**
+     * Get the index for the current component.
+     *
+     * @return int
+     */
+    protected function currentComponent()
+    {
+        return count($this->componentStack) - 1;
     }
 }

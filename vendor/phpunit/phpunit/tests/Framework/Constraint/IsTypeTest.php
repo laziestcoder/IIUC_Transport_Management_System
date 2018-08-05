@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\Assert;
@@ -43,18 +42,6 @@ EOF
         $this->fail();
     }
 
-    /**
-     * Removes spaces in front of newlines
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    private function trimnl($string)
-    {
-        return \preg_replace('/[ ]*\n/', "\n", $string);
-    }
-
     public function testConstraintIsType2(): void
     {
         $constraint = Assert::isType('string');
@@ -80,8 +67,6 @@ EOF
 
     /**
      * @dataProvider resources
-     *
-     * @param mixed $resource
      */
     public function testConstraintIsResourceTypeEvaluatesCorrectlyWithResources($resource): void
     {
@@ -98,8 +83,8 @@ EOF
         \fclose($fh);
 
         return [
-            'open resource' => [\fopen(__FILE__, 'r')],
-            'closed resource' => [$fh],
+            'open resource'     => [\fopen(__FILE__, 'r')],
+            'closed resource'   => [$fh],
         ];
     }
 
@@ -110,5 +95,17 @@ EOF
         $this->assertFalse($constraint->evaluate('', '', true));
         $this->assertTrue($constraint->evaluate([], '', true));
         $this->assertEquals('is of type "iterable"', $constraint->toString());
+    }
+
+    /**
+     * Removes spaces in front of newlines
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    private function trimnl($string)
+    {
+        return \preg_replace('/[ ]*\n/', "\n", $string);
     }
 }

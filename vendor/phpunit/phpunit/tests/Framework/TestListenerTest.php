@@ -7,20 +7,40 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 class TestListenerTest extends TestCase implements TestListener
 {
     protected $endCount;
+
     protected $errorCount;
+
     protected $failureCount;
+
     protected $warningCount;
+
     protected $notImplementedCount;
+
     protected $riskyCount;
+
     protected $skippedCount;
+
     protected $result;
+
     protected $startCount;
+
+    protected function setUp(): void
+    {
+        $this->result = new TestResult;
+        $this->result->addListener($this);
+
+        $this->endCount            = 0;
+        $this->failureCount        = 0;
+        $this->notImplementedCount = 0;
+        $this->riskyCount          = 0;
+        $this->skippedCount        = 0;
+        $this->startCount          = 0;
+    }
 
     public function addError(Test $test, \Throwable $t, float $time): void
     {
@@ -95,18 +115,5 @@ class TestListenerTest extends TestCase implements TestListener
 
         $this->assertEquals(1, $this->startCount);
         $this->assertEquals(1, $this->endCount);
-    }
-
-    protected function setUp(): void
-    {
-        $this->result = new TestResult;
-        $this->result->addListener($this);
-
-        $this->endCount = 0;
-        $this->failureCount = 0;
-        $this->notImplementedCount = 0;
-        $this->riskyCount = 0;
-        $this->skippedCount = 0;
-        $this->startCount = 0;
     }
 }

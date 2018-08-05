@@ -2,10 +2,10 @@
 
 namespace Illuminate\Hashing;
 
-use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 use RuntimeException;
+use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 
-class BcryptHasher implements HasherContract
+class BcryptHasher extends AbstractHasher implements HasherContract
 {
     /**
      * The default cost factor.
@@ -17,7 +17,7 @@ class BcryptHasher implements HasherContract
     /**
      * Create a new hasher instance.
      *
-     * @param  array $options
+     * @param  array  $options
      * @return void
      */
     public function __construct(array $options = [])
@@ -26,21 +26,10 @@ class BcryptHasher implements HasherContract
     }
 
     /**
-     * Get information about the given hashed value.
-     *
-     * @param  string $hashedValue
-     * @return array
-     */
-    public function info($hashedValue)
-    {
-        return password_get_info($hashedValue);
-    }
-
-    /**
      * Hash the given value.
      *
-     * @param  string $value
-     * @param  array $options
+     * @param  string  $value
+     * @param  array   $options
      * @return string
      *
      * @throws \RuntimeException
@@ -59,38 +48,10 @@ class BcryptHasher implements HasherContract
     }
 
     /**
-     * Extract the cost value from the options array.
-     *
-     * @param  array $options
-     * @return int
-     */
-    protected function cost(array $options = [])
-    {
-        return $options['rounds'] ?? $this->rounds;
-    }
-
-    /**
-     * Check the given plain value against a hash.
-     *
-     * @param  string $value
-     * @param  string $hashedValue
-     * @param  array $options
-     * @return bool
-     */
-    public function check($value, $hashedValue, array $options = [])
-    {
-        if (strlen($hashedValue) === 0) {
-            return false;
-        }
-
-        return password_verify($value, $hashedValue);
-    }
-
-    /**
      * Check if the given hash has been hashed using the given options.
      *
-     * @param  string $hashedValue
-     * @param  array $options
+     * @param  string  $hashedValue
+     * @param  array   $options
      * @return bool
      */
     public function needsRehash($hashedValue, array $options = [])
@@ -103,13 +64,24 @@ class BcryptHasher implements HasherContract
     /**
      * Set the default password work factor.
      *
-     * @param  int $rounds
+     * @param  int  $rounds
      * @return $this
      */
     public function setRounds($rounds)
     {
-        $this->rounds = (int)$rounds;
+        $this->rounds = (int) $rounds;
 
         return $this;
+    }
+
+    /**
+     * Extract the cost value from the options array.
+     *
+     * @param  array  $options
+     * @return int
+     */
+    protected function cost(array $options = [])
+    {
+        return $options['rounds'] ?? $this->rounds;
     }
 }

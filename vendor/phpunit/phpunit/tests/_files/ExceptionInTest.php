@@ -7,23 +7,19 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 use PHPUnit\Framework\TestCase;
 
 class ExceptionInTest extends TestCase
 {
-    public $setUp = false;
-    public $assertPreConditions = false;
+    public $setUp                = false;
+
+    public $assertPreConditions  = false;
+
     public $assertPostConditions = false;
-    public $tearDown = false;
-    public $testSomething = false;
 
-    public function testSomething(): void
-    {
-        $this->testSomething = true;
+    public $tearDown             = false;
 
-        throw new Exception;
-    }
+    public $testSomething        = false;
 
     protected function setUp(): void
     {
@@ -33,6 +29,13 @@ class ExceptionInTest extends TestCase
     protected function tearDown(): void
     {
         $this->tearDown = true;
+    }
+
+    public function testSomething(): void
+    {
+        $this->testSomething = true;
+
+        throw new Exception;
     }
 
     protected function assertPreConditions(): void

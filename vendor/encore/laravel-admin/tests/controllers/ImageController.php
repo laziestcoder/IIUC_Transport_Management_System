@@ -30,23 +30,6 @@ class ImageController extends Controller
     }
 
     /**
-     * Make a grid builder.
-     *
-     * @return Grid
-     */
-    protected function grid()
-    {
-        return Admin::grid(Image::class, function (Grid $grid) {
-            $grid->id('ID')->sortable();
-
-            $grid->created_at();
-            $grid->updated_at();
-
-            $grid->disableFilter();
-        });
-    }
-
-    /**
      * Edit interface.
      *
      * @param $id
@@ -60,6 +43,37 @@ class ImageController extends Controller
             $content->description('description');
 
             $content->body($this->form()->edit($id));
+        });
+    }
+
+    /**
+     * Create interface.
+     *
+     * @return Content
+     */
+    public function create()
+    {
+        return Admin::content(function (Content $content) {
+            $content->header('Upload image');
+
+            $content->body($this->form());
+        });
+    }
+
+    /**
+     * Make a grid builder.
+     *
+     * @return Grid
+     */
+    protected function grid()
+    {
+        return Admin::grid(Image::class, function (Grid $grid) {
+            $grid->id('ID')->sortable();
+
+            $grid->created_at();
+            $grid->updated_at();
+
+            $grid->disableFilter();
         });
     }
 
@@ -78,26 +92,12 @@ class ImageController extends Controller
             $form->image('image3')->flip('v');
             $form->image('image4')->move(null, 'renamed.jpeg');
             $form->image('image5')->name(function ($file) {
-                return 'asdasdasdasdasd.' . $file->guessExtension();
+                return 'asdasdasdasdasd.'.$file->guessExtension();
             });
             $form->image('image6')->uniqueName();
 
             $form->display('created_at', 'Created At');
             $form->display('updated_at', 'Updated At');
-        });
-    }
-
-    /**
-     * Create interface.
-     *
-     * @return Content
-     */
-    public function create()
-    {
-        return Admin::content(function (Content $content) {
-            $content->header('Upload image');
-
-            $content->body($this->form());
         });
     }
 }

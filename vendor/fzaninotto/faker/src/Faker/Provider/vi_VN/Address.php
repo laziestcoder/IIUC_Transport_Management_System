@@ -116,14 +116,6 @@ class Address extends \Faker\Provider\Address
         'Zambia', 'Zimbabwe'
     );
 
-    /**
-     * @example 'Bắc Giang'
-     */
-    public static function province()
-    {
-        return static::randomElement(static::$province);
-    }
-
     public function hamletName()
     {
         $format = static::randomElement(static::$hamletNameFormats);
@@ -166,5 +158,13 @@ class Address extends \Faker\Provider\Address
     public function city()
     {
         return static::randomElement(static::$city);
+    }
+
+    /**
+     * @example 'Bắc Giang'
+     */
+    public static function province()
+    {
+        return static::randomElement(static::$province);
     }
 }

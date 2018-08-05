@@ -7,9 +7,16 @@ use Encore\Admin\Admin;
 class SwitchDisplay extends AbstractDisplayer
 {
     protected $states = [
-        'on' => ['value' => 1, 'text' => 'ON', 'color' => 'primary'],
+        'on'  => ['value' => 1, 'text' => 'ON', 'color' => 'primary'],
         'off' => ['value' => 0, 'text' => 'OFF', 'color' => 'default'],
     ];
+
+    protected function updateStates($states)
+    {
+        foreach (array_dot($states) as $key => $state) {
+            array_set($this->states, $key, $state);
+        }
+    }
 
     public function display($states = [])
     {
@@ -60,12 +67,5 @@ EOT;
         return <<<EOT
         <input type="checkbox" class="$class" $checked data-key="$key" />
 EOT;
-    }
-
-    protected function updateStates($states)
-    {
-        foreach (array_dot($states) as $key => $state) {
-            array_set($this->states, $key, $state);
-        }
     }
 }

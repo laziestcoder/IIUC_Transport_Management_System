@@ -25,8 +25,8 @@ class Debug
      *
      * This method registers an error handler and an exception handler.
      *
-     * @param int $errorReportingLevel The level of error reporting you want
-     * @param bool $displayErrors Whether to display errors (for development) or just log them (for production)
+     * @param int  $errorReportingLevel The level of error reporting you want
+     * @param bool $displayErrors       Whether to display errors (for development) or just log them (for production)
      */
     public static function enable($errorReportingLevel = E_ALL, $displayErrors = true)
     {
@@ -42,7 +42,7 @@ class Debug
             error_reporting(E_ALL);
         }
 
-        if (!\in_array(PHP_SAPI, array('cli', 'phpdbg'), true)) {
+        if (!\in_array(\PHP_SAPI, array('cli', 'phpdbg'), true)) {
             ini_set('display_errors', 0);
             ExceptionHandler::register();
         } elseif ($displayErrors && (!ini_get('log_errors') || ini_get('error_log'))) {

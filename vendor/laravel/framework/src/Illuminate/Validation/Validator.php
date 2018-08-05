@@ -2,18 +2,18 @@
 
 namespace Illuminate\Validation;
 
+use RuntimeException;
 use BadMethodCallException;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Illuminate\Support\Fluent;
+use Illuminate\Support\MessageBag;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Contracts\Validation\ImplicitRule;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Contracts\Validation\Rule as RuleContract;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Fluent;
-use Illuminate\Support\MessageBag;
-use Illuminate\Support\Str;
-use RuntimeException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Validator implements ValidatorContract
 {
@@ -21,107 +21,124 @@ class Validator implements ValidatorContract
         Concerns\ValidatesAttributes;
 
     /**
-     * The array of custom error messages.
-     *
-     * @var array
-     */
-    public $customMessages = [];
-    /**
-     * The array of fallback error messages.
-     *
-     * @var array
-     */
-    public $fallbackMessages = [];
-    /**
-     * The array of custom attribute names.
-     *
-     * @var array
-     */
-    public $customAttributes = [];
-    /**
-     * The array of custom displayable values.
-     *
-     * @var array
-     */
-    public $customValues = [];
-    /**
-     * All of the custom validator extensions.
-     *
-     * @var array
-     */
-    public $extensions = [];
-    /**
-     * All of the custom replacer extensions.
-     *
-     * @var array
-     */
-    public $replacers = [];
-    /**
      * The Translator implementation.
      *
      * @var \Illuminate\Contracts\Translation\Translator
      */
     protected $translator;
+
     /**
      * The container instance.
      *
      * @var \Illuminate\Contracts\Container\Container
      */
     protected $container;
+
     /**
      * The Presence Verifier implementation.
      *
      * @var \Illuminate\Validation\PresenceVerifierInterface
      */
     protected $presenceVerifier;
+
     /**
      * The failed validation rules.
      *
      * @var array
      */
     protected $failedRules = [];
+
     /**
      * The message bag instance.
      *
      * @var \Illuminate\Support\MessageBag
      */
     protected $messages;
+
     /**
      * The data under validation.
      *
      * @var array
      */
     protected $data;
+
     /**
      * The initial rules provided.
      *
      * @var array
      */
     protected $initialRules;
+
     /**
      * The rules to be applied to the data.
      *
      * @var array
      */
     protected $rules;
+
     /**
      * The current rule that is validating.
      *
      * @var string
      */
     protected $currentRule;
+
     /**
      * The array of wildcard attributes with their asterisks expanded.
      *
      * @var array
      */
     protected $implicitAttributes = [];
+
     /**
      * All of the registered "after" callbacks.
      *
      * @var array
      */
     protected $after = [];
+
+    /**
+     * The array of custom error messages.
+     *
+     * @var array
+     */
+    public $customMessages = [];
+
+    /**
+     * The array of fallback error messages.
+     *
+     * @var array
+     */
+    public $fallbackMessages = [];
+
+    /**
+     * The array of custom attribute names.
+     *
+     * @var array
+     */
+    public $customAttributes = [];
+
+    /**
+     * The array of custom displayable values.
+     *
+     * @var array
+     */
+    public $customValues = [];
+
+    /**
+     * All of the custom validator extensions.
+     *
+     * @var array
+     */
+    public $extensions = [];
+
+    /**
+     * All of the custom replacer extensions.
+     *
+     * @var array
+     */
+    public $replacers = [];
+
     /**
      * The validation rules that may be applied to files.
      *
@@ -170,11 +187,11 @@ class Validator implements ValidatorContract
     /**
      * Create a new Validator instance.
      *
-     * @param  \Illuminate\Contracts\Translation\Translator $translator
-     * @param  array $data
-     * @param  array $rules
-     * @param  array $messages
-     * @param  array $customAttributes
+     * @param  \Illuminate\Contracts\Translation\Translator  $translator
+     * @param  array  $data
+     * @param  array  $rules
+     * @param  array  $messages
+     * @param  array  $customAttributes
      * @return void
      */
     public function __construct(Translator $translator, array $data, array $rules,
@@ -192,7 +209,7 @@ class Validator implements ValidatorContract
     /**
      * Parse the data array, converting dots to ->.
      *
-     * @param  array $data
+     * @param  array  $data
      * @return array
      */
     public function parseData(array $data)
@@ -220,7 +237,7 @@ class Validator implements ValidatorContract
     /**
      * Add an after validation callback.
      *
-     * @param  callable|string $callback
+     * @param  callable|string  $callback
      * @return $this
      */
     public function after($callback)
@@ -230,36 +247,6 @@ class Validator implements ValidatorContract
         };
 
         return $this;
-    }
-
-    /**
-     * Run the validator's rules against its data.
-     *
-     * @return array
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function validate()
-    {
-        if ($this->fails()) {
-            throw new ValidationException($this);
-        }
-
-        $data = collect($this->getData());
-
-        return $data->only(collect($this->getRules())->keys()->map(function ($rule) {
-            return explode('.', $rule)[0];
-        })->unique())->toArray();
-    }
-
-    /**
-     * Determine if the data fails the validation rules.
-     *
-     * @return bool
-     */
-    public function fails()
-    {
-        return !$this->passes();
     }
 
     /**
@@ -297,10 +284,40 @@ class Validator implements ValidatorContract
     }
 
     /**
+     * Determine if the data fails the validation rules.
+     *
+     * @return bool
+     */
+    public function fails()
+    {
+        return ! $this->passes();
+    }
+
+    /**
+     * Run the validator's rules against its data.
+     *
+     * @return array
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function validate()
+    {
+        if ($this->fails()) {
+            throw new ValidationException($this);
+        }
+
+        $data = collect($this->getData());
+
+        return $data->only(collect($this->getRules())->keys()->map(function ($rule) {
+            return explode('.', $rule)[0];
+        })->unique())->toArray();
+    }
+
+    /**
      * Validate a given attribute against a rule.
      *
-     * @param  string $attribute
-     * @param  string $rule
+     * @param  string  $attribute
+     * @param  string  $rule
      * @return void
      */
     protected function validateAttribute($attribute, $rule)
@@ -326,7 +343,7 @@ class Validator implements ValidatorContract
         // If the attribute is a file, we will verify that the file upload was actually successful
         // and if it wasn't we will add a failure for the attribute. Files may not successfully
         // upload if they are too large based on PHP's settings so we will bail in this case.
-        if ($value instanceof UploadedFile && !$value->isValid() &&
+        if ($value instanceof UploadedFile && ! $value->isValid() &&
             $this->hasRule($attribute, array_merge($this->fileRules, $this->implicitRules))
         ) {
             return $this->addFailure($attribute, 'uploaded', []);
@@ -339,15 +356,26 @@ class Validator implements ValidatorContract
 
         if ($rule instanceof RuleContract) {
             return $validatable
-                ? $this->validateUsingCustomRule($attribute, $value, $rule)
-                : null;
+                    ? $this->validateUsingCustomRule($attribute, $value, $rule)
+                    : null;
         }
 
         $method = "validate{$rule}";
 
-        if ($validatable && !$this->$method($attribute, $value, $parameters, $this)) {
+        if ($validatable && ! $this->$method($attribute, $value, $parameters, $this)) {
             $this->addFailure($attribute, $rule, $parameters);
         }
+    }
+
+    /**
+     * Determine if the given rule depends on other fields.
+     *
+     * @param  string  $rule
+     * @return bool
+     */
+    protected function dependsOnOtherFields($rule)
+    {
+        return in_array($rule, $this->dependentRules);
     }
 
     /**
@@ -355,14 +383,14 @@ class Validator implements ValidatorContract
      *
      * E.g. 'foo.1.bar.spark.baz' -> [1, 'spark'] for 'foo.*.bar.*.baz'
      *
-     * @param  string $attribute
+     * @param  string  $attribute
      * @return array
      */
     protected function getExplicitKeys($attribute)
     {
         $pattern = str_replace('\*', '([^\.]+)', preg_quote($this->getPrimaryAttribute($attribute), '/'));
 
-        if (preg_match('/^' . $pattern . '/', $attribute, $keys)) {
+        if (preg_match('/^'.$pattern.'/', $attribute, $keys)) {
             array_shift($keys);
 
             return $keys;
@@ -376,7 +404,7 @@ class Validator implements ValidatorContract
      *
      * For example, if "name.0" is given, "name.*" will be returned.
      *
-     * @param  string $attribute
+     * @param  string  $attribute
      * @return string
      */
     protected function getPrimaryAttribute($attribute)
@@ -391,21 +419,10 @@ class Validator implements ValidatorContract
     }
 
     /**
-     * Determine if the given rule depends on other fields.
-     *
-     * @param  string $rule
-     * @return bool
-     */
-    protected function dependsOnOtherFields($rule)
-    {
-        return in_array($rule, $this->dependentRules);
-    }
-
-    /**
      * Replace each field parameter which has asterisks with the given keys.
      *
-     * @param  array $parameters
-     * @param  array $keys
+     * @param  array  $parameters
+     * @param  array  $keys
      * @return array
      */
     protected function replaceAsterisksInParameters(array $parameters, array $keys)
@@ -416,91 +433,27 @@ class Validator implements ValidatorContract
     }
 
     /**
-     * Get the value of a given attribute.
-     *
-     * @param  string $attribute
-     * @return mixed
-     */
-    protected function getValue($attribute)
-    {
-        return Arr::get($this->data, $attribute);
-    }
-
-    /**
-     * Determine if the given attribute has a rule in the given set.
-     *
-     * @param  string $attribute
-     * @param  string|array $rules
-     * @return bool
-     */
-    public function hasRule($attribute, $rules)
-    {
-        return !is_null($this->getRule($attribute, $rules));
-    }
-
-    /**
-     * Get a rule and its parameters for a given attribute.
-     *
-     * @param  string $attribute
-     * @param  string|array $rules
-     * @return array|null
-     */
-    protected function getRule($attribute, $rules)
-    {
-        if (!array_key_exists($attribute, $this->rules)) {
-            return;
-        }
-
-        $rules = (array)$rules;
-
-        foreach ($this->rules[$attribute] as $rule) {
-            list($rule, $parameters) = ValidationRuleParser::parse($rule);
-
-            if (in_array($rule, $rules)) {
-                return [$rule, $parameters];
-            }
-        }
-    }
-
-    /**
-     * Add a failed rule and error message to the collection.
-     *
-     * @param  string $attribute
-     * @param  string $rule
-     * @param  array $parameters
-     * @return void
-     */
-    protected function addFailure($attribute, $rule, $parameters)
-    {
-        $this->messages->add($attribute, $this->makeReplacements(
-            $this->getMessage($attribute, $rule), $attribute, $rule, $parameters
-        ));
-
-        $this->failedRules[$attribute][$rule] = $parameters;
-    }
-
-    /**
      * Determine if the attribute is validatable.
      *
-     * @param  object|string $rule
-     * @param  string $attribute
-     * @param  mixed $value
+     * @param  object|string  $rule
+     * @param  string  $attribute
+     * @param  mixed   $value
      * @return bool
      */
     protected function isValidatable($rule, $attribute, $value)
     {
         return $this->presentOrRuleIsImplicit($rule, $attribute, $value) &&
-            $this->passesOptionalCheck($attribute) &&
-            $this->isNotNullIfMarkedAsNullable($rule, $attribute) &&
-            $this->hasNotFailedPreviousRuleIfPresenceRule($rule, $attribute);
+               $this->passesOptionalCheck($attribute) &&
+               $this->isNotNullIfMarkedAsNullable($rule, $attribute) &&
+               $this->hasNotFailedPreviousRuleIfPresenceRule($rule, $attribute);
     }
 
     /**
      * Determine if the field is present, or the rule implies required.
      *
-     * @param  object|string $rule
-     * @param  string $attribute
-     * @param  mixed $value
+     * @param  object|string  $rule
+     * @param  string  $attribute
+     * @param  mixed   $value
      * @return bool
      */
     protected function presentOrRuleIsImplicit($rule, $attribute, $value)
@@ -510,53 +463,53 @@ class Validator implements ValidatorContract
         }
 
         return $this->validatePresent($attribute, $value) ||
-            $this->isImplicit($rule);
+               $this->isImplicit($rule);
     }
 
     /**
      * Determine if a given rule implies the attribute is required.
      *
-     * @param  object|string $rule
+     * @param  object|string  $rule
      * @return bool
      */
     protected function isImplicit($rule)
     {
         return $rule instanceof ImplicitRule ||
-            in_array($rule, $this->implicitRules);
+               in_array($rule, $this->implicitRules);
     }
 
     /**
      * Determine if the attribute passes any optional check.
      *
-     * @param  string $attribute
+     * @param  string  $attribute
      * @return bool
      */
     protected function passesOptionalCheck($attribute)
     {
-        if (!$this->hasRule($attribute, ['Sometimes'])) {
+        if (! $this->hasRule($attribute, ['Sometimes'])) {
             return true;
         }
 
         $data = ValidationData::initializeAndGatherData($attribute, $this->data);
 
         return array_key_exists($attribute, $data)
-            || array_key_exists($attribute, $this->data);
+                    || array_key_exists($attribute, $this->data);
     }
 
     /**
      * Determine if the attribute fails the nullable check.
      *
-     * @param  string $rule
-     * @param  string $attribute
+     * @param  string  $rule
+     * @param  string  $attribute
      * @return bool
      */
     protected function isNotNullIfMarkedAsNullable($rule, $attribute)
     {
-        if ($this->isImplicit($rule) || !$this->hasRule($attribute, ['Nullable'])) {
+        if ($this->isImplicit($rule) || ! $this->hasRule($attribute, ['Nullable'])) {
             return true;
         }
 
-        return !is_null(Arr::get($this->data, $attribute, 0));
+        return ! is_null(Arr::get($this->data, $attribute, 0));
     }
 
     /**
@@ -564,26 +517,26 @@ class Validator implements ValidatorContract
      *
      * This is to avoid possible database type comparison errors.
      *
-     * @param  string $rule
-     * @param  string $attribute
+     * @param  string  $rule
+     * @param  string  $attribute
      * @return bool
      */
     protected function hasNotFailedPreviousRuleIfPresenceRule($rule, $attribute)
     {
-        return in_array($rule, ['Unique', 'Exists']) ? !$this->messages->has($attribute) : true;
+        return in_array($rule, ['Unique', 'Exists']) ? ! $this->messages->has($attribute) : true;
     }
 
     /**
      * Validate an attribute using a custom rule object.
      *
-     * @param  string $attribute
-     * @param  mixed $value
-     * @param  \Illuminate\Contracts\Validation\Rule $rule
+     * @param  string  $attribute
+     * @param  mixed  $value
+     * @param  \Illuminate\Contracts\Validation\Rule  $rule
      * @return void
      */
     protected function validateUsingCustomRule($attribute, $value, $rule)
     {
-        if (!$rule->passes($attribute, $value)) {
+        if (! $rule->passes($attribute, $value)) {
             $this->failedRules[$attribute][get_class($rule)] = [];
 
             $this->messages->add($attribute, $this->makeReplacements(
@@ -595,7 +548,7 @@ class Validator implements ValidatorContract
     /**
      * Check if we should stop further validations on a given attribute.
      *
-     * @param  string $attribute
+     * @param  string  $attribute
      * @return bool
      */
     protected function shouldStopValidating($attribute)
@@ -613,60 +566,25 @@ class Validator implements ValidatorContract
         // and that rule already failed then we should stop validation at this point
         // as now there is no point in calling other rules with this field empty.
         return $this->hasRule($attribute, $this->implicitRules) &&
-            isset($this->failedRules[$attribute]) &&
-            array_intersect(array_keys($this->failedRules[$attribute]), $this->implicitRules);
+               isset($this->failedRules[$attribute]) &&
+               array_intersect(array_keys($this->failedRules[$attribute]), $this->implicitRules);
     }
 
     /**
-     * Get the data under validation.
+     * Add a failed rule and error message to the collection.
      *
-     * @return array
+     * @param  string  $attribute
+     * @param  string  $rule
+     * @param  array   $parameters
+     * @return void
      */
-    public function getData()
+    protected function addFailure($attribute, $rule, $parameters)
     {
-        return $this->data;
-    }
+        $this->messages->add($attribute, $this->makeReplacements(
+            $this->getMessage($attribute, $rule), $attribute, $rule, $parameters
+        ));
 
-    /**
-     * Set the data under validation.
-     *
-     * @param  array $data
-     * @return $this
-     */
-    public function setData(array $data)
-    {
-        $this->data = $this->parseData($data);
-
-        $this->setRules($this->initialRules);
-
-        return $this;
-    }
-
-    /**
-     * Get the validation rules.
-     *
-     * @return array
-     */
-    public function getRules()
-    {
-        return $this->rules;
-    }
-
-    /**
-     * Set the validation rules.
-     *
-     * @param  array $rules
-     * @return $this
-     */
-    public function setRules(array $rules)
-    {
-        $this->initialRules = $rules;
-
-        $this->rules = [];
-
-        $this->addRules($rules);
-
-        return $this;
+        $this->failedRules[$attribute][$rule] = $parameters;
     }
 
     /**
@@ -676,11 +594,27 @@ class Validator implements ValidatorContract
      */
     public function valid()
     {
-        if (!$this->messages) {
+        if (! $this->messages) {
             $this->passes();
         }
 
         return array_diff_key(
+            $this->data, $this->attributesThatHaveMessages()
+        );
+    }
+
+    /**
+     * Returns the data which was invalid.
+     *
+     * @return array
+     */
+    public function invalid()
+    {
+        if (! $this->messages) {
+            $this->passes();
+        }
+
+        return array_intersect_key(
             $this->data, $this->attributesThatHaveMessages()
         );
     }
@@ -698,36 +632,6 @@ class Validator implements ValidatorContract
     }
 
     /**
-     * Get the message container for the validator.
-     *
-     * @return \Illuminate\Support\MessageBag
-     */
-    public function messages()
-    {
-        if (!$this->messages) {
-            $this->passes();
-        }
-
-        return $this->messages;
-    }
-
-    /**
-     * Returns the data which was invalid.
-     *
-     * @return array
-     */
-    public function invalid()
-    {
-        if (!$this->messages) {
-            $this->passes();
-        }
-
-        return array_intersect_key(
-            $this->data, $this->attributesThatHaveMessages()
-        );
-    }
-
-    /**
      * Get the failed validation rules.
      *
      * @return array
@@ -735,6 +639,20 @@ class Validator implements ValidatorContract
     public function failed()
     {
         return $this->failedRules;
+    }
+
+    /**
+     * Get the message container for the validator.
+     *
+     * @return \Illuminate\Support\MessageBag
+     */
+    public function messages()
+    {
+        if (! $this->messages) {
+            $this->passes();
+        }
+
+        return $this->messages;
     }
 
     /**
@@ -758,6 +676,42 @@ class Validator implements ValidatorContract
     }
 
     /**
+     * Determine if the given attribute has a rule in the given set.
+     *
+     * @param  string  $attribute
+     * @param  string|array  $rules
+     * @return bool
+     */
+    public function hasRule($attribute, $rules)
+    {
+        return ! is_null($this->getRule($attribute, $rules));
+    }
+
+    /**
+     * Get a rule and its parameters for a given attribute.
+     *
+     * @param  string  $attribute
+     * @param  string|array  $rules
+     * @return array|null
+     */
+    protected function getRule($attribute, $rules)
+    {
+        if (! array_key_exists($attribute, $this->rules)) {
+            return;
+        }
+
+        $rules = (array) $rules;
+
+        foreach ($this->rules[$attribute] as $rule) {
+            list($rule, $parameters) = ValidationRuleParser::parse($rule);
+
+            if (in_array($rule, $rules)) {
+                return [$rule, $parameters];
+            }
+        }
+    }
+
+    /**
      * Get the data under validation.
      *
      * @return array
@@ -768,22 +722,64 @@ class Validator implements ValidatorContract
     }
 
     /**
-     * Add conditions to a given field based on a Closure.
+     * Get the data under validation.
      *
-     * @param  string|array $attribute
-     * @param  string|array $rules
-     * @param  callable $callback
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * Set the data under validation.
+     *
+     * @param  array  $data
      * @return $this
      */
-    public function sometimes($attribute, $rules, callable $callback)
+    public function setData(array $data)
     {
-        $payload = new Fluent($this->getData());
+        $this->data = $this->parseData($data);
 
-        if (call_user_func($callback, $payload)) {
-            foreach ((array)$attribute as $key) {
-                $this->addRules([$key => $rules]);
-            }
-        }
+        $this->setRules($this->initialRules);
+
+        return $this;
+    }
+
+    /**
+     * Get the value of a given attribute.
+     *
+     * @param  string  $attribute
+     * @return mixed
+     */
+    protected function getValue($attribute)
+    {
+        return Arr::get($this->data, $attribute);
+    }
+
+    /**
+     * Get the validation rules.
+     *
+     * @return array
+     */
+    public function getRules()
+    {
+        return $this->rules;
+    }
+
+    /**
+     * Set the validation rules.
+     *
+     * @param  array  $rules
+     * @return $this
+     */
+    public function setRules(array $rules)
+    {
+        $this->initialRules = $rules;
+
+        $this->rules = [];
+
+        $this->addRules($rules);
 
         return $this;
     }
@@ -791,7 +787,7 @@ class Validator implements ValidatorContract
     /**
      * Parse the given rules and merge them into current rules.
      *
-     * @param  array $rules
+     * @param  array  $rules
      * @return void
      */
     public function addRules($rules)
@@ -800,7 +796,7 @@ class Validator implements ValidatorContract
         // of the explicit rules needed for the given data. For example the rule
         // names.* would get expanded to names.0, names.1, etc. for this data.
         $response = (new ValidationRuleParser($this->data))
-            ->explode($rules);
+                            ->explode($rules);
 
         $this->rules = array_merge_recursive(
             $this->rules, $response->rules
@@ -812,24 +808,30 @@ class Validator implements ValidatorContract
     }
 
     /**
-     * Register an array of custom implicit validator extensions.
+     * Add conditions to a given field based on a Closure.
      *
-     * @param  array $extensions
-     * @return void
+     * @param  string|array  $attribute
+     * @param  string|array  $rules
+     * @param  callable  $callback
+     * @return $this
      */
-    public function addImplicitExtensions(array $extensions)
+    public function sometimes($attribute, $rules, callable $callback)
     {
-        $this->addExtensions($extensions);
+        $payload = new Fluent($this->getData());
 
-        foreach ($extensions as $rule => $extension) {
-            $this->implicitRules[] = Str::studly($rule);
+        if (call_user_func($callback, $payload)) {
+            foreach ((array) $attribute as $key) {
+                $this->addRules([$key => $rules]);
+            }
         }
+
+        return $this;
     }
 
     /**
      * Register an array of custom validator extensions.
      *
-     * @param  array $extensions
+     * @param  array  $extensions
      * @return void
      */
     public function addExtensions(array $extensions)
@@ -846,7 +848,22 @@ class Validator implements ValidatorContract
     /**
      * Register an array of custom implicit validator extensions.
      *
-     * @param  array $extensions
+     * @param  array  $extensions
+     * @return void
+     */
+    public function addImplicitExtensions(array $extensions)
+    {
+        $this->addExtensions($extensions);
+
+        foreach ($extensions as $rule => $extension) {
+            $this->implicitRules[] = Str::studly($rule);
+        }
+    }
+
+    /**
+     * Register an array of custom implicit validator extensions.
+     *
+     * @param  array  $extensions
      * @return void
      */
     public function addDependentExtensions(array $extensions)
@@ -859,10 +876,22 @@ class Validator implements ValidatorContract
     }
 
     /**
+     * Register a custom validator extension.
+     *
+     * @param  string  $rule
+     * @param  \Closure|string  $extension
+     * @return void
+     */
+    public function addExtension($rule, $extension)
+    {
+        $this->extensions[Str::snake($rule)] = $extension;
+    }
+
+    /**
      * Register a custom implicit validator extension.
      *
-     * @param  string $rule
-     * @param  \Closure|string $extension
+     * @param  string   $rule
+     * @param  \Closure|string  $extension
      * @return void
      */
     public function addImplicitExtension($rule, $extension)
@@ -873,22 +902,10 @@ class Validator implements ValidatorContract
     }
 
     /**
-     * Register a custom validator extension.
-     *
-     * @param  string $rule
-     * @param  \Closure|string $extension
-     * @return void
-     */
-    public function addExtension($rule, $extension)
-    {
-        $this->extensions[Str::snake($rule)] = $extension;
-    }
-
-    /**
      * Register a custom dependent validator extension.
      *
-     * @param  string $rule
-     * @param  \Closure|string $extension
+     * @param  string   $rule
+     * @param  \Closure|string  $extension
      * @return void
      */
     public function addDependentExtension($rule, $extension)
@@ -901,7 +918,7 @@ class Validator implements ValidatorContract
     /**
      * Register an array of custom validator message replacers.
      *
-     * @param  array $replacers
+     * @param  array  $replacers
      * @return void
      */
     public function addReplacers(array $replacers)
@@ -918,8 +935,8 @@ class Validator implements ValidatorContract
     /**
      * Register a custom validator message replacer.
      *
-     * @param  string $rule
-     * @param  \Closure|string $replacer
+     * @param  string  $rule
+     * @param  \Closure|string  $replacer
      * @return void
      */
     public function addReplacer($rule, $replacer)
@@ -930,7 +947,7 @@ class Validator implements ValidatorContract
     /**
      * Set the custom messages for the validator.
      *
-     * @param  array $messages
+     * @param  array  $messages
      * @return $this
      */
     public function setCustomMessages(array $messages)
@@ -943,7 +960,7 @@ class Validator implements ValidatorContract
     /**
      * Set the custom attributes on the validator.
      *
-     * @param  array $attributes
+     * @param  array  $attributes
      * @return $this
      */
     public function setAttributeNames(array $attributes)
@@ -956,7 +973,7 @@ class Validator implements ValidatorContract
     /**
      * Add custom attributes to the validator.
      *
-     * @param  array $customAttributes
+     * @param  array  $customAttributes
      * @return $this
      */
     public function addCustomAttributes(array $customAttributes)
@@ -969,7 +986,7 @@ class Validator implements ValidatorContract
     /**
      * Set the custom values on the validator.
      *
-     * @param  array $values
+     * @param  array  $values
      * @return $this
      */
     public function setValueNames(array $values)
@@ -982,7 +999,7 @@ class Validator implements ValidatorContract
     /**
      * Add the custom values for the validator.
      *
-     * @param  array $customValues
+     * @param  array  $customValues
      * @return $this
      */
     public function addCustomValues(array $customValues)
@@ -995,12 +1012,54 @@ class Validator implements ValidatorContract
     /**
      * Set the fallback messages for the validator.
      *
-     * @param  array $messages
+     * @param  array  $messages
      * @return void
      */
     public function setFallbackMessages(array $messages)
     {
         $this->fallbackMessages = $messages;
+    }
+
+    /**
+     * Get the Presence Verifier implementation.
+     *
+     * @return \Illuminate\Validation\PresenceVerifierInterface
+     *
+     * @throws \RuntimeException
+     */
+    public function getPresenceVerifier()
+    {
+        if (! isset($this->presenceVerifier)) {
+            throw new RuntimeException('Presence verifier has not been set.');
+        }
+
+        return $this->presenceVerifier;
+    }
+
+    /**
+     * Get the Presence Verifier implementation.
+     *
+     * @param  string  $connection
+     * @return \Illuminate\Validation\PresenceVerifierInterface
+     *
+     * @throws \RuntimeException
+     */
+    protected function getPresenceVerifierFor($connection)
+    {
+        return tap($this->getPresenceVerifier(), function ($verifier) use ($connection) {
+            $verifier->setConnection($connection);
+        });
+    }
+
+    /**
+     * Set the Presence Verifier implementation.
+     *
+     * @param  \Illuminate\Validation\PresenceVerifierInterface  $presenceVerifier
+     * @return void
+     */
+    public function setPresenceVerifier(PresenceVerifierInterface $presenceVerifier)
+    {
+        $this->presenceVerifier = $presenceVerifier;
     }
 
     /**
@@ -1016,7 +1075,7 @@ class Validator implements ValidatorContract
     /**
      * Set the Translator implementation.
      *
-     * @param  \Illuminate\Contracts\Translation\Translator $translator
+     * @param  \Illuminate\Contracts\Translation\Translator  $translator
      * @return void
      */
     public function setTranslator(Translator $translator)
@@ -1027,7 +1086,7 @@ class Validator implements ValidatorContract
     /**
      * Set the IoC container instance.
      *
-     * @param  \Illuminate\Contracts\Container\Container $container
+     * @param  \Illuminate\Contracts\Container\Container  $container
      * @return void
      */
     public function setContainer(Container $container)
@@ -1036,32 +1095,10 @@ class Validator implements ValidatorContract
     }
 
     /**
-     * Handle dynamic calls to class methods.
-     *
-     * @param  string $method
-     * @param  array $parameters
-     * @return mixed
-     *
-     * @throws \BadMethodCallException
-     */
-    public function __call($method, $parameters)
-    {
-        $rule = Str::snake(substr($method, 8));
-
-        if (isset($this->extensions[$rule])) {
-            return $this->callExtension($rule, $parameters);
-        }
-
-        throw new BadMethodCallException(sprintf(
-            'Method %s::%s does not exist.', static::class, $method
-        ));
-    }
-
-    /**
      * Call a custom validator extension.
      *
-     * @param  string $rule
-     * @param  array $parameters
+     * @param  string  $rule
+     * @param  array   $parameters
      * @return bool|null
      */
     protected function callExtension($rule, $parameters)
@@ -1078,8 +1115,8 @@ class Validator implements ValidatorContract
     /**
      * Call a class based validator extension.
      *
-     * @param  string $callback
-     * @param  array $parameters
+     * @param  string  $callback
+     * @param  array   $parameters
      * @return bool
      */
     protected function callClassBasedExtension($callback, $parameters)
@@ -1090,44 +1127,24 @@ class Validator implements ValidatorContract
     }
 
     /**
-     * Get the Presence Verifier implementation.
+     * Handle dynamic calls to class methods.
      *
-     * @param  string $connection
-     * @return \Illuminate\Validation\PresenceVerifierInterface
+     * @param  string  $method
+     * @param  array   $parameters
+     * @return mixed
      *
-     * @throws \RuntimeException
+     * @throws \BadMethodCallException
      */
-    protected function getPresenceVerifierFor($connection)
+    public function __call($method, $parameters)
     {
-        return tap($this->getPresenceVerifier(), function ($verifier) use ($connection) {
-            $verifier->setConnection($connection);
-        });
-    }
+        $rule = Str::snake(substr($method, 8));
 
-    /**
-     * Get the Presence Verifier implementation.
-     *
-     * @return \Illuminate\Validation\PresenceVerifierInterface
-     *
-     * @throws \RuntimeException
-     */
-    public function getPresenceVerifier()
-    {
-        if (!isset($this->presenceVerifier)) {
-            throw new RuntimeException('Presence verifier has not been set.');
+        if (isset($this->extensions[$rule])) {
+            return $this->callExtension($rule, $parameters);
         }
 
-        return $this->presenceVerifier;
-    }
-
-    /**
-     * Set the Presence Verifier implementation.
-     *
-     * @param  \Illuminate\Validation\PresenceVerifierInterface $presenceVerifier
-     * @return void
-     */
-    public function setPresenceVerifier(PresenceVerifierInterface $presenceVerifier)
-    {
-        $this->presenceVerifier = $presenceVerifier;
+        throw new BadMethodCallException(sprintf(
+            'Method %s::%s does not exist.', static::class, $method
+        ));
     }
 }

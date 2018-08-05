@@ -7,24 +7,29 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace SebastianBergmann\Comparator;
 
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass SebastianBergmann\Comparator\ArrayComparator
+ * @covers \SebastianBergmann\Comparator\ArrayComparator<extended>
  *
- * @uses SebastianBergmann\Comparator\Comparator
- * @uses SebastianBergmann\Comparator\Factory
- * @uses SebastianBergmann\Comparator\ComparisonFailure
+ * @uses \SebastianBergmann\Comparator\Comparator
+ * @uses \SebastianBergmann\Comparator\Factory
+ * @uses \SebastianBergmann\Comparator\ComparisonFailure
  */
-class ArrayComparatorTest extends TestCase
+final class ArrayComparatorTest extends TestCase
 {
     /**
      * @var ArrayComparator
      */
     private $comparator;
+
+    protected function setUp(): void
+    {
+        $this->comparator = new ArrayComparator;
+        $this->comparator->setFactory(new Factory);
+    }
 
     public function acceptsFailsProvider()
     {
@@ -111,40 +116,27 @@ class ArrayComparatorTest extends TestCase
         ];
     }
 
-    /**
-     * @covers  ::accepts
-     */
-    public function testAcceptsSucceeds()
+    public function testAcceptsSucceeds(): void
     {
         $this->assertTrue(
-            $this->comparator->accepts([], [])
+          $this->comparator->accepts([], [])
         );
     }
 
     /**
-     * @covers       ::accepts
      * @dataProvider acceptsFailsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
      */
-    public function testAcceptsFails($expected, $actual)
+    public function testAcceptsFails($expected, $actual): void
     {
         $this->assertFalse(
-            $this->comparator->accepts($expected, $actual)
+          $this->comparator->accepts($expected, $actual)
         );
     }
 
     /**
-     * @covers       ::assertEquals
      * @dataProvider assertEqualsSucceedsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
-     * @param mixed $delta
-     * @param mixed $canonicalize
      */
-    public function testAssertEqualsSucceeds($expected, $actual, $delta = 0.0, $canonicalize = false)
+    public function testAssertEqualsSucceeds($expected, $actual, $delta = 0.0, $canonicalize = false): void
     {
         $exception = null;
 
@@ -157,25 +149,13 @@ class ArrayComparatorTest extends TestCase
     }
 
     /**
-     * @covers       ::assertEquals
      * @dataProvider assertEqualsFailsProvider
-     *
-     * @param mixed $expected
-     * @param mixed $actual
-     * @param mixed $delta
-     * @param mixed $canonicalize
      */
-    public function testAssertEqualsFails($expected, $actual, $delta = 0.0, $canonicalize = false)
+    public function testAssertEqualsFails($expected, $actual, $delta = 0.0, $canonicalize = false): void
     {
         $this->expectException(ComparisonFailure::class);
         $this->expectExceptionMessage('Failed asserting that two arrays are equal');
 
         $this->comparator->assertEquals($expected, $actual, $delta, $canonicalize);
-    }
-
-    protected function setUp()
-    {
-        $this->comparator = new ArrayComparator;
-        $this->comparator->setFactory(new Factory);
     }
 }

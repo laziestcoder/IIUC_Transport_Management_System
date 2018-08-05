@@ -10,7 +10,7 @@ class Number extends Text
 
     public function render()
     {
-        $this->default((int)$this->default);
+        $this->default((int) $this->default);
 
         $this->script = <<<EOT
 

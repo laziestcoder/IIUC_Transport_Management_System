@@ -54,19 +54,19 @@ class CodeCleaner
     /**
      * CodeCleaner constructor.
      *
-     * @param Parser $parser A PhpParser Parser instance. One will be created if not explicitly supplied
-     * @param Printer $printer A PhpParser Printer instance. One will be created if not explicitly supplied
+     * @param Parser        $parser    A PhpParser Parser instance. One will be created if not explicitly supplied
+     * @param Printer       $printer   A PhpParser Printer instance. One will be created if not explicitly supplied
      * @param NodeTraverser $traverser A PhpParser NodeTraverser instance. One will be created if not explicitly supplied
      */
     public function __construct(Parser $parser = null, Printer $printer = null, NodeTraverser $traverser = null)
     {
         if ($parser === null) {
             $parserFactory = new ParserFactory();
-            $parser = $parserFactory->createParser();
+            $parser        = $parserFactory->createParser();
         }
 
-        $this->parser = $parser;
-        $this->printer = $printer ?: new Printer();
+        $this->parser    = $parser;
+        $this->printer   = $printer ?: new Printer();
         $this->traverser = $traverser ?: new NodeTraverser();
 
         foreach ($this->getDefaultPasses() as $pass) {
@@ -82,7 +82,7 @@ class CodeCleaner
     private function getDefaultPasses()
     {
         $useStatementPass = new UseStatementPass();
-        $namespacePass = new NamespacePass($this);
+        $namespacePass    = new NamespacePass($this);
 
         // Try to add implicit `use` statements and an implicit namespace,
         // based on the file in which the `debug` call was made.
@@ -195,11 +195,65 @@ class CodeCleaner
      */
     private static function isDebugCall(array $stackFrame)
     {
-        $class = isset($stackFrame['class']) ? $stackFrame['class'] : null;
+        $class    = isset($stackFrame['class']) ? $stackFrame['class'] : null;
         $function = isset($stackFrame['function']) ? $stackFrame['function'] : null;
 
         return ($class === null && $function === 'Psy\debug') ||
             ($class === 'Psy\Shell' && $function === 'debug');
+    }
+
+    /**
+     * Clean the given array of code.
+     *
+     * @throws ParseErrorException if the code is invalid PHP, and cannot be coerced into valid PHP
+     *
+     * @param array $codeLines
+     * @param bool  $requireSemicolons
+     *
+     * @return string|false Cleaned PHP code, False if the input is incomplete
+     */
+    public function clean(array $codeLines, $requireSemicolons = false)
+    {
+        $stmts = $this->parse('<?php ' . implode(PHP_EOL, $codeLines) . PHP_EOL, $requireSemicolons);
+        if ($stmts === false) {
+            return false;
+        }
+
+        // Catch fatal errors before they happen
+        $stmts = $this->traverser->traverse($stmts);
+
+        // Work around https://github.com/nikic/PHP-Parser/issues/399
+        $oldLocale = setlocale(LC_NUMERIC, 0);
+        setlocale(LC_NUMERIC, 'C');
+
+        $code = $this->printer->prettyPrint($stmts);
+
+        // Now put the locale back
+        setlocale(LC_NUMERIC, $oldLocale);
+
+        return $code;
+    }
+
+    /**
+     * Set the current local namespace.
+     *
+     * @param null|array $namespace (default: null)
+     *
+     * @return null|array
+     */
+    public function setNamespace(array $namespace = null)
+    {
+        $this->namespace = $namespace;
+    }
+
+    /**
+     * Get the current local namespace.
+     *
+     * @return null|array
+     */
+    public function getNamespace()
+    {
+        return $this->namespace;
     }
 
     /**
@@ -211,7 +265,7 @@ class CodeCleaner
      *                             waiting a line to see what comes next
      *
      * @param string $code
-     * @param bool $requireSemicolons
+     * @param bool   $requireSemicolons
      *
      * @return array|false A set of statements, or false if incomplete
      */
@@ -249,6 +303,13 @@ class CodeCleaner
         }
     }
 
+    private function parseErrorIsEOF(\PhpParser\Error $e)
+    {
+        $msg = $e->getRawMessage();
+
+        return ($msg === 'Unexpected token EOF') || (strpos($msg, 'Syntax error, unexpected EOF') !== false);
+    }
+
     /**
      * A special test for unclosed single-quoted strings.
      *
@@ -257,7 +318,7 @@ class CodeCleaner
      * themselves.
      *
      * @param \PhpParser\Error $e
-     * @param string $code
+     * @param string           $code
      *
      * @return bool
      */
@@ -284,66 +345,5 @@ class CodeCleaner
     private function parseErrorIsTrailingComma(\PhpParser\Error $e, $code)
     {
         return ($e->getRawMessage() === 'A trailing comma is not allowed here') && (substr(rtrim($code), -1) === ',');
-    }
-
-    private function parseErrorIsEOF(\PhpParser\Error $e)
-    {
-        $msg = $e->getRawMessage();
-
-        return ($msg === 'Unexpected token EOF') || (strpos($msg, 'Syntax error, unexpected EOF') !== false);
-    }
-
-    /**
-     * Clean the given array of code.
-     *
-     * @throws ParseErrorException if the code is invalid PHP, and cannot be coerced into valid PHP
-     *
-     * @param array $codeLines
-     * @param bool $requireSemicolons
-     *
-     * @return string|false Cleaned PHP code, False if the input is incomplete
-     */
-    public function clean(array $codeLines, $requireSemicolons = false)
-    {
-        $stmts = $this->parse('<?php ' . implode(PHP_EOL, $codeLines) . PHP_EOL, $requireSemicolons);
-        if ($stmts === false) {
-            return false;
-        }
-
-        // Catch fatal errors before they happen
-        $stmts = $this->traverser->traverse($stmts);
-
-        // Work around https://github.com/nikic/PHP-Parser/issues/399
-        $oldLocale = setlocale(LC_NUMERIC, 0);
-        setlocale(LC_NUMERIC, 'C');
-
-        $code = $this->printer->prettyPrint($stmts);
-
-        // Now put the locale back
-        setlocale(LC_NUMERIC, $oldLocale);
-
-        return $code;
-    }
-
-    /**
-     * Get the current local namespace.
-     *
-     * @return null|array
-     */
-    public function getNamespace()
-    {
-        return $this->namespace;
-    }
-
-    /**
-     * Set the current local namespace.
-     *
-     * @param null|array $namespace (default: null)
-     *
-     * @return null|array
-     */
-    public function setNamespace(array $namespace = null)
-    {
-        $this->namespace = $namespace;
     }
 }

@@ -29,7 +29,7 @@ class SortableIterator implements \IteratorAggregate
 
     /**
      * @param \Traversable $iterator The Iterator to filter
-     * @param int|callable $sort The sort type (SORT_BY_NAME, SORT_BY_TYPE, or a PHP callback)
+     * @param int|callable $sort     The sort type (SORT_BY_NAME, SORT_BY_TYPE, or a PHP callback)
      *
      * @throws \InvalidArgumentException
      */
@@ -63,7 +63,7 @@ class SortableIterator implements \IteratorAggregate
             $this->sort = function ($a, $b) {
                 return $a->getMTime() - $b->getMTime();
             };
-        } elseif (is_callable($sort)) {
+        } elseif (\is_callable($sort)) {
             $this->sort = $sort;
         } else {
             throw new \InvalidArgumentException('The SortableIterator takes a PHP callable or a valid built-in sort algorithm as an argument.');

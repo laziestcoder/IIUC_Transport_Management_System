@@ -30,6 +30,67 @@ class Select extends Presenter
     }
 
     /**
+     * Build options.
+     *
+     * @return array
+     */
+    protected function buildOptions() : array
+    {
+        if (is_string($this->options)) {
+            $this->loadRemoteOptions($this->options);
+        }
+
+        if ($this->options instanceof \Closure) {
+            $this->options = $this->options->call($this->filter, $this->filter->getValue());
+        }
+
+        if ($this->options instanceof Arrayable) {
+            $this->options = $this->options->toArray();
+        }
+
+        if (empty($this->script)) {
+            $placeholder = trans('admin.choose');
+
+            $this->script = <<<SCRIPT
+$(".{$this->getElementClass()}").select2({
+  placeholder: "$placeholder"
+});
+
+SCRIPT;
+        }
+
+        Admin::script($this->script);
+
+        return is_array($this->options) ? $this->options : [];
+    }
+
+    /**
+     * Load options from remote.
+     *
+     * @param string $url
+     * @param array  $parameters
+     * @param array  $options
+     *
+     * @return $this
+     */
+    protected function loadRemoteOptions($url, $parameters = [], $options = [])
+    {
+        $ajaxOptions = [
+            'url' => $url.'?'.http_build_query($parameters),
+        ];
+
+        $ajaxOptions = json_encode(array_merge($ajaxOptions, $options));
+
+        $this->script = <<<EOT
+
+$.ajax($ajaxOptions).done(function(data) {
+  $(".{$this->getElementClass()}").select2({data: data});
+});
+
+EOT;
+    }
+
+    /**
      * Load options from ajax.
      *
      * @param string $resourceUrl
@@ -74,83 +135,22 @@ EOT;
     }
 
     /**
-     * @return string
-     */
-    protected function getElementClass(): string
-    {
-        return str_replace('.', '_', $this->filter->getColumn());
-    }
-
-    /**
      * @return array
      */
-    public function variables(): array
+    public function variables() : array
     {
         return [
             'options' => $this->buildOptions(),
-            'class' => $this->getElementClass(),
+            'class'   => $this->getElementClass(),
         ];
     }
 
     /**
-     * Build options.
-     *
-     * @return array
+     * @return string
      */
-    protected function buildOptions(): array
+    protected function getElementClass() : string
     {
-        if (is_string($this->options)) {
-            $this->loadRemoteOptions($this->options);
-        }
-
-        if ($this->options instanceof \Closure) {
-            $this->options = $this->options->call($this->filter, $this->filter->getValue());
-        }
-
-        if ($this->options instanceof Arrayable) {
-            $this->options = $this->options->toArray();
-        }
-
-        if (empty($this->script)) {
-            $placeholder = trans('admin.choose');
-
-            $this->script = <<<SCRIPT
-$(".{$this->getElementClass()}").select2({
-  placeholder: "$placeholder"
-});
-
-SCRIPT;
-        }
-
-        Admin::script($this->script);
-
-        return is_array($this->options) ? $this->options : [];
-    }
-
-    /**
-     * Load options from remote.
-     *
-     * @param string $url
-     * @param array $parameters
-     * @param array $options
-     *
-     * @return $this
-     */
-    protected function loadRemoteOptions($url, $parameters = [], $options = [])
-    {
-        $ajaxOptions = [
-            'url' => $url . '?' . http_build_query($parameters),
-        ];
-
-        $ajaxOptions = json_encode(array_merge($ajaxOptions, $options));
-
-        $this->script = <<<EOT
-
-$.ajax($ajaxOptions).done(function(data) {
-  $(".{$this->getElementClass()}").select2({data: data});
-});
-
-EOT;
+        return str_replace('.', '_', $this->filter->getColumn());
     }
 
     /**
@@ -163,7 +163,7 @@ EOT;
      *
      * @return $this
      */
-    public function load($target, $resourceUrl, $idField = 'id', $textField = 'text'): self
+    public function load($target, $resourceUrl, $idField = 'id', $textField = 'text') : self
     {
         $column = $this->filter->getColumn();
 
@@ -197,7 +197,7 @@ EOT;
      *
      * @return mixed
      */
-    protected function getClass($target): string
+    protected function getClass($target) : string
     {
         return str_replace('.', '_', $target);
     }

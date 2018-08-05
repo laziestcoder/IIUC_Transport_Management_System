@@ -7,27 +7,27 @@ class MySqlBuilder extends Builder
     /**
      * Determine if the given table exists.
      *
-     * @param  string $table
+     * @param  string  $table
      * @return bool
      */
     public function hasTable($table)
     {
-        $table = $this->connection->getTablePrefix() . $table;
+        $table = $this->connection->getTablePrefix().$table;
 
         return count($this->connection->select(
-                $this->grammar->compileTableExists(), [$this->connection->getDatabaseName(), $table]
-            )) > 0;
+            $this->grammar->compileTableExists(), [$this->connection->getDatabaseName(), $table]
+        )) > 0;
     }
 
     /**
      * Get the column listing for a given table.
      *
-     * @param  string $table
+     * @param  string  $table
      * @return array
      */
     public function getColumnListing($table)
     {
-        $table = $this->connection->getTablePrefix() . $table;
+        $table = $this->connection->getTablePrefix().$table;
 
         $results = $this->connection->select(
             $this->grammar->compileColumnListing(), [$this->connection->getDatabaseName(), $table]
@@ -46,7 +46,7 @@ class MySqlBuilder extends Builder
         $tables = [];
 
         foreach ($this->getAllTables() as $row) {
-            $row = (array)$row;
+            $row = (array) $row;
 
             $tables[] = reset($row);
         }
@@ -65,6 +65,30 @@ class MySqlBuilder extends Builder
     }
 
     /**
+     * Drop all views from the database.
+     *
+     * @return void
+     */
+    public function dropAllViews()
+    {
+        $views = [];
+
+        foreach ($this->getAllViews() as $row) {
+            $row = (array) $row;
+
+            $views[] = reset($row);
+        }
+
+        if (empty($views)) {
+            return;
+        }
+
+        $this->connection->statement(
+            $this->grammar->compileDropAllViews($views)
+        );
+    }
+
+    /**
      * Get all of the table names for the database.
      *
      * @return array
@@ -73,6 +97,18 @@ class MySqlBuilder extends Builder
     {
         return $this->connection->select(
             $this->grammar->compileGetAllTables()
+        );
+    }
+
+    /**
+     * Get all of the view names for the database.
+     *
+     * @return array
+     */
+    protected function getAllViews()
+    {
+        return $this->connection->select(
+            $this->grammar->compileGetAllViews()
         );
     }
 }

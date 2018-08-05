@@ -26,6 +26,23 @@ class CommandTesterTest extends TestCase
     protected $command;
     protected $tester;
 
+    protected function setUp()
+    {
+        $this->command = new Command('foo');
+        $this->command->addArgument('command');
+        $this->command->addArgument('foo');
+        $this->command->setCode(function ($input, $output) { $output->writeln('foo'); });
+
+        $this->tester = new CommandTester($this->command);
+        $this->tester->execute(array('foo' => 'bar'), array('interactive' => false, 'decorated' => false, 'verbosity' => Output::VERBOSITY_VERBOSE));
+    }
+
+    protected function tearDown()
+    {
+        $this->command = null;
+        $this->tester = null;
+    }
+
     public function testExecute()
     {
         $this->assertFalse($this->tester->getInput()->isInteractive(), '->execute() takes an interactive option');
@@ -41,12 +58,12 @@ class CommandTesterTest extends TestCase
     public function testGetOutput()
     {
         rewind($this->tester->getOutput()->getStream());
-        $this->assertEquals('foo' . PHP_EOL, stream_get_contents($this->tester->getOutput()->getStream()), '->getOutput() returns the current output instance');
+        $this->assertEquals('foo'.PHP_EOL, stream_get_contents($this->tester->getOutput()->getStream()), '->getOutput() returns the current output instance');
     }
 
     public function testGetDisplay()
     {
-        $this->assertEquals('foo' . PHP_EOL, $this->tester->getDisplay(), '->getDisplay() returns the display of the last execution');
+        $this->assertEquals('foo'.PHP_EOL, $this->tester->getDisplay(), '->getDisplay() returns the display of the last execution');
     }
 
     public function testGetStatusCode()
@@ -60,9 +77,7 @@ class CommandTesterTest extends TestCase
         $application->setAutoExit(false);
 
         $command = new Command('foo');
-        $command->setCode(function ($input, $output) {
-            $output->writeln('foo');
-        });
+        $command->setCode(function ($input, $output) { $output->writeln('foo'); });
 
         $application->add($command);
 
@@ -144,24 +159,5 @@ class CommandTesterTest extends TestCase
         $tester->execute(array());
 
         $this->assertEquals(0, $tester->getStatusCode());
-    }
-
-    protected function setUp()
-    {
-        $this->command = new Command('foo');
-        $this->command->addArgument('command');
-        $this->command->addArgument('foo');
-        $this->command->setCode(function ($input, $output) {
-            $output->writeln('foo');
-        });
-
-        $this->tester = new CommandTester($this->command);
-        $this->tester->execute(array('foo' => 'bar'), array('interactive' => false, 'decorated' => false, 'verbosity' => Output::VERBOSITY_VERBOSE));
-    }
-
-    protected function tearDown()
-    {
-        $this->command = null;
-        $this->tester = null;
     }
 }

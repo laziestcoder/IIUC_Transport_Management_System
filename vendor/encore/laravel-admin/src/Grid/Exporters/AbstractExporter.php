@@ -59,7 +59,7 @@ abstract class AbstractExporter implements ExporterInterface
 
     /**
      * @param callable $callback
-     * @param int $count
+     * @param int      $count
      *
      * @return bool
      */

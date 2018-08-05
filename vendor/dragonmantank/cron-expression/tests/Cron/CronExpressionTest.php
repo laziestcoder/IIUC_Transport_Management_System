@@ -3,6 +3,7 @@
 namespace Cron\Tests;
 
 use Cron\CronExpression;
+use Cron\MonthField;
 use DateTime;
 use DateTimeZone;
 use InvalidArgumentException;
@@ -13,21 +14,6 @@ use PHPUnit\Framework\TestCase;
  */
 class CronExpressionTest extends TestCase
 {
-    /**
-     * Data provider for testParsesCronScheduleWithAnySpaceCharsAsSeparators
-     *
-     * @return array
-     */
-    public static function scheduleWithDifferentSeparatorsProvider()
-    {
-        return array(
-            array("*\t*\t*\t*\t*\t", array('*', '*', '*', '*', '*', '*')),
-            array("*  *  *  *  *  ", array('*', '*', '*', '*', '*', '*')),
-            array("* \t * \t * \t * \t * \t", array('*', '*', '*', '*', '*', '*')),
-            array("*\t \t*\t \t*\t \t*\t \t*\t \t", array('*', '*', '*', '*', '*', '*')),
-        );
-    }
-
     /**
      * @covers \Cron\CronExpression::factory
      */
@@ -53,7 +39,7 @@ class CronExpressionTest extends TestCase
         $this->assertSame('4,5,6', $cron->getExpression(CronExpression::MONTH));
         $this->assertSame('*/3', $cron->getExpression(CronExpression::WEEKDAY));
         $this->assertSame('1 2-4 * 4,5,6 */3', $cron->getExpression());
-        $this->assertSame('1 2-4 * 4,5,6 */3', (string)$cron);
+        $this->assertSame('1 2-4 * 4,5,6 */3', (string) $cron);
         $this->assertNull($cron->getExpression('foo'));
     }
 
@@ -70,8 +56,8 @@ class CronExpressionTest extends TestCase
     }
 
     /**
-     * @covers       \Cron\CronExpression::__construct
-     * @covers       \Cron\CronExpression::getExpression
+     * @covers \Cron\CronExpression::__construct
+     * @covers \Cron\CronExpression::getExpression
      * @dataProvider scheduleWithDifferentSeparatorsProvider
      */
     public function testParsesCronScheduleWithAnySpaceCharsAsSeparators($schedule, array $expected)
@@ -82,6 +68,21 @@ class CronExpressionTest extends TestCase
         $this->assertSame($expected[2], $cron->getExpression(CronExpression::DAY));
         $this->assertSame($expected[3], $cron->getExpression(CronExpression::MONTH));
         $this->assertSame($expected[4], $cron->getExpression(CronExpression::WEEKDAY));
+    }
+
+    /**
+     * Data provider for testParsesCronScheduleWithAnySpaceCharsAsSeparators
+     *
+     * @return array
+     */
+    public static function scheduleWithDifferentSeparatorsProvider()
+    {
+        return array(
+            array("*\t*\t*\t*\t*\t", array('*', '*', '*', '*', '*', '*')),
+            array("*  *  *  *  *  ", array('*', '*', '*', '*', '*', '*')),
+            array("* \t * \t * \t * \t * \t", array('*', '*', '*', '*', '*', '*')),
+            array("*\t \t*\t \t*\t \t*\t \t*\t \t", array('*', '*', '*', '*', '*', '*')),
+        );
     }
 
     /**
@@ -183,14 +184,14 @@ class CronExpressionTest extends TestCase
     }
 
     /**
-     * @covers       \Cron\CronExpression::isDue
-     * @covers       \Cron\CronExpression::getNextRunDate
-     * @covers       \Cron\DayOfMonthField
-     * @covers       \Cron\DayOfWeekField
-     * @covers       \Cron\MinutesField
-     * @covers       \Cron\HoursField
-     * @covers       \Cron\MonthField
-     * @covers       \Cron\CronExpression::getRunDate
+     * @covers \Cron\CronExpression::isDue
+     * @covers \Cron\CronExpression::getNextRunDate
+     * @covers \Cron\DayOfMonthField
+     * @covers \Cron\DayOfWeekField
+     * @covers \Cron\MinutesField
+     * @covers \Cron\HoursField
+     * @covers \Cron\MonthField
+     * @covers \Cron\CronExpression::getRunDate
      * @dataProvider scheduleProvider
      */
     public function testDeterminesIfCronIsDue($schedule, $relativeTime, $nextRun, $isDue)
@@ -277,16 +278,16 @@ class CronExpressionTest extends TestCase
         $this->assertTrue($cron->isDue(new DateTime($date, new DateTimeZone('Asia/Tokyo')), 'Asia/Tokyo'));
     }
 
-    /**
+   /**
      * @covers Cron\CronExpression::isDue
      */
     public function testIsDueHandlesDifferentTimezonesAsArgument()
     {
-        $cron = CronExpression::factory('0 15 * * 3'); //Wednesday at 15:00
-        $date = '2014-01-01 15:00'; //Wednesday
-        $utc = new \DateTimeZone('UTC');
+        $cron      = CronExpression::factory('0 15 * * 3'); //Wednesday at 15:00
+        $date      = '2014-01-01 15:00'; //Wednesday
+        $utc       = new \DateTimeZone('UTC');
         $amsterdam = new \DateTimeZone('Europe/Amsterdam');
-        $tokyo = new \DateTimeZone('Asia/Tokyo');
+        $tokyo     = new \DateTimeZone('Asia/Tokyo');
         $this->assertTrue($cron->isDue(new DateTime($date, $utc), 'UTC'));
         $this->assertFalse($cron->isDue(new DateTime($date, $amsterdam), 'UTC'));
         $this->assertFalse($cron->isDue(new DateTime($date, $tokyo), 'UTC'));
@@ -365,8 +366,7 @@ class CronExpressionTest extends TestCase
      * @covers \Cron\CronExpression::getMultipleRunDates
      * @covers \Cron\CronExpression::setMaxIterationCount
      */
-    public function testProvidesMultipleRunDatesForTheFarFuture()
-    {
+    public function testProvidesMultipleRunDatesForTheFarFuture() {
         // Fails with the default 1000 iteration limit
         $cron = CronExpression::factory('0 0 12 1 *');
         $cron->setMaxIterationCount(2000);
@@ -451,8 +451,7 @@ class CronExpressionTest extends TestCase
     /**
      * @see https://github.com/mtdowling/cron-expression/issues/20
      */
-    public function testIssue20()
-    {
+    public function testIssue20() {
         $e = CronExpression::factory('* * * * MON#1');
         $this->assertTrue($e->isDue(new DateTime('2014-04-07 00:00:00')));
         $this->assertFalse($e->isDue(new DateTime('2014-04-14 00:00:00')));
@@ -509,5 +508,53 @@ class CronExpressionTest extends TestCase
 
         // see https://github.com/dragonmantank/cron-expression/issues/5
         $this->assertTrue(CronExpression::isValidExpression('2,17,35,47 5-7,11-13 * * *'));
+    }
+
+    /**
+     * Makes sure that 00 is considered a valid value for 0-based fields
+     * cronie allows numbers with a leading 0, so adding support for this as well
+     *
+     * @see https://github.com/dragonmantank/cron-expression/issues/12
+     */
+    public function testDoubleZeroIsValid()
+    {
+        $this->assertTrue(CronExpression::isValidExpression('00 * * * *'));
+        $this->assertTrue(CronExpression::isValidExpression('01 * * * *'));
+        $this->assertTrue(CronExpression::isValidExpression('* 00 * * *'));
+        $this->assertTrue(CronExpression::isValidExpression('* 01 * * *'));
+
+        $e = CronExpression::factory('00 * * * *');
+        $this->assertTrue($e->isDue(new DateTime('2014-04-07 00:00:00')));
+        $e = CronExpression::factory('01 * * * *');
+        $this->assertTrue($e->isDue(new DateTime('2014-04-07 00:01:00')));
+
+        $e = CronExpression::factory('* 00 * * *');
+        $this->assertTrue($e->isDue(new DateTime('2014-04-07 00:00:00')));
+        $e = CronExpression::factory('* 01 * * *');
+        $this->assertTrue($e->isDue(new DateTime('2014-04-07 01:00:00')));
+    }
+
+
+    /**
+     * Ranges with large steps should "wrap around" to the appropriate value
+     * cronie allows for steps that are larger than the range of a field, with it wrapping around like a ring buffer. We
+     * should do the same.
+     *
+     * @see https://github.com/dragonmantank/cron-expression/issues/6
+     */
+    public function testRangesWrapAroundWithLargeSteps()
+    {
+        $f = new MonthField();
+        $this->assertTrue($f->validate('*/123'));
+        $this->assertSame([4], $f->getRangeForExpression('*/123', 12));
+
+        $e = CronExpression::factory('* * * */123 *');
+        $this->assertTrue($e->isDue(new DateTime('2014-04-07 00:00:00')));
+
+        $nextRunDate = $e->getNextRunDate(new DateTime('2014-04-07 00:00:00'));
+        $this->assertSame('2014-04-07 00:01:00', $nextRunDate->format('Y-m-d H:i:s'));
+
+        $nextRunDate = $e->getNextRunDate(new DateTime('2014-05-07 00:00:00'));
+        $this->assertSame('2015-04-01 00:00:00', $nextRunDate->format('Y-m-d H:i:s'));
     }
 }

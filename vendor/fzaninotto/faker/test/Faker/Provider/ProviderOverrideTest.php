@@ -6,6 +6,7 @@
 namespace Faker\Test\Provider;
 
 use Faker;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ProviderOverrideTest
@@ -16,7 +17,7 @@ use Faker;
  * locale specific provider (can) has specific implementations. The goal of this test is to test the common denominator
  * and to try to catch possible invalid multi-byte sequences.
  */
-class ProviderOverrideTest extends \PHPUnit_Framework_TestCase
+class ProviderOverrideTest extends TestCase
 {
     /**
      * Constants with regular expression patterns for testing the output.
@@ -134,7 +135,7 @@ class ProviderOverrideTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider localeDataProvider
      *
-     * @param null $locale
+     * @param null   $locale
      * @param string $locale
      */
     public function testUuid($locale = null)
@@ -172,20 +173,20 @@ class ProviderOverrideTest extends \PHPUnit_Framework_TestCase
     {
         static $locales = array();
 
-        if (!empty($locales)) {
+        if ( ! empty($locales)) {
             return $locales;
         }
 
         // Finding all PHP files in the xx_XX directories
-        $providerDir = __DIR__ . '/../../../src/Faker/Provider';
-        foreach (glob($providerDir . '/*_*/*.php') as $file) {
+        $providerDir = __DIR__ .'/../../../src/Faker/Provider';
+        foreach (glob($providerDir .'/*_*/*.php') as $file) {
             $localisation = basename(dirname($file));
 
-            if (isset($locales[$localisation])) {
+            if (isset($locales[ $localisation ])) {
                 continue;
             }
 
-            $locales[$localisation] = $localisation;
+            $locales[ $localisation ] = $localisation;
         }
 
         return $locales;

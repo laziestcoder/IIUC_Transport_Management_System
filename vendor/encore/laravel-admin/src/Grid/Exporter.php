@@ -13,22 +13,25 @@ class Exporter
     const SCOPE_ALL = 'all';
     const SCOPE_CURRENT_PAGE = 'page';
     const SCOPE_SELECTED_ROWS = 'selected';
+
     /**
-     * Export query name.
-     *
-     * @var string
+     * @var Grid
      */
-    public static $queryName = '_export_';
+    protected $grid;
+
     /**
      * Available exporter drivers.
      *
      * @var array
      */
     protected static $drivers = [];
+
     /**
-     * @var Grid
+     * Export query name.
+     *
+     * @var string
      */
-    protected $grid;
+    public static $queryName = '_export_';
 
     /**
      * Create a new Exporter instance.
@@ -61,33 +64,6 @@ class Exporter
     public static function extend($driver, $extend)
     {
         static::$drivers[$driver] = $extend;
-    }
-
-    /**
-     * Format query for export url.
-     *
-     * @param int $scope
-     * @param null $args
-     *
-     * @return array
-     */
-    public static function formatExportQuery($scope = '', $args = null)
-    {
-        $query = '';
-
-        if ($scope == static::SCOPE_ALL) {
-            $query = 'all';
-        }
-
-        if ($scope == static::SCOPE_CURRENT_PAGE) {
-            $query = "page:$args";
-        }
-
-        if ($scope == static::SCOPE_SELECTED_ROWS) {
-            $query = "selected:$args";
-        }
-
-        return [static::$queryName => $query];
     }
 
     /**
@@ -130,5 +106,32 @@ class Exporter
     public function getDefaultExporter()
     {
         return new CsvExporter($this->grid);
+    }
+
+    /**
+     * Format query for export url.
+     *
+     * @param int  $scope
+     * @param null $args
+     *
+     * @return array
+     */
+    public static function formatExportQuery($scope = '', $args = null)
+    {
+        $query = '';
+
+        if ($scope == static::SCOPE_ALL) {
+            $query = 'all';
+        }
+
+        if ($scope == static::SCOPE_CURRENT_PAGE) {
+            $query = "page:$args";
+        }
+
+        if ($scope == static::SCOPE_SELECTED_ROWS) {
+            $query = "selected:$args";
+        }
+
+        return [static::$queryName => $query];
     }
 }

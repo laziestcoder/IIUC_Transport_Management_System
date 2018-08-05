@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework\Constraint;
 
 use PHPUnit\Framework\ExpectationFailedException;
@@ -27,13 +26,11 @@ class IsAnything extends Constraint
      * a boolean value instead: true in case of success, false in case of a
      * failure.
      *
-     * @param mixed $other value or object to evaluate
-     * @param string $description Additional information about the test
-     * @param bool $returnResult Whether to return a result or throw an exception
+     * @param mixed  $other        value or object to evaluate
+     * @param string $description  Additional information about the test
+     * @param bool   $returnResult Whether to return a result or throw an exception
      *
      * @throws ExpectationFailedException
-     *
-     * @return mixed
      */
     public function evaluate($other, $description = '', $returnResult = false)
     {

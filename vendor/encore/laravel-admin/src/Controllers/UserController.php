@@ -30,6 +30,36 @@ class UserController extends Controller
     }
 
     /**
+     * Edit interface.
+     *
+     * @param $id
+     *
+     * @return Content
+     */
+    public function edit($id)
+    {
+        return Admin::content(function (Content $content) use ($id) {
+            $content->header(trans('admin.administrator'));
+            $content->description(trans('admin.edit'));
+            $content->body($this->form()->edit($id));
+        });
+    }
+
+    /**
+     * Create interface.
+     *
+     * @return Content
+     */
+    public function create()
+    {
+        return Admin::content(function (Content $content) {
+            $content->header(trans('admin.administrator'));
+            $content->description(trans('admin.create'));
+            $content->body($this->form());
+        });
+    }
+
+    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -55,22 +85,6 @@ class UserController extends Controller
                     $actions->disableDelete();
                 });
             });
-        });
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param $id
-     *
-     * @return Content
-     */
-    public function edit($id)
-    {
-        return Admin::content(function (Content $content) use ($id) {
-            $content->header(trans('admin.administrator'));
-            $content->description(trans('admin.edit'));
-            $content->body($this->form()->edit($id));
         });
     }
 
@@ -106,20 +120,6 @@ class UserController extends Controller
                     $form->password = bcrypt($form->password);
                 }
             });
-        });
-    }
-
-    /**
-     * Create interface.
-     *
-     * @return Content
-     */
-    public function create()
-    {
-        return Admin::content(function (Content $content) {
-            $content->header(trans('admin.administrator'));
-            $content->description(trans('admin.create'));
-            $content->body($this->form());
         });
     }
 }

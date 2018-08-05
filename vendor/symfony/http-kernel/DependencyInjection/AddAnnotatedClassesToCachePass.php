@@ -36,7 +36,7 @@ class AddAnnotatedClassesToCachePass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $annotatedClasses = array();
+        $annotatedClasses = $this->kernel->getAnnotatedClassesToCompile();
         foreach ($container->getExtensions() as $extension) {
             if ($extension instanceof Extension) {
                 $annotatedClasses = array_merge($annotatedClasses, $extension->getAnnotatedClassesToCompile());
@@ -49,32 +49,11 @@ class AddAnnotatedClassesToCachePass implements CompilerPassInterface
         $this->kernel->setAnnotatedClassCache($this->expandClasses($annotatedClasses, $existingClasses));
     }
 
-    private function getClassesInComposerClassMaps()
-    {
-        $classes = array();
-
-        foreach (spl_autoload_functions() as $function) {
-            if (!is_array($function)) {
-                continue;
-            }
-
-            if ($function[0] instanceof DebugClassLoader) {
-                $function = $function[0]->getClassLoader();
-            }
-
-            if (is_array($function) && $function[0] instanceof ClassLoader) {
-                $classes += array_filter($function[0]->getClassMap());
-            }
-        }
-
-        return array_keys($classes);
-    }
-
     /**
      * Expands the given class patterns using a list of existing classes.
      *
      * @param array $patterns The class patterns to expand
-     * @param array $classes The existing classes to match against the patterns
+     * @param array $classes  The existing classes to match against the patterns
      *
      * @return array A list of classes derivated from the patterns
      */
@@ -104,6 +83,27 @@ class AddAnnotatedClassesToCachePass implements CompilerPassInterface
         return array_unique($expanded);
     }
 
+    private function getClassesInComposerClassMaps()
+    {
+        $classes = array();
+
+        foreach (spl_autoload_functions() as $function) {
+            if (!\is_array($function)) {
+                continue;
+            }
+
+            if ($function[0] instanceof DebugClassLoader) {
+                $function = $function[0]->getClassLoader();
+            }
+
+            if (\is_array($function) && $function[0] instanceof ClassLoader) {
+                $classes += array_filter($function[0]->getClassMap());
+            }
+        }
+
+        return array_keys($classes);
+    }
+
     private function patternsToRegexps($patterns)
     {
         $regexps = array();
@@ -120,7 +120,7 @@ class AddAnnotatedClassesToCachePass implements CompilerPassInterface
                 $regex .= '$';
             }
 
-            $regexps[] = '{^\\\\' . $regex . '}';
+            $regexps[] = '{^\\\\'.$regex.'}';
         }
 
         return $regexps;
@@ -135,7 +135,7 @@ class AddAnnotatedClassesToCachePass implements CompilerPassInterface
                 continue;
             }
 
-            if (preg_match($regex, '\\' . $class)) {
+            if (preg_match($regex, '\\'.$class)) {
                 return true;
             }
         }

@@ -83,8 +83,7 @@ class ArgumentResolverTest extends TestCase
     {
         $request = Request::create('/');
         $request->attributes->set('foo', 'foo');
-        $controller = function ($foo) {
-        };
+        $controller = function ($foo) {};
 
         $this->assertEquals(array('foo'), self::$resolver->getArguments($request, $controller));
     }
@@ -93,8 +92,7 @@ class ArgumentResolverTest extends TestCase
     {
         $request = Request::create('/');
         $request->attributes->set('foo', 'foo');
-        $controller = function ($foo, $bar = 'bar') {
-        };
+        $controller = function ($foo, $bar = 'bar') {};
 
         $this->assertEquals(array('foo', 'bar'), self::$resolver->getArguments($request, $controller));
     }
@@ -118,7 +116,7 @@ class ArgumentResolverTest extends TestCase
         $request = Request::create('/');
         $request->attributes->set('foo', 'foo');
         $request->attributes->set('foobar', 'foobar');
-        $controller = __NAMESPACE__ . '\controller_function';
+        $controller = __NAMESPACE__.'\controller_function';
 
         $this->assertEquals(array('foo', 'foobar'), self::$resolver->getArguments($request, $controller));
     }

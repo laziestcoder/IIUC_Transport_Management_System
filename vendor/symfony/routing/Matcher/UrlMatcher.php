@@ -33,7 +33,19 @@ class UrlMatcher implements UrlMatcherInterface, RequestMatcherInterface
     const ROUTE_MATCH = 2;
 
     protected $context;
+
+    /**
+     * Collects HTTP methods that would be allowed for the request.
+     */
     protected $allow = array();
+
+    /**
+     * Collects URI schemes that would be allowed for the request.
+     *
+     * @internal
+     */
+    protected $allowSchemes = array();
+
     protected $routes;
     protected $request;
     protected $expressionLanguage;
@@ -52,6 +64,14 @@ class UrlMatcher implements UrlMatcherInterface, RequestMatcherInterface
     /**
      * {@inheritdoc}
      */
+    public function setContext(RequestContext $context)
+    {
+        $this->context = $context;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getContext()
     {
         return $this->context;
@@ -60,9 +80,21 @@ class UrlMatcher implements UrlMatcherInterface, RequestMatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function setContext(RequestContext $context)
+    public function match($pathinfo)
     {
-        $this->context = $context;
+        $this->allow = $this->allowSchemes = array();
+
+        if ($ret = $this->matchCollection(rawurldecode($pathinfo), $this->routes)) {
+            return $ret;
+        }
+
+        if ('/' === $pathinfo && !$this->allow) {
+            throw new NoConfigurationException();
+        }
+
+        throw 0 < \count($this->allow)
+            ? new MethodNotAllowedException(array_unique($this->allow))
+            : new ResourceNotFoundException(sprintf('No routes found for "%s".', $pathinfo));
     }
 
     /**
@@ -79,31 +111,16 @@ class UrlMatcher implements UrlMatcherInterface, RequestMatcherInterface
         return $ret;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function match($pathinfo)
+    public function addExpressionLanguageProvider(ExpressionFunctionProviderInterface $provider)
     {
-        $this->allow = array();
-
-        if ($ret = $this->matchCollection(rawurldecode($pathinfo), $this->routes)) {
-            return $ret;
-        }
-
-        if ('/' === $pathinfo && !$this->allow) {
-            throw new NoConfigurationException();
-        }
-
-        throw 0 < count($this->allow)
-            ? new MethodNotAllowedException(array_unique($this->allow))
-            : new ResourceNotFoundException(sprintf('No routes found for "%s".', $pathinfo));
+        $this->expressionLanguageProviders[] = $provider;
     }
 
     /**
      * Tries to match a URL with a set of routes.
      *
-     * @param string $pathinfo The path info to be parsed
-     * @param RouteCollection $routes The set of routes
+     * @param string          $pathinfo The path info to be parsed
+     * @param RouteCollection $routes   The set of routes
      *
      * @return array An array of parameters
      *
@@ -136,15 +153,15 @@ class UrlMatcher implements UrlMatcherInterface, RequestMatcherInterface
                 continue;
             }
 
-            // check HTTP method requirement
+            $hasRequiredScheme = !$route->getSchemes() || $route->hasScheme($this->context->getScheme());
             if ($requiredMethods = $route->getMethods()) {
                 // HEAD and GET are equivalent as per RFC
                 if ('HEAD' === $method = $this->context->getMethod()) {
                     $method = 'GET';
                 }
 
-                if (!in_array($method, $requiredMethods)) {
-                    if (self::REQUIREMENT_MATCH === $status[0]) {
+                if (!\in_array($method, $requiredMethods)) {
+                    if ($hasRequiredScheme) {
                         $this->allow = array_merge($this->allow, $requiredMethods);
                     }
 
@@ -152,16 +169,47 @@ class UrlMatcher implements UrlMatcherInterface, RequestMatcherInterface
                 }
             }
 
+            if (!$hasRequiredScheme) {
+                $this->allowSchemes = array_merge($this->allowSchemes, $route->getSchemes());
+
+                continue;
+            }
+
             return $this->getAttributes($route, $name, array_replace($matches, $hostMatches, isset($status[1]) ? $status[1] : array()));
         }
+    }
+
+    /**
+     * Returns an array of values to use as request attributes.
+     *
+     * As this method requires the Route object, it is not available
+     * in matchers that do not have access to the matched Route instance
+     * (like the PHP and Apache matcher dumpers).
+     *
+     * @param Route  $route      The route we are matching against
+     * @param string $name       The name of the route
+     * @param array  $attributes An array of attributes from the matcher
+     *
+     * @return array An array of parameters
+     */
+    protected function getAttributes(Route $route, $name, array $attributes)
+    {
+        $defaults = $route->getDefaults();
+        if (isset($defaults['_canonical_route'])) {
+            $name = $defaults['_canonical_route'];
+            unset($defaults['_canonical_route']);
+        }
+        $attributes['_route'] = $name;
+
+        return $this->mergeDefaults($attributes, $defaults);
     }
 
     /**
      * Handles specific route requirements.
      *
      * @param string $pathinfo The path
-     * @param string $name The route name
-     * @param Route $route The route
+     * @param string $name     The route name
+     * @param Route  $route    The route
      *
      * @return array The first element represents the status, the second contains additional information
      */
@@ -172,11 +220,26 @@ class UrlMatcher implements UrlMatcherInterface, RequestMatcherInterface
             return array(self::REQUIREMENT_MISMATCH, null);
         }
 
-        // check HTTP scheme requirement
-        $scheme = $this->context->getScheme();
-        $status = $route->getSchemes() && !$route->hasScheme($scheme) ? self::REQUIREMENT_MISMATCH : self::REQUIREMENT_MATCH;
+        return array(self::REQUIREMENT_MATCH, null);
+    }
 
-        return array($status, null);
+    /**
+     * Get merged default parameters.
+     *
+     * @param array $params   The parameters
+     * @param array $defaults The defaults
+     *
+     * @return array Merged default parameters
+     */
+    protected function mergeDefaults($params, $defaults)
+    {
+        foreach ($params as $key => $value) {
+            if (!\is_int($key) && null !== $value) {
+                $defaults[$key] = $value;
+            }
+        }
+
+        return $defaults;
     }
 
     protected function getExpressionLanguage()
@@ -200,53 +263,9 @@ class UrlMatcher implements UrlMatcherInterface, RequestMatcherInterface
             return null;
         }
 
-        return Request::create($this->context->getScheme() . '://' . $this->context->getHost() . $this->context->getBaseUrl() . $pathinfo, $this->context->getMethod(), $this->context->getParameters(), array(), array(), array(
+        return Request::create($this->context->getScheme().'://'.$this->context->getHost().$this->context->getBaseUrl().$pathinfo, $this->context->getMethod(), $this->context->getParameters(), array(), array(), array(
             'SCRIPT_FILENAME' => $this->context->getBaseUrl(),
             'SCRIPT_NAME' => $this->context->getBaseUrl(),
         ));
-    }
-
-    /**
-     * Returns an array of values to use as request attributes.
-     *
-     * As this method requires the Route object, it is not available
-     * in matchers that do not have access to the matched Route instance
-     * (like the PHP and Apache matcher dumpers).
-     *
-     * @param Route $route The route we are matching against
-     * @param string $name The name of the route
-     * @param array $attributes An array of attributes from the matcher
-     *
-     * @return array An array of parameters
-     */
-    protected function getAttributes(Route $route, $name, array $attributes)
-    {
-        $attributes['_route'] = $name;
-
-        return $this->mergeDefaults($attributes, $route->getDefaults());
-    }
-
-    /**
-     * Get merged default parameters.
-     *
-     * @param array $params The parameters
-     * @param array $defaults The defaults
-     *
-     * @return array Merged default parameters
-     */
-    protected function mergeDefaults($params, $defaults)
-    {
-        foreach ($params as $key => $value) {
-            if (!is_int($key)) {
-                $defaults[$key] = $value;
-            }
-        }
-
-        return $defaults;
-    }
-
-    public function addExpressionLanguageProvider(ExpressionFunctionProviderInterface $provider)
-    {
-        $this->expressionLanguageProviders[] = $provider;
     }
 }

@@ -27,6 +27,11 @@ abstract class Node
         $this->setContextNode($context);
     }
 
+    public function getDom(): \DOMDocument
+    {
+        return $this->dom;
+    }
+
     public function getTotals(): Totals
     {
         $totalsContainer = $this->getContextNode()->firstChild;
@@ -43,17 +48,6 @@ abstract class Node
         return new Totals($totalsContainer);
     }
 
-    protected function getContextNode(): \DOMElement
-    {
-        return $this->contextNode;
-    }
-
-    protected function setContextNode(\DOMElement $context): void
-    {
-        $this->dom = $context->ownerDocument;
-        $this->contextNode = $context;
-    }
-
     public function addDirectory(string $name): Directory
     {
         $dirNode = $this->getDom()->createElementNS(
@@ -65,11 +59,6 @@ abstract class Node
         $this->getContextNode()->appendChild($dirNode);
 
         return new Directory($dirNode);
-    }
-
-    public function getDom(): \DOMDocument
-    {
-        return $this->dom;
     }
 
     public function addFile(string $name, string $href): File
@@ -84,5 +73,16 @@ abstract class Node
         $this->getContextNode()->appendChild($fileNode);
 
         return new File($fileNode);
+    }
+
+    protected function setContextNode(\DOMElement $context): void
+    {
+        $this->dom         = $context->ownerDocument;
+        $this->contextNode = $context;
+    }
+
+    protected function getContextNode(): \DOMElement
+    {
+        return $this->contextNode;
     }
 }

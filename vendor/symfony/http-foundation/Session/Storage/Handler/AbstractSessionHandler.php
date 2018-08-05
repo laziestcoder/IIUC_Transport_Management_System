@@ -33,11 +33,33 @@ abstract class AbstractSessionHandler implements \SessionHandlerInterface, \Sess
     {
         $this->sessionName = $sessionName;
         if (!headers_sent() && !ini_get('session.cache_limiter') && '0' !== ini_get('session.cache_limiter')) {
-            header(sprintf('Cache-Control: max-age=%d, private, must-revalidate', 60 * (int)ini_get('session.cache_expire')));
+            header(sprintf('Cache-Control: max-age=%d, private, must-revalidate', 60 * (int) ini_get('session.cache_expire')));
         }
 
         return true;
     }
+
+    /**
+     * @param string $sessionId
+     *
+     * @return string
+     */
+    abstract protected function doRead($sessionId);
+
+    /**
+     * @param string $sessionId
+     * @param string $data
+     *
+     * @return bool
+     */
+    abstract protected function doWrite($sessionId, $data);
+
+    /**
+     * @param string $sessionId
+     *
+     * @return bool
+     */
+    abstract protected function doDestroy($sessionId);
 
     /**
      * {@inheritdoc}
@@ -74,13 +96,6 @@ abstract class AbstractSessionHandler implements \SessionHandlerInterface, \Sess
     }
 
     /**
-     * @param string $sessionId
-     *
-     * @return string
-     */
-    abstract protected function doRead($sessionId);
-
-    /**
      * {@inheritdoc}
      */
     public function write($sessionId, $data)
@@ -104,7 +119,7 @@ abstract class AbstractSessionHandler implements \SessionHandlerInterface, \Sess
     {
         if (!headers_sent() && ini_get('session.use_cookies')) {
             if (!$this->sessionName) {
-                throw new \LogicException(sprintf('Session name cannot be empty, did you forget to call "parent::open()" in "%s"?.', get_class($this)));
+                throw new \LogicException(sprintf('Session name cannot be empty, did you forget to call "parent::open()" in "%s"?.', \get_class($this)));
             }
             $sessionCookie = sprintf(' %s=', urlencode($this->sessionName));
             $sessionCookieWithId = sprintf('%s%s;', $sessionCookie, urlencode($sessionId));
@@ -136,19 +151,4 @@ abstract class AbstractSessionHandler implements \SessionHandlerInterface, \Sess
 
         return $this->newSessionId === $sessionId || $this->doDestroy($sessionId);
     }
-
-    /**
-     * @param string $sessionId
-     *
-     * @return bool
-     */
-    abstract protected function doDestroy($sessionId);
-
-    /**
-     * @param string $sessionId
-     * @param string $data
-     *
-     * @return bool
-     */
-    abstract protected function doWrite($sessionId, $data);
 }

@@ -2,9 +2,9 @@
 
 namespace Illuminate\Broadcasting\Broadcasters;
 
-use Illuminate\Contracts\Redis\Factory as Redis;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Contracts\Redis\Factory as Redis;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class RedisBroadcaster extends Broadcaster
@@ -26,8 +26,8 @@ class RedisBroadcaster extends Broadcaster
     /**
      * Create a new broadcaster instance.
      *
-     * @param  \Illuminate\Contracts\Redis\Factory $redis
-     * @param  string|null $connection
+     * @param  \Illuminate\Contracts\Redis\Factory  $redis
+     * @param  string|null  $connection
      * @return void
      */
     public function __construct(Redis $redis, $connection = null)
@@ -39,20 +39,20 @@ class RedisBroadcaster extends Broadcaster
     /**
      * Authenticate the incoming request for a given channel.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return mixed
      * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
      */
     public function auth($request)
     {
         if (Str::startsWith($request->channel_name, ['private-', 'presence-']) &&
-            !$request->user()) {
+            ! $request->user()) {
             throw new AccessDeniedHttpException;
         }
 
         $channelName = Str::startsWith($request->channel_name, 'private-')
-            ? Str::replaceFirst('private-', '', $request->channel_name)
-            : Str::replaceFirst('presence-', '', $request->channel_name);
+                            ? Str::replaceFirst('private-', '', $request->channel_name)
+                            : Str::replaceFirst('presence-', '', $request->channel_name);
 
         return parent::verifyUserCanAccessChannel(
             $request, $channelName
@@ -62,8 +62,8 @@ class RedisBroadcaster extends Broadcaster
     /**
      * Return the valid authentication response.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  mixed $result
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $result
      * @return mixed
      */
     public function validAuthenticationResponse($request, $result)
@@ -81,9 +81,9 @@ class RedisBroadcaster extends Broadcaster
     /**
      * Broadcast the given event.
      *
-     * @param  array $channels
-     * @param  string $event
-     * @param  array $payload
+     * @param  array  $channels
+     * @param  string  $event
+     * @param  array  $payload
      * @return void
      */
     public function broadcast(array $channels, $event, array $payload = [])

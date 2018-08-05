@@ -14,8 +14,8 @@
 
 namespace Ramsey\Uuid;
 
-use Ramsey\Uuid\Codec\CodecInterface;
 use Ramsey\Uuid\Converter\NumberConverterInterface;
+use Ramsey\Uuid\Codec\CodecInterface;
 use Ramsey\Uuid\Exception\UnsupportedOperationException;
 
 /**
@@ -182,129 +182,10 @@ class Uuid implements UuidInterface
         array $fields,
         NumberConverterInterface $converter,
         CodecInterface $codec
-    )
-    {
+    ) {
         $this->fields = $fields;
         $this->codec = $codec;
         $this->converter = $converter;
-    }
-
-    /**
-     * Creates a UUID from a byte string.
-     *
-     * @param string $bytes
-     * @return UuidInterface
-     */
-    public static function fromBytes($bytes)
-    {
-        return self::getFactory()->fromBytes($bytes);
-    }
-
-    /**
-     * Returns the currently set factory used to create UUIDs.
-     *
-     * @return UuidFactoryInterface
-     */
-    public static function getFactory()
-    {
-        if (!self::$factory) {
-            self::$factory = new UuidFactory();
-        }
-
-        return self::$factory;
-    }
-
-    /**
-     * Sets the factory used to create UUIDs.
-     *
-     * @param UuidFactoryInterface $factory
-     */
-    public static function setFactory(UuidFactoryInterface $factory)
-    {
-        self::$factory = $factory;
-    }
-
-    /**
-     * Creates a UUID from a 128-bit integer string.
-     *
-     * @param string $integer String representation of 128-bit integer
-     * @return UuidInterface
-     */
-    public static function fromInteger($integer)
-    {
-        return self::getFactory()->fromInteger($integer);
-    }
-
-    /**
-     * Check if a string is a valid UUID.
-     *
-     * @param string $uuid The string UUID to test
-     * @return boolean
-     */
-    public static function isValid($uuid)
-    {
-        $uuid = str_replace(array('urn:', 'uuid:', '{', '}'), '', $uuid);
-
-        if ($uuid == self::NIL) {
-            return true;
-        }
-
-        if (!preg_match('/' . self::VALID_PATTERN . '/', $uuid)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Generate a version 1 UUID from a host ID, sequence number, and the current time.
-     *
-     * @param int|string $node A 48-bit number representing the hardware address
-     *     This number may be represented as an integer or a hexadecimal string.
-     * @param int $clockSeq A 14-bit number used to help avoid duplicates that
-     *     could arise when the clock is set backwards in time or if the node ID
-     *     changes.
-     * @return UuidInterface
-     */
-    public static function uuid1($node = null, $clockSeq = null)
-    {
-        return self::getFactory()->uuid1($node, $clockSeq);
-    }
-
-    /**
-     * Generate a version 3 UUID based on the MD5 hash of a namespace identifier
-     * (which is a UUID) and a name (which is a string).
-     *
-     * @param string $ns The UUID namespace in which to create the named UUID
-     * @param string $name The name to create a UUID for
-     * @return UuidInterface
-     */
-    public static function uuid3($ns, $name)
-    {
-        return self::getFactory()->uuid3($ns, $name);
-    }
-
-    /**
-     * Generate a version 4 (random) UUID.
-     *
-     * @return UuidInterface
-     */
-    public static function uuid4()
-    {
-        return self::getFactory()->uuid4();
-    }
-
-    /**
-     * Generate a version 5 UUID based on the SHA-1 hash of a namespace
-     * identifier (which is a UUID) and a name (which is a string).
-     *
-     * @param string $ns The UUID namespace in which to create the named UUID
-     * @param string $name The name to create a UUID for
-     * @return UuidInterface
-     */
-    public static function uuid5($ns, $name)
-    {
-        return self::getFactory()->uuid5($ns, $name);
     }
 
     /**
@@ -317,11 +198,6 @@ class Uuid implements UuidInterface
     public function __toString()
     {
         return $this->toString();
-    }
-
-    public function toString()
-    {
-        return $this->codec->encode($this);
     }
 
     /**
@@ -353,6 +229,7 @@ class Uuid implements UuidInterface
      *
      * @param string $serialized
      * @link http://php.net/manual/en/class.serializable.php
+     * @throws \Ramsey\Uuid\Exception\InvalidUuidStringException
      */
     public function unserialize($serialized)
     {
@@ -360,26 +237,6 @@ class Uuid implements UuidInterface
         $this->codec = $uuid->codec;
         $this->converter = $uuid->converter;
         $this->fields = $uuid->fields;
-    }
-
-    /**
-     * Creates a UUID from the string standard representation.
-     *
-     * @param string $name A string that specifies a UUID
-     * @return UuidInterface
-     */
-    public static function fromString($name)
-    {
-        return self::getFactory()->fromString($name);
-    }
-
-    public function equals($other)
-    {
-        if (!($other instanceof UuidInterface)) {
-            return false;
-        }
-
-        return ($this->compareTo($other) == 0);
     }
 
     public function compareTo(UuidInterface $other)
@@ -399,56 +256,18 @@ class Uuid implements UuidInterface
         return $comparison;
     }
 
-    public function getMostSignificantBitsHex()
+    public function equals($other)
     {
-        return sprintf(
-            '%08s%04s%04s',
-            $this->fields['time_low'],
-            $this->fields['time_mid'],
-            $this->fields['time_hi_and_version']
-        );
-    }
+        if (!($other instanceof UuidInterface)) {
+            return false;
+        }
 
-    public function getLeastSignificantBitsHex()
-    {
-        return sprintf(
-            '%02s%02s%012s',
-            $this->fields['clock_seq_hi_and_reserved'],
-            $this->fields['clock_seq_low'],
-            $this->fields['node']
-        );
+        return ($this->compareTo($other) == 0);
     }
 
     public function getBytes()
     {
         return $this->codec->encodeBinary($this);
-    }
-
-    public function getClockSequenceHex()
-    {
-        return sprintf('%04x', $this->getClockSequence());
-    }
-
-    /**
-     * Returns the clock sequence value associated with this UUID.
-     *
-     * For UUID version 1, the clock sequence is used to help avoid
-     * duplicates that could arise when the clock is set backwards in time
-     * or if the node ID changes.
-     *
-     * For UUID version 3 or 5, the clock sequence is a 14-bit value
-     * constructed from a name as described in RFC 4122, Section 4.3.
-     *
-     * For UUID version 4, clock sequence is a randomly or pseudo-randomly
-     * generated 14-bit value as described in RFC 4122, Section 4.4.
-     *
-     * @return int Unsigned 14-bit integer value of clock sequence
-     * @link http://tools.ietf.org/html/rfc4122#section-4.1.5
-     */
-    public function getClockSequence()
-    {
-        return (($this->getClockSeqHiAndReserved() & 0x3f) << 8)
-            | $this->getClockSeqLow();
     }
 
     /**
@@ -482,11 +301,41 @@ class Uuid implements UuidInterface
         return $this->fields['clock_seq_low'];
     }
 
+    /**
+     * Returns the clock sequence value associated with this UUID.
+     *
+     * For UUID version 1, the clock sequence is used to help avoid
+     * duplicates that could arise when the clock is set backwards in time
+     * or if the node ID changes.
+     *
+     * For UUID version 3 or 5, the clock sequence is a 14-bit value
+     * constructed from a name as described in RFC 4122, Section 4.3.
+     *
+     * For UUID version 4, clock sequence is a randomly or pseudo-randomly
+     * generated 14-bit value as described in RFC 4122, Section 4.4.
+     *
+     * @return int Unsigned 14-bit integer value of clock sequence
+     * @link http://tools.ietf.org/html/rfc4122#section-4.1.5
+     */
+    public function getClockSequence()
+    {
+        return (($this->getClockSeqHiAndReserved() & 0x3f) << 8)
+            | $this->getClockSeqLow();
+    }
+
+    public function getClockSequenceHex()
+    {
+        return sprintf('%04x', $this->getClockSequence());
+    }
+
     public function getNumberConverter()
     {
         return $this->converter;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getDateTime()
     {
         if ($this->getVersion() != 1) {
@@ -497,86 +346,6 @@ class Uuid implements UuidInterface
         $unixTime = number_format($unixTime, 0, '', '');
 
         return new \DateTime("@{$unixTime}");
-    }
-
-    public function getVersion()
-    {
-        if ($this->getVariant() == self::RFC_4122) {
-            return (int)(($this->getTimeHiAndVersion() >> 12) & 0x0f);
-        }
-
-        return null;
-    }
-
-    public function getVariant()
-    {
-        $clockSeq = $this->getClockSeqHiAndReserved();
-        if (0 === ($clockSeq & 0x80)) {
-            $variant = self::RESERVED_NCS;
-        } elseif (0 === ($clockSeq & 0x40)) {
-            $variant = self::RFC_4122;
-        } elseif (0 === ($clockSeq & 0x20)) {
-            $variant = self::RESERVED_MICROSOFT;
-        } else {
-            $variant = self::RESERVED_FUTURE;
-        }
-
-        return $variant;
-    }
-
-    /**
-     * Returns the high field of the timestamp multiplexed with the version
-     * number (bits 49-64 of the UUID).
-     *
-     * @return int Unsigned 16-bit integer value of time_hi_and_version
-     */
-    public function getTimeHiAndVersion()
-    {
-        return hexdec($this->getTimeHiAndVersionHex());
-    }
-
-    public function getTimeHiAndVersionHex()
-    {
-        return $this->fields['time_hi_and_version'];
-    }
-
-    /**
-     * Returns the timestamp value associated with this UUID.
-     *
-     * The 60 bit timestamp value is constructed from the time_low,
-     * time_mid, and time_hi fields of this UUID. The resulting
-     * timestamp is measured in 100-nanosecond units since midnight,
-     * October 15, 1582 UTC.
-     *
-     * The timestamp value is only meaningful in a time-based UUID, which
-     * has version type 1. If this UUID is not a time-based UUID then
-     * this method throws UnsupportedOperationException.
-     *
-     * @return int Unsigned 60-bit integer value of the timestamp
-     * @throws UnsupportedOperationException If this UUID is not a version 1 UUID
-     * @link http://tools.ietf.org/html/rfc4122#section-4.1.4
-     */
-    public function getTimestamp()
-    {
-        if ($this->getVersion() != 1) {
-            throw new UnsupportedOperationException('Not a time-based UUID');
-        }
-
-        return hexdec($this->getTimestampHex());
-    }
-
-    public function getTimestampHex()
-    {
-        if ($this->getVersion() != 1) {
-            throw new UnsupportedOperationException('Not a time-based UUID');
-        }
-
-        return sprintf(
-            '%03x%04s%08s',
-            ($this->getTimeHiAndVersion() & 0x0fff),
-            $this->fields['time_mid'],
-            $this->fields['time_low']
-        );
     }
 
     /**
@@ -609,34 +378,64 @@ class Uuid implements UuidInterface
         );
     }
 
-    /**
-     * Returns the low field of the timestamp (the first 32 bits of the UUID).
-     *
-     * @return int Unsigned 32-bit integer value of time_low
-     */
-    public function getTimeLow()
+    public function getFieldsHex()
     {
-        return hexdec($this->getTimeLowHex());
+        return $this->fields;
     }
 
-    public function getTimeLowHex()
+    public function getHex()
     {
-        return $this->fields['time_low'];
+        return str_replace('-', '', $this->toString());
     }
 
     /**
-     * Returns the middle field of the timestamp (bits 33-48 of the UUID).
-     *
-     * @return int Unsigned 16-bit integer value of time_mid
+     * @inheritdoc
      */
-    public function getTimeMid()
+    public function getInteger()
     {
-        return hexdec($this->getTimeMidHex());
+        return $this->converter->fromHex($this->getHex());
     }
 
-    public function getTimeMidHex()
+    /**
+     * Returns the least significant 64 bits of this UUID's 128 bit value.
+     *
+     * @return mixed Converted representation of the unsigned 64-bit integer value
+     * @throws \Ramsey\Uuid\Exception\UnsatisfiedDependencyException if `Moontoast\Math\BigNumber` is not present
+     */
+    public function getLeastSignificantBits()
     {
-        return $this->fields['time_mid'];
+        return $this->converter->fromHex($this->getLeastSignificantBitsHex());
+    }
+
+    public function getLeastSignificantBitsHex()
+    {
+        return sprintf(
+            '%02s%02s%012s',
+            $this->fields['clock_seq_hi_and_reserved'],
+            $this->fields['clock_seq_low'],
+            $this->fields['node']
+        );
+    }
+
+    /**
+     * Returns the most significant 64 bits of this UUID's 128 bit value.
+     *
+     * @return mixed Converted representation of the unsigned 64-bit integer value
+     * @throws \Ramsey\Uuid\Exception\UnsatisfiedDependencyException if `Moontoast\Math\BigNumber` is not present
+     */
+    public function getMostSignificantBits()
+    {
+        return $this->converter->fromHex($this->getMostSignificantBitsHex());
+    }
+
+    public function getMostSignificantBitsHex()
+    {
+        return sprintf(
+            '%08s%04s%04s',
+            $this->fields['time_low'],
+            $this->fields['time_mid'],
+            $this->fields['time_hi_and_version']
+        );
     }
 
     /**
@@ -673,43 +472,269 @@ class Uuid implements UuidInterface
         return $this->fields['node'];
     }
 
-    public function getFieldsHex()
+    /**
+     * Returns the high field of the timestamp multiplexed with the version
+     * number (bits 49-64 of the UUID).
+     *
+     * @return int Unsigned 16-bit integer value of time_hi_and_version
+     */
+    public function getTimeHiAndVersion()
     {
-        return $this->fields;
+        return hexdec($this->getTimeHiAndVersionHex());
     }
 
-    public function getInteger()
+    public function getTimeHiAndVersionHex()
     {
-        return $this->converter->fromHex($this->getHex());
-    }
-
-    public function getHex()
-    {
-        return str_replace('-', '', $this->toString());
+        return $this->fields['time_hi_and_version'];
     }
 
     /**
-     * Returns the least significant 64 bits of this UUID's 128 bit value.
+     * Returns the low field of the timestamp (the first 32 bits of the UUID).
      *
-     * @return mixed Converted representation of the unsigned 64-bit integer value
+     * @return int Unsigned 32-bit integer value of time_low
      */
-    public function getLeastSignificantBits()
+    public function getTimeLow()
     {
-        return $this->converter->fromHex($this->getLeastSignificantBitsHex());
+        return hexdec($this->getTimeLowHex());
+    }
+
+    public function getTimeLowHex()
+    {
+        return $this->fields['time_low'];
     }
 
     /**
-     * Returns the most significant 64 bits of this UUID's 128 bit value.
+     * Returns the middle field of the timestamp (bits 33-48 of the UUID).
      *
-     * @return mixed Converted representation of the unsigned 64-bit integer value
+     * @return int Unsigned 16-bit integer value of time_mid
      */
-    public function getMostSignificantBits()
+    public function getTimeMid()
     {
-        return $this->converter->fromHex($this->getMostSignificantBitsHex());
+        return hexdec($this->getTimeMidHex());
+    }
+
+    public function getTimeMidHex()
+    {
+        return $this->fields['time_mid'];
+    }
+
+    /**
+     * Returns the timestamp value associated with this UUID.
+     *
+     * The 60 bit timestamp value is constructed from the time_low,
+     * time_mid, and time_hi fields of this UUID. The resulting
+     * timestamp is measured in 100-nanosecond units since midnight,
+     * October 15, 1582 UTC.
+     *
+     * The timestamp value is only meaningful in a time-based UUID, which
+     * has version type 1. If this UUID is not a time-based UUID then
+     * this method throws UnsupportedOperationException.
+     *
+     * @return int Unsigned 60-bit integer value of the timestamp
+     * @throws UnsupportedOperationException If this UUID is not a version 1 UUID
+     * @link http://tools.ietf.org/html/rfc4122#section-4.1.4
+     */
+    public function getTimestamp()
+    {
+        if ($this->getVersion() != 1) {
+            throw new UnsupportedOperationException('Not a time-based UUID');
+        }
+
+        return hexdec($this->getTimestampHex());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTimestampHex()
+    {
+        if ($this->getVersion() != 1) {
+            throw new UnsupportedOperationException('Not a time-based UUID');
+        }
+
+        return sprintf(
+            '%03x%04s%08s',
+            ($this->getTimeHiAndVersion() & 0x0fff),
+            $this->fields['time_mid'],
+            $this->fields['time_low']
+        );
     }
 
     public function getUrn()
     {
         return 'urn:uuid:' . $this->toString();
+    }
+
+    public function getVariant()
+    {
+        $clockSeq = $this->getClockSeqHiAndReserved();
+        if (0 === ($clockSeq & 0x80)) {
+            $variant = self::RESERVED_NCS;
+        } elseif (0 === ($clockSeq & 0x40)) {
+            $variant = self::RFC_4122;
+        } elseif (0 === ($clockSeq & 0x20)) {
+            $variant = self::RESERVED_MICROSOFT;
+        } else {
+            $variant = self::RESERVED_FUTURE;
+        }
+
+        return $variant;
+    }
+
+    public function getVersion()
+    {
+        if ($this->getVariant() == self::RFC_4122) {
+            return (int) (($this->getTimeHiAndVersion() >> 12) & 0x0f);
+        }
+
+        return null;
+    }
+
+    public function toString()
+    {
+        return $this->codec->encode($this);
+    }
+
+    /**
+     * Returns the currently set factory used to create UUIDs.
+     *
+     * @return UuidFactoryInterface
+     */
+    public static function getFactory()
+    {
+        if (!self::$factory) {
+            self::$factory = new UuidFactory();
+        }
+
+        return self::$factory;
+    }
+
+    /**
+     * Sets the factory used to create UUIDs.
+     *
+     * @param UuidFactoryInterface $factory
+     */
+    public static function setFactory(UuidFactoryInterface $factory)
+    {
+        self::$factory = $factory;
+    }
+
+    /**
+     * Creates a UUID from a byte string.
+     *
+     * @param string $bytes
+     * @return UuidInterface
+     * @throws \Ramsey\Uuid\Exception\InvalidUuidStringException
+     * @throws \InvalidArgumentException
+     */
+    public static function fromBytes($bytes)
+    {
+        return self::getFactory()->fromBytes($bytes);
+    }
+
+    /**
+     * Creates a UUID from the string standard representation.
+     *
+     * @param string $name A string that specifies a UUID
+     * @return UuidInterface
+     * @throws \Ramsey\Uuid\Exception\InvalidUuidStringException
+     */
+    public static function fromString($name)
+    {
+        return self::getFactory()->fromString($name);
+    }
+
+    /**
+     * Creates a UUID from a 128-bit integer string.
+     *
+     * @param string $integer String representation of 128-bit integer
+     * @return UuidInterface
+     * @throws \Ramsey\Uuid\Exception\UnsatisfiedDependencyException if `Moontoast\Math\BigNumber` is not present
+     * @throws \Ramsey\Uuid\Exception\InvalidUuidStringException
+     */
+    public static function fromInteger($integer)
+    {
+        return self::getFactory()->fromInteger($integer);
+    }
+
+    /**
+     * Check if a string is a valid UUID.
+     *
+     * @param string $uuid The string UUID to test
+     * @return boolean
+     */
+    public static function isValid($uuid)
+    {
+        $uuid = str_replace(array('urn:', 'uuid:', '{', '}'), '', $uuid);
+
+        if ($uuid == self::NIL) {
+            return true;
+        }
+
+        if (!preg_match('/' . self::VALID_PATTERN . '/D', $uuid)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Generate a version 1 UUID from a host ID, sequence number, and the current time.
+     *
+     * @param int|string $node A 48-bit number representing the hardware address
+     *     This number may be represented as an integer or a hexadecimal string.
+     * @param int $clockSeq A 14-bit number used to help avoid duplicates that
+     *     could arise when the clock is set backwards in time or if the node ID
+     *     changes.
+     * @return UuidInterface
+     * @throws \Ramsey\Uuid\Exception\UnsatisfiedDependencyException if called on a 32-bit system and
+     *     `Moontoast\Math\BigNumber` is not present
+     * @throws \InvalidArgumentException
+     * @throws \Exception if it was not possible to gather sufficient entropy
+     */
+    public static function uuid1($node = null, $clockSeq = null)
+    {
+        return self::getFactory()->uuid1($node, $clockSeq);
+    }
+
+    /**
+     * Generate a version 3 UUID based on the MD5 hash of a namespace identifier
+     * (which is a UUID) and a name (which is a string).
+     *
+     * @param string $ns The UUID namespace in which to create the named UUID
+     * @param string $name The name to create a UUID for
+     * @return UuidInterface
+     * @throws \Ramsey\Uuid\Exception\InvalidUuidStringException
+     */
+    public static function uuid3($ns, $name)
+    {
+        return self::getFactory()->uuid3($ns, $name);
+    }
+
+    /**
+     * Generate a version 4 (random) UUID.
+     *
+     * @return UuidInterface
+     * @throws \Ramsey\Uuid\Exception\UnsatisfiedDependencyException if `Moontoast\Math\BigNumber` is not present
+     * @throws \InvalidArgumentException
+     * @throws \Exception
+     */
+    public static function uuid4()
+    {
+        return self::getFactory()->uuid4();
+    }
+
+    /**
+     * Generate a version 5 UUID based on the SHA-1 hash of a namespace
+     * identifier (which is a UUID) and a name (which is a string).
+     *
+     * @param string $ns The UUID namespace in which to create the named UUID
+     * @param string $name The name to create a UUID for
+     * @return UuidInterface
+     * @throws \Ramsey\Uuid\Exception\InvalidUuidStringException
+     */
+    public static function uuid5($ns, $name)
+    {
+        return self::getFactory()->uuid5($ns, $name);
     }
 }

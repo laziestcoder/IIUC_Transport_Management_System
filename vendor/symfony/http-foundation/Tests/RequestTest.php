@@ -19,6 +19,12 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 class RequestTest extends TestCase
 {
+    protected function tearDown()
+    {
+        Request::setTrustedProxies(array(), -1);
+        Request::setTrustedHosts(array());
+    }
+
     public function testInitialize()
     {
         $request = new Request();
@@ -322,20 +328,6 @@ class RequestTest extends TestCase
         );
     }
 
-    public function getFormatToMimeTypeMapProvider()
-    {
-        return array(
-            array('txt', array('text/plain')),
-            array('js', array('application/javascript', 'application/x-javascript', 'text/javascript')),
-            array('css', array('text/css')),
-            array('json', array('application/json', 'application/x-json')),
-            array('jsonld', array('application/ld+json')),
-            array('xml', array('text/xml', 'application/xml', 'application/x-xml')),
-            array('rdf', array('application/rdf+xml')),
-            array('atom', array('application/atom+xml')),
-        );
-    }
-
     public function testGetFormatFromMimeTypeWithParameters()
     {
         $request = new Request();
@@ -371,6 +363,20 @@ class RequestTest extends TestCase
         $request = new Request();
         $request->setFormat('custom', 'application/vnd.foo.api;myversion=2.3');
         $this->assertEquals('custom', $request->getFormat('application/vnd.foo.api;myversion=2.3'));
+    }
+
+    public function getFormatToMimeTypeMapProvider()
+    {
+        return array(
+            array('txt', array('text/plain')),
+            array('js', array('application/javascript', 'application/x-javascript', 'text/javascript')),
+            array('css', array('text/css')),
+            array('json', array('application/json', 'application/x-json')),
+            array('jsonld', array('application/ld+json')),
+            array('xml', array('text/xml', 'application/xml', 'application/x-xml')),
+            array('rdf', array('application/rdf+xml')),
+            array('atom', array('application/atom+xml')),
+        );
     }
 
     public function testGetUri()
@@ -669,7 +675,7 @@ class RequestTest extends TestCase
     public function getQueryStringNormalizationData()
     {
         return array(
-            array('foo', 'foo', 'works with valueless parameters'),
+            array('foo', 'foo=', 'works with valueless parameters'),
             array('foo=', 'foo=', 'includes a dangling equal sign'),
             array('bar=&foo=bar', 'bar=&foo=bar', '->works with empty parameters'),
             array('foo=bar&bar=', 'bar=&foo=bar', 'sorts keys alphabetically'),
@@ -678,18 +684,24 @@ class RequestTest extends TestCase
             // PHP also converts "+" to spaces when filling the global _GET or when using the function parse_str.
             array('him=John%20Doe&her=Jane+Doe', 'her=Jane%20Doe&him=John%20Doe', 'normalizes spaces in both encodings "%20" and "+"'),
 
-            array('foo[]=1&foo[]=2', 'foo%5B%5D=1&foo%5B%5D=2', 'allows array notation'),
-            array('foo=1&foo=2', 'foo=1&foo=2', 'allows repeated parameters'),
+            array('foo[]=1&foo[]=2', 'foo%5B0%5D=1&foo%5B1%5D=2', 'allows array notation'),
+            array('foo=1&foo=2', 'foo=2', 'merges repeated parameters'),
             array('pa%3Dram=foo%26bar%3Dbaz&test=test', 'pa%3Dram=foo%26bar%3Dbaz&test=test', 'works with encoded delimiters'),
-            array('0', '0', 'allows "0"'),
-            array('Jane Doe&John%20Doe', 'Jane%20Doe&John%20Doe', 'normalizes encoding in keys'),
+            array('0', '0=', 'allows "0"'),
+            array('Jane Doe&John%20Doe', 'Jane_Doe=&John_Doe=', 'normalizes encoding in keys'),
             array('her=Jane Doe&him=John%20Doe', 'her=Jane%20Doe&him=John%20Doe', 'normalizes encoding in values'),
-            array('foo=bar&&&test&&', 'foo=bar&test', 'removes unneeded delimiters'),
+            array('foo=bar&&&test&&', 'foo=bar&test=', 'removes unneeded delimiters'),
             array('formula=e=m*c^2', 'formula=e%3Dm%2Ac%5E2', 'correctly treats only the first "=" as delimiter and the next as value'),
 
             // Ignore pairs with empty key, even if there was a value, e.g. "=value", as such nameless values cannot be retrieved anyway.
             // PHP also does not include them when building _GET.
             array('foo=bar&=a=b&=x=y', 'foo=bar', 'removes params with empty key'),
+
+            // Don't reorder nested query string keys
+            array('foo[]=Z&foo[]=A', 'foo%5B0%5D=Z&foo%5B1%5D=A', 'keeps order of values'),
+            array('foo[Z]=B&foo[A]=B', 'foo%5BZ%5D=B&foo%5BA%5D=B', 'keeps order of keys'),
+
+            array('utf8=✓', 'utf8=%E2%9C%93', 'encodes UTF-8'),
         );
     }
 
@@ -842,14 +854,11 @@ class RequestTest extends TestCase
         $request->setMethod('POST');
         $request->headers->set('X-HTTP-METHOD-OVERRIDE', 'delete');
         $this->assertEquals('DELETE', $request->getMethod(), '->getMethod() returns the method from X-HTTP-Method-Override if defined and POST');
-    }
 
-    private function disableHttpMethodParameterOverride()
-    {
-        $class = new \ReflectionClass('Symfony\\Component\\HttpFoundation\\Request');
-        $property = $class->getProperty('httpMethodParameterOverride');
-        $property->setAccessible(true);
-        $property->setValue(false);
+        $request = new Request();
+        $request->setMethod('POST');
+        $request->query->set('_method', array('delete', 'patch'));
+        $this->assertSame('POST', $request->getMethod(), '->getMethod() returns the request method if invalid type is defined in query');
     }
 
     /**
@@ -860,24 +869,6 @@ class RequestTest extends TestCase
         $request = $this->getRequestInstanceForClientIpTests($remoteAddr, $httpForwardedFor, $trustedProxies);
 
         $this->assertEquals($expected[0], $request->getClientIp());
-    }
-
-    private function getRequestInstanceForClientIpTests($remoteAddr, $httpForwardedFor, $trustedProxies)
-    {
-        $request = new Request();
-
-        $server = array('REMOTE_ADDR' => $remoteAddr);
-        if (null !== $httpForwardedFor) {
-            $server['HTTP_X_FORWARDED_FOR'] = $httpForwardedFor;
-        }
-
-        if ($trustedProxies) {
-            Request::setTrustedProxies($trustedProxies, Request::HEADER_X_FORWARDED_ALL);
-        }
-
-        $request->initialize(array(), array(), array(), array(), array(), $server);
-
-        return $request;
     }
 
     /**
@@ -900,35 +891,16 @@ class RequestTest extends TestCase
         $this->assertEquals($expected, $request->getClientIps());
     }
 
-    private function getRequestInstanceForClientIpsForwardedTests($remoteAddr, $httpForwarded, $trustedProxies)
-    {
-        $request = new Request();
-
-        $server = array('REMOTE_ADDR' => $remoteAddr);
-
-        if (null !== $httpForwarded) {
-            $server['HTTP_FORWARDED'] = $httpForwarded;
-        }
-
-        if ($trustedProxies) {
-            Request::setTrustedProxies($trustedProxies, Request::HEADER_FORWARDED);
-        }
-
-        $request->initialize(array(), array(), array(), array(), array(), $server);
-
-        return $request;
-    }
-
     public function getClientIpsForwardedProvider()
     {
         //              $expected                                  $remoteAddr  $httpForwarded                                       $trustedProxies
         return array(
-            array(array('127.0.0.1'), '127.0.0.1', 'for="_gazonk"', null),
-            array(array('127.0.0.1'), '127.0.0.1', 'for="_gazonk"', array('127.0.0.1')),
-            array(array('88.88.88.88'), '127.0.0.1', 'for="88.88.88.88:80"', array('127.0.0.1')),
-            array(array('192.0.2.60'), '::1', 'for=192.0.2.60;proto=http;by=203.0.113.43', array('::1')),
-            array(array('2620:0:1cfe:face:b00c::3', '192.0.2.43'), '::1', 'for=192.0.2.43, for=2620:0:1cfe:face:b00c::3', array('::1')),
-            array(array('2001:db8:cafe::17'), '::1', 'for="[2001:db8:cafe::17]:4711', array('::1')),
+            array(array('127.0.0.1'),                              '127.0.0.1', 'for="_gazonk"',                                      null),
+            array(array('127.0.0.1'),                              '127.0.0.1', 'for="_gazonk"',                                      array('127.0.0.1')),
+            array(array('88.88.88.88'),                            '127.0.0.1', 'for="88.88.88.88:80"',                               array('127.0.0.1')),
+            array(array('192.0.2.60'),                             '::1',       'for=192.0.2.60;proto=http;by=203.0.113.43',          array('::1')),
+            array(array('2620:0:1cfe:face:b00c::3', '192.0.2.43'), '::1',       'for=192.0.2.43, for="[2620:0:1cfe:face:b00c::3]"',   array('::1')),
+            array(array('2001:db8:cafe::17'),                      '::1',       'for="[2001:db8:cafe::17]:4711',                      array('::1')),
         );
     }
 
@@ -937,39 +909,39 @@ class RequestTest extends TestCase
         //        $expected                   $remoteAddr                $httpForwardedFor            $trustedProxies
         return array(
             // simple IPv4
-            array(array('88.88.88.88'), '88.88.88.88', null, null),
+            array(array('88.88.88.88'),              '88.88.88.88',              null,                        null),
             // trust the IPv4 remote addr
-            array(array('88.88.88.88'), '88.88.88.88', null, array('88.88.88.88')),
+            array(array('88.88.88.88'),              '88.88.88.88',              null,                        array('88.88.88.88')),
 
             // simple IPv6
-            array(array('::1'), '::1', null, null),
+            array(array('::1'),                      '::1',                      null,                        null),
             // trust the IPv6 remote addr
-            array(array('::1'), '::1', null, array('::1')),
+            array(array('::1'),                      '::1',                      null,                        array('::1')),
 
             // forwarded for with remote IPv4 addr not trusted
-            array(array('127.0.0.1'), '127.0.0.1', '88.88.88.88', null),
+            array(array('127.0.0.1'),                '127.0.0.1',                '88.88.88.88',               null),
             // forwarded for with remote IPv4 addr trusted
-            array(array('88.88.88.88'), '127.0.0.1', '88.88.88.88', array('127.0.0.1')),
+            array(array('88.88.88.88'),              '127.0.0.1',                '88.88.88.88',               array('127.0.0.1')),
             // forwarded for with remote IPv4 and all FF addrs trusted
-            array(array('88.88.88.88'), '127.0.0.1', '88.88.88.88', array('127.0.0.1', '88.88.88.88')),
+            array(array('88.88.88.88'),              '127.0.0.1',                '88.88.88.88',               array('127.0.0.1', '88.88.88.88')),
             // forwarded for with remote IPv4 range trusted
-            array(array('88.88.88.88'), '123.45.67.89', '88.88.88.88', array('123.45.67.0/24')),
+            array(array('88.88.88.88'),              '123.45.67.89',             '88.88.88.88',               array('123.45.67.0/24')),
 
             // forwarded for with remote IPv6 addr not trusted
-            array(array('1620:0:1cfe:face:b00c::3'), '1620:0:1cfe:face:b00c::3', '2620:0:1cfe:face:b00c::3', null),
+            array(array('1620:0:1cfe:face:b00c::3'), '1620:0:1cfe:face:b00c::3', '2620:0:1cfe:face:b00c::3',  null),
             // forwarded for with remote IPv6 addr trusted
-            array(array('2620:0:1cfe:face:b00c::3'), '1620:0:1cfe:face:b00c::3', '2620:0:1cfe:face:b00c::3', array('1620:0:1cfe:face:b00c::3')),
+            array(array('2620:0:1cfe:face:b00c::3'), '1620:0:1cfe:face:b00c::3', '2620:0:1cfe:face:b00c::3',  array('1620:0:1cfe:face:b00c::3')),
             // forwarded for with remote IPv6 range trusted
-            array(array('88.88.88.88'), '2a01:198:603:0:396e:4789:8e99:890f', '88.88.88.88', array('2a01:198:603:0::/65')),
+            array(array('88.88.88.88'),              '2a01:198:603:0:396e:4789:8e99:890f', '88.88.88.88',     array('2a01:198:603:0::/65')),
 
             // multiple forwarded for with remote IPv4 addr trusted
             array(array('88.88.88.88', '87.65.43.21', '127.0.0.1'), '123.45.67.89', '127.0.0.1, 87.65.43.21, 88.88.88.88', array('123.45.67.89')),
             // multiple forwarded for with remote IPv4 addr and some reverse proxies trusted
-            array(array('87.65.43.21', '127.0.0.1'), '123.45.67.89', '127.0.0.1, 87.65.43.21, 88.88.88.88', array('123.45.67.89', '88.88.88.88')),
+            array(array('87.65.43.21', '127.0.0.1'), '123.45.67.89',             '127.0.0.1, 87.65.43.21, 88.88.88.88', array('123.45.67.89', '88.88.88.88')),
             // multiple forwarded for with remote IPv4 addr and some reverse proxies trusted but in the middle
-            array(array('88.88.88.88', '127.0.0.1'), '123.45.67.89', '127.0.0.1, 87.65.43.21, 88.88.88.88', array('123.45.67.89', '87.65.43.21')),
+            array(array('88.88.88.88', '127.0.0.1'), '123.45.67.89',             '127.0.0.1, 87.65.43.21, 88.88.88.88', array('123.45.67.89', '87.65.43.21')),
             // multiple forwarded for with remote IPv4 addr and all reverse proxies trusted
-            array(array('127.0.0.1'), '123.45.67.89', '127.0.0.1, 87.65.43.21, 88.88.88.88', array('123.45.67.89', '87.65.43.21', '88.88.88.88', '127.0.0.1')),
+            array(array('127.0.0.1'),                '123.45.67.89',             '127.0.0.1, 87.65.43.21, 88.88.88.88', array('123.45.67.89', '87.65.43.21', '88.88.88.88', '127.0.0.1')),
 
             // multiple forwarded for with remote IPv6 addr trusted
             array(array('2620:0:1cfe:face:b00c::3', '3620:0:1cfe:face:b00c::3'), '1620:0:1cfe:face:b00c::3', '3620:0:1cfe:face:b00c::3,2620:0:1cfe:face:b00c::3', array('1620:0:1cfe:face:b00c::3')),
@@ -1032,10 +1004,10 @@ class RequestTest extends TestCase
     {
         //        $httpForwarded                   $httpXForwardedFor
         return array(
-            array('for=87.65.43.21', '192.0.2.60'),
+            array('for=87.65.43.21',                 '192.0.2.60'),
             array('for=87.65.43.21, for=192.0.2.60', '192.0.2.60'),
-            array('for=192.0.2.60', '192.0.2.60,87.65.43.21'),
-            array('for="::face", for=192.0.2.60', '192.0.2.60,192.0.2.43'),
+            array('for=192.0.2.60',                  '192.0.2.60,87.65.43.21'),
+            array('for="::face", for=192.0.2.60',    '192.0.2.60,192.0.2.43'),
             array('for=87.65.43.21, for=192.0.2.60', '192.0.2.60,87.65.43.21'),
         );
     }
@@ -1066,12 +1038,12 @@ class RequestTest extends TestCase
     {
         //        $httpForwarded                               $httpXForwardedFor
         return array(
-            array('for="192.0.2.60"', '192.0.2.60', array('192.0.2.60')),
-            array('for=192.0.2.60, for=87.65.43.21', '192.0.2.60,87.65.43.21', array('87.65.43.21', '192.0.2.60')),
-            array('for="[::face]", for=192.0.2.60', '::face,192.0.2.60', array('192.0.2.60', '::face')),
-            array('for="192.0.2.60:80"', '192.0.2.60', array('192.0.2.60')),
-            array('for=192.0.2.60;proto=http;by=203.0.113.43', '192.0.2.60', array('192.0.2.60')),
-            array('for="[2001:db8:cafe::17]:4711"', '2001:db8:cafe::17', array('2001:db8:cafe::17')),
+            array('for="192.0.2.60"',                          '192.0.2.60',             array('192.0.2.60')),
+            array('for=192.0.2.60, for=87.65.43.21',           '192.0.2.60,87.65.43.21', array('87.65.43.21', '192.0.2.60')),
+            array('for="[::face]", for=192.0.2.60',            '::face,192.0.2.60',      array('192.0.2.60', '::face')),
+            array('for="192.0.2.60:80"',                       '192.0.2.60',             array('192.0.2.60')),
+            array('for=192.0.2.60;proto=http;by=203.0.113.43', '192.0.2.60',             array('192.0.2.60')),
+            array('for="[2001:db8:cafe::17]:4711"',            '2001:db8:cafe::17',      array('2001:db8:cafe::17')),
         );
     }
 
@@ -1530,6 +1502,15 @@ class RequestTest extends TestCase
         $this->assertObjectHasAttribute('attributeName', $session);
     }
 
+    /**
+     * @group legacy
+     * @expectedDeprecation Calling "Symfony\Component\HttpFoundation\Request::getSession()" when no session has been set is deprecated since Symfony 4.1 and will throw an exception in 5.0. Use "hasSession()" instead.
+     */
+    public function testGetSessionNullable()
+    {
+        (new Request())->getSession();
+    }
+
     public function testHasPreviousSession()
     {
         $request = new Request();
@@ -1548,14 +1529,14 @@ class RequestTest extends TestCase
         $request->headers->set('Accept-language', 'zh, en-us; q=0.8, en; q=0.6');
         $request->cookies->set('Foo', 'Bar');
 
-        $asString = (string)$request;
+        $asString = (string) $request;
 
         $this->assertContains('Accept-Language: zh, en-us; q=0.8, en; q=0.6', $asString);
         $this->assertContains('Cookie: Foo=Bar', $asString);
 
         $request->cookies->set('Another', 'Cookie');
 
-        $asString = (string)$request;
+        $asString = (string) $request;
 
         $this->assertContains('Cookie: Foo=Bar; Another=Cookie', $asString);
     }
@@ -1690,6 +1671,51 @@ class RequestTest extends TestCase
         );
     }
 
+    private function disableHttpMethodParameterOverride()
+    {
+        $class = new \ReflectionClass('Symfony\\Component\\HttpFoundation\\Request');
+        $property = $class->getProperty('httpMethodParameterOverride');
+        $property->setAccessible(true);
+        $property->setValue(false);
+    }
+
+    private function getRequestInstanceForClientIpTests($remoteAddr, $httpForwardedFor, $trustedProxies)
+    {
+        $request = new Request();
+
+        $server = array('REMOTE_ADDR' => $remoteAddr);
+        if (null !== $httpForwardedFor) {
+            $server['HTTP_X_FORWARDED_FOR'] = $httpForwardedFor;
+        }
+
+        if ($trustedProxies) {
+            Request::setTrustedProxies($trustedProxies, Request::HEADER_X_FORWARDED_ALL);
+        }
+
+        $request->initialize(array(), array(), array(), array(), array(), $server);
+
+        return $request;
+    }
+
+    private function getRequestInstanceForClientIpsForwardedTests($remoteAddr, $httpForwarded, $trustedProxies)
+    {
+        $request = new Request();
+
+        $server = array('REMOTE_ADDR' => $remoteAddr);
+
+        if (null !== $httpForwarded) {
+            $server['HTTP_FORWARDED'] = $httpForwarded;
+        }
+
+        if ($trustedProxies) {
+            Request::setTrustedProxies($trustedProxies, Request::HEADER_FORWARDED);
+        }
+
+        $request->initialize(array(), array(), array(), array(), array(), $server);
+
+        return $request;
+    }
+
     public function testTrustedProxiesXForwardedFor()
     {
         $request = Request::create('http://example.com/');
@@ -1811,52 +1837,8 @@ class RequestTest extends TestCase
     {
         return array(
             array(
-                array(
-                    'X_ORIGINAL_URL' => '/foo/bar',
-                ),
-                array(),
-                '/foo/bar',
-            ),
-            array(
-                array(
-                    'X_REWRITE_URL' => '/foo/bar',
-                ),
-                array(),
-                '/foo/bar',
-            ),
-            array(
                 array(),
                 array(
-                    'IIS_WasUrlRewritten' => '1',
-                    'UNENCODED_URL' => '/foo/bar',
-                ),
-                '/foo/bar',
-            ),
-            array(
-                array(
-                    'X_ORIGINAL_URL' => '/foo/bar',
-                ),
-                array(
-                    'HTTP_X_ORIGINAL_URL' => '/foo/bar',
-                ),
-                '/foo/bar',
-            ),
-            array(
-                array(
-                    'X_ORIGINAL_URL' => '/foo/bar',
-                ),
-                array(
-                    'IIS_WasUrlRewritten' => '1',
-                    'UNENCODED_URL' => '/foo/bar',
-                ),
-                '/foo/bar',
-            ),
-            array(
-                array(
-                    'X_ORIGINAL_URL' => '/foo/bar',
-                ),
-                array(
-                    'HTTP_X_ORIGINAL_URL' => '/foo/bar',
                     'IIS_WasUrlRewritten' => '1',
                     'UNENCODED_URL' => '/foo/bar',
                 ),
@@ -1994,7 +1976,7 @@ class RequestTest extends TestCase
     public function getLongHostNames()
     {
         return array(
-            array('a' . str_repeat('.a', 40000)),
+            array('a'.str_repeat('.a', 40000)),
             array(str_repeat(':', 101)),
         );
     }
@@ -2120,25 +2102,25 @@ class RequestTest extends TestCase
     public function nonstandardRequestsData()
     {
         return array(
-            array('', '', '/', 'http://host:8080/', ''),
+            array('',  '', '/', 'http://host:8080/', ''),
             array('/', '', '/', 'http://host:8080/', ''),
 
-            array('hello/app.php/x', '', '/x', 'http://host:8080/hello/app.php/x', '/hello', '/hello/app.php'),
+            array('hello/app.php/x',  '', '/x', 'http://host:8080/hello/app.php/x', '/hello', '/hello/app.php'),
             array('/hello/app.php/x', '', '/x', 'http://host:8080/hello/app.php/x', '/hello', '/hello/app.php'),
 
-            array('', 'a=b', '/', 'http://host:8080/?a=b'),
-            array('?a=b', 'a=b', '/', 'http://host:8080/?a=b'),
+            array('',      'a=b', '/', 'http://host:8080/?a=b'),
+            array('?a=b',  'a=b', '/', 'http://host:8080/?a=b'),
             array('/?a=b', 'a=b', '/', 'http://host:8080/?a=b'),
 
-            array('x', 'a=b', '/x', 'http://host:8080/x?a=b'),
-            array('x?a=b', 'a=b', '/x', 'http://host:8080/x?a=b'),
+            array('x',      'a=b', '/x', 'http://host:8080/x?a=b'),
+            array('x?a=b',  'a=b', '/x', 'http://host:8080/x?a=b'),
             array('/x?a=b', 'a=b', '/x', 'http://host:8080/x?a=b'),
 
-            array('hello/x', '', '/x', 'http://host:8080/hello/x', '/hello'),
+            array('hello/x',  '', '/x', 'http://host:8080/hello/x', '/hello'),
             array('/hello/x', '', '/x', 'http://host:8080/hello/x', '/hello'),
 
-            array('hello/app.php/x', 'a=b', '/x', 'http://host:8080/hello/app.php/x?a=b', '/hello', '/hello/app.php'),
-            array('hello/app.php/x?a=b', 'a=b', '/x', 'http://host:8080/hello/app.php/x?a=b', '/hello', '/hello/app.php'),
+            array('hello/app.php/x',      'a=b', '/x', 'http://host:8080/hello/app.php/x?a=b', '/hello', '/hello/app.php'),
+            array('hello/app.php/x?a=b',  'a=b', '/x', 'http://host:8080/hello/app.php/x?a=b', '/hello', '/hello/app.php'),
             array('/hello/app.php/x?a=b', 'a=b', '/x', 'http://host:8080/hello/app.php/x?a=b', '/hello', '/hello/app.php'),
         );
     }
@@ -2170,13 +2152,6 @@ class RequestTest extends TestCase
         $this->assertEquals('host:8080', $request->getHttpHost());
         $this->assertEquals($expectedBaseUrl, $request->getBaseUrl());
         $this->assertEquals($expectedBasePath, $request->getBasePath());
-    }
-
-    protected function tearDown()
-    {
-        // reset
-        Request::setTrustedProxies(array(), -1);
-        Request::setTrustedHosts(array());
     }
 }
 

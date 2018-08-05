@@ -26,6 +26,16 @@ class ThrowUpException extends \Exception implements Exception
     }
 
     /**
+     * Return a raw (unformatted) version of the error message.
+     *
+     * @return string
+     */
+    public function getRawMessage()
+    {
+        return $this->getPrevious()->getMessage();
+    }
+
+    /**
      * Create a ThrowUpException from a Throwable.
      *
      * @param \Throwable $throwable
@@ -43,15 +53,5 @@ class ThrowUpException extends \Exception implements Exception
         }
 
         return new self($throwable);
-    }
-
-    /**
-     * Return a raw (unformatted) version of the error message.
-     *
-     * @return string
-     */
-    public function getRawMessage()
-    {
-        return $this->getPrevious()->getMessage();
     }
 }

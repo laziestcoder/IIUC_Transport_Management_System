@@ -60,7 +60,7 @@ class AddConsoleCommandPass implements CompilerPassInterface
 
             if (null === $commandName) {
                 if (!$definition->isPublic() || $definition->isPrivate()) {
-                    $commandId = 'console.command.public_alias.' . $id;
+                    $commandId = 'console.command.public_alias.'.$id;
                     $container->setAlias($commandId, $id)->setPublic(true);
                     $id = $commandId;
                 }

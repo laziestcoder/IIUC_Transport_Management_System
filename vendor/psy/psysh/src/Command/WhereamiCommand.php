@@ -63,46 +63,6 @@ HELP
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $info = $this->fileInfo();
-        $num = $input->getOption('num');
-        $factory = new ConsoleColorFactory($this->colorMode);
-        $colors = $factory->getConsoleColor();
-        $highlighter = new Highlighter($colors);
-        $contents = file_get_contents($info['file']);
-
-        $output->startPaging();
-        $output->writeln('');
-        $output->writeln(sprintf('From <info>%s:%s</info>:', $this->replaceCwd($info['file']), $info['line']));
-        $output->writeln('');
-        $output->write($highlighter->getCodeSnippet($contents, $info['line'], $num, $num), ShellOutput::OUTPUT_RAW);
-        $output->stopPaging();
-    }
-
-    /**
-     * Determine the file and line based on the specific backtrace.
-     *
-     * @return array
-     */
-    protected function fileInfo()
-    {
-        $stackFrame = $this->trace();
-        if (preg_match('/eval\(/', $stackFrame['file'])) {
-            preg_match_all('/([^\(]+)\((\d+)/', $stackFrame['file'], $matches);
-            $file = $matches[1][0];
-            $line = (int)$matches[2][0];
-        } else {
-            $file = $stackFrame['file'];
-            $line = $stackFrame['line'];
-        }
-
-        return compact('file', 'line');
-    }
-
-    /**
      * Obtains the correct stack frame in the full backtrace.
      *
      * @return array
@@ -120,11 +80,51 @@ HELP
 
     private static function isDebugCall(array $stackFrame)
     {
-        $class = isset($stackFrame['class']) ? $stackFrame['class'] : null;
+        $class    = isset($stackFrame['class']) ? $stackFrame['class'] : null;
         $function = isset($stackFrame['function']) ? $stackFrame['function'] : null;
 
         return ($class === null && $function === 'Psy\debug') ||
             ($class === 'Psy\Shell' && in_array($function, ['__construct', 'debug']));
+    }
+
+    /**
+     * Determine the file and line based on the specific backtrace.
+     *
+     * @return array
+     */
+    protected function fileInfo()
+    {
+        $stackFrame = $this->trace();
+        if (preg_match('/eval\(/', $stackFrame['file'])) {
+            preg_match_all('/([^\(]+)\((\d+)/', $stackFrame['file'], $matches);
+            $file = $matches[1][0];
+            $line = (int) $matches[2][0];
+        } else {
+            $file = $stackFrame['file'];
+            $line = $stackFrame['line'];
+        }
+
+        return compact('file', 'line');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $info        = $this->fileInfo();
+        $num         = $input->getOption('num');
+        $factory     = new ConsoleColorFactory($this->colorMode);
+        $colors      = $factory->getConsoleColor();
+        $highlighter = new Highlighter($colors);
+        $contents    = file_get_contents($info['file']);
+
+        $output->startPaging();
+        $output->writeln('');
+        $output->writeln(sprintf('From <info>%s:%s</info>:', $this->replaceCwd($info['file']), $info['line']));
+        $output->writeln('');
+        $output->write($highlighter->getCodeSnippet($contents, $info['line'], $num, $num), ShellOutput::OUTPUT_RAW);
+        $output->stopPaging();
     }
 
     /**

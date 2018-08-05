@@ -25,7 +25,7 @@ class Swift_Mime_Headers_IdentificationHeader extends Swift_Mime_Headers_Abstrac
      *
      * @var string[]
      */
-    private $ids = array();
+    private $ids = [];
 
     /**
      * The strict EmailValidator.
@@ -34,16 +34,18 @@ class Swift_Mime_Headers_IdentificationHeader extends Swift_Mime_Headers_Abstrac
      */
     private $emailValidator;
 
+    private $addressEncoder;
+
     /**
      * Creates a new IdentificationHeader with the given $name and $id.
      *
      * @param string $name
-     * @param EmailValidator $emailValidator
      */
-    public function __construct($name, EmailValidator $emailValidator)
+    public function __construct($name, EmailValidator $emailValidator, Swift_AddressEncoder $addressEncoder = null)
     {
         $this->setFieldName($name);
         $this->emailValidator = $emailValidator;
+        $this->addressEncoder = $addressEncoder ?? new Swift_AddressEncoder_IdnAddressEncoder();
     }
 
     /**
@@ -74,18 +76,6 @@ class Swift_Mime_Headers_IdentificationHeader extends Swift_Mime_Headers_Abstrac
     }
 
     /**
-     * Set the ID used in the value of this header.
-     *
-     * @param string|array $id
-     *
-     * @throws Swift_RfcComplianceException
-     */
-    public function setId($id)
-    {
-        $this->setIds(is_array($id) ? $id : array($id));
-    }
-
-    /**
      * Get the model for the field body.
      *
      * This method returns an array of IDs
@@ -98,33 +88,15 @@ class Swift_Mime_Headers_IdentificationHeader extends Swift_Mime_Headers_Abstrac
     }
 
     /**
-     * Get the list of IDs used in this Header.
+     * Set the ID used in the value of this header.
      *
-     * @return string[]
-     */
-    public function getIds()
-    {
-        return $this->ids;
-    }
-
-    /**
-     * Set a collection of IDs to use in the value of this Header.
-     *
-     * @param string[] $ids
+     * @param string|array $id
      *
      * @throws Swift_RfcComplianceException
      */
-    public function setIds(array $ids)
+    public function setId($id)
     {
-        $actualIds = array();
-
-        foreach ($ids as $id) {
-            $this->assertValidId($id);
-            $actualIds[] = $id;
-        }
-
-        $this->clearCachedValueIf($this->ids != $actualIds);
-        $this->ids = $actualIds;
+        $this->setIds(is_array($id) ? $id : [$id]);
     }
 
     /**
@@ -142,6 +114,36 @@ class Swift_Mime_Headers_IdentificationHeader extends Swift_Mime_Headers_Abstrac
     }
 
     /**
+     * Set a collection of IDs to use in the value of this Header.
+     *
+     * @param string[] $ids
+     *
+     * @throws Swift_RfcComplianceException
+     */
+    public function setIds(array $ids)
+    {
+        $actualIds = [];
+
+        foreach ($ids as $id) {
+            $this->assertValidId($id);
+            $actualIds[] = $id;
+        }
+
+        $this->clearCachedValueIf($this->ids != $actualIds);
+        $this->ids = $actualIds;
+    }
+
+    /**
+     * Get the list of IDs used in this Header.
+     *
+     * @return string[]
+     */
+    public function getIds()
+    {
+        return $this->ids;
+    }
+
+    /**
      * Get the string value of the body in this Header.
      *
      * This is not necessarily RFC 2822 compliant since folding white space will
@@ -156,10 +158,10 @@ class Swift_Mime_Headers_IdentificationHeader extends Swift_Mime_Headers_Abstrac
     public function getFieldBody()
     {
         if (!$this->getCachedValue()) {
-            $angleAddrs = array();
+            $angleAddrs = [];
 
             foreach ($this->ids as $id) {
-                $angleAddrs[] = '<' . $id . '>';
+                $angleAddrs[] = '<'.$this->addressEncoder->encodeString($id).'>';
             }
 
             $this->setCachedValue(implode(' ', $angleAddrs));
@@ -178,7 +180,7 @@ class Swift_Mime_Headers_IdentificationHeader extends Swift_Mime_Headers_Abstrac
     private function assertValidId($id)
     {
         if (!$this->emailValidator->isValid($id, new RFCValidation())) {
-            throw new Swift_RfcComplianceException('Invalid ID given <' . $id . '>');
+            throw new Swift_RfcComplianceException('Invalid ID given <'.$id.'>');
         }
     }
 }

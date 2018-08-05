@@ -11,9 +11,9 @@
 
 namespace Prophecy\Doubler\ClassPatch;
 
-use Prophecy\Doubler\Generator\Node\ArgumentNode;
 use Prophecy\Doubler\Generator\Node\ClassNode;
 use Prophecy\Doubler\Generator\Node\MethodNode;
+use Prophecy\Doubler\Generator\Node\ArgumentNode;
 
 /**
  * Add Prophecy functionality to the double.
@@ -77,7 +77,7 @@ class ProphecySubjectPatch implements ClassPatchInterface
             $__call->addArgument(new ArgumentNode('name'));
             $__call->addArgument(new ArgumentNode('arguments'));
 
-            $node->addMethod($__call);
+            $node->addMethod($__call, true);
         }
 
         $__call->setCode(<<<PHP
@@ -88,8 +88,8 @@ throw new \Prophecy\Exception\Doubler\MethodNotFoundException(
 PHP
         );
 
-        $node->addMethod($prophecySetter);
-        $node->addMethod($prophecyGetter);
+        $node->addMethod($prophecySetter, true);
+        $node->addMethod($prophecyGetter, true);
     }
 
     /**

@@ -4,8 +4,9 @@ namespace Faker\Test\Provider\pt_PT;
 
 use Faker\Generator;
 use Faker\Provider\pt_PT\PhoneNumber;
+use PHPUnit\Framework\TestCase;
 
-class PhoneNumberTest extends \PHPUnit_Framework_TestCase
+class PhoneNumberTest extends TestCase
 {
     public function setUp()
     {
@@ -18,7 +19,6 @@ class PhoneNumberTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertRegExp('/^(9[1,2,3,6][0-9]{7})|(2[0-9]{8})|(\+351 [2][0-9]{8})|(\+351 9[1,2,3,6][0-9]{7})/', $this->faker->phoneNumber());
     }
-
     public function testMobileNumberReturnsMobileNumberWithOrWithoutPrefix()
     {
         $this->assertRegExp('/^(9[1,2,3,6][0-9]{7})/', $this->faker->mobileNumber());

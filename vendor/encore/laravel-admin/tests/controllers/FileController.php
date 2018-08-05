@@ -30,21 +30,6 @@ class FileController extends Controller
     }
 
     /**
-     * Make a grid builder.
-     *
-     * @return Grid
-     */
-    protected function grid()
-    {
-        return Admin::grid(File::class, function (Grid $grid) {
-            $grid->id('ID')->sortable();
-
-            $grid->created_at();
-            $grid->updated_at();
-        });
-    }
-
-    /**
      * Edit interface.
      *
      * @param $id
@@ -58,6 +43,35 @@ class FileController extends Controller
             $content->description('description');
 
             $content->body($this->form()->edit($id));
+        });
+    }
+
+    /**
+     * Create interface.
+     *
+     * @return Content
+     */
+    public function create()
+    {
+        return Admin::content(function (Content $content) {
+            $content->header('Upload file');
+
+            $content->body($this->form());
+        });
+    }
+
+    /**
+     * Make a grid builder.
+     *
+     * @return Grid
+     */
+    protected function grid()
+    {
+        return Admin::grid(File::class, function (Grid $grid) {
+            $grid->id('ID')->sortable();
+
+            $grid->created_at();
+            $grid->updated_at();
         });
     }
 
@@ -80,20 +94,6 @@ class FileController extends Controller
 
             $form->display('created_at', 'Created At');
             $form->display('updated_at', 'Updated At');
-        });
-    }
-
-    /**
-     * Create interface.
-     *
-     * @return Content
-     */
-    public function create()
-    {
-        return Admin::content(function (Content $content) {
-            $content->header('Upload file');
-
-            $content->body($this->form());
         });
     }
 }

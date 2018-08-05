@@ -8,9 +8,16 @@ use Illuminate\Support\Arr;
 class SwitchGroup extends AbstractDisplayer
 {
     protected $states = [
-        'on' => ['value' => 1, 'text' => 'ON', 'color' => 'primary'],
+        'on'  => ['value' => 1, 'text' => 'ON', 'color' => 'primary'],
         'off' => ['value' => 0, 'text' => 'OFF', 'color' => 'default'],
     ];
+
+    protected function updateStates($states)
+    {
+        foreach (array_dot($states) as $key => $state) {
+            array_set($this->states, $key, $state);
+        }
+    }
 
     public function display($columns = [], $states = [])
     {
@@ -28,14 +35,7 @@ class SwitchGroup extends AbstractDisplayer
             $html[] = $this->buildSwitch($column, $label);
         }
 
-        return '<table>' . implode('', $html) . '</table>';
-    }
-
-    protected function updateStates($states)
-    {
-        foreach (array_dot($states) as $key => $state) {
-            array_set($this->states, $key, $state);
-        }
+        return '<table>'.implode('', $html).'</table>';
     }
 
     protected function buildSwitch($name, $label = '')

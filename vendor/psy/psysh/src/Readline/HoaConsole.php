@@ -22,17 +22,17 @@ class HoaConsole implements Readline
     /** @var HoaReadline */
     private $hoaReadline;
 
-    public function __construct()
-    {
-        $this->hoaReadline = new HoaReadline();
-    }
-
     /**
      * @return bool
      */
     public static function isSupported()
     {
         return class_exists('\Hoa\Console\Console', true);
+    }
+
+    public function __construct()
+    {
+        $this->hoaReadline = new HoaReadline();
     }
 
     /**

@@ -26,17 +26,6 @@ class EsiFragmentRendererTest extends TestCase
         $strategy->render('/', Request::create('/'));
     }
 
-    private function getInlineStrategy($called = false)
-    {
-        $inline = $this->getMockBuilder('Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer')->disableOriginalConstructor()->getMock();
-
-        if ($called) {
-            $inline->expects($this->once())->method('render');
-        }
-
-        return $inline;
-    }
-
     public function testRenderFallbackWithScalar()
     {
         $strategy = new EsiFragmentRenderer(new Esi(), $this->getInlineStrategy(true), new UriSigner('foo'));
@@ -102,5 +91,16 @@ class EsiFragmentRendererTest extends TestCase
         $request->headers->set('Surrogate-Capability', 'ESI/1.0');
 
         $strategy->render('/', $request, array('alt' => new ControllerReference('alt_controller')));
+    }
+
+    private function getInlineStrategy($called = false)
+    {
+        $inline = $this->getMockBuilder('Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer')->disableOriginalConstructor()->getMock();
+
+        if ($called) {
+            $inline->expects($this->once())->method('render');
+        }
+
+        return $inline;
     }
 }

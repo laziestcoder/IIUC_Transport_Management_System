@@ -2,8 +2,8 @@
 
 namespace Illuminate\Foundation\Providers;
 
-use Illuminate\Database\MigrationServiceProvider;
 use Illuminate\Support\AggregateServiceProvider;
+use Illuminate\Database\MigrationServiceProvider;
 
 class ConsoleSupportServiceProvider extends AggregateServiceProvider
 {

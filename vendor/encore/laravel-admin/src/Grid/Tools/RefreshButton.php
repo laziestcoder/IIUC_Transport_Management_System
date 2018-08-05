@@ -7,22 +7,6 @@ use Encore\Admin\Admin;
 class RefreshButton extends AbstractTool
 {
     /**
-     * Render refresh button of grid.
-     *
-     * @return string
-     */
-    public function render()
-    {
-        Admin::script($this->script());
-
-        $refresh = trans('admin.refresh');
-
-        return <<<EOT
-<a class="btn btn-sm btn-primary grid-refresh"><i class="fa fa-refresh"></i> $refresh</a>
-EOT;
-    }
-
-    /**
      * Script for this tool.
      *
      * @return string
@@ -38,6 +22,22 @@ $('.grid-refresh').on('click', function() {
     toastr.success('{$message}');
 });
 
+EOT;
+    }
+
+    /**
+     * Render refresh button of grid.
+     *
+     * @return string
+     */
+    public function render()
+    {
+        Admin::script($this->script());
+
+        $refresh = trans('admin.refresh');
+
+        return <<<EOT
+<a class="btn btn-sm btn-primary grid-refresh"><i class="fa fa-refresh"></i> $refresh</a>
 EOT;
     }
 }

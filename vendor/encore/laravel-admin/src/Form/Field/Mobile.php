@@ -43,9 +43,9 @@ EOT;
                 // Store function string.
                 $value_arr[] = $value;
                 // Replace function string in $foo with a 'unique' special key.
-                $value = '%' . $key . '%';
+                $value = '%'.$key.'%';
                 // Later on, we'll look for the value, and replace it.
-                $replace_keys[] = '"' . $value . '"';
+                $replace_keys[] = '"'.$value.'"';
             }
         }
 

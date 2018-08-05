@@ -28,26 +28,6 @@ class ListCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function getNativeDefinition()
-    {
-        return $this->createDefinition();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    private function createDefinition()
-    {
-        return new InputDefinition(array(
-            new InputArgument('namespace', InputArgument::OPTIONAL, 'The namespace name'),
-            new InputOption('raw', null, InputOption::VALUE_NONE, 'To output raw command list'),
-            new InputOption('format', null, InputOption::VALUE_REQUIRED, 'The output format (txt, xml, json, or md)', 'txt'),
-        ));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function configure()
     {
         $this
@@ -71,7 +51,16 @@ It's also possible to get raw list of commands (useful for embedding command run
 
   <info>php %command.full_name% --raw</info>
 EOF
-            );
+            )
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getNativeDefinition()
+    {
+        return $this->createDefinition();
     }
 
     /**
@@ -84,6 +73,18 @@ EOF
             'format' => $input->getOption('format'),
             'raw_text' => $input->getOption('raw'),
             'namespace' => $input->getArgument('namespace'),
+        ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    private function createDefinition()
+    {
+        return new InputDefinition(array(
+            new InputArgument('namespace', InputArgument::OPTIONAL, 'The namespace name'),
+            new InputOption('raw', null, InputOption::VALUE_NONE, 'To output raw command list'),
+            new InputOption('format', null, InputOption::VALUE_REQUIRED, 'The output format (txt, xml, json, or md)', 'txt'),
         ));
     }
 }

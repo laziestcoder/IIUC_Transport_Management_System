@@ -47,6 +47,11 @@ class SizeRangeFilterIteratorTest extends RealIteratorTestCase
 
 class InnerSizeIterator extends \ArrayIterator
 {
+    public function current()
+    {
+        return new \SplFileInfo(parent::current());
+    }
+
     public function getFilename()
     {
         return parent::current();
@@ -55,11 +60,6 @@ class InnerSizeIterator extends \ArrayIterator
     public function isFile()
     {
         return $this->current()->isFile();
-    }
-
-    public function current()
-    {
-        return new \SplFileInfo(parent::current());
     }
 
     public function getSize()

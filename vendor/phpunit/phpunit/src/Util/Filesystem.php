@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util;
 
 /**
@@ -23,9 +22,9 @@ final class Filesystem
     public static function classNameToFilename(string $className): string
     {
         return \str_replace(
-                ['_', '\\'],
-                DIRECTORY_SEPARATOR,
-                $className
-            ) . '.php';
+            ['_', '\\'],
+            \DIRECTORY_SEPARATOR,
+            $className
+        ) . '.php';
     }
 }

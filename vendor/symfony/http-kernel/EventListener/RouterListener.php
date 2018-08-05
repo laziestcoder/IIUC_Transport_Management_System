@@ -48,12 +48,12 @@ class RouterListener implements EventSubscriberInterface
     private $debug;
 
     /**
-     * @param UrlMatcherInterface|RequestMatcherInterface $matcher The Url or Request matcher
-     * @param RequestStack $requestStack A RequestStack instance
-     * @param RequestContext|null $context The RequestContext (can be null when $matcher implements RequestContextAwareInterface)
-     * @param LoggerInterface|null $logger The logger
-     * @param string $projectDir
-     * @param bool $debug
+     * @param UrlMatcherInterface|RequestMatcherInterface $matcher      The Url or Request matcher
+     * @param RequestStack                                $requestStack A RequestStack instance
+     * @param RequestContext|null                         $context      The RequestContext (can be null when $matcher implements RequestContextAwareInterface)
+     * @param LoggerInterface|null                        $logger       The logger
+     * @param string                                      $projectDir
+     * @param bool                                        $debug
      *
      * @throws \InvalidArgumentException
      */
@@ -75,13 +75,15 @@ class RouterListener implements EventSubscriberInterface
         $this->debug = $debug;
     }
 
-    public static function getSubscribedEvents()
+    private function setCurrentRequest(Request $request = null)
     {
-        return array(
-            KernelEvents::REQUEST => array(array('onKernelRequest', 32)),
-            KernelEvents::FINISH_REQUEST => array(array('onKernelFinishRequest', 0)),
-            KernelEvents::EXCEPTION => array('onKernelException', -64),
-        );
+        if (null !== $request) {
+            try {
+                $this->context->fromRequest($request);
+            } catch (\UnexpectedValueException $e) {
+                throw new BadRequestHttpException($e->getMessage(), $e, $e->getCode());
+            }
+        }
     }
 
     /**
@@ -93,17 +95,6 @@ class RouterListener implements EventSubscriberInterface
     public function onKernelFinishRequest(FinishRequestEvent $event)
     {
         $this->setCurrentRequest($this->requestStack->getParentRequest());
-    }
-
-    private function setCurrentRequest(Request $request = null)
-    {
-        if (null !== $request) {
-            try {
-                $this->context->fromRequest($request);
-            } catch (\UnexpectedValueException $e) {
-                throw new BadRequestHttpException($e->getMessage(), $e, $e->getCode());
-            }
-        }
     }
 
     public function onKernelRequest(GetResponseEvent $event)
@@ -164,14 +155,23 @@ class RouterListener implements EventSubscriberInterface
         }
     }
 
+    public static function getSubscribedEvents()
+    {
+        return array(
+            KernelEvents::REQUEST => array(array('onKernelRequest', 32)),
+            KernelEvents::FINISH_REQUEST => array(array('onKernelFinishRequest', 0)),
+            KernelEvents::EXCEPTION => array('onKernelException', -64),
+        );
+    }
+
     private function createWelcomeResponse()
     {
         $version = Kernel::VERSION;
-        $baseDir = realpath($this->projectDir) . DIRECTORY_SEPARATOR;
+        $baseDir = realpath($this->projectDir).\DIRECTORY_SEPARATOR;
         $docVersion = substr(Kernel::VERSION, 0, 3);
 
         ob_start();
-        include __DIR__ . '/../Resources/welcome.html.php';
+        include __DIR__.'/../Resources/welcome.html.php';
 
         return new Response(ob_get_clean(), Response::HTTP_NOT_FOUND);
     }

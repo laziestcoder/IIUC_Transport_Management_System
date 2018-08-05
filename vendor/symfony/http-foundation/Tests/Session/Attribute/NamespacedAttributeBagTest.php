@@ -28,6 +28,33 @@ class NamespacedAttributeBagTest extends TestCase
      */
     private $bag;
 
+    protected function setUp()
+    {
+        $this->array = array(
+            'hello' => 'world',
+            'always' => 'be happy',
+            'user.login' => 'drak',
+            'csrf.token' => array(
+                'a' => '1234',
+                'b' => '4321',
+            ),
+            'category' => array(
+                'fishing' => array(
+                    'first' => 'cod',
+                    'second' => 'sole',
+                ),
+            ),
+        );
+        $this->bag = new NamespacedAttributeBag('_sf2', '/');
+        $this->bag->initialize($this->array);
+    }
+
+    protected function tearDown()
+    {
+        $this->bag = null;
+        $this->array = array();
+    }
+
     public function testInitialize()
     {
         $bag = new NamespacedAttributeBag();
@@ -58,6 +85,17 @@ class NamespacedAttributeBagTest extends TestCase
     /**
      * @dataProvider attributesProvider
      */
+    public function testHasNoSideEffect($key, $value, $expected)
+    {
+        $expected = json_encode($this->bag->all());
+        $this->bag->has($key);
+
+        $this->assertEquals($expected, json_encode($this->bag->all()));
+    }
+
+    /**
+     * @dataProvider attributesProvider
+     */
     public function testGet($key, $value, $expected)
     {
         $this->assertEquals($value, $this->bag->get($key));
@@ -67,6 +105,17 @@ class NamespacedAttributeBagTest extends TestCase
     {
         $this->assertNull($this->bag->get('user2.login'));
         $this->assertEquals('default', $this->bag->get('user2.login', 'default'));
+    }
+
+    /**
+     * @dataProvider attributesProvider
+     */
+    public function testGetNoSideEffect($key, $value, $expected)
+    {
+        $expected = json_encode($this->bag->all());
+        $this->bag->get($key);
+
+        $this->assertEquals($expected, json_encode($this->bag->all()));
     }
 
     /**
@@ -151,32 +200,5 @@ class NamespacedAttributeBagTest extends TestCase
             array('bye', null, false),
             array('bye/for/now', null, false),
         );
-    }
-
-    protected function setUp()
-    {
-        $this->array = array(
-            'hello' => 'world',
-            'always' => 'be happy',
-            'user.login' => 'drak',
-            'csrf.token' => array(
-                'a' => '1234',
-                'b' => '4321',
-            ),
-            'category' => array(
-                'fishing' => array(
-                    'first' => 'cod',
-                    'second' => 'sole',
-                ),
-            ),
-        );
-        $this->bag = new NamespacedAttributeBag('_sf2', '/');
-        $this->bag->initialize($this->array);
-    }
-
-    protected function tearDown()
-    {
-        $this->bag = null;
-        $this->array = array();
     }
 }

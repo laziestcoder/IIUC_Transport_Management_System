@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util;
 
 use PHPUnit\Framework\Exception;
@@ -30,7 +29,7 @@ final class FileLoader
     public static function checkAndLoad(string $filename): string
     {
         $includePathFilename = \stream_resolve_include_path($filename);
-        $localFile = __DIR__ . DIRECTORY_SEPARATOR . $filename;
+        $localFile           = __DIR__ . \DIRECTORY_SEPARATOR . $filename;
 
         /**
          * @see https://github.com/sebastianbergmann/phpunit/pull/2751
@@ -57,7 +56,7 @@ final class FileLoader
 
         include_once $filename;
 
-        $newVariables = \get_defined_vars();
+        $newVariables     = \get_defined_vars();
         $newVariableNames = \array_diff(\array_keys($newVariables), $oldVariableNames);
 
         foreach ($newVariableNames as $variableName) {

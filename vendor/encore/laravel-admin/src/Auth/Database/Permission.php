@@ -12,13 +12,14 @@ class Permission extends Model
     /**
      * @var array
      */
-    public static $httpMethods = [
-        'GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD',
-    ];
+    protected $fillable = ['name', 'slug', 'http_method', 'http_path'];
+
     /**
      * @var array
      */
-    protected $fillable = ['name', 'slug', 'http_method', 'http_path'];
+    public static $httpMethods = [
+        'GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD',
+    ];
 
     /**
      * Create a new Eloquent model instance.
@@ -37,25 +38,11 @@ class Permission extends Model
     }
 
     /**
-     * Detach models from the relationship.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::deleting(function ($model) {
-            $model->roles()->detach();
-        });
-    }
-
-    /**
      * Permission belongs to many roles.
      *
      * @return BelongsToMany
      */
-    public function roles(): BelongsToMany
+    public function roles() : BelongsToMany
     {
         $pivotTable = config('admin.database.role_permissions_table');
 
@@ -71,7 +58,7 @@ class Permission extends Model
      *
      * @return bool
      */
-    public function shouldPassThrough(Request $request): bool
+    public function shouldPassThrough(Request $request) : bool
     {
         if (empty($this->http_method) && empty($this->http_path)) {
             return true;
@@ -80,7 +67,7 @@ class Permission extends Model
         $method = $this->http_method;
 
         $matches = array_map(function ($path) use ($method) {
-            $path = trim(config('admin.route.prefix'), '/') . $path;
+            $path = trim(config('admin.route.prefix'), '/').$path;
 
             if (Str::contains($path, ':')) {
                 list($method, $path) = explode(':', $path);
@@ -102,12 +89,12 @@ class Permission extends Model
     /**
      * If a request match the specific HTTP method and path.
      *
-     * @param array $match
+     * @param array   $match
      * @param Request $request
      *
      * @return bool
      */
-    protected function matchRequest(array $match, Request $request): bool
+    protected function matchRequest(array $match, Request $request) : bool
     {
         if (!$request->is(trim($match['path'], '/'))) {
             return false;
@@ -142,5 +129,19 @@ class Permission extends Model
         }
 
         return $method;
+    }
+
+    /**
+     * Detach models from the relationship.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($model) {
+            $model->roles()->detach();
+        });
     }
 }

@@ -111,7 +111,7 @@ class MoFileLoader extends FileLoader
             $ids = array('singular' => $singularId, 'plural' => $pluralId);
             $item = compact('ids', 'translated');
 
-            if (is_array($item['translated'])) {
+            if (\is_array($item['translated'])) {
                 $messages[$item['ids']['singular']] = stripcslashes($item['translated'][0]);
                 if (isset($item['ids']['plural'])) {
                     $plurals = array();
@@ -140,6 +140,6 @@ class MoFileLoader extends FileLoader
         $result = unpack($isBigEndian ? 'N1' : 'V1', fread($stream, 4));
         $result = current($result);
 
-        return (int)substr($result, -8);
+        return (int) substr($result, -8);
     }
 }

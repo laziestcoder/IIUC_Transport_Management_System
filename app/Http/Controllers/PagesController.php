@@ -70,7 +70,7 @@ class PagesController extends Controller
             ->where( 'time' ,'>', $now  )
             ->first()->time;
 
-        $toIIUCFemale=Carbon::parse(Time::where('id', $time )->first()->time)->format('g:i A');;
+        $toIIUCFemale=Carbon::parse(Time::where('id', $time )->first()->time)->format('g:i A');
 
         // To City
         //male
@@ -85,7 +85,7 @@ class PagesController extends Controller
             ->where( 'day', $todayid )
             ->where( 'time' ,'>', $now  )
             ->first()->time;
-        $toCityMale =Carbon::parse(Time::where('id', $time )->first()->time)->format('g:i A');;
+        $toCityMale =Carbon::parse(Time::where('id', $time )->first()->time)->format('g:i A');
 
 
         // female
@@ -98,10 +98,10 @@ class PagesController extends Controller
         $time=Schedule::where('female', 1)
             ->where( 'fromiiuc',1)
             ->where( 'day', $todayid )
-            ->where( 'time' ,'>', $now  )
+            ->where( 'time' ,'>=', $now  )
             ->first()->time;
 
-        $toCityFemale =Carbon::parse(Time::where('id', $time )->first()->time)->format('g:i A');;
+        $toCityFemale =Carbon::parse(Time::where('id', $time )->first()->time)->format('g:i A');
 
         $data = array(
             'titile' => $title,
@@ -114,8 +114,8 @@ class PagesController extends Controller
             'toIIUCFemale'=>$toIIUCFemale ? $toIIUCFemale : 'NOT AVAILABLE',
             'toCityMale'=>$toCityMale ? $toCityMale : 'NOT AVAILABLE',
             'toCityFemale'=>$toCityFemale ? $toCityFemale : 'NOT AVAILABLE',
-            'fromRouteM'=> $fromRouteM == 'AK Khan' ? $fromRouteM : 'All Route',
-            'fromRouteF'=> $fromRouteF == 'AK Khan' ? $fromRouteF : 'All Route',
+            'fromRouteM'=> $fromRouteM ,//== 'AK Khan' ? $fromRouteM : 'All Route',
+            'fromRouteF'=> $fromRouteF ,//== 'AK Khan' ? $fromRouteF : 'All Route',
             'toRouteM'=> $toRouteM ,//== 'AK Khan' ? $toRouteM : 'All Route',
             'toRouteF'=> $toRouteF ,//== 'AK Khan' ? $toRouteF : 'All Route',
         );

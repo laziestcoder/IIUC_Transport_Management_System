@@ -32,11 +32,6 @@ class NullSessionHandlerTest extends TestCase
         $this->assertEquals('user', ini_get('session.save_handler'));
     }
 
-    public function getStorage()
-    {
-        return new NativeSessionStorage(array(), new NullSessionHandler());
-    }
-
     public function testSession()
     {
         session_id('nullsessionstorage');
@@ -55,5 +50,10 @@ class NullSessionHandlerTest extends TestCase
         $session->start();
         $this->assertEquals('nullsessionstorage', $session->getId());
         $this->assertNull($session->get('something'));
+    }
+
+    public function getStorage()
+    {
+        return new NativeSessionStorage(array(), new NullSessionHandler());
     }
 }

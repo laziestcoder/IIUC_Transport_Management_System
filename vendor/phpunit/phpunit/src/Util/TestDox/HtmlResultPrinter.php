@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Util\TestDox;
 
 /**
@@ -101,8 +100,6 @@ EOT;
 
     /**
      * Handler for 'on test' event.
-     *
-     * @param mixed $name
      */
     protected function onTest($name, bool $success = true): void
     {

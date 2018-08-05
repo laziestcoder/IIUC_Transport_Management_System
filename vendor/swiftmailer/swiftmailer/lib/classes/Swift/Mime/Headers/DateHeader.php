@@ -79,14 +79,12 @@ class Swift_Mime_Headers_DateHeader extends Swift_Mime_Headers_AbstractHeader
      * Set the date-time of the Date in this Header.
      *
      * If a DateTime instance is provided, it is converted to DateTimeImmutable.
-     *
-     * @param DateTimeInterface $dateTime
      */
     public function setDateTime(DateTimeInterface $dateTime)
     {
         $this->clearCachedValueIf($this->getCachedValue() != $dateTime->format(DateTime::RFC2822));
         if ($dateTime instanceof DateTime) {
-            $immutable = new DateTimeImmutable('@' . $dateTime->getTimestamp());
+            $immutable = new DateTimeImmutable('@'.$dateTime->getTimestamp());
             $dateTime = $immutable->setTimezone($dateTime->getTimezone());
         }
         $this->dateTime = $dateTime;

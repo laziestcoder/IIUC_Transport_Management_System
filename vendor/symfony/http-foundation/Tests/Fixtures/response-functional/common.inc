@@ -3,7 +3,7 @@
 use Symfony\Component\HttpFoundation\Response;
 
 $parent = __DIR__;
-while (!@file_exists($parent . '/vendor/autoload.php')) {
+while (!@file_exists($parent.'/vendor/autoload.php')) {
     if (!@file_exists($parent)) {
         // open_basedir restriction in effect
         break;
@@ -16,11 +16,15 @@ while (!@file_exists($parent . '/vendor/autoload.php')) {
     $parent = dirname($parent);
 }
 
-require $parent . '/vendor/autoload.php';
+require $parent.'/vendor/autoload.php';
 
 error_reporting(-1);
 ini_set('html_errors', 0);
 ini_set('display_errors', 1);
+
+if (ini_get('xdebug.default_enable')) {
+    xdebug_disable();
+}
 
 header_remove('X-Powered-By');
 header('Content-Type: text/plain; charset=utf-8');

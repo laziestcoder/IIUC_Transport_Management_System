@@ -11,11 +11,14 @@ use PHPUnit\Framework\TestCase;
 
 class NameResolverTest extends TestCase
 {
+    private function canonicalize($string) {
+        return str_replace("\r\n", "\n", $string);
+    }
+
     /**
      * @covers PhpParser\NodeVisitor\NameResolver
      */
-    public function testResolveNames()
-    {
+    public function testResolveNames() {
         $code = <<<'EOC'
 <?php
 
@@ -163,9 +166,9 @@ namespace Baz {
 }
 EOC;
 
-        $parser = new PhpParser\Parser\Php7(new PhpParser\Lexer\Emulative);
+        $parser        = new PhpParser\Parser\Php7(new PhpParser\Lexer\Emulative);
         $prettyPrinter = new PhpParser\PrettyPrinter\Standard;
-        $traverser = new PhpParser\NodeTraverser;
+        $traverser     = new PhpParser\NodeTraverser;
         $traverser->addVisitor(new NameResolver);
 
         $stmts = $parser->parse($code);
@@ -177,16 +180,10 @@ EOC;
         );
     }
 
-    private function canonicalize($string)
-    {
-        return str_replace("\r\n", "\n", $string);
-    }
-
     /**
      * @covers PhpParser\NodeVisitor\NameResolver
      */
-    public function testResolveLocations()
-    {
+    public function testResolveLocations() {
         $code = <<<'EOC'
 <?php
 namespace NS;
@@ -268,9 +265,9 @@ try {
 }
 EOC;
 
-        $parser = new PhpParser\Parser\Php7(new PhpParser\Lexer\Emulative);
+        $parser        = new PhpParser\Parser\Php7(new PhpParser\Lexer\Emulative);
         $prettyPrinter = new PhpParser\PrettyPrinter\Standard;
-        $traverser = new PhpParser\NodeTraverser;
+        $traverser     = new PhpParser\NodeTraverser;
         $traverser->addVisitor(new NameResolver);
 
         $stmts = $parser->parse($code);
@@ -282,8 +279,7 @@ EOC;
         );
     }
 
-    public function testNoResolveSpecialName()
-    {
+    public function testNoResolveSpecialName() {
         $stmts = [new Node\Expr\New_(new Name('self'))];
 
         $traverser = new PhpParser\NodeTraverser;
@@ -292,8 +288,7 @@ EOC;
         $this->assertEquals($stmts, $traverser->traverse($stmts));
     }
 
-    public function testAddDeclarationNamespacedName()
-    {
+    public function testAddDeclarationNamespacedName() {
         $nsStmts = [
             new Stmt\Class_('A'),
             new Stmt\Interface_('B'),
@@ -309,24 +304,23 @@ EOC;
         $traverser->addVisitor(new NameResolver);
 
         $stmts = $traverser->traverse([new Stmt\Namespace_(new Name('NS'), $nsStmts)]);
-        $this->assertSame('NS\\A', (string)$stmts[0]->stmts[0]->namespacedName);
-        $this->assertSame('NS\\B', (string)$stmts[0]->stmts[1]->namespacedName);
-        $this->assertSame('NS\\C', (string)$stmts[0]->stmts[2]->namespacedName);
-        $this->assertSame('NS\\D', (string)$stmts[0]->stmts[3]->consts[0]->namespacedName);
-        $this->assertSame('NS\\E', (string)$stmts[0]->stmts[4]->namespacedName);
+        $this->assertSame('NS\\A', (string) $stmts[0]->stmts[0]->namespacedName);
+        $this->assertSame('NS\\B', (string) $stmts[0]->stmts[1]->namespacedName);
+        $this->assertSame('NS\\C', (string) $stmts[0]->stmts[2]->namespacedName);
+        $this->assertSame('NS\\D', (string) $stmts[0]->stmts[3]->consts[0]->namespacedName);
+        $this->assertSame('NS\\E', (string) $stmts[0]->stmts[4]->namespacedName);
         $this->assertObjectNotHasAttribute('namespacedName', $stmts[0]->stmts[5]->class);
 
         $stmts = $traverser->traverse([new Stmt\Namespace_(null, $nsStmts)]);
-        $this->assertSame('A', (string)$stmts[0]->stmts[0]->namespacedName);
-        $this->assertSame('B', (string)$stmts[0]->stmts[1]->namespacedName);
-        $this->assertSame('C', (string)$stmts[0]->stmts[2]->namespacedName);
-        $this->assertSame('D', (string)$stmts[0]->stmts[3]->consts[0]->namespacedName);
-        $this->assertSame('E', (string)$stmts[0]->stmts[4]->namespacedName);
+        $this->assertSame('A',     (string) $stmts[0]->stmts[0]->namespacedName);
+        $this->assertSame('B',     (string) $stmts[0]->stmts[1]->namespacedName);
+        $this->assertSame('C',     (string) $stmts[0]->stmts[2]->namespacedName);
+        $this->assertSame('D',     (string) $stmts[0]->stmts[3]->consts[0]->namespacedName);
+        $this->assertSame('E',     (string) $stmts[0]->stmts[4]->namespacedName);
         $this->assertObjectNotHasAttribute('namespacedName', $stmts[0]->stmts[5]->class);
     }
 
-    public function testAddRuntimeResolvedNamespacedName()
-    {
+    public function testAddRuntimeResolvedNamespacedName() {
         $stmts = [
             new Stmt\Namespace_(new Name('NS'), [
                 new Expr\FuncCall(new Name('foo')),
@@ -342,8 +336,8 @@ EOC;
         $traverser->addVisitor(new NameResolver);
         $stmts = $traverser->traverse($stmts);
 
-        $this->assertSame('NS\\foo', (string)$stmts[0]->stmts[0]->name->getAttribute('namespacedName'));
-        $this->assertSame('NS\\FOO', (string)$stmts[0]->stmts[1]->name->getAttribute('namespacedName'));
+        $this->assertSame('NS\\foo', (string) $stmts[0]->stmts[0]->name->getAttribute('namespacedName'));
+        $this->assertSame('NS\\FOO', (string) $stmts[0]->stmts[1]->name->getAttribute('namespacedName'));
 
         $this->assertFalse($stmts[1]->stmts[0]->name->hasAttribute('namespacedName'));
         $this->assertFalse($stmts[1]->stmts[1]->name->hasAttribute('namespacedName'));
@@ -352,8 +346,7 @@ EOC;
     /**
      * @dataProvider provideTestError
      */
-    public function testError(Node $stmt, $errorMsg)
-    {
+    public function testError(Node $stmt, $errorMsg) {
         $this->expectException(\PhpParser\Error::class);
         $this->expectExceptionMessage($errorMsg);
 
@@ -362,8 +355,7 @@ EOC;
         $traverser->traverse([$stmt]);
     }
 
-    public function provideTestError()
-    {
+    public function provideTestError() {
         return [
             [
                 new Stmt\Use_([
@@ -427,8 +419,7 @@ EOC;
         $this->assertSame(['Bar', 'Baz'], $assign->expr->class->parts);
     }
 
-    public function testSpecialClassNamesAreCaseInsensitive()
-    {
+    public function testSpecialClassNamesAreCaseInsensitive() {
         $source = <<<'EOC'
 <?php
 namespace Foo;
@@ -454,13 +445,12 @@ EOC;
         $classStmt = $stmts[0];
         $methodStmt = $classStmt->stmts[0]->stmts[0];
 
-        $this->assertSame('SELF', (string)$methodStmt->stmts[0]->expr->class);
-        $this->assertSame('PARENT', (string)$methodStmt->stmts[1]->expr->class);
-        $this->assertSame('STATIC', (string)$methodStmt->stmts[2]->expr->class);
+        $this->assertSame('SELF', (string) $methodStmt->stmts[0]->expr->class);
+        $this->assertSame('PARENT', (string) $methodStmt->stmts[1]->expr->class);
+        $this->assertSame('STATIC', (string) $methodStmt->stmts[2]->expr->class);
     }
 
-    public function testAddOriginalNames()
-    {
+    public function testAddOriginalNames() {
         $traverser = new PhpParser\NodeTraverser;
         $traverser->addVisitor(new NameResolver(null, ['preserveOriginalNames' => true]));
 
@@ -479,8 +469,7 @@ EOC;
         $this->assertSame($n2, $stmts[0]->stmts[1]->name->getAttribute('originalName'));
     }
 
-    public function testAttributeOnlyMode()
-    {
+    public function testAttributeOnlyMode() {
         $traverser = new PhpParser\NodeTraverser;
         $traverser->addVisitor(new NameResolver(null, ['replaceNodes' => false]));
 

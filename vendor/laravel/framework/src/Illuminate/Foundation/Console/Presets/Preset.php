@@ -15,7 +15,7 @@ class Preset
     {
         $filesystem = new Filesystem;
 
-        if (!$filesystem->isDirectory($directory = resource_path('assets/js/components'))) {
+        if (! $filesystem->isDirectory($directory = resource_path('assets/js/components'))) {
             $filesystem->makeDirectory($directory, 0755, true);
         }
     }
@@ -23,12 +23,12 @@ class Preset
     /**
      * Update the "package.json" file.
      *
-     * @param  bool $dev
+     * @param  bool  $dev
      * @return void
      */
     protected static function updatePackages($dev = true)
     {
-        if (!file_exists(base_path('package.json'))) {
+        if (! file_exists(base_path('package.json'))) {
             return;
         }
 
@@ -44,7 +44,7 @@ class Preset
 
         file_put_contents(
             base_path('package.json'),
-            json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . PHP_EOL
+            json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT).PHP_EOL
         );
     }
 

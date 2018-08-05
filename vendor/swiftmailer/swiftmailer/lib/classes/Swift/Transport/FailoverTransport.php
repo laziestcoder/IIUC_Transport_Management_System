@@ -35,7 +35,7 @@ class Swift_Transport_FailoverTransport extends Swift_Transport_LoadBalancedTran
     {
         $maxTransports = count($this->transports);
         for ($i = 0; $i < $maxTransports
-        && $transport = $this->getNextTransport(); ++$i) {
+            && $transport = $this->getNextTransport(); ++$i) {
             if ($transport->ping()) {
                 return true;
             } else {
@@ -46,28 +46,12 @@ class Swift_Transport_FailoverTransport extends Swift_Transport_LoadBalancedTran
         return count($this->transports) > 0;
     }
 
-    protected function getNextTransport()
-    {
-        if (!isset($this->currentTransport)) {
-            $this->currentTransport = parent::getNextTransport();
-        }
-
-        return $this->currentTransport;
-    }
-
-    protected function killCurrentTransport()
-    {
-        $this->currentTransport = null;
-        parent::killCurrentTransport();
-    }
-
     /**
      * Send the given Message.
      *
      * Recipient/sender data will be retrieved from the Message API.
      * The return value is the number of recipients who were accepted for delivery.
      *
-     * @param Swift_Mime_SimpleMessage $message
      * @param string[] $failedRecipients An array of failures by-reference
      *
      * @return int
@@ -79,7 +63,7 @@ class Swift_Transport_FailoverTransport extends Swift_Transport_LoadBalancedTran
         $this->lastUsedTransport = null;
 
         for ($i = 0; $i < $maxTransports
-        && $transport = $this->getNextTransport(); ++$i) {
+            && $transport = $this->getNextTransport(); ++$i) {
             try {
                 if (!$transport->isStarted()) {
                     $transport->start();
@@ -95,12 +79,27 @@ class Swift_Transport_FailoverTransport extends Swift_Transport_LoadBalancedTran
             }
         }
 
-        if (count($this->transports) == 0) {
+        if (0 == count($this->transports)) {
             throw new Swift_TransportException(
                 'All Transports in FailoverTransport failed, or no Transports available'
-            );
+                );
         }
 
         return $sent;
+    }
+
+    protected function getNextTransport()
+    {
+        if (!isset($this->currentTransport)) {
+            $this->currentTransport = parent::getNextTransport();
+        }
+
+        return $this->currentTransport;
+    }
+
+    protected function killCurrentTransport()
+    {
+        $this->currentTransport = null;
+        parent::killCurrentTransport();
     }
 }

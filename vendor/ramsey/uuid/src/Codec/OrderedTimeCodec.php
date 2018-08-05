@@ -11,7 +11,6 @@
  * @link https://packagist.org/packages/ramsey/uuid Packagist
  * @link https://github.com/ramsey/uuid GitHub
  */
-
 namespace Ramsey\Uuid\Codec;
 
 use InvalidArgumentException;
@@ -51,6 +50,7 @@ class OrderedTimeCodec extends StringCodec
      *
      * @param string $bytes
      * @return UuidInterface
+     * @throws \InvalidArgumentException if string has not 16 characters
      */
     public function decodeBytes($bytes)
     {

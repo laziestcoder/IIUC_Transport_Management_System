@@ -17,24 +17,16 @@ class Actions extends AbstractDisplayer
     protected $prepends = [];
 
     /**
-     * @var bool
+     * Default actions.
+     *
+     * @var array
      */
-    protected $allowEdit = true;
-
-    /**
-     * @var bool
-     */
-    protected $allowDelete = true;
+    protected $actions = ['view', 'edit', 'delete'];
 
     /**
      * @var string
      */
     protected $resource;
-
-    /**
-     * @var
-     */
-    protected $key;
 
     /**
      * Append a action.
@@ -65,60 +57,53 @@ class Actions extends AbstractDisplayer
     }
 
     /**
+     * Disable view action.
+     *
+     * @return $this
+     */
+    public function disableView()
+    {
+        array_delete($this->actions, 'view');
+
+        return $this;
+    }
+
+    /**
      * Disable delete.
      *
-     * @return void.
+     * @return $this.
      */
     public function disableDelete()
     {
-        $this->allowDelete = false;
+        array_delete($this->actions, 'delete');
+
+        return $this;
     }
 
     /**
      * Disable edit.
      *
-     * @return void.
+     * @return $this.
      */
     public function disableEdit()
     {
-        $this->allowEdit = false;
+        array_delete($this->actions, 'edit');
+
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function display($callback = null)
-    {
-        if ($callback instanceof \Closure) {
-            $callback->call($this, $this);
-        }
-
-        $actions = $this->prepends;
-        if ($this->allowEdit) {
-            array_push($actions, $this->editAction());
-        }
-
-        if ($this->allowDelete) {
-            array_push($actions, $this->deleteAction());
-        }
-
-        $actions = array_merge($actions, $this->appends);
-
-        return implode('', $actions);
-    }
-
-    /**
-     * Built edit action.
+     * Set resource of current resource.
      *
-     * @return string
+     * @param $resource
+     *
+     * @return $this
      */
-    protected function editAction()
+    public function setResource($resource)
     {
-        return <<<EOT
-<a href="{$this->getResource()}/{$this->getKey()}/edit">
-    <i class="fa fa-edit"></i>
-</a>
-EOT;
+        $this->resource = $resource;
+
+        return $this;
     }
 
     /**
@@ -132,39 +117,60 @@ EOT;
     }
 
     /**
-     * Set resource of current resource.
-     *
-     * @param $resource
-     *
-     * @return void
+     * {@inheritdoc}
      */
-    public function setResource($resource)
+    public function display($callback = null)
     {
-        $this->resource = $resource;
-    }
-
-    public function getKey()
-    {
-        if ($this->key) {
-            return $this->key;
+        if ($callback instanceof \Closure) {
+            $callback->call($this, $this);
         }
 
-        return parent::getKey();
-    }
+        $actions = $this->prepends;
 
-    public function setKey($key)
-    {
-        $this->key = $key;
+        foreach ($this->actions as $action) {
+            $method = 'render'.ucfirst($action);
+            array_push($actions, $this->{$method}());
+        }
 
-        return $this;
+        $actions = array_merge($actions, $this->appends);
+
+        return implode('', $actions);
     }
 
     /**
-     * Built delete action.
+     * Render view action.
      *
      * @return string
      */
-    protected function deleteAction()
+    protected function renderView()
+    {
+        return <<<EOT
+<a href="{$this->getResource()}/{$this->getKey()}">
+    <i class="fa fa-eye"></i>
+</a>
+EOT;
+    }
+
+    /**
+     * Render edit action.
+     *
+     * @return string
+     */
+    protected function renderEdit()
+    {
+        return <<<EOT
+<a href="{$this->getResource()}/{$this->getKey()}/edit">
+    <i class="fa fa-edit"></i>
+</a>
+EOT;
+    }
+
+    /**
+     * Render delete action.
+     *
+     * @return string
+     */
+    protected function renderDelete()
     {
         $deleteConfirm = trans('admin.delete_confirm');
         $confirm = trans('admin.confirm');
@@ -172,7 +178,7 @@ EOT;
 
         $script = <<<SCRIPT
 
-$('.grid-row-delete').unbind('click').click(function() {
+$('.{$this->grid->getGridRowName()}-delete').unbind('click').click(function() {
 
     var id = $(this).data('id');
 
@@ -213,7 +219,7 @@ SCRIPT;
         Admin::script($script);
 
         return <<<EOT
-<a href="javascript:void(0);" data-id="{$this->getKey()}" class="grid-row-delete">
+<a href="javascript:void(0);" data-id="{$this->getKey()}" class="{$this->grid->getGridRowName()}-delete">
     <i class="fa fa-trash"></i>
 </a>
 EOT;

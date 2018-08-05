@@ -24,13 +24,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class StreamedResponseListener implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents()
-    {
-        return array(
-            KernelEvents::RESPONSE => array('onKernelResponse', -1024),
-        );
-    }
-
     /**
      * Filters the Response.
      */
@@ -45,5 +38,12 @@ class StreamedResponseListener implements EventSubscriberInterface
         if ($response instanceof StreamedResponse) {
             $response->send();
         }
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array(
+            KernelEvents::RESPONSE => array('onKernelResponse', -1024),
+        );
     }
 }

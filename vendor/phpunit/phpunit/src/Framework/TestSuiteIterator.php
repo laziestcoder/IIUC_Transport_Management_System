@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace PHPUnit\Framework;
 
 use RecursiveIterator;
@@ -15,21 +14,18 @@ use RecursiveIterator;
 /**
  * Iterator for test suites.
  */
-class TestSuiteIterator implements RecursiveIterator
+final class TestSuiteIterator implements RecursiveIterator
 {
     /**
      * @var int
      */
-    protected $position;
+    private $position;
 
     /**
      * @var Test[]
      */
-    protected $tests;
+    private $tests;
 
-    /**
-     * @param TestSuite $testSuite
-     */
     public function __construct(TestSuite $testSuite)
     {
         $this->tests = $testSuite->tests();
@@ -41,6 +37,14 @@ class TestSuiteIterator implements RecursiveIterator
     public function rewind(): void
     {
         $this->position = 0;
+    }
+
+    /**
+     * Checks if there is a current element after calls to rewind() or next().
+     */
+    public function valid(): bool
+    {
+        return $this->position < \count($this->tests);
     }
 
     /**
@@ -57,14 +61,6 @@ class TestSuiteIterator implements RecursiveIterator
     public function current(): Test
     {
         return $this->valid() ? $this->tests[$this->position] : null;
-    }
-
-    /**
-     * Checks if there is a current element after calls to rewind() or next().
-     */
-    public function valid(): bool
-    {
-        return $this->position < \count($this->tests);
     }
 
     /**

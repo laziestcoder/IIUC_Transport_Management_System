@@ -55,12 +55,12 @@ class Address extends \Faker\Provider\Address
      * @link http://sh.wikipedia.org/wiki/Popis_gradova_u_Crnoj_Gori
      */
     protected static $cityNames = array(
-        'Bar', 'Budva', 'Herceg Novi',
-        'Kotor', 'Tivat', 'Ulcinj', 'Podgorica',
-        'Cetinje', 'Nikšić', 'Danilovgrad', 'Žabljak',
-        'Kolašin', 'Andrijevica', 'Berane', 'Bijelo Polje',
-        'Mojkovac', 'Plav', 'Plužine', 'Pljevlja', 'Rožaje',
-        'Šavnik', 'Petnjica', 'Gusinje', 'Petrovac', 'Sutomore',
+       'Bar', 'Budva', 'Herceg Novi',
+       'Kotor', 'Tivat', 'Ulcinj', 'Podgorica',
+       'Cetinje', 'Nikšić', 'Danilovgrad', 'Žabljak',
+       'Kolašin', 'Andrijevica', 'Berane', 'Bijelo Polje',
+       'Mojkovac', 'Plav', 'Plužine', 'Pljevlja', 'Rožaje',
+       'Šavnik', 'Petnjica', 'Gusinje', 'Petrovac','Sutomore',
     );
 
     /**
@@ -104,16 +104,16 @@ class Address extends \Faker\Provider\Address
         return static::randomElement(static::$street);
     }
 
+    public function cityName()
+    {
+        return static::randomElement(static::$cityNames);
+    }
+
     public static function localCoordinates()
     {
         return array(
             'latitude' => static::latitude(42.43, 42.45),
             'longitude' => static::longitude(19.16, 19.27)
         );
-    }
-
-    public function cityName()
-    {
-        return static::randomElement(static::$cityNames);
     }
 }

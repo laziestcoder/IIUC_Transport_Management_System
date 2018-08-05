@@ -11,16 +11,16 @@
 
 namespace Prophecy;
 
-use Prophecy\Call\CallCenter;
-use Prophecy\Doubler\ClassPatch;
 use Prophecy\Doubler\Doubler;
 use Prophecy\Doubler\LazyDouble;
-use Prophecy\Exception\Prediction\AggregateException;
-use Prophecy\Exception\Prediction\PredictionException;
+use Prophecy\Doubler\ClassPatch;
 use Prophecy\Prophecy\ObjectProphecy;
-use Prophecy\Prophecy\Revealer;
 use Prophecy\Prophecy\RevealerInterface;
+use Prophecy\Prophecy\Revealer;
+use Prophecy\Call\CallCenter;
 use Prophecy\Util\StringUtil;
+use Prophecy\Exception\Prediction\PredictionException;
+use Prophecy\Exception\Prediction\AggregateException;
 
 /**
  * Prophet creates prophecies.
@@ -41,9 +41,9 @@ class Prophet
     /**
      * Initializes Prophet.
      *
-     * @param null|Doubler $doubler
+     * @param null|Doubler           $doubler
      * @param null|RevealerInterface $revealer
-     * @param null|StringUtil $util
+     * @param null|StringUtil        $util
      */
     public function __construct(Doubler $doubler = null, RevealerInterface $revealer = null,
                                 StringUtil $util = null)
@@ -52,6 +52,7 @@ class Prophet
             $doubler = new Doubler;
             $doubler->registerClassPatch(new ClassPatch\SplFileInfoPatch);
             $doubler->registerClassPatch(new ClassPatch\TraversablePatch);
+            $doubler->registerClassPatch(new ClassPatch\ThrowablePatch);
             $doubler->registerClassPatch(new ClassPatch\DisableConstructorPatch);
             $doubler->registerClassPatch(new ClassPatch\ProphecySubjectPatch);
             $doubler->registerClassPatch(new ClassPatch\ReflectionClassNewInstancePatch);
@@ -60,9 +61,9 @@ class Prophet
             $doubler->registerClassPatch(new ClassPatch\KeywordPatch);
         }
 
-        $this->doubler = $doubler;
+        $this->doubler  = $doubler;
         $this->revealer = $revealer ?: new Revealer;
-        $this->util = $util ?: new StringUtil;
+        $this->util     = $util ?: new StringUtil;
     }
 
     /**

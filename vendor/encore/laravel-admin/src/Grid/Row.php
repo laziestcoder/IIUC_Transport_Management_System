@@ -59,6 +59,22 @@ class Row
     }
 
     /**
+     * Get column attributes.
+     *
+     * @param string $column
+     *
+     * @return string
+     */
+    public function getColumnAttributes($column)
+    {
+        if ($attributes = Column::getAttributes($column)) {
+            return $this->formatHtmlAttribute($attributes);
+        }
+
+        return '';
+    }
+
+    /**
      * Format attributes to html.
      *
      * @param array $attributes
@@ -73,22 +89,6 @@ class Row
         }
 
         return implode(' ', $attrArr);
-    }
-
-    /**
-     * Get column attributes.
-     *
-     * @param string $column
-     *
-     * @return string
-     */
-    public function getColumnAttributes($column)
-    {
-        if ($attributes = Column::getAttributes($column)) {
-            return $this->formatHtmlAttribute($attributes);
-        }
-
-        return '';
     }
 
     /**
@@ -178,7 +178,7 @@ class Row
     protected function dump($var)
     {
         if (!is_scalar($var)) {
-            return '<pre>' . var_export($var, true) . '</pre>';
+            return '<pre>'.var_export($var, true).'</pre>';
         }
 
         return $var;

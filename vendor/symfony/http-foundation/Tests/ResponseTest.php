@@ -126,7 +126,7 @@ class ResponseTest extends ResponseTestCase
 
     public function testSetNotModified()
     {
-        $response = new Response();
+        $response = new Response('foo');
         $modified = $response->setNotModified();
         $this->assertObjectHasAttribute('headers', $modified);
         $this->assertObjectHasAttribute('content', $modified);
@@ -135,6 +135,11 @@ class ResponseTest extends ResponseTestCase
         $this->assertObjectHasAttribute('statusText', $modified);
         $this->assertObjectHasAttribute('charset', $modified);
         $this->assertEquals(304, $modified->getStatusCode());
+
+        ob_start();
+        $modified->sendContent();
+        $string = ob_get_clean();
+        $this->assertEmpty($string);
     }
 
     public function testIsSuccessful()
@@ -258,18 +263,6 @@ class ResponseTest extends ResponseTestCase
         $this->assertFalse($response->isValidateable(), '->isValidateable() returns false when no validator is present');
     }
 
-    protected function createDateTimeOneHourAgo()
-    {
-        return $this->createDateTimeNow()->sub(new \DateInterval('PT1H'));
-    }
-
-    protected function createDateTimeNow()
-    {
-        $date = new \DateTime();
-
-        return $date->setTimestamp(time());
-    }
-
     public function testGetDate()
     {
         $oneHourAgo = $this->createDateTimeOneHourAgo();
@@ -316,11 +309,6 @@ class ResponseTest extends ResponseTestCase
 
         $response = new Response();
         $this->assertNull($response->getMaxAge(), '->getMaxAge() returns null if no freshness information available');
-    }
-
-    protected function createDateTimeOneHourLater()
-    {
-        return $this->createDateTimeNow()->add(new \DateInterval('PT1H'));
     }
 
     public function testSetSharedMaxAge()
@@ -709,13 +697,6 @@ class ResponseTest extends ResponseTestCase
         $this->assertEquals($response->getExpires()->getTimestamp(), $now->getTimestamp());
     }
 
-    protected function createDateTimeImmutableNow()
-    {
-        $date = new \DateTimeImmutable();
-
-        return $date->setTimestamp(time());
-    }
-
     public function testSetLastModified()
     {
         $response = new Response();
@@ -892,7 +873,7 @@ class ResponseTest extends ResponseTestCase
     {
         $response = new Response();
         $response->setContent($content);
-        $this->assertEquals((string)$content, $response->getContent());
+        $this->assertEquals((string) $content, $response->getContent());
     }
 
     /**
@@ -955,6 +936,35 @@ class ResponseTest extends ResponseTestCase
         );
     }
 
+    protected function createDateTimeOneHourAgo()
+    {
+        return $this->createDateTimeNow()->sub(new \DateInterval('PT1H'));
+    }
+
+    protected function createDateTimeOneHourLater()
+    {
+        return $this->createDateTimeNow()->add(new \DateInterval('PT1H'));
+    }
+
+    protected function createDateTimeNow()
+    {
+        $date = new \DateTime();
+
+        return $date->setTimestamp(time());
+    }
+
+    protected function createDateTimeImmutableNow()
+    {
+        $date = new \DateTimeImmutable();
+
+        return $date->setTimestamp(time());
+    }
+
+    protected function provideResponse()
+    {
+        return new Response();
+    }
+
     /**
      * @see       http://github.com/zendframework/zend-diactoros for the canonical source repository
      *
@@ -964,7 +974,7 @@ class ResponseTest extends ResponseTestCase
      */
     public function ianaCodesReasonPhrasesProvider()
     {
-        if (!in_array('https', stream_get_wrappers(), true)) {
+        if (!\in_array('https', stream_get_wrappers(), true)) {
             $this->markTestSkipped('The "https" wrapper is not available');
         }
 
@@ -978,7 +988,7 @@ class ResponseTest extends ResponseTestCase
         )));
 
         $ianaHttpStatusCodes->load('https://www.iana.org/assignments/http-status-codes/http-status-codes.xml');
-        if (!$ianaHttpStatusCodes->relaxNGValidate(__DIR__ . '/schema/http-status-codes.rng')) {
+        if (!$ianaHttpStatusCodes->relaxNGValidate(__DIR__.'/schema/http-status-codes.rng')) {
             self::fail('Invalid IANA\'s HTTP status code list.');
         }
 
@@ -992,7 +1002,7 @@ class ResponseTest extends ResponseTestCase
             $value = $xpath->query('.//ns:value', $record)->item(0)->nodeValue;
             $description = $xpath->query('.//ns:description', $record)->item(0)->nodeValue;
 
-            if (in_array($description, array('Unassigned', '(Unused)'), true)) {
+            if (\in_array($description, array('Unassigned', '(Unused)'), true)) {
                 continue;
             }
 
@@ -1014,11 +1024,6 @@ class ResponseTest extends ResponseTestCase
     public function testReasonPhraseDefaultsAgainstIana($code, $reasonPhrase)
     {
         $this->assertEquals($reasonPhrase, Response::$statusTexts[$code]);
-    }
-
-    protected function provideResponse()
-    {
-        return new Response();
     }
 }
 

@@ -9,28 +9,27 @@ use PhpParser\NodeAbstract;
  */
 class Identifier extends NodeAbstract
 {
+    /** @var string Identifier as string */
+    public $name;
+
     private static $specialClassNames = [
-        'self' => true,
+        'self'   => true,
         'parent' => true,
         'static' => true,
     ];
-    /** @var string Identifier as string */
-    public $name;
 
     /**
      * Constructs an identifier node.
      *
-     * @param string $name Identifier as string
-     * @param array $attributes Additional attributes
+     * @param string $name       Identifier as string
+     * @param array  $attributes Additional attributes
      */
-    public function __construct(string $name, array $attributes = [])
-    {
+    public function __construct(string $name, array $attributes = []) {
         parent::__construct($attributes);
         $this->name = $name;
     }
 
-    public function getSubNodeNames(): array
-    {
+    public function getSubNodeNames() : array {
         return ['name'];
     }
 
@@ -39,8 +38,7 @@ class Identifier extends NodeAbstract
      *
      * @return string Identifier as string.
      */
-    public function toString(): string
-    {
+    public function toString() : string {
         return $this->name;
     }
 
@@ -49,8 +47,7 @@ class Identifier extends NodeAbstract
      *
      * @return string Lowercased identifier as string
      */
-    public function toLowerString(): string
-    {
+    public function toLowerString() : string {
         return strtolower($this->name);
     }
 
@@ -59,8 +56,7 @@ class Identifier extends NodeAbstract
      *
      * @return bool Whether identifier is a special class name
      */
-    public function isSpecialClassName(): bool
-    {
+    public function isSpecialClassName() : bool {
         return isset(self::$specialClassNames[strtolower($this->name)]);
     }
 
@@ -69,13 +65,11 @@ class Identifier extends NodeAbstract
      *
      * @return string Identifier as string
      */
-    public function __toString(): string
-    {
+    public function __toString() : string {
         return $this->name;
     }
-
-    public function getType(): string
-    {
+    
+    public function getType() : string {
         return 'Identifier';
     }
 }

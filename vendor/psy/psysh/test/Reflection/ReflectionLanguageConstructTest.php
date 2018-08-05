@@ -22,7 +22,7 @@ class ReflectionLanguageConstructTest extends \PHPUnit\Framework\TestCase
     {
         $refl = new ReflectionLanguageConstruct($keyword);
         $this->assertEquals($keyword, $refl->getName());
-        $this->assertEquals($keyword, (string)$refl);
+        $this->assertEquals($keyword, (string) $refl);
     }
 
     /**

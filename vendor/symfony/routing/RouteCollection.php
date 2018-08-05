@@ -63,20 +63,30 @@ class RouteCollection implements \IteratorAggregate, \Countable
      */
     public function count()
     {
-        return count($this->routes);
+        return \count($this->routes);
     }
 
     /**
      * Adds a route.
      *
-     * @param string $name The route name
-     * @param Route $route A Route instance
+     * @param string $name  The route name
+     * @param Route  $route A Route instance
      */
     public function add($name, Route $route)
     {
         unset($this->routes[$name]);
 
         $this->routes[$name] = $route;
+    }
+
+    /**
+     * Returns all routes in this collection.
+     *
+     * @return Route[] An array of routes
+     */
+    public function all()
+    {
+        return $this->routes;
     }
 
     /**
@@ -98,7 +108,7 @@ class RouteCollection implements \IteratorAggregate, \Countable
      */
     public function remove($name)
     {
-        foreach ((array)$name as $n) {
+        foreach ((array) $name as $n) {
             unset($this->routes[$n]);
         }
     }
@@ -122,44 +132,11 @@ class RouteCollection implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Returns all routes in this collection.
-     *
-     * @return Route[] An array of routes
-     */
-    public function all()
-    {
-        return $this->routes;
-    }
-
-    /**
-     * Returns an array of resources loaded to build this collection.
-     *
-     * @return ResourceInterface[] An array of resources
-     */
-    public function getResources()
-    {
-        return array_values($this->resources);
-    }
-
-    /**
-     * Adds a resource for this collection. If the resource already exists
-     * it is not added.
-     */
-    public function addResource(ResourceInterface $resource)
-    {
-        $key = (string)$resource;
-
-        if (!isset($this->resources[$key])) {
-            $this->resources[$key] = $resource;
-        }
-    }
-
-    /**
      * Adds a prefix to the path of all child routes.
      *
-     * @param string $prefix An optional prefix to add before each pattern of the route collection
-     * @param array $defaults An array of default values
-     * @param array $requirements An array of requirements
+     * @param string $prefix       An optional prefix to add before each pattern of the route collection
+     * @param array  $defaults     An array of default values
+     * @param array  $requirements An array of requirements
      */
     public function addPrefix($prefix, array $defaults = array(), array $requirements = array())
     {
@@ -170,18 +147,35 @@ class RouteCollection implements \IteratorAggregate, \Countable
         }
 
         foreach ($this->routes as $route) {
-            $route->setPath('/' . $prefix . $route->getPath());
+            $route->setPath('/'.$prefix.$route->getPath());
             $route->addDefaults($defaults);
             $route->addRequirements($requirements);
         }
     }
 
     /**
+     * Adds a prefix to the name of all the routes within in the collection.
+     */
+    public function addNamePrefix(string $prefix)
+    {
+        $prefixedRoutes = array();
+
+        foreach ($this->routes as $name => $route) {
+            $prefixedRoutes[$prefix.$name] = $route;
+            if (null !== $name = $route->getDefault('_canonical_route')) {
+                $route->setDefault('_canonical_route', $prefix.$name);
+            }
+        }
+
+        $this->routes = $prefixedRoutes;
+    }
+
+    /**
      * Sets the host pattern on all routes.
      *
-     * @param string $pattern The pattern
-     * @param array $defaults An array of default values
-     * @param array $requirements An array of requirements
+     * @param string $pattern      The pattern
+     * @param array  $defaults     An array of default values
+     * @param array  $requirements An array of requirements
      */
     public function setHost($pattern, array $defaults = array(), array $requirements = array())
     {
@@ -275,6 +269,29 @@ class RouteCollection implements \IteratorAggregate, \Countable
     {
         foreach ($this->routes as $route) {
             $route->setMethods($methods);
+        }
+    }
+
+    /**
+     * Returns an array of resources loaded to build this collection.
+     *
+     * @return ResourceInterface[] An array of resources
+     */
+    public function getResources()
+    {
+        return array_values($this->resources);
+    }
+
+    /**
+     * Adds a resource for this collection. If the resource already exists
+     * it is not added.
+     */
+    public function addResource(ResourceInterface $resource)
+    {
+        $key = (string) $resource;
+
+        if (!isset($this->resources[$key])) {
+            $this->resources[$key] = $resource;
         }
     }
 }

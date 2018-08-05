@@ -22,6 +22,12 @@ class RouterTest extends TestCase
 
     private $loader = null;
 
+    protected function setUp()
+    {
+        $this->loader = $this->getMockBuilder('Symfony\Component\Config\Loader\LoaderInterface')->getMock();
+        $this->router = new Router($this->loader, 'routing.yml');
+    }
+
     public function testSetOptionsWithSupportedOptions()
     {
         $this->router->setOptions(array(
@@ -153,11 +159,5 @@ class RouterTest extends TestCase
         $p->setValue($this->router, $matcher);
 
         $this->router->matchRequest(Request::create('/'));
-    }
-
-    protected function setUp()
-    {
-        $this->loader = $this->getMockBuilder('Symfony\Component\Config\Loader\LoaderInterface')->getMock();
-        $this->router = new Router($this->loader, 'routing.yml');
     }
 }

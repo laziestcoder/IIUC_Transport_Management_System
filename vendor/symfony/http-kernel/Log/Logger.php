@@ -43,19 +43,11 @@ class Logger extends AbstractLogger
             $minLevel = LogLevel::WARNING;
 
             if (isset($_ENV['SHELL_VERBOSITY']) || isset($_SERVER['SHELL_VERBOSITY'])) {
-                switch ((int)(isset($_ENV['SHELL_VERBOSITY']) ? $_ENV['SHELL_VERBOSITY'] : $_SERVER['SHELL_VERBOSITY'])) {
-                    case -1:
-                        $minLevel = LogLevel::ERROR;
-                        break;
-                    case 1:
-                        $minLevel = LogLevel::NOTICE;
-                        break;
-                    case 2:
-                        $minLevel = LogLevel::INFO;
-                        break;
-                    case 3:
-                        $minLevel = LogLevel::DEBUG;
-                        break;
+                switch ((int) (isset($_ENV['SHELL_VERBOSITY']) ? $_ENV['SHELL_VERBOSITY'] : $_SERVER['SHELL_VERBOSITY'])) {
+                    case -1: $minLevel = LogLevel::ERROR; break;
+                    case 1: $minLevel = LogLevel::NOTICE; break;
+                    case 2: $minLevel = LogLevel::INFO; break;
+                    case 3: $minLevel = LogLevel::DEBUG; break;
                 }
             }
         }
@@ -66,7 +58,7 @@ class Logger extends AbstractLogger
 
         $this->minLevelIndex = self::$levels[$minLevel];
         $this->formatter = $formatter ?: array($this, 'format');
-        if (false === $this->handle = is_resource($output) ? $output : @fopen($output, 'a')) {
+        if (false === $this->handle = \is_resource($output) ? $output : @fopen($output, 'a')) {
             throw new InvalidArgumentException(sprintf('Unable to open "%s".', $output));
         }
     }
@@ -98,15 +90,15 @@ class Logger extends AbstractLogger
                 } elseif ($val instanceof \DateTimeInterface) {
                     $replacements["{{$key}}"] = $val->format(\DateTime::RFC3339);
                 } elseif (\is_object($val)) {
-                    $replacements["{{$key}}"] = '[object ' . \get_class($val) . ']';
+                    $replacements["{{$key}}"] = '[object '.\get_class($val).']';
                 } else {
-                    $replacements["{{$key}}"] = '[' . \gettype($val) . ']';
+                    $replacements["{{$key}}"] = '['.\gettype($val).']';
                 }
             }
 
             $message = strtr($message, $replacements);
         }
 
-        return sprintf('%s [%s] %s', date(\DateTime::RFC3339), $level, $message) . \PHP_EOL;
+        return sprintf('%s [%s] %s', date(\DateTime::RFC3339), $level, $message).\PHP_EOL;
     }
 }

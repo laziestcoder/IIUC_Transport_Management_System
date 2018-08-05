@@ -31,21 +31,21 @@ class ImplicitReturnPassTest extends CodeCleanerTestCase
     public function implicitReturns()
     {
         $data = [
-            ['4', 'return 4;'],
-            ['foo()', 'return foo();'],
+            ['4',        'return 4;'],
+            ['foo()',    'return foo();'],
             ['return 1', 'return 1;'],
-            ['', 'return new \Psy\CodeCleaner\NoReturnValue();'],
+            ['',         'return new \Psy\CodeCleaner\NoReturnValue();'],
         ];
 
         $from = 'echo "foo";';
-        $to = <<<'EOS'
+        $to   = <<<'EOS'
 echo "foo";
 return new \Psy\CodeCleaner\NoReturnValue();
 EOS;
         $data[] = [$from, $to];
 
         $from = 'if (true) { 1; } elseif (true) { 2; } else { 3; }';
-        $to = <<<'EOS'
+        $to   = <<<'EOS'
 if (true) {
     return 1;
 } elseif (true) {
@@ -58,7 +58,7 @@ EOS;
         $data[] = [$from, $to];
 
         $from = 'class A {}';
-        $to = <<<'EOS'
+        $to   = <<<'EOS'
 class A
 {
 }
