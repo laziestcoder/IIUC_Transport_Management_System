@@ -9,11 +9,15 @@
                     <div class="nextBus-info">
                         <table class="table table-responsive-lg">
                             <thead>
-                            <tr><td colspan="4">
-                                <div class="nextBus-title">
-                                    NEXT BUS ( Today :  <?php echo e(\Carbon\Carbon::now()->format('l')); ?>)
-                                </div>
-                            </td></tr>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="nextBus-title">
+                                        NEXT BUS<br>
+                                        <hr>
+                                        ( Day : <i> <?php echo $today; ?> </i>, Time: <?php echo $now; ?> )
+                                    </div>
+                                </td>
+                            </tr>
 
                             <tr>
                                 <td>Station From</td>
@@ -22,37 +26,41 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr><td colspan="4">
+                            <tr>
+                                <td colspan="4">
                                     <div class="nextBus-title" style="text-align: left;">
                                         <i>MALE</i>
                                     </div>
-                                </td></tr>
+                                </td>
+                            </tr>
                             <tr>
-                                <td><?php echo e($fromRouteM); ?></td>
-                                <td><?php echo e("IIUC CAMPUS"); ?></td>
-                                <td><?php echo e($toIIUCMale); ?></td>
+                                <td><?php echo $fromRouteM; ?></td>
+                                <td><?php echo e("IIUC CAMPUS", false); ?></td>
+                                <td><?php echo e($toIIUCMale, false); ?></td>
                             </tr>
 
                             <tr>
-                                <td><?php echo e("IIUC CAMPUS"); ?></td>
-                                <td><?php echo e($toRouteM); ?></td>
-                                <td><?php echo e($toCityMale); ?></td>
+                                <td><?php echo e("IIUC CAMPUS", false); ?></td>
+                                <td><?php echo e($toRouteM, false); ?></td>
+                                <td><?php echo e($toCityMale, false); ?></td>
                             </tr>
-                            <tr><td colspan="4">
+                            <tr>
+                                <td colspan="4">
                                     <div class="nextBus-title" style="text-align: left;">
                                         <i>FEMALE</i>
                                     </div>
-                                </td></tr>
+                                </td>
+                            </tr>
                             <tr>
-                                <td><?php echo e($fromRouteF); ?></td>
-                                <td><?php echo e("IIUC CAMPUS"); ?></td>
-                                <td><?php echo e($toIIUCFemale); ?></td>
+                                <td><?php echo e($fromRouteF, false); ?></td>
+                                <td><?php echo e("IIUC CAMPUS", false); ?></td>
+                                <td><?php echo e($toIIUCFemale, false); ?></td>
                             </tr>
 
                             <tr>
-                                <td><?php echo e("IIUC CAMPUS"); ?></td>
-                                <td><?php echo e($toRouteF); ?></td>
-                                <td><?php echo e($toCityFemale); ?></td>
+                                <td><?php echo e("IIUC CAMPUS", false); ?></td>
+                                <td><?php echo e($toRouteF, false); ?></td>
+                                <td><?php echo e($toCityFemale, false); ?></td>
                             </tr>
                             </tbody>
 
@@ -69,30 +77,101 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2 id="schedule" class="section-heading text-uppercase">Today's Bus Schedule</h2>
-                    <h3 class="section-subheading text-muted">Here is today's bus schedule</h3>
+                    <h3 class="section-subheading text-muted">Here is '<?php echo $day->dayname; ?>' bus schedule</h3>
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-12">
                     <ul class="timeline">
-                        <li>
-                            <div class="timeline-image">
-                                <!-- <img class="rounded-circle img-fluid" src="/storage/img/about/1.jpg" alt=""> -->
-                                <h4>12:30 pm<br>AK KHAN<br>FEMALE</h4>
-                            </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    
-                                    
-                                </div>
-                                <div class="timeline-body">
-                                    
-                                        
-                                        
-                                        
-                                </div>
-                            </div>
-                        </li>
+                        <?php $sl = 0;?>
+                        <?php $__currentLoopData = $times; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $time): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php $schedules = App\Schedule::where('day', $day->id)
+                                ->where('time', $time->id)
+                                ->first();?>
+                            <?php if($schedules): ?>
+                                
+                                <li class="<?php echo ($sl+=1)%2 == 0? "timeline-inverted":""; ?>">
+                                    <div class="timeline-image">
+                                        <h4><?php echo e(\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A'), false); ?>
+
+                                            <br>
+                                            
+
+                                            <?php $male = App\Schedule::where('day', $day->id)
+                                                ->where('time', $time->id)
+                                                ->where('male', '1')
+                                                ->get();
+                                            $female = App\Schedule::where('day', $day->id)
+                                                ->where('time', $time->id)
+                                                ->where('Female', '1')
+                                                ->get();?>
+
+                                            <?php echo e(count($male)? 'Male':'', false); ?>
+
+                                            <?php if(count($male) && count($female)): ?>
+                                                <?php echo "<br>"; ?>
+
+                                            <?php endif; ?>
+                                            <?php echo e(count($female)? 'Female':'', false); ?>
+
+                                        </h4>
+                                    </div>
+                                    <div class="timeline-panel">
+                                        <div class="timeline-heading">
+                                            
+                                            Destination:
+                                            <h4>
+                                                <?php $toiiuc = App\Schedule::where('day', $day->id)
+                                                    ->where('time', $time->id)
+                                                    ->where('toiiuc', '1')
+                                                    ->get();
+                                                $fromiiuc = App\Schedule::where('day', $day->id)
+                                                    ->where('time', $time->id)
+                                                    ->where('fromiiuc', '1')
+                                                    ->get();?>
+                                                <?php echo e(count($toiiuc)? 'To IIUC Campus':'', false); ?>
+
+                                                <?php if(count($toiiuc) && count($fromiiuc)): ?>
+                                                    <?php echo e(",", false); ?>
+
+                                                <?php endif; ?>
+                                                <?php echo e(count($fromiiuc)? 'From IIUC Campus':'', false); ?>
+
+                                            </h4>
+                                            Routes:
+                                            <h4 class="subheading">
+
+                                                
+                                                <?php $routes = App\Schedule::where('day', $day->id)
+                                                    ->where('time', $time->id)
+                                                    ->get();
+                                                if (count($routes) > 1) {
+                                                    $routeFlag = count($routes) - 1;
+                                                } else {
+                                                    $routeFlag = 0;
+                                                }?>
+                                                <?php $__currentLoopData = $routes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <?php echo e(\App\BusRoute::where('id',$route->route)->first()->routename, false); ?>
+
+                                                    <?php if($routeFlag): ?>
+                                                        <?php echo e(", ", false); ?>
+
+                                                    <?php endif; ?>
+                                                    <?php $routeFlag -= 1;?>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            </h4>
+                                        </div>
+                                        <div class="timeline-body">
+                                            
+                                            
+                                            
+                                            
+                                        </div>
+                                    </div>
+                                </li>
+                                
+                            <?php endif; ?>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                         <li class="timeline-inverted">
                             <div class="timeline-image">
@@ -100,8 +179,7 @@
                                     <br>
                                     Safe
                                     <br>
-                                    Journey<br>
-                                    :)
+                                    Journey
                                 </h4>
                             </div>
                         </li>
@@ -118,8 +196,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2 id="notice" class="section-heading text-uppercase"><?php echo e($noticetitle); ?></h2>
-                    <h3 class="section-subheading text-muted"><?php echo e($description); ?></h3>
+                    <h2 id="notice" class="section-heading text-uppercase"><?php echo e($noticetitle, false); ?></h2>
+                    <h3 class="section-subheading text-muted"><?php echo e($description, false); ?></h3>
                 </div>
             </div>
 
@@ -130,24 +208,24 @@
                         <?php $count = $count + 1; ?>
                         
                         <div class="col-md-3 col-md-3 portfolio-item">
-                            <a class="portfolio-link" data-toggle="modal" href="#portfolioModal<?php echo e($count); ?>">
+                            <a class="portfolio-link" data-toggle="modal" href="#portfolioModal<?php echo e($count, false); ?>">
                                 <div class="portfolio-hover">
                                     <div class="portfolio-hover-content">
                                         <i class="fa fa-plus fa-3x"></i>
                                     </div>
                                 </div>
-                                <img class="img-fluid" src="/storage/cover_images/<?php echo e($notice->cover_image); ?>"
-                                     alt="<?php echo e($notice->title); ?>"> </a>
+                                <img class="img-fluid" src="/storage/cover_images/<?php echo e($notice->cover_image, false); ?>"
+                                     alt="<?php echo e($notice->title, false); ?>"> </a>
                             <div class="portfolio-caption">
-                                <h4><?php echo e($notice->title); ?></h4>
+                                <h4><?php echo e($notice->title, false); ?></h4>
                                 <small>
                                     <p class="text-muted">
                                         Posted By:
                                         <i>
-                                            <?php echo e(DB::table('admin_users')->where('id', $notice->user_id)->first()->name); ?>
+                                            <?php echo e(DB::table('admin_users')->where('id', $notice->user_id)->first()->name, false); ?>
 
                                         </i><br>
-                                        Posted At: <?php echo e($notice->created_at); ?>
+                                        Posted At: <?php echo e($notice->created_at, false); ?>
 
                                     </p>
                                 </small>
@@ -163,7 +241,7 @@
                 <?php endif; ?>
 
             </div>
-            <?php echo e($notices->links()); ?>
+            <?php echo e($notices->links(), false); ?>
 
         </div>
     </section>
@@ -358,7 +436,7 @@
         <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <?php $count = $count + 1; ?>
             
-            <div class="portfolio-modal modal fade" id="portfolioModal<?php echo e($count); ?>" tabindex="-1" role="dialog"
+            <div class="portfolio-modal modal fade" id="portfolioModal<?php echo e($count, false); ?>" tabindex="-1" role="dialog"
                  aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">

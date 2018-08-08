@@ -15,10 +15,10 @@
             <table class="table table-striped">
 
                 <?php $__currentLoopData = $envs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $env): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <tr>
-                        <td width="120px"><?php echo e($env['name']); ?></td>
-                        <td><?php echo e($env['value']); ?></td>
-                    </tr>
+                <tr>
+                    <td width="120px"><?php echo e($env['name'], false); ?></td>
+                    <td><?php echo e($env['value'], false); ?></td>
+                </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </table>
         </div>

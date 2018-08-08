@@ -1,14 +1,24 @@
-<!-- Main Footer -->
+
+
+    
+    
+        
+    
+    
+    
+
+
 <footer class="main-footer">
     <!-- To the right -->
     <div class="pull-right hidden-xs">
-        <p>&copy <?php echo e(date("Y")); ?>
+        <p>&copy <?php echo e(date("Y"), false); ?>
 
             
-            ITMS & <a href="https://github.com/laziestcoder"> Towfiqul Islam </a> | All Rights Reserved</p>
+            ITMS & <a href="https://github.com/laziestcoder"> Developers </a> | All Rights Reserved</p>
+        
     </div>
     <!-- Default to the left -->
-    <b>Today: </b><?php echo e(date(" l, d M, Y")); ?>
+    <b>Today: </b><?php echo e(date(" l, d M, Y"), false); ?>
 
     
     <div id="time"></div>
@@ -24,4 +34,5 @@
             }, 100);
         });
     </script>
+    
 </footer>

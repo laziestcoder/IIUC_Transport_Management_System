@@ -1,7 +1,7 @@
 <tr>
     <td class="header">
-        <a href="<?php echo e($url); ?>">
-            <?php echo e($slot); ?>
+        <a href="<?php echo e($url, false); ?>">
+            <?php echo e($slot, false); ?>
 
         </a>
     </td>

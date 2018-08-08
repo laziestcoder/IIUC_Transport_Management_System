@@ -14,10 +14,10 @@
         <div class="table-responsive">
             <table class="table table-striped">
                 <?php $__currentLoopData = $dependencies; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dependency => $version): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <tr>
-                        <td width="240px"><?php echo e($dependency); ?></td>
-                        <td><span class="label label-primary"><?php echo e($version); ?></span></td>
-                    </tr>
+                <tr>
+                    <td width="240px"><?php echo e($dependency, false); ?></td>
+                    <td><span class="label label-primary"><?php echo e($version, false); ?></span></td>
+                </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </table>
         </div>

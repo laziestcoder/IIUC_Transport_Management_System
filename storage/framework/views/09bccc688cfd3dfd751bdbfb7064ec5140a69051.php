@@ -7,8 +7,7 @@
                         <table border="0" cellpadding="0" cellspacing="0">
                             <tr>
                                 <td>
-                                    <a href="<?php echo e($url); ?>" class="button button-<?php echo e($color ?? 'blue'); ?>"
-                                       target="_blank"><?php echo e($slot); ?></a>
+                                    <a href="<?php echo e($url, false); ?>" class="button button-<?php echo e($color ?? 'blue', false); ?>" target="_blank"><?php echo e($slot, false); ?></a>
                                 </td>
                             </tr>
                         </table>

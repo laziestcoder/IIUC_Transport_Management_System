@@ -117,17 +117,17 @@ class ScheduleController extends Controller
         ]);
 
         function dataCheck($day, $route, $time, $male, $female, $toiiuc, $fromiiuc,$user){
-            $data = Schedule::where('day',$day)
-                ->where('route',$route)
-                ->where('time',$time)
-                ->where('male',$male)
-                ->where('female',$female)
-                ->where('toiiuc',$toiiuc)
-                ->where('fromiiuc',$fromiiuc)
-                ->where('user',$user)
+            $data = Schedule::where('day','=',$day)
+                ->where('route','=',$route)
+                ->where('time','=',$time)
+                ->where('male','=',$male)
+                ->where('female','=',$female)
+                ->where('toiiuc','=',$toiiuc)
+                ->where('fromiiuc','=',$fromiiuc)
+                ->where('user','=',$user)
                 ->get();
-            if(count($data)>0)
-                return true;
+            if(count($data) >= 0)
+                return null;
             else
                 return true;
 
@@ -135,12 +135,14 @@ class ScheduleController extends Controller
         $day= $request->input('day'); $route= $request->input('route'); $time= $request->input('time');
         $male= $request->input('male'); $female= $request->input('female');
         $toiiuc= $request->input('toiiuc'); $fromiiuc= $request->input('fromiiuc'); $user = $request->input('user');
-
+        $flag= '';
+        $save= 0;
 
 
         if ($day == '9') {
+            $flag = 'if';
             for ($i = 1; $i <= 5; $i = $i + 1) {
-                if(dataCheck($i, $route, $time, $male, $female, $toiiuc, $fromiiuc,$user)){
+                if(dataCheck($i, $route, $time, $male, $female, $toiiuc, $fromiiuc,$user) == null){
                     continue;
                 }
                 $schedule = new Schedule;
@@ -153,13 +155,16 @@ class ScheduleController extends Controller
                 $schedule->user = $request->input('user');
                 $schedule->route = $request->input('route');
                 $schedule->user_id = Admin::user()->id;
-                $schedule->save();
-
+                $save = $schedule->save();
+                if($save){
+                    $flag .= $save;
+                }
             }
 
         } else {
-            if(dataCheck($day, $route, $time, $male, $female, $toiiuc, $fromiiuc,$user)){
-                return redirect('/admin/auth/schedule/create')->with('error', 'Data Exist');
+            $flag = 'else';
+            if(dataCheck($day, $route, $time, $male, $female, $toiiuc, $fromiiuc,$user)==null){
+                return redirect('/admin/auth/schedule/create')->with('error', $flag.' Data Exist');
             }
             //Create BusRoute
             $schedule = new Schedule;
@@ -172,15 +177,15 @@ class ScheduleController extends Controller
             $schedule->user = $request->input('user');
             $schedule->route = $request->input('route');
             $schedule->user_id = Admin::user()->id;
-            $schedule->save();
+            $save = $schedule->save();
         }
         $success = array(
-            'success' => 'Bus Schedule Created Successfully!'
+            'success' => $flag.' Bus Schedule Created Successfully!'
         );
-        if ($this) {
+        if ($this && $save) {
             return redirect('/admin/auth/schedule/create')->with($success);
         } else {
-            return redirect('/admin/auth/schedule/create')->with('error', 'validation failed');
+            return redirect('/admin/auth/schedule/create')->with('error', $flag.'validation failed');
         }
     }
 
@@ -245,18 +250,14 @@ class ScheduleController extends Controller
         //Check for correct user
 
         if((Admin::user()->id == $schedule->user_id)||(DB::table('admin_role_users')->where('user_id',(Admin::user()->id))->first()->role_id <= 4))
-//        if (Admin::user()->id !== $schedule->user_id)
         {
-            /* if($BusRoute->cover_image != 'noimage.jpeg' ){
-                //Delete Image From Windows Directory
-                Storage::delete('public/cover_images/'.$BusRoute->cover_image);
-            } */
+
 
             // Check other Tables if the time is used
             $points = DB::table('points')->where('routeid', $id)->first();
             $name = DB::table('day')->where('id', $schedule->day)->first()->dayname;
-            $time = Carbon::parse(DB::table('time')->where('time', $schedule->time)->first())->format('g:i A');
-            $route = $schedule->route ? 'AK Khan Shuttle' : 'All Route';
+            $time = Carbon::parse(DB::table('time')->where('id', $schedule->time)->first()->time)->format('g:i A');
+            $route = DB::table('routes')->where('id', $schedule->route)->first()->routename;
             if ($points && !$points) {
                 if ($points->routeid == $id) {
                     return redirect('/admin/auth/allschedule')->with('error', 'Day "' . $name . '" Time "' . $time . '" Route > "' . $route . '"<br>=> This Bus Schedule has assigned one or more students schedule.<br> Delete all students schedule related to the schedule.<br> Then delete the schedule.');

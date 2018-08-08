@@ -48,6 +48,7 @@
             <table class="table table-hover">
                 <thead class="table">
                 <tr>
+                    <th>No.</th>
                     <th>ID</th>
                     <th>Time</th>
                     <th>To IIUC Campus</th>
@@ -61,6 +62,7 @@
                 @foreach($times as $time)
                     <tr>
                         <td>{{$flag+=1}}</td>
+                        <td>{{$time->id}}</td>
                         <td>{{Carbon\Carbon::parse($time->time)->format('g:i A')}}</td>
                         <td>{{$time->toiiuc? 'YES':'NO'}}</td>
                         <td>{{$time->fromiiuc?'YES':'NO'}}</td>

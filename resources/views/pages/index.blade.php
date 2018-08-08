@@ -10,11 +10,15 @@
                     <div class="nextBus-info">
                         <table class="table table-responsive-lg">
                             <thead>
-                            <tr><td colspan="4">
-                                <div class="nextBus-title">
-                                    NEXT BUS ( Today :  {{\Carbon\Carbon::now()->format('l')}})
-                                </div>
-                            </td></tr>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="nextBus-title">
+                                        NEXT BUS<br>
+                                        <hr>
+                                        ( Day : <i> {!! $today !!} </i>, Time: {!! $now !!} )
+                                    </div>
+                                </td>
+                            </tr>
 
                             <tr>
                                 <td>Station From</td>
@@ -23,13 +27,15 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr><td colspan="4">
+                            <tr>
+                                <td colspan="4">
                                     <div class="nextBus-title" style="text-align: left;">
                                         <i>MALE</i>
                                     </div>
-                                </td></tr>
+                                </td>
+                            </tr>
                             <tr>
-                                <td>{{$fromRouteM}}</td>
+                                <td>{!! $fromRouteM !!}</td>
                                 <td>{{"IIUC CAMPUS"}}</td>
                                 <td>{{$toIIUCMale}}</td>
                             </tr>
@@ -39,11 +45,13 @@
                                 <td>{{$toRouteM}}</td>
                                 <td>{{$toCityMale}}</td>
                             </tr>
-                            <tr><td colspan="4">
+                            <tr>
+                                <td colspan="4">
                                     <div class="nextBus-title" style="text-align: left;">
                                         <i>FEMALE</i>
                                     </div>
-                                </td></tr>
+                                </td>
+                            </tr>
                             <tr>
                                 <td>{{$fromRouteF}}</td>
                                 <td>{{"IIUC CAMPUS"}}</td>
@@ -70,30 +78,92 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2 id="schedule" class="section-heading text-uppercase">Today's Bus Schedule</h2>
-                    <h3 class="section-subheading text-muted">Here is today's bus schedule</h3>
+                    <h3 class="section-subheading text-muted">Here is '{!! $day->dayname !!}' bus schedule</h3>
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-12">
                     <ul class="timeline">
-                        <li>
-                            <div class="timeline-image">
-                                <!-- <img class="rounded-circle img-fluid" src="/storage/img/about/1.jpg" alt=""> -->
-                                <h4>12:30 pm<br>AK KHAN<br>FEMALE</h4>
-                            </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    {{--<h4>2009-2011</h4>--}}
-                                    {{--<h4 class="subheading">Our Humble Beginnings</h4>--}}
-                                </div>
-                                <div class="timeline-body">
-                                    {{--<p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt--}}
-                                        {{--ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam,--}}
-                                        {{--recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium--}}
-                                        {{--consectetur!</p>--}}
-                                </div>
-                            </div>
-                        </li>
+                        <?php $sl = 0;?>
+                        @foreach($times as $time)
+                            <?php $schedules = App\Schedule::where('day', $day->id)
+                                ->where('time', $time->id)
+                                ->first();?>
+                            @if($schedules)
+                                {{--@foreach($schedules as $schedule)--}}
+                                <li class="{!! ($sl+=1)%2 == 0? "timeline-inverted":""!!}">
+                                    <div class="timeline-image">
+                                        <h4>{{\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A')}}
+                                            <br>
+                                            {{--Gender--}}
+
+                                            <?php $male = App\Schedule::where('day', $day->id)
+                                                ->where('time', $time->id)
+                                                ->where('male', '1')
+                                                ->get();
+                                            $female = App\Schedule::where('day', $day->id)
+                                                ->where('time', $time->id)
+                                                ->where('Female', '1')
+                                                ->get();?>
+
+                                            {{count($male)? 'Male':''}}
+                                            @if(count($male) && count($female))
+                                                {!! "<br>" !!}
+                                            @endif
+                                            {{count($female)? 'Female':''}}
+                                        </h4>
+                                    </div>
+                                    <div class="timeline-panel">
+                                        <div class="timeline-heading">
+                                            {{--Direction--}}
+                                            Destination:
+                                            <h4>
+                                                <?php $toiiuc = App\Schedule::where('day', $day->id)
+                                                    ->where('time', $time->id)
+                                                    ->where('toiiuc', '1')
+                                                    ->get();
+                                                $fromiiuc = App\Schedule::where('day', $day->id)
+                                                    ->where('time', $time->id)
+                                                    ->where('fromiiuc', '1')
+                                                    ->get();?>
+                                                {{count($toiiuc)? 'To IIUC Campus':''}}
+                                                @if(count($toiiuc) && count($fromiiuc))
+                                                    {{","}}
+                                                @endif
+                                                {{count($fromiiuc)? 'From IIUC Campus':''}}
+                                            </h4>
+                                            Routes:
+                                            <h4 class="subheading">
+
+                                                {{--Routes--}}
+                                                <?php $routes = App\Schedule::where('day', $day->id)
+                                                    ->where('time', $time->id)
+                                                    ->get();
+                                                if (count($routes) > 1) {
+                                                    $routeFlag = count($routes) - 1;
+                                                } else {
+                                                    $routeFlag = 0;
+                                                }?>
+                                                @foreach($routes as $route)
+                                                    {{\App\BusRoute::where('id',$route->route)->first()->routename}}
+                                                    @if($routeFlag)
+                                                        {{", "}}
+                                                    @endif
+                                                    <?php $routeFlag -= 1;?>
+                                                @endforeach
+                                            </h4>
+                                        </div>
+                                        <div class="timeline-body">
+                                            {{--<p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt--}}
+                                            {{--ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam,--}}
+                                            {{--recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium--}}
+                                            {{--consectetur!</p>--}}
+                                        </div>
+                                    </div>
+                                </li>
+                                {{--@endforeach--}}
+                            @endif
+                        @endforeach
 
                         <li class="timeline-inverted">
                             <div class="timeline-image">
@@ -101,8 +171,7 @@
                                     <br>
                                     Safe
                                     <br>
-                                    Journey<br>
-                                    :)
+                                    Journey
                                 </h4>
                             </div>
                         </li>

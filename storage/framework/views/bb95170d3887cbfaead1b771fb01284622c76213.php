@@ -26,8 +26,11 @@
 </style>
 
 <div class="title">
-    Welcome to <b>ITMS Admin Panel</b>
+    <i>Welcome to <b>ITMS</b> Admin Panel</i>
 </div>
 <div class="links">
-
+    <a>Warmth wishes to Admin <i><?php echo e(Admin::user()->name, false); ?></i></a>
+    
+    
+    
 </div>

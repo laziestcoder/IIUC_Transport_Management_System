@@ -1,6 +1,6 @@
-<div class="<?php echo e($viewClass['form-group']); ?>">
-    <label class="<?php echo e($viewClass['label']); ?> control-label"><?php echo e($label); ?></label>
-    <div class="<?php echo e($viewClass['field']); ?>">
+<div class="<?php echo e($viewClass['form-group'], false); ?>">
+    <label class="<?php echo e($viewClass['label'], false); ?> control-label"><?php echo e($label, false); ?></label>
+    <div class="<?php echo e($viewClass['field'], false); ?>">
         <div class="box box-solid box-default no-margin">
             <!-- /.box-header -->
             <div class="box-body">

@@ -141,12 +141,12 @@ return [
     |               | sidebar-mini                            |
     |---------------------------------------------------------|
      */
-    'layout' => ['sidebar-mini', 'sidebar-collapse'],
+    'layout' => ['sidebar-mini', 'sidebar-collapse', ],
 
     /*
      * Version displayed in footer.
      */
-    'version' => '1.5.x-dev',
+//    'version' => '1.5.x-dev',
 
     /*
      * Settings for extensions.

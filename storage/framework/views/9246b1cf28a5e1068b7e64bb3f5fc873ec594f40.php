@@ -6,12 +6,12 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel">
             <div class="pull-left image">
-                <img src="<?php echo e(Admin::user()->avatar); ?>" class="img-circle" alt="User Image">
+                <img src="<?php echo e(Admin::user()->avatar, false); ?>" class="img-circle" alt="User Image">
             </div>
             <div class="pull-left info">
-                <p><?php echo e(Admin::user()->name); ?></p>
+                <p><?php echo e(Admin::user()->name, false); ?></p>
                 <!-- Status -->
-                <a href="#"><i class="fa fa-circle text-success"></i> <?php echo e(trans('admin.online')); ?></a>
+                <a href="#"><i class="fa fa-circle text-success"></i> <?php echo e(trans('admin.online'), false); ?></a>
             </div>
         </div>
 
@@ -29,7 +29,7 @@
 
         <!-- Sidebar Menu -->
         <ul class="sidebar-menu">
-            <li class="header"><?php echo e(trans('admin.menu')); ?></li>
+            <li class="header"><?php echo e(trans('admin.menu'), false); ?></li>
 
             <?php echo $__env->renderEach('admin::partials.menu', Admin::menu(), 'item'); ?>
 

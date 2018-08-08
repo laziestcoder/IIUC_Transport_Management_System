@@ -17,6 +17,7 @@ class HomeController extends Controller
 
             $content->header('Dashboard');
             $content->description('This is Super Admin Dashboard');
+            //$content->row("<div class='title'>This is Super Admin Dashboard</div>");
 
             $content->row(Dashboard::title());
 

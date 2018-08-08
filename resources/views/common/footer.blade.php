@@ -1,11 +1,11 @@
 <!-- Footer -->
 {{--<section>--}}
-<div class="container" style="background: #bababa;">
+<div class="container" >
     <div id="footer" class="row" style="background: ghostwhite;">
         <div class="col-md-4">
                     <span class="copyright">
                         <!-- Copyright &copy; Your Website 2017 -->
-                    <b>Today : </b>{{ date("l, d M, Y   ")."  || "}} <b>Last Refresh : </b>{{ date("h:i A")}}
+                    <b>Today: </b>{{ date("l, d M, Y")." ||| "}} <b>Time: </b>{{ date("h:i A")}}
                         {{-- <div id="time">Time:</div> --}}
                         <p>&copy {{ date("Y") }}
                             {{-- <script type="text/JavaScript"> document.write(new Date().getFullYear()); </script> --}}

@@ -1,2 +1,2 @@
-<?php echo e($slot); ?>: <?php echo e($url); ?>
+<?php echo e($slot, false); ?>: <?php echo e($url, false); ?>
 

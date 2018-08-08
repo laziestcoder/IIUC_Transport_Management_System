@@ -1,6 +1,6 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-xl navbar-default navbar-fixed-top" id="mainNav">
-
+    
     <div class="container">
         <a class="navbar-brand js-scroll-trigger" href="/">
             <img src="/storage/img/logos/itms-logo.png" alt="IIUC TMD LOGO">
@@ -23,26 +23,26 @@
                 <!-- <li class="nav-item"><a class="nav-link" href="/admin">Admin Panel</a></li>
                 <li class="nav-item"><a class="nav-link" href="/test">Test</a></li>
                  -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false">Bus schidule</a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="#">friday</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </li>
+                
+                    
+                       
+                    
+                        
+                        
+                        
+                    
+                
                 <!-- <li class="nav-item"><a class="nav-link" data-toggle="modal" href="#exampleModal1">Login</a></li> -->
-                <?php if (auth()->guard()->guest()): ?>
+                <?php if(auth()->guard()->guest()): ?>
                     <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
 
                 <?php else: ?>
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                            aria-expanded="false" aria-haspopup="true" v-pre>
-                            <?php echo e(Auth::user()->name); ?>
+                        <?php echo e(Auth::user()->name, false); ?>
 
-                            <!-- <span class="caret"></span> -->
+                        <!-- <span class="caret"></span> -->
                         </a>
 
                         <ul class="dropdown-menu">
@@ -53,15 +53,15 @@
                             <li><a href="/statistics" disabled='True'>Statistics</a></li>
                             <li><a href="/dashboard">Dashboard</a></li>    -->
                             <li>
-                                <a href="<?php echo e(route('logout')); ?>"
+                                <a href="<?php echo e(route('logout'), false); ?>"
                                    onclick="event.preventDefault();
                                             document.getElementById('logout-form').submit();">
                                     Logout
                                 </a>
 
-                                <form id="logout-form" action="<?php echo e(route('logout')); ?>" method="POST"
+                                <form id="logout-form" action="<?php echo e(route('logout'), false); ?>" method="POST"
                                       style="display: none;">
-                                    <?php echo e(csrf_field()); ?>
+                                    <?php echo e(csrf_field(), false); ?>
 
                                 </form>
                             </li>

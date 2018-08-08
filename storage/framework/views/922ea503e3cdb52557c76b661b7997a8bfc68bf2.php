@@ -5,7 +5,7 @@
 
 <?php if(isset($subcopy)): ?>
 
-    <?php echo strip_tags($subcopy); ?>
+<?php echo strip_tags($subcopy); ?>
 
 <?php endif; ?>
 
