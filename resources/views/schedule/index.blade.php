@@ -2,6 +2,7 @@
 
 
 @section('content')
+
     {{--<script>--}}
     {{--$(document).ready(function () {--}}
     {{--$('[data-toggle=confirmation]').confirmation({--}}

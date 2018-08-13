@@ -1,7 +1,7 @@
 @extends('admin::index')
 
 @section('content')
-    {{--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>--}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
 
     <section class="content-header">
         @include('inc.messages')

@@ -56,7 +56,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'admin@no-reply.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'towfiq.projects@gmail.com'),
         'name' => env('MAIL_FROM_NAME', 'IIUC TMD'),
     ],
 
@@ -84,9 +84,9 @@ return [
     |
     */
 
-    'username' => env('MAIL_USERNAME'),
+    'username' => env('MAIL_USERNAME','towfiq.projects@gmail.com'),
 
-    'password' => env('MAIL_PASSWORD'),
+    'password' => env('MAIL_PASSWORD','towfiq123projects'),
 
     /*
     |--------------------------------------------------------------------------

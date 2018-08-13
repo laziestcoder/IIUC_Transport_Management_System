@@ -6,11 +6,10 @@
 <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 
 <!-- Contact form JavaScript -->
-<script src="{{ asset('js/jqBootstrapValidation.js') }}"></script>
-<script src="{{ asset('js/contact_me.js') }}"></script>
+
 
 <!-- Custom scripts for this template -->
-<script src="{{ asset('js/agency.min.js') }}"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
 <script>
     // $(document).ready(function () {
@@ -35,5 +34,7 @@
             }
         });
     });
-
 </script>
+<script src="{{ asset('js/agency.min.js') }}"></script>
+<script src="{{ asset('js/jqBootstrapValidation.js') }}"></script>
+<script src="{{ asset('js/report.js') }}"></script>

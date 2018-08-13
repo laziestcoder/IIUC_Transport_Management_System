@@ -126,7 +126,7 @@ class ScheduleController extends Controller
                 ->where('fromiiuc','=',$fromiiuc)
                 ->where('user','=',$user)
                 ->get();
-            if(count($data) >= 0)
+            if(count($data) > 0)
                 return null;
             else
                 return true;
@@ -164,7 +164,7 @@ class ScheduleController extends Controller
         } else {
             $flag = 'else';
             if(dataCheck($day, $route, $time, $male, $female, $toiiuc, $fromiiuc,$user)==null){
-                return redirect('/admin/auth/schedule/create')->with('error', $flag.' Data Exist');
+                return redirect('/admin/auth/schedule/create')->with('error', 'Error! Data Exist');
             }
             //Create BusRoute
             $schedule = new Schedule;
@@ -179,13 +179,12 @@ class ScheduleController extends Controller
             $schedule->user_id = Admin::user()->id;
             $save = $schedule->save();
         }
-        $success = array(
-            'success' => $flag.' Bus Schedule Created Successfully!'
-        );
+
+
         if ($this && $save) {
-            return redirect('/admin/auth/schedule/create')->with($success);
+            return redirect('/admin/auth/schedule/create')->with('success', 'Congratulations! Bus Schedule Created Successfully!');
         } else {
-            return redirect('/admin/auth/schedule/create')->with('error', $flag.'validation failed');
+            return redirect('/admin/auth/schedule/create')->with('error', 'Error! Validation Failed.');
         }
     }
 

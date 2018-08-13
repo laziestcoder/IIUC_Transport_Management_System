@@ -1,4 +1,6 @@
 <?php $__env->startSection('usercontent'); ?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
+
     <div class="panel-body" style="background:#212529">
         <h1>Edit Schedule</h1>
     </div>
@@ -6,7 +8,7 @@
     <div class="panel-body" style="background:#212529">
         <?php if(session('status')): ?>
             <div class="alert alert-success">
-                <?php echo e(session('status')); ?>
+                <?php echo e(session('status'), false); ?>
 
             </div>
         <?php endif; ?>
@@ -19,45 +21,45 @@
                     <thead class="tableSpace">
                     <tr>
                         <td>
-                            <img src="storage/image/user/<?php echo e(Auth::user()->image); ?>">
+                            <img src="storage/image/user/<?php echo e(Auth::user()->image, false); ?>">
                         <td>
                     </tr>
                     <tr>
                         <td>
-                            Name: <?php echo e(Auth::user()->name); ?>
+                            Name: <?php echo e(Auth::user()->name, false); ?>
 
                         </td>
 
                     </tr>
                     <tr>
                         <td>
-                            ID: <?php echo e(Auth::user()->jobid); ?>
+                            ID: <?php echo e(Auth::user()->jobid, false); ?>
 
                         </td>
 
                     </tr>
                     <tr>
                         <td>
-                            Gender: <?php echo e(Auth::user()->gender == 0 ? 'Male' : 'Female'); ?>
+                            Gender: <?php echo e(Auth::user()->gender == 0 ? 'Male' : 'Female', false); ?>
 
                         </td>
                     </tr>
                     <tr>
                         <td>
                             Registered
-                            As: <?php echo e(Auth::user()->userrole == 1 ? 'Student' : ( Auth::user()->userrole == 2 ? 'Faculty Member' :(Auth::user()->userrole == 3 ? 'Officer/Staff' : 'undefined'))); ?>
+                            As: <?php echo e(Auth::user()->userrole == 1 ? 'Student' : ( Auth::user()->userrole == 2 ? 'Faculty Member' :(Auth::user()->userrole == 3 ? 'Officer/Staff' : 'undefined')), false); ?>
 
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            Email: <?php echo e(Auth::user()->email); ?>
+                            Email: <?php echo e(Auth::user()->email, false); ?>
 
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            Contact: <?php echo e(Auth::user()->contact ? Auth::user()->contact : 'none'); ?>
+                            Contact: <?php echo e(Auth::user()->contact ? Auth::user()->contact : 'none', false); ?>
 
                         </td>
                     </tr>
@@ -104,7 +106,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -124,7 +126,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -149,7 +151,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -169,7 +171,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -194,7 +196,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -214,7 +216,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -239,7 +241,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -259,7 +261,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -284,7 +286,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -304,7 +306,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -329,7 +331,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -349,7 +351,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -374,7 +376,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -394,7 +396,7 @@
                                         <option value="" disabled="true" selected="true" required>Select A Point Name
                                         </option>
                                         <?php $__currentLoopData = $BusPoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $point): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($point->id); ?>"><?php echo e($point->pointname); ?></option>
+                                            <option value="<?php echo e($point->id, false); ?>"><?php echo e($point->pointname, false); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -411,7 +413,7 @@
 
                     </tbody>
                 </table>
-                <?php echo e(Form :: submit('Submit',['class' => 'btn btn-primary'])); ?>
+                <?php echo e(Form :: submit('Submit',['class' => 'btn btn-primary']), false); ?>
 
                 <?php echo Form::close(); ?>
 
@@ -423,115 +425,20 @@
 
 
     <script>
-        /* $(document).ready(function () {        
+        /* $(document).ready(function () {
         $('[data-toggle=confirmation]').confirmation({
             rootSelector: '[data-toggle=confirmation]',
             onConfirm: function (event, element) {
                 element.closest('form').submit();
             }
-        });   
-    }); */
+        });
+    });
         $("#delete").on("submit", function () {
             return confirm("Do you want to delete this item?");
         });
+        */
 
     </script>
 <?php $__env->stopSection(); ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <?php echo $__env->make('layouts.userlayout', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

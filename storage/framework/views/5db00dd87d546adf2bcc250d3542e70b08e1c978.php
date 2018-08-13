@@ -1,16 +1,15 @@
 <!-- Bootstrap core JavaScript -->
-<script src="<?php echo e(asset('vendor/jquery/jquery.min.js')); ?>"></script>
-<script src="<?php echo e(asset('vendor/bootstrap/js/bootstrap.bundle.min.js')); ?>"></script>
+<script src="<?php echo e(asset('vendor/jquery/jquery.min.js'), false); ?>"></script>
+<script src="<?php echo e(asset('vendor/bootstrap/js/bootstrap.bundle.min.js'), false); ?>"></script>
 
 <!-- Plugin JavaScript -->
-<script src="<?php echo e(asset('vendor/jquery-easing/jquery.easing.min.js')); ?>"></script>
+<script src="<?php echo e(asset('vendor/jquery-easing/jquery.easing.min.js'), false); ?>"></script>
 
 <!-- Contact form JavaScript -->
-<script src="<?php echo e(asset('js/jqBootstrapValidation.js')); ?>"></script>
-<script src="<?php echo e(asset('js/contact_me.js')); ?>"></script>
+
 
 <!-- Custom scripts for this template -->
-<script src="<?php echo e(asset('js/agency.min.js')); ?>"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
 <script>
     // $(document).ready(function () {
@@ -35,5 +34,7 @@
             }
         });
     });
-
 </script>
+<script src="<?php echo e(asset('js/agency.min.js'), false); ?>"></script>
+<script src="<?php echo e(asset('js/jqBootstrapValidation.js'), false); ?>"></script>
+<script src="<?php echo e(asset('js/report.js'), false); ?>"></script>

@@ -49,7 +49,8 @@ Route::get('/test', 'PagesController@test');
 
 // Report A Problem
 //Route::get('/contact-msg', ['as'=>'contact-msg','uses'=>'DashboardController@contact']);
-Route::post('/contact-msg', ['as' => 'contact-msg', 'uses' => 'DashboardController@contact']);
+Route::post('/report', 'PagesController@contact');
+//Route::post('/report', ['as' => 'report', 'uses' => 'PagesController@contact']);
 //Route::post('product_catalog',['as' => 'storeProduct', 'uses' => 'front\ProductCatalogController@storeProduct']);
 
 //Notice routing

@@ -28,9 +28,4 @@ class DashboardController extends Controller
         return view('dashboard')->with('notices', $user->notices);
     }
 
-    public function contact()
-    {
-        return view('mail.contact_me');
-    }
-
 }

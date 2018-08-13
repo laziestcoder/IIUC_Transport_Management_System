@@ -23,32 +23,42 @@ class PagesController extends Controller
         $description = "";
 
         //Time and Today
-        $now = Carbon::now()->format('g:i A');
+        $now = Carbon::now()->format('H:i:s');
         $today = Carbon::today()->format('l');
 
 
         //Next Bus
-        $times = Time::where('time', '>=', $now)->get();
+        $times = Time::where('time', '>=', $now)->orderBy('time')->get();
         $todayid = Day::where('dayname', $today)->first()->id;
+//        $theTime = "21:00:00";
+//        if ($now >= $theTime){
+//            $today = Carbon::tomorrow()->format('l');
+//            $todayid = Day::where('dayname', $today)->first()->id;
+//        }
 
         // Get Route Information
         function getRoute($times, $todayid, $direction, $gender)
         {
             if (count($times) > 0) {
                 foreach ($times as $time) {
-                    $nowid = $time->id;
-                    $route = Schedule::where('day', $todayid)
-                        ->where('time', '=', $nowid)
-                        ->where($direction, 1)
-                        ->where($gender, 1)
-                        ->first();
-                    if ($route !== null) {
-                        return $route;
+//                    $check = Time::where('id', $time->id)->where($direction,1)->get();
+//                    if($check) {
+                        $nowid = $time->id;
+                        $route = Schedule::where('day', $todayid)
+                            ->where('time', $nowid)
+                            ->where($direction, 1)
+                            ->where($gender, 1)
+                            ->first();
+                        if ($route == true) {
+                            return $route;
+                            //return var_dump($route);
+                        }
                     }
-                }
-                return null;
+                    return false;
+//                }
+//                return false;
             }
-            return null;
+            return false;
         }
 
         //Route Name Retrive From Table
@@ -68,8 +78,11 @@ class PagesController extends Controller
         // male
 
         $toIIUCMaleSchedule = getRoute($times, $todayid, 'toiiuc', 'male');
+        //var_dump($toIIUCMaleSchedule !== false);
 
-        if ($toIIUCMaleSchedule != null) {
+
+        if ($toIIUCMaleSchedule !== false) //&& $now >= $theTime)
+        {
             $toIIUCRouteM = getRouteName($toIIUCMaleSchedule->route);
             $toIIUCMale = getTime($toIIUCMaleSchedule->time);
         } else {
@@ -81,8 +94,10 @@ class PagesController extends Controller
         // From Campus
         //male
         $fromIIUCMaleSchedule = getRoute($times, $todayid, 'fromiiuc', 'male');
+        //var_dump($fromIIUCMaleSchedule !== false);
 
-        if ($fromIIUCMaleSchedule != null) {
+        if ($fromIIUCMaleSchedule !== false)//&& $now >= $theTime)
+        {
             $fromIIUCRouteM = getRouteName($fromIIUCMaleSchedule->route);
             $toCityMale = getTime($fromIIUCMaleSchedule->time);
         } else {
@@ -94,8 +109,10 @@ class PagesController extends Controller
         //To Campus
         // female
         $toIIUCFemaleSchedule = getRoute($times, $todayid, 'toiiuc', 'female');
+        //var_dump($toIIUCFemaleSchedule !== false);
 
-        if ($fromIIUCMaleSchedule != null) {
+        if ($fromIIUCMaleSchedule !== false)// && $now >= $theTime)
+        {
             $toIIUCRouteF = getRouteName($toIIUCFemaleSchedule->route);
             $toIIUCFemale = getTime($toIIUCFemaleSchedule->time);
         } else {
@@ -106,8 +123,10 @@ class PagesController extends Controller
         //From Campus
         // female
         $fromIIUCFemaleSchedule = getRoute($times, $todayid, 'fromiiuc', 'female');
+        //var_dump($fromIIUCFemaleSchedule !== false);
 
-        if ($fromIIUCFemaleSchedule != null) {
+        if ($fromIIUCFemaleSchedule !== false)//&& $now >= $theTime)
+        {
             $fromIIUCRouteF = getRouteName($fromIIUCFemaleSchedule->route);
             $toCityFemale = getTime($fromIIUCFemaleSchedule->time);
         } else {
@@ -116,9 +135,9 @@ class PagesController extends Controller
         }
 
         // Todays Schedule
-        $day = Day::where('dayname',$today)->first();
+        $day = Day::where('dayname', $today)->first();
         $timeAll = Time::orderBy('time')->get();
-        $schedules = Schedule::where('day',$day->id)->get();
+        $schedules = Schedule::where('day', $day->id)->get();
         //$males = Schedule::where('male','1');
         //$females = Schedule::where('female','1');
 
@@ -129,7 +148,7 @@ class PagesController extends Controller
             'notices' => $notices,
             'description' => $description,
             'today' => $today,
-            'now' => $now,
+            'now' => Carbon::now()->format('g:i A'),
 
 
             //NEXT BUS Informations
@@ -169,7 +188,13 @@ class PagesController extends Controller
 //        );
 //        return  view('pages.services')->with($data);
 //    }
+    // Report
+    public function contact()
+    {
+        return view('mails.report');
+    }
 
+    //Test Page
     public function test()
     {
         $data = array(

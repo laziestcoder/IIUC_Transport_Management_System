@@ -2,16 +2,8 @@
 
 
 @section('content')
-    <script>
-        $(document).ready(function () {
-            $('[data-toggle=confirmation]').confirmation({
-                rootSelector: '[data-toggle=confirmation]',
-                onConfirm: function (event, element) {
-                    element.closest('form').submit();
-                }
-            });
-        });
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
+
     <section class="content-header">
         @include('inc.messages')
         <h1>
@@ -79,5 +71,14 @@
             <p>No Schedule Found</p>
         @endif
     </section>
-
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle=confirmation]').confirmation({
+                rootSelector: '[data-toggle=confirmation]',
+                onConfirm: function (event, element) {
+                    element.closest('form').submit();
+                }
+            });
+        });
+    </script>
 @endsection

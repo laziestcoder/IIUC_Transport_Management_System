@@ -23,9 +23,9 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-<!-- @yield('index') -->
-    <link href="{{ asset('css/agency.min.css') }}" rel="stylesheet">
+    {{--@yield('index')--}}
     <link href="{{ asset('css/agency.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/agency.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 
 

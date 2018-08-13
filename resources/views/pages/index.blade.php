@@ -2,9 +2,9 @@
 @section('content')
 
     <header id="home" class="masthead">
-        <div class="container">
+        <div class="container" id="page-top">
             <div class="intro-text">
-                <div class="intro-lead-in" style="padding:10px 0px;">Welcome To IIUC Transport Website!</div>
+                <div class="intro-lead-in" style="padding:10px 0;">Welcome To IIUC Transport Website!</div>
                 <div class="intro-heading text-uppercase">It's Nice To Meet You</div>
                 <div class="nextBus">
                     <div class="nextBus-info">
@@ -73,7 +73,7 @@
     </header>
 
     <!-- Todays Bus Schedule -->
-    <section>
+    <section id="about">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -84,13 +84,13 @@
             <div class="row">
                 <div class="col-lg-12">
                     <ul class="timeline">
-                        <?php $sl = 0;?>
+                        <?php $flagSchedules = 0;$sl = 0;?>
                         @foreach($times as $time)
-                            <?php $schedules = App\Schedule::where('day', $day->id)
+                            <?php  $schedules = App\Schedule::where('day', $day->id)
                                 ->where('time', $time->id)
                                 ->first();?>
                             @if($schedules)
-                                {{--@foreach($schedules as $schedule)--}}
+                                <?php $flagSchedules = 1;?>
                                 <li class="{!! ($sl+=1)%2 == 0? "timeline-inverted":""!!}">
                                     <div class="timeline-image">
                                         <h4>{{\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A')}}
@@ -161,9 +161,20 @@
                                         </div>
                                     </div>
                                 </li>
-                                {{--@endforeach--}}
                             @endif
                         @endforeach
+                        @if($flagSchedules == 0)
+                            <li class="timeline-inverted">
+                                <div class="timeline-image">
+                                    <h4>No
+                                        <br>
+                                        Bus
+                                        <br>
+                                        Today
+                                    </h4>
+                                </div>
+                            </li>
+                        @endif
 
                         <li class="timeline-inverted">
                             <div class="timeline-image">
@@ -184,7 +195,7 @@
 
     <!-- Notice Board -->
 
-    <section class="bg-light">
+    <section class="bg-light" id="portfolio">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -199,11 +210,11 @@
                     @foreach($notices as $notice)
                         <?php $count = $count + 1; ?>
                         {{--@if($count<=12)--}}
-                        <div class="col-md-3 col-md-3 portfolio-item">
+                            <div class="col-md-4 col-sm-6 portfolio-item">
                             <a class="portfolio-link" data-toggle="modal" href="#portfolioModal{{$count}}">
                                 <div class="portfolio-hover">
                                     <div class="portfolio-hover-content">
-                                        <i class="fa fa-plus fa-3x"></i>
+                                        <i class="fa fa-eye fa-2x">Read Me</i>
                                     </div>
                                 </div>
                                 <img class="img-fluid" src="/storage/cover_images/{{$notice->cover_image}}"
@@ -216,7 +227,7 @@
                                         <i>
                                             {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}
                                         </i><br>
-                                        Posted At: {{$notice->created_at}}
+                                        Posted At: {!!  \Carbon\Carbon::parse($notice->created_at)->format('l, d-M-Y g:i: A') !!}
                                     </p>
                                 </small>
                             </div>
@@ -238,7 +249,7 @@
 
     <!-- Emergency Contact -->
 
-    <section>
+    <section id="services">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -280,7 +291,7 @@
 
 
 
-    <section class="bg-light">
+    <section class="bg-light" id="team">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -363,7 +374,7 @@
     </section>
 
 
-    <!-- Contact -->
+    <!-- Report -->
 
     <section id="contact">
         <div class="container">

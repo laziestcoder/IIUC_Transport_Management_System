@@ -1,9 +1,9 @@
 <?php $__env->startSection('content'); ?>
 
     <header id="home" class="masthead">
-        <div class="container">
+        <div class="container" id="page-top">
             <div class="intro-text">
-                <div class="intro-lead-in" style="padding:10px 0px;">Welcome To IIUC Transport Website!</div>
+                <div class="intro-lead-in" style="padding:10px 0;">Welcome To IIUC Transport Website!</div>
                 <div class="intro-heading text-uppercase">It's Nice To Meet You</div>
                 <div class="nextBus">
                     <div class="nextBus-info">
@@ -72,7 +72,7 @@
     </header>
 
     <!-- Todays Bus Schedule -->
-    <section>
+    <section id="about">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -83,13 +83,13 @@
             <div class="row">
                 <div class="col-lg-12">
                     <ul class="timeline">
-                        <?php $sl = 0;?>
+                        <?php $flagSchedules = 0;$sl = 0;?>
                         <?php $__currentLoopData = $times; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $time): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <?php $schedules = App\Schedule::where('day', $day->id)
+                            <?php  $schedules = App\Schedule::where('day', $day->id)
                                 ->where('time', $time->id)
                                 ->first();?>
                             <?php if($schedules): ?>
-                                
+                                <?php $flagSchedules = 1;?>
                                 <li class="<?php echo ($sl+=1)%2 == 0? "timeline-inverted":""; ?>">
                                     <div class="timeline-image">
                                         <h4><?php echo e(\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A'), false); ?>
@@ -169,9 +169,20 @@
                                         </div>
                                     </div>
                                 </li>
-                                
                             <?php endif; ?>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        <?php if($flagSchedules == 0): ?>
+                            <li class="timeline-inverted">
+                                <div class="timeline-image">
+                                    <h4>No
+                                        <br>
+                                        Bus
+                                        <br>
+                                        Today
+                                    </h4>
+                                </div>
+                            </li>
+                        <?php endif; ?>
 
                         <li class="timeline-inverted">
                             <div class="timeline-image">
@@ -192,7 +203,7 @@
 
     <!-- Notice Board -->
 
-    <section class="bg-light">
+    <section class="bg-light" id="portfolio">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -207,11 +218,11 @@
                     <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <?php $count = $count + 1; ?>
                         
-                        <div class="col-md-3 col-md-3 portfolio-item">
+                            <div class="col-md-4 col-sm-6 portfolio-item">
                             <a class="portfolio-link" data-toggle="modal" href="#portfolioModal<?php echo e($count, false); ?>">
                                 <div class="portfolio-hover">
                                     <div class="portfolio-hover-content">
-                                        <i class="fa fa-plus fa-3x"></i>
+                                        <i class="fa fa-eye fa-2x">Read Me</i>
                                     </div>
                                 </div>
                                 <img class="img-fluid" src="/storage/cover_images/<?php echo e($notice->cover_image, false); ?>"
@@ -225,7 +236,7 @@
                                             <?php echo e(DB::table('admin_users')->where('id', $notice->user_id)->first()->name, false); ?>
 
                                         </i><br>
-                                        Posted At: <?php echo e($notice->created_at, false); ?>
+                                        Posted At: <?php echo \Carbon\Carbon::parse($notice->created_at)->format('l, d-M-Y g:i: A'); ?>
 
                                     </p>
                                 </small>
@@ -249,7 +260,7 @@
 
     <!-- Emergency Contact -->
 
-    <section>
+    <section id="services">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -291,7 +302,7 @@
 
 
 
-    <section class="bg-light">
+    <section class="bg-light" id="team">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -374,7 +385,7 @@
     </section>
 
 
-    <!-- Contact -->
+    <!-- Report -->
 
     <section id="contact">
         <div class="container">

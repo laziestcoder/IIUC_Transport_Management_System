@@ -11,6 +11,7 @@
 
 .portfolio-item .img-fluid {
     height: 200px;
+    width: 100%;
 }
 
 .navbar-nav {

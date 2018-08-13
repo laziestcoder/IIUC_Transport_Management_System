@@ -2,6 +2,7 @@
 
 
 @section('content')
+
     <section class="content-header">
         @include('inc.messages')
         <h1>

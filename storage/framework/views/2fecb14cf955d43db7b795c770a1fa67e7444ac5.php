@@ -1,4 +1,6 @@
 <?php $__env->startSection('content'); ?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
+
     <section class="content-header">
         <?php echo $__env->make('inc.messages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         <h1>

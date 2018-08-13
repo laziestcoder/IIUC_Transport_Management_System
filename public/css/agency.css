@@ -180,10 +180,7 @@ body {
 header.masthead {
     text-align: center;
     color: white;
-    background-image: url("storage/img/transport-bg.png");
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-    background-position: center center;
+    background: url("storage/img/transport-bg.png") no-repeat scroll center center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -318,7 +315,7 @@ header.masthead .intro-text .intro-heading {
 }
 
 .portfolio-modal {
-    padding-right: 0px !important;
+    padding-right: 0 !important;
 }
 
 .portfolio-modal .modal-dialog {
@@ -621,7 +618,7 @@ header.masthead .intro-text .intro-heading {
 
 section#contact {
     background-color: #212529;
-    background-image: url("../img/map-image.png");
+    /*background-image: url("storage/img/map-image.png");*/
     background-repeat: no-repeat;
     background-position: center;
 }
