@@ -17,7 +17,7 @@
         //     console.log("2");
         //     return confirm("Do you want to delete this item?");
         // });
-        </script>
+    </script>
     <script>
         $(document).ready(function () {
             $('[data-toggle=confirmation]').confirmation({

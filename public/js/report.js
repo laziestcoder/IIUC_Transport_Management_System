@@ -6,7 +6,7 @@ $(function () {
             // additional error messages or events
         },
         submitSuccess: function ($form, event) {
-             event.preventDefault(); // prevent default submit behaviour
+             //event.preventDefault(); // prevent default submit behaviour
             // get values from FORM
             var name = $("input#name").val();
             var email = $("input#email").val();
@@ -21,7 +21,7 @@ $(function () {
             $this = $("#sendMessageButton");
             $this.prop("disabled", true); // Disable submit button until AJAX call is complete to prevent duplicate messages
             $.ajax({
-                url: 'report',
+                url: '/report',
                 type: "POST",
                 data: {
                     name: name,
@@ -30,34 +30,36 @@ $(function () {
                     message: message
                 },
                 cache: false,
-                success: function () {
-                    // Success message
-                    $('#success').html("<div class='alert alert-success'>");
-                    $('#success > .alert-success').html("<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;")
-                        .append("</button>");
-                    $('#success > .alert-success')
-                        .append("<strong>"+ name +", your message has been sent. </strong>");
-                    $('#success > .alert-success')
-                        .append('</div>');
-                    //clear all fields
-                    //$('#contactForm').trigger("reset");
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    // Fail message
-                    $('#success').html("<div class='alert alert-danger'>");
-                    $('#success > .alert-danger').html("<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;")
-                        .append("</button>");
-                    $('#success > .alert-danger').append($("<strong>").text("Sorry " + name + ", it seems that my mail server is not responding. Please try again later! " + errorThrown));
-                    $('#success > .alert-danger').append('</div>');
-                    //clear all fields
-                    // $('#contactForm').trigger("reset");
-                },
-                complete: function () {
-                    setTimeout(function () {
-                        $this.prop("disabled", false); // Re-enable submit button when AJAX call is complete
-                    }, 1000);
-                }
+                // success: function () {
+                //     // Success message
+                //     $('#success').html("<div class='alert alert-success'>");
+                //     $('#success > .alert-success').html("<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;")
+                //         .append("</button>");
+                //     $('#success > .alert-success')
+                //         .append("<strong>"+ name +", your message has been sent. </strong>");
+                //     $('#success > .alert-success')
+                //         .append('</div>');
+                //     //clear all fields
+                //     $('#contactForm').trigger("reset");
+                // },
+                // error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //     // Fail message
+                //     $('#success').html("<div class='alert alert-danger'>");
+                //     $('#success > .alert-danger').html("<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;")
+                //         .append("</button>");
+                //     $('#success > .alert-danger').append($("<strong>").text("Sorry " + name + ", it seems that my mail server is not responding. Please try again later! " + errorThrown + "</strong>"));
+                //     $('#success > .alert-danger').append('</div>');
+                //     //clear all fields
+                //      $('#contactForm').trigger("reset");
+                // },                
             });
+            
+        },
+        complete: function () {
+            setTimeout(function () {
+                $this.prop("disabled", false); // Re-enable submit button when AJAX call is complete
+            }, 30);
+            $('#contactForm').trigger("reset");            
         },
         filter: function () {
             return $(this).is(":visible");

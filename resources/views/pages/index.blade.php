@@ -86,9 +86,9 @@
                     <ul class="timeline">
                         <?php $flagSchedules = 0;$sl = 0;?>
                         @foreach($times as $time)
-                            <?php  $schedules = App\Schedule::where('day', $day->id)
+                            <?php   $schedules = App\Schedule::where('day', $day->id)
                                 ->where('time', $time->id)
-                                ->first();?>
+                                ->first(); ?>
                             @if($schedules)
                                 <?php $flagSchedules = 1;?>
                                 <li class="{!! ($sl+=1)%2 == 0? "timeline-inverted":""!!}">
@@ -227,7 +227,8 @@
                                         <i>
                                             {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}
                                         </i><br>
-                                        Posted At: {!!  \Carbon\Carbon::parse($notice->created_at)->format('l, d-M-Y g:i: A') !!}
+                                        Posted
+                                        At: {!!  \Carbon\Carbon::parse($notice->created_at)->format('l, d-M-Y g:i: A') !!}
                                     </p>
                                 </small>
                             </div>
@@ -296,7 +297,7 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2 id="about" class="section-heading text-uppercase">Developed By</h2>
-                    <!-- <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3> -->
+                    <h3 class="section-subheading text-muted">The frontend and The backend are designed and coded by </h3>
                 </div>
             </div>
 
@@ -375,7 +376,13 @@
 
 
     <!-- Report -->
+<style>
 
+.invalid-feedback {
+    display: block;
+}
+
+</style>
     <section id="contact">
         <div class="container">
             <div class="row">
@@ -386,41 +393,62 @@
             </div>
             <div class="row">
                 <div class="col-lg-12">
-                    <form id="contactForm" name="sentMessage" novalidate>
+                    {!! Form :: open(['action'=>'PagesController@report','id'=>'contactForm', 'method' => 'POST',
+                    'enctype' => 'multipart/form-data','name'=>'sentMessage', 'novalidate']) !!}
+                    {{ csrf_field() }}
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <input class="form-control" id="name" type="text" placeholder="Your Name *" required
-                                           data-validation-required-message="Please enter your name.">
+                                {{Form :: text('name' , '', ['id' => 'name','class' => 'form-control', 'placeholder' => 'Your Name *',
+                                   'required','data-validation-required-message'=>'Please enter your your name.'])}}
                                     <p class="help-block text-danger"></p>
+                                    <!-- @if($errors->has('name'))
+                                    <small class="form-text invalid-feedback">{{ $errors->first('name') }}</small>                                                                                                    
+                                    @endif -->
                                 </div>
                                 <div class="form-group">
-                                    <input class="form-control" id="email" type="email" placeholder="Your Email *"
-                                           required data-validation-required-message="Please enter your email address.">
+                                {{Form :: email('email' , '', ['id' => 'email','class' => 'form-control', 'placeholder' => 'Your Email *',
+                                           'required','data-validation-required-message'=>'Please enter your email address.'])}}
                                     <p class="help-block text-danger"></p>
+                                    <!-- @if($errors->has('email'))
+                                    <small class="form-text invalid-feedback">{{ $errors->first('email') }}</small>                                                                                                    
+                                    @endif -->
                                 </div>
                                 <div class="form-group">
-                                    <input class="form-control" id="phone" type="tel" placeholder="Your Phone *"
-                                           required data-validation-required-message="Please enter your phone number.">
+                                {{Form :: tel('phone' , '', ['id' => 'phone','class' => 'form-control', 'placeholder' => 'Your Phone *',
+                                           'required','data-validation-required-message'=>'Please enter your phone number.'])}}
                                     <p class="help-block text-danger"></p>
+                                    <!-- @if($errors->has('phone'))
+                                    <div class="form-text invalid-feedback">{{ $errors->first('phone') }}</div>                                                                                                    
+                                    @endif -->
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <textarea class="form-control" id="message" placeholder="Your Message *" required
-                                              data-validation-required-message="Please enter a message."></textarea>
+                                {{Form :: textarea('message' , '', ['id' => 'message','class' => 'form-control', 'placeholder' => 'Your Message *',
+                                'required','data-validation-required-message'=>'Please enter your message.'])}}
                                     <p class="help-block text-danger"></p>
+                                    <!-- @if($errors->has('message'))
+                                    <small class="form-text invalid-feedback">{{ $errors->first('message') }}</small>                                                                                                    
+                                    @endif -->
                                 </div>
                             </div>
                             <div class="clearfix"></div>
                             <div class="col-lg-12 text-center">
-                                <div id="success"></div>
-                                <button id="sendMessageButton" class="btn btn-primary btn-xl text-uppercase"
-                                        type="submit">Send Message
-                                </button>
+                            <div id="success">
+                            @if(Session::has('success_flash_message'))
+                            <div class="alert alert-success">
+                            <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
+                            <strong>
+                            {{ Session::get('success_flash_message') }}
+                            </strong>                            
+                            </div>            
+                            @endif
+                            </div>
+                            {{ Form :: submit('Send Message',['class' => 'btn btn-primary btn-xl text-uppercase','id'=>'sendMessageButton']) }}
                             </div>
                         </div>
-                    </form>
+                    {!! Form::close() !!}
                 </div>
             </div>
         </div>

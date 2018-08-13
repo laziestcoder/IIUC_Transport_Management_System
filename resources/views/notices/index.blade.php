@@ -24,12 +24,12 @@
 
             </small>
         </h1>
-    <br>
+        <br>
         <a href="/admin/auth/notices/create" class="btn btn-facebook">New Notice</a>
 
-    {{--</section>--}}
+        {{--</section>--}}
         <br><br>
-    {{--<section class="container-fluid">--}}
+        {{--<section class="container-fluid">--}}
         @if(count($notices) > 0)
             <?php $count = 0; ?>
             @foreach($notices as $notice)

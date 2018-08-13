@@ -60,9 +60,9 @@
             <div class="form-group">
                 {{Form :: label('title','Male')}}
                 {{Form :: checkbox('male' , 1, ['class' => 'checkbox form-control',])}}
-            {{--</div>--}}
+                {{--</div>--}}
 
-            {{--<div class="form-group">--}}
+                {{--<div class="form-group">--}}
                 {{Form :: label('title','Female')}}
                 {{Form :: checkbox('female' , 1, ['class' => 'checkbox form-control',])}}
             </div>
@@ -86,9 +86,9 @@
             <div class="form-group">
                 {{Form :: label('title','To IIUC Campus')}}
                 {{Form :: checkbox('toiiuc' , 1, ['class' => 'checkbox form-control', ])}}
-            {{--</div>--}}
+                {{--</div>--}}
 
-            {{--<div class="form-group">--}}
+                {{--<div class="form-group">--}}
                 {{Form :: label('title','From IIUC Campus')}}
                 {{Form :: checkbox('fromiiuc' , 1,  ['class' => 'checkbox form-control',])}}
             </div>

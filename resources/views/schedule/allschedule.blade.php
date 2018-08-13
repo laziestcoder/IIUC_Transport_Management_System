@@ -51,13 +51,13 @@
                         <td>{{$schedule->fromiiuc? 'YES' : 'NO'}}</td>
                         <td>
                             @if((Admin::user()->id == $schedule->user_id)||(DB::table('admin_role_users')->where('user_id',(Admin::user()->id))->first()->role_id <= 4))
-                            <a href="" class="btn btn-primary">Edit</a>
-                            {!! Form::open(['action'=>['ScheduleController@destroy', $schedule->id],'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline' /* ,'onclick' => 'function deleteMe()' */]) !!}
-                            {{--'onclick' => 'return confirm("Are you sure?")'--}}
-                            {{Form::hidden('_method','DELETE')}}
-                            {{ csrf_field() }}
-                            {{Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top']) }}
-                            {!! Form::close() !!}
+                                <a href="" class="btn btn-primary">Edit</a>
+                                {!! Form::open(['action'=>['ScheduleController@destroy', $schedule->id],'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline' /* ,'onclick' => 'function deleteMe()' */]) !!}
+                                {{--'onclick' => 'return confirm("Are you sure?")'--}}
+                                {{Form::hidden('_method','DELETE')}}
+                                {{ csrf_field() }}
+                                {{Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top']) }}
+                                {!! Form::close() !!}
                             @else
                                 {{"You are not eligible"}}
                             @endif

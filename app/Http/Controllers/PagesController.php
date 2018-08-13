@@ -9,7 +9,11 @@ use App\Notice;
 use App\Schedule;
 use App\Time;
 use Carbon\Carbon;
+use Mail;
 use DB;
+use Illuminate\Http\Request;
+
+
 
 class PagesController extends Controller
 {
@@ -30,7 +34,7 @@ class PagesController extends Controller
         //Next Bus
         $times = Time::where('time', '>=', $now)->orderBy('time')->get();
         $todayid = Day::where('dayname', $today)->first()->id;
-//        $theTime = "21:00:00";
+
 //        if ($now >= $theTime){
 //            $today = Carbon::tomorrow()->format('l');
 //            $todayid = Day::where('dayname', $today)->first()->id;
@@ -81,7 +85,7 @@ class PagesController extends Controller
         //var_dump($toIIUCMaleSchedule !== false);
 
 
-        if ($toIIUCMaleSchedule !== false) //&& $now >= $theTime)
+        if ($toIIUCMaleSchedule !== false ) //&& $now >= $theTime)
         {
             $toIIUCRouteM = getRouteName($toIIUCMaleSchedule->route);
             $toIIUCMale = getTime($toIIUCMaleSchedule->time);
@@ -111,7 +115,7 @@ class PagesController extends Controller
         $toIIUCFemaleSchedule = getRoute($times, $todayid, 'toiiuc', 'female');
         //var_dump($toIIUCFemaleSchedule !== false);
 
-        if ($fromIIUCMaleSchedule !== false)// && $now >= $theTime)
+        if ($fromIIUCMaleSchedule !== false && $now <= "12:00:00")
         {
             $toIIUCRouteF = getRouteName($toIIUCFemaleSchedule->route);
             $toIIUCFemale = getTime($toIIUCFemaleSchedule->time);
@@ -125,7 +129,7 @@ class PagesController extends Controller
         $fromIIUCFemaleSchedule = getRoute($times, $todayid, 'fromiiuc', 'female');
         //var_dump($fromIIUCFemaleSchedule !== false);
 
-        if ($fromIIUCFemaleSchedule !== false)//&& $now >= $theTime)
+        if ($fromIIUCFemaleSchedule !== false && $now <= "2:30:00")
         {
             $fromIIUCRouteF = getRouteName($fromIIUCFemaleSchedule->route);
             $toCityFemale = getTime($fromIIUCFemaleSchedule->time);
@@ -189,9 +193,31 @@ class PagesController extends Controller
 //        return  view('pages.services')->with($data);
 //    }
     // Report
-    public function contact()
+    public function report(Request $request)
     {
-        return view('mails.report');
+        $this->validate($request ,[
+            'name' => 'required|string', 
+            'email' => 'required',
+            'phone' => 'required',
+            'message' => 'required|string', 
+        ]);
+
+        Mail::send('mails.report',[
+            'msg' => $request->message,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'name' => $request->name,
+        ], function($mail) use($request) {
+            $mail->from( $request->email, $request->name);
+            $mail->to('towfiq.projects@gmail.com','IIUC TMD')->subject('Report Message From ITMS'); 
+        });
+        
+        return redirect('/#contact')->with('success_flash_message', $request->name.', Thank you for your message.');
+        
+        //dd($request->all());
+
+        //return view('mails.report');
+
     }
 
     //Test Page

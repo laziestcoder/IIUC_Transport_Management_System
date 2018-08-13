@@ -1,6 +1,6 @@
 <!-- Footer -->
 {{--<section>--}}
-<div class="container" >
+<div class="container">
     <div id="footer" class="row" style="background: ghostwhite;">
         <div class="col-md-4">
                     <span class="copyright">
@@ -16,9 +16,9 @@
         <div class="col-md-4">
             <ul class="list-inline social-buttons">
                 {{--<li class="list-inline-item">--}}
-                    {{--<a target="_blank" href="#">--}}
-                        {{--<i class="fa fa-twitter"></i>--}}
-                    {{--</a>--}}
+                {{--<a target="_blank" href="#">--}}
+                {{--<i class="fa fa-twitter"></i>--}}
+                {{--</a>--}}
                 {{--</li>--}}
                 <li class="list-inline-item">
                     <a target="_blank" href="https://www.facebook.com/IIUCTMD/">
@@ -26,21 +26,21 @@
                     </a>
                 </li>
                 {{--<li class="list-inline-item">--}}
-                    {{--<a target="_blank" href="#">--}}
-                        {{--<i class="fa fa-linkedin"></i>--}}
-                    {{--</a>--}}
+                {{--<a target="_blank" href="#">--}}
+                {{--<i class="fa fa-linkedin"></i>--}}
+                {{--</a>--}}
                 {{--</li>--}}
             </ul>
         </div>
         {{--<div class="col-md-4">--}}
-            {{--<ul class="list-inline quicklinks">--}}
-                {{--<li class="list-inline-item">--}}
-                    {{--<a target="_blank" href="#">Privacy Policy</a>--}}
-                {{--</li>--}}
-                {{--<li class="list-inline-item">--}}
-                    {{--<a target="_blank" href="#">Terms of Use</a>--}}
-                {{--</li>--}}
-            {{--</ul>--}}
+        {{--<ul class="list-inline quicklinks">--}}
+        {{--<li class="list-inline-item">--}}
+        {{--<a target="_blank" href="#">Privacy Policy</a>--}}
+        {{--</li>--}}
+        {{--<li class="list-inline-item">--}}
+        {{--<a target="_blank" href="#">Terms of Use</a>--}}
+        {{--</li>--}}
+        {{--</ul>--}}
         {{--</div>--}}
     </div>
 </div>

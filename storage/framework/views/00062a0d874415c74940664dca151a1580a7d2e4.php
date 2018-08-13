@@ -23,16 +23,16 @@
                 <!-- <li class="nav-item"><a class="nav-link" href="/admin">Admin Panel</a></li>
                 <li class="nav-item"><a class="nav-link" href="/test">Test</a></li>
                  -->
-                
-                    
-                       
-                    
-                        
-                        
-                        
-                    
-                
-                <!-- <li class="nav-item"><a class="nav-link" data-toggle="modal" href="#exampleModal1">Login</a></li> -->
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            <!-- <li class="nav-item"><a class="nav-link" data-toggle="modal" href="#exampleModal1">Login</a></li> -->
                 <?php if(auth()->guard()->guest()): ?>
                     <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
 
