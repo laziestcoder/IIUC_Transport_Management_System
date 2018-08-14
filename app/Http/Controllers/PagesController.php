@@ -33,7 +33,10 @@ class PagesController extends Controller
 
         //Next Bus
         $times = Time::where('time', '>=', $now)->orderBy('time')->get();
-        $todayid = Day::where('dayname', $today)->first()->id;
+        $todayid = Day::where('dayname', $today)->first();
+        if($todayid){
+            $todayid = $todayid->id;
+        }
 
 //        if ($now >= $theTime){
 //            $today = Carbon::tomorrow()->format('l');
