@@ -5,8 +5,8 @@ Phone: {{$phone}}<br>
 <br>
 Hello Admin,
 <br>
-<br>   
-  {{$msg}} 
+<br>
+{{$msg}}
 <br>
 <br>
 <br>

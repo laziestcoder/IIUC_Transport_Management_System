@@ -2778,8 +2778,8 @@
                      * @example
                      *
                      * function square(n) {
-     *   return n * n;
-     * }
+                     *   return n * n;
+                     * }
                      *
                      * var wrapped = _([1, 2, 3]);
                      *
@@ -9013,8 +9013,8 @@
                      *
                      * var array = [1, 2, 3, 4];
                      * var evens = _.remove(array, function(n) {
-     *   return n % 2 == 0;
-     * });
+                     *   return n % 2 == 0;
+                     * });
                      *
                      * console.log(array);
                      * // => [1, 3]
@@ -9869,8 +9869,8 @@
                      * @example
                      *
                      * _.zipWith([1, 2], [10, 20], [100, 200], function(a, b, c) {
-     *   return a + b + c;
-     * });
+                     *   return a + b + c;
+                     * });
                      * // => [111, 222]
                      */
                     var zipWith = baseRest(function (arrays) {
@@ -9906,8 +9906,8 @@
                      *   .chain(users)
                      *   .sortBy('age')
                      *   .map(function(o) {
-     *     return o.user + ' is ' + o.age;
-     *   })
+                     *     return o.user + ' is ' + o.age;
+                     *   })
                      *   .head()
                      *   .value();
                      * // => 'pebbles is 1'
@@ -9934,9 +9934,9 @@
                      *
                      * _([1, 2, 3])
                      *  .tap(function(array) {
-     *    // Mutate input array.
-     *    array.pop();
-     *  })
+                     *    // Mutate input array.
+                     *    array.pop();
+                     *  })
                      *  .reverse()
                      *  .value();
                      * // => [2, 1]
@@ -9964,8 +9964,8 @@
                      *  .chain()
                      *  .trim()
                      *  .thru(function(value) {
-     *    return [value];
-     *  })
+                     *    return [value];
+                     *  })
                      *  .value();
                      * // => ['abc']
                      */
@@ -10142,8 +10142,8 @@
                      * @example
                      *
                      * function square(n) {
-     *   return n * n;
-     * }
+                     *   return n * n;
+                     * }
                      *
                      * var wrapped = _([1, 2]).map(square);
                      * var other = wrapped.plant([3, 4]);
@@ -10406,8 +10406,8 @@
                      * @example
                      *
                      * _.findLast([1, 2, 3, 4], function(n) {
-     *   return n % 2 == 1;
-     * });
+                     *   return n % 2 == 1;
+                     * });
                      * // => 3
                      */
                     var findLast = createFind(findLastIndex);
@@ -10427,8 +10427,8 @@
                      * @example
                      *
                      * function duplicate(n) {
-     *   return [n, n];
-     * }
+                     *   return [n, n];
+                     * }
                      *
                      * _.flatMap([1, 2], duplicate);
                      * // => [1, 1, 2, 2]
@@ -10451,8 +10451,8 @@
                      * @example
                      *
                      * function duplicate(n) {
-     *   return [[[n, n]]];
-     * }
+                     *   return [[[n, n]]];
+                     * }
                      *
                      * _.flatMapDeep([1, 2], duplicate);
                      * // => [1, 1, 2, 2]
@@ -10476,8 +10476,8 @@
                      * @example
                      *
                      * function duplicate(n) {
-     *   return [[[n, n]]];
-     * }
+                     *   return [[[n, n]]];
+                     * }
                      *
                      * _.flatMapDepth([1, 2], duplicate, 2);
                      * // => [[1, 1], [2, 2]]
@@ -10508,13 +10508,13 @@
                      * @example
                      *
                      * _.forEach([1, 2], function(value) {
-     *   console.log(value);
-     * });
+                     *   console.log(value);
+                     * });
                      * // => Logs `1` then `2`.
                      *
                      * _.forEach({ 'a': 1, 'b': 2 }, function(value, key) {
-     *   console.log(key);
-     * });
+                     *   console.log(key);
+                     * });
                      * // => Logs 'a' then 'b' (iteration order is not guaranteed).
                      */
                     function forEach(collection, iteratee) {
@@ -10538,8 +10538,8 @@
                      * @example
                      *
                      * _.forEachRight([1, 2], function(value) {
-     *   console.log(value);
-     * });
+                     *   console.log(value);
+                     * });
                      * // => Logs `2` then `1`.
                      */
                     function forEachRight(collection, iteratee) {
@@ -10676,8 +10676,8 @@
                      * ];
                      *
                      * _.keyBy(array, function(o) {
-     *   return String.fromCharCode(o.code);
-     * });
+                     *   return String.fromCharCode(o.code);
+                     * });
                      * // => { 'a': { 'dir': 'left', 'code': 97 }, 'd': { 'dir': 'right', 'code': 100 } }
                      *
                      * _.keyBy(array, 'dir');
@@ -10711,8 +10711,8 @@
                      * @example
                      *
                      * function square(n) {
-     *   return n * n;
-     * }
+                     *   return n * n;
+                     * }
                      *
                      * _.map([4, 8], square);
                      * // => [16, 64]
@@ -10846,14 +10846,14 @@
                      * @example
                      *
                      * _.reduce([1, 2], function(sum, n) {
-     *   return sum + n;
-     * }, 0);
+                     *   return sum + n;
+                     * }, 0);
                      * // => 3
                      *
                      * _.reduce({ 'a': 1, 'b': 2, 'c': 1 }, function(result, value, key) {
-     *   (result[value] || (result[value] = [])).push(key);
-     *   return result;
-     * }, {});
+                     *   (result[value] || (result[value] = [])).push(key);
+                     *   return result;
+                     * }, {});
                      * // => { '1': ['a', 'c'], '2': ['b'] } (iteration order is not guaranteed)
                      */
                     function reduce(collection, iteratee, accumulator) {
@@ -10881,8 +10881,8 @@
                      * var array = [[0, 1], [2, 3], [4, 5]];
                      *
                      * _.reduceRight(array, function(flattened, other) {
-     *   return flattened.concat(other);
-     * }, []);
+                     *   return flattened.concat(other);
+                     * }, []);
                      * // => [4, 5, 2, 3, 0, 1]
                      */
                     function reduceRight(collection, iteratee, accumulator) {
@@ -11135,8 +11135,8 @@
                      * @example
                      *
                      * _.defer(function(stamp) {
-     *   console.log(_.now() - stamp);
-     * }, _.now());
+                     *   console.log(_.now() - stamp);
+                     * }, _.now());
                      * // => Logs the number of milliseconds it took for the deferred invocation.
                      */
                     var now = ctxNow || function () {
@@ -11161,12 +11161,12 @@
                      * var saves = ['profile', 'settings'];
                      *
                      * var done = _.after(saves.length, function() {
-     *   console.log('done saving!');
-     * });
+                     *   console.log('done saving!');
+                     * });
                      *
                      * _.forEach(saves, function(type) {
-     *   asyncSave({ 'type': type, 'complete': done });
-     * });
+                     *   asyncSave({ 'type': type, 'complete': done });
+                     * });
                      * // => Logs 'done saving!' after the two async saves have completed.
                      */
                     function after(n, func) {
@@ -11259,8 +11259,8 @@
                      * @example
                      *
                      * function greet(greeting, punctuation) {
-     *   return greeting + ' ' + this.user + punctuation;
-     * }
+                     *   return greeting + ' ' + this.user + punctuation;
+                     * }
                      *
                      * var object = { 'user': 'fred' };
                      *
@@ -11305,19 +11305,19 @@
                      * @example
                      *
                      * var object = {
-     *   'user': 'fred',
-     *   'greet': function(greeting, punctuation) {
-     *     return greeting + ' ' + this.user + punctuation;
-     *   }
-     * };
+                     *   'user': 'fred',
+                     *   'greet': function(greeting, punctuation) {
+                     *     return greeting + ' ' + this.user + punctuation;
+                     *   }
+                     * };
                      *
                      * var bound = _.bindKey(object, 'greet', 'hi');
                      * bound('!');
                      * // => 'hi fred!'
                      *
                      * object.greet = function(greeting, punctuation) {
-     *   return greeting + 'ya ' + this.user + punctuation;
-     * };
+                     *   return greeting + 'ya ' + this.user + punctuation;
+                     * };
                      *
                      * bound('!');
                      * // => 'hiya fred!'
@@ -11359,8 +11359,8 @@
                      * @example
                      *
                      * var abc = function(a, b, c) {
-     *   return [a, b, c];
-     * };
+                     *   return [a, b, c];
+                     * };
                      *
                      * var curried = _.curry(abc);
                      *
@@ -11404,8 +11404,8 @@
                      * @example
                      *
                      * var abc = function(a, b, c) {
-     *   return [a, b, c];
-     * };
+                     *   return [a, b, c];
+                     * };
                      *
                      * var curried = _.curryRight(abc);
                      *
@@ -11471,9 +11471,9 @@
                      *
                      * // Invoke `sendMail` when clicked, debouncing subsequent calls.
                      * jQuery(element).on('click', _.debounce(sendMail, 300, {
-     *   'leading': true,
-     *   'trailing': false
-     * }));
+                     *   'leading': true,
+                     *   'trailing': false
+                     * }));
                      *
                      * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
                      * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
@@ -11622,8 +11622,8 @@
                      * @example
                      *
                      * _.defer(function(text) {
-     *   console.log(text);
-     * }, 'deferred');
+                     *   console.log(text);
+                     * }, 'deferred');
                      * // => Logs 'deferred' after one millisecond.
                      */
                     var defer = baseRest(function (func, args) {
@@ -11645,8 +11645,8 @@
                      * @example
                      *
                      * _.delay(function(text) {
-     *   console.log(text);
-     * }, 1000, 'later');
+                     *   console.log(text);
+                     * }, 1000, 'later');
                      * // => Logs 'later' after one second.
                      */
                     var delay = baseRest(function (func, wait, args) {
@@ -11665,8 +11665,8 @@
                      * @example
                      *
                      * var flipped = _.flip(function() {
-     *   return _.toArray(arguments);
-     * });
+                     *   return _.toArray(arguments);
+                     * });
                      *
                      * flipped('a', 'b', 'c', 'd');
                      * // => ['d', 'c', 'b', 'a']
@@ -11756,8 +11756,8 @@
                      * @example
                      *
                      * function isEven(n) {
-     *   return n % 2 == 0;
-     * }
+                     *   return n % 2 == 0;
+                     * }
                      *
                      * _.filter([1, 2, 3, 4, 5, 6], _.negate(isEven));
                      * // => [1, 3, 5]
@@ -11818,16 +11818,16 @@
                      * @example
                      *
                      * function doubled(n) {
-     *   return n * 2;
-     * }
+                     *   return n * 2;
+                     * }
                      *
                      * function square(n) {
-     *   return n * n;
-     * }
+                     *   return n * n;
+                     * }
                      *
                      * var func = _.overArgs(function(x, y) {
-     *   return [x, y];
-     * }, [square, doubled]);
+                     *   return [x, y];
+                     * }, [square, doubled]);
                      *
                      * func(9, 3);
                      * // => [81, 6]
@@ -11873,8 +11873,8 @@
                      * @example
                      *
                      * function greet(greeting, name) {
-     *   return greeting + ' ' + name;
-     * }
+                     *   return greeting + ' ' + name;
+                     * }
                      *
                      * var sayHelloTo = _.partial(greet, 'hello');
                      * sayHelloTo('fred');
@@ -11910,8 +11910,8 @@
                      * @example
                      *
                      * function greet(greeting, name) {
-     *   return greeting + ' ' + name;
-     * }
+                     *   return greeting + ' ' + name;
+                     * }
                      *
                      * var greetFred = _.partialRight(greet, 'fred');
                      * greetFred('hi');
@@ -11943,8 +11943,8 @@
                      * @example
                      *
                      * var rearged = _.rearg(function(a, b, c) {
-     *   return [a, b, c];
-     * }, [2, 0, 1]);
+                     *   return [a, b, c];
+                     * }, [2, 0, 1]);
                      *
                      * rearged('b', 'c', 'a')
                      * // => ['a', 'b', 'c']
@@ -11971,9 +11971,9 @@
                      * @example
                      *
                      * var say = _.rest(function(what, names) {
-     *   return what + ' ' + _.initial(names).join(', ') +
-     *     (_.size(names) > 1 ? ', & ' : '') + _.last(names);
-     * });
+                     *   return what + ' ' + _.initial(names).join(', ') +
+                     *     (_.size(names) > 1 ? ', & ' : '') + _.last(names);
+                     * });
                      *
                      * say('hello', 'fred', 'barney', 'pebbles');
                      * // => 'hello fred, barney, & pebbles'
@@ -12004,8 +12004,8 @@
                      * @example
                      *
                      * var say = _.spread(function(who, what) {
-     *   return who + ' says ' + what;
-     * });
+                     *   return who + ' says ' + what;
+                     * });
                      *
                      * say(['fred', 'hello']);
                      * // => 'fred says hello'
@@ -12016,8 +12016,8 @@
                      * ]);
                      *
                      * numbers.then(_.spread(function(x, y) {
-     *   return x + y;
-     * }));
+                     *   return x + y;
+                     * }));
                      * // => a Promise of 76
                      */
                     function spread(func, start) {
@@ -12133,8 +12133,8 @@
                      * @example
                      *
                      * var p = _.wrap(_.escape, function(func, text) {
-     *   return '<p>' + func(text) + '</p>';
-     * });
+                     *   return '<p>' + func(text) + '</p>';
+                     * });
                      *
                      * p('fred, barney, & pebbles');
                      * // => '<p>fred, barney, &amp; pebbles</p>'
@@ -12233,10 +12233,10 @@
                      * @example
                      *
                      * function customizer(value) {
-     *   if (_.isElement(value)) {
-     *     return value.cloneNode(false);
-     *   }
-     * }
+                     *   if (_.isElement(value)) {
+                     *     return value.cloneNode(false);
+                     *   }
+                     * }
                      *
                      * var el = _.cloneWith(document.body, customizer);
                      *
@@ -12288,10 +12288,10 @@
                      * @example
                      *
                      * function customizer(value) {
-     *   if (_.isElement(value)) {
-     *     return value.cloneNode(true);
-     *   }
-     * }
+                     *   if (_.isElement(value)) {
+                     *     return value.cloneNode(true);
+                     *   }
+                     * }
                      *
                      * var el = _.cloneDeepWith(document.body, customizer);
                      *
@@ -12737,14 +12737,14 @@
                      * @example
                      *
                      * function isGreeting(value) {
-     *   return /^h(?:i|ello)$/.test(value);
-     * }
+                     *   return /^h(?:i|ello)$/.test(value);
+                     * }
                      *
                      * function customizer(objValue, othValue) {
-     *   if (isGreeting(objValue) && isGreeting(othValue)) {
-     *     return true;
-     *   }
-     * }
+                     *   if (isGreeting(objValue) && isGreeting(othValue)) {
+                     *     return true;
+                     *   }
+                     * }
                      *
                      * var array = ['hello', 'goodbye'];
                      * var other = ['hi', 'goodbye'];
@@ -13029,14 +13029,14 @@
                      * @example
                      *
                      * function isGreeting(value) {
-     *   return /^h(?:i|ello)$/.test(value);
-     * }
+                     *   return /^h(?:i|ello)$/.test(value);
+                     * }
                      *
                      * function customizer(objValue, srcValue) {
-     *   if (isGreeting(objValue) && isGreeting(srcValue)) {
-     *     return true;
-     *   }
-     * }
+                     *   if (isGreeting(objValue) && isGreeting(srcValue)) {
+                     *     return true;
+                     *   }
+                     * }
                      *
                      * var object = { 'greeting': 'hello' };
                      * var source = { 'greeting': 'hi' };
@@ -13206,8 +13206,8 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     * }
+                     *   this.a = 1;
+                     * }
                      *
                      * _.isPlainObject(new Foo);
                      * // => false
@@ -13676,8 +13676,8 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.b = 2;
-     * }
+                     *   this.b = 2;
+                     * }
                      *
                      * Foo.prototype.c = 3;
                      *
@@ -13767,12 +13767,12 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     * }
+                     *   this.a = 1;
+                     * }
                      *
                      * function Bar() {
-     *   this.c = 3;
-     * }
+                     *   this.c = 3;
+                     * }
                      *
                      * Foo.prototype.b = 2;
                      * Bar.prototype.d = 4;
@@ -13810,12 +13810,12 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     * }
+                     *   this.a = 1;
+                     * }
                      *
                      * function Bar() {
-     *   this.c = 3;
-     * }
+                     *   this.c = 3;
+                     * }
                      *
                      * Foo.prototype.b = 2;
                      * Bar.prototype.d = 4;
@@ -13848,8 +13848,8 @@
                      * @example
                      *
                      * function customizer(objValue, srcValue) {
-     *   return _.isUndefined(objValue) ? srcValue : objValue;
-     * }
+                     *   return _.isUndefined(objValue) ? srcValue : objValue;
+                     * }
                      *
                      * var defaults = _.partialRight(_.assignInWith, customizer);
                      *
@@ -13880,8 +13880,8 @@
                      * @example
                      *
                      * function customizer(objValue, srcValue) {
-     *   return _.isUndefined(objValue) ? srcValue : objValue;
-     * }
+                     *   return _.isUndefined(objValue) ? srcValue : objValue;
+                     * }
                      *
                      * var defaults = _.partialRight(_.assignWith, customizer);
                      *
@@ -13926,17 +13926,17 @@
                      * @example
                      *
                      * function Shape() {
-     *   this.x = 0;
-     *   this.y = 0;
-     * }
+                     *   this.x = 0;
+                     *   this.y = 0;
+                     * }
                      *
                      * function Circle() {
-     *   Shape.call(this);
-     * }
+                     *   Shape.call(this);
+                     * }
                      *
                      * Circle.prototype = _.create(Shape.prototype, {
-     *   'constructor': Circle
-     * });
+                     *   'constructor': Circle
+                     * });
                      *
                      * var circle = new Circle;
                      * circle instanceof Circle;
@@ -14041,10 +14041,10 @@
                      * @example
                      *
                      * var users = {
-     *   'barney':  { 'age': 36, 'active': true },
-     *   'fred':    { 'age': 40, 'active': false },
-     *   'pebbles': { 'age': 1,  'active': true }
-     * };
+                     *   'barney':  { 'age': 36, 'active': true },
+                     *   'fred':    { 'age': 40, 'active': false },
+                     *   'pebbles': { 'age': 1,  'active': true }
+                     * };
                      *
                      * _.findKey(users, function(o) { return o.age < 40; });
                      * // => 'barney' (iteration order is not guaranteed)
@@ -14080,10 +14080,10 @@
                      * @example
                      *
                      * var users = {
-     *   'barney':  { 'age': 36, 'active': true },
-     *   'fred':    { 'age': 40, 'active': false },
-     *   'pebbles': { 'age': 1,  'active': true }
-     * };
+                     *   'barney':  { 'age': 36, 'active': true },
+                     *   'fred':    { 'age': 40, 'active': false },
+                     *   'pebbles': { 'age': 1,  'active': true }
+                     * };
                      *
                      * _.findLastKey(users, function(o) { return o.age < 40; });
                      * // => returns 'pebbles' assuming `_.findKey` returns 'barney'
@@ -14121,15 +14121,15 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     *   this.b = 2;
-     * }
+                     *   this.a = 1;
+                     *   this.b = 2;
+                     * }
                      *
                      * Foo.prototype.c = 3;
                      *
                      * _.forIn(new Foo, function(value, key) {
-     *   console.log(key);
-     * });
+                     *   console.log(key);
+                     * });
                      * // => Logs 'a', 'b', then 'c' (iteration order is not guaranteed).
                      */
                     function forIn(object, iteratee) {
@@ -14153,15 +14153,15 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     *   this.b = 2;
-     * }
+                     *   this.a = 1;
+                     *   this.b = 2;
+                     * }
                      *
                      * Foo.prototype.c = 3;
                      *
                      * _.forInRight(new Foo, function(value, key) {
-     *   console.log(key);
-     * });
+                     *   console.log(key);
+                     * });
                      * // => Logs 'c', 'b', then 'a' assuming `_.forIn` logs 'a', 'b', then 'c'.
                      */
                     function forInRight(object, iteratee) {
@@ -14187,15 +14187,15 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     *   this.b = 2;
-     * }
+                     *   this.a = 1;
+                     *   this.b = 2;
+                     * }
                      *
                      * Foo.prototype.c = 3;
                      *
                      * _.forOwn(new Foo, function(value, key) {
-     *   console.log(key);
-     * });
+                     *   console.log(key);
+                     * });
                      * // => Logs 'a' then 'b' (iteration order is not guaranteed).
                      */
                     function forOwn(object, iteratee) {
@@ -14217,15 +14217,15 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     *   this.b = 2;
-     * }
+                     *   this.a = 1;
+                     *   this.b = 2;
+                     * }
                      *
                      * Foo.prototype.c = 3;
                      *
                      * _.forOwnRight(new Foo, function(value, key) {
-     *   console.log(key);
-     * });
+                     *   console.log(key);
+                     * });
                      * // => Logs 'b' then 'a' assuming `_.forOwn` logs 'a' then 'b'.
                      */
                     function forOwnRight(object, iteratee) {
@@ -14246,9 +14246,9 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = _.constant('a');
-     *   this.b = _.constant('b');
-     * }
+                     *   this.a = _.constant('a');
+                     *   this.b = _.constant('b');
+                     * }
                      *
                      * Foo.prototype.c = _.constant('c');
                      *
@@ -14273,9 +14273,9 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = _.constant('a');
-     *   this.b = _.constant('b');
-     * }
+                     *   this.a = _.constant('a');
+                     *   this.b = _.constant('b');
+                     * }
                      *
                      * Foo.prototype.c = _.constant('c');
                      *
@@ -14426,8 +14426,8 @@
                      * // => { '1': ['a', 'c'], '2': ['b'] }
                      *
                      * _.invertBy(object, function(value) {
-     *   return 'group' + value;
-     * });
+                     *   return 'group' + value;
+                     * });
                      * // => { 'group1': ['a', 'c'], 'group2': ['b'] }
                      */
                     var invertBy = createInverter(function (result, value, key) {
@@ -14479,9 +14479,9 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     *   this.b = 2;
-     * }
+                     *   this.a = 1;
+                     *   this.b = 2;
+                     * }
                      *
                      * Foo.prototype.c = 3;
                      *
@@ -14509,9 +14509,9 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     *   this.b = 2;
-     * }
+                     *   this.a = 1;
+                     *   this.b = 2;
+                     * }
                      *
                      * Foo.prototype.c = 3;
                      *
@@ -14539,8 +14539,8 @@
                      * @example
                      *
                      * _.mapKeys({ 'a': 1, 'b': 2 }, function(value, key) {
-     *   return key + value;
-     * });
+                     *   return key + value;
+                     * });
                      * // => { 'a1': 1, 'b2': 2 }
                      */
                     function mapKeys(object, iteratee) {
@@ -14570,9 +14570,9 @@
                      * @example
                      *
                      * var users = {
-     *   'fred':    { 'user': 'fred',    'age': 40 },
-     *   'pebbles': { 'user': 'pebbles', 'age': 1 }
-     * };
+                     *   'fred':    { 'user': 'fred',    'age': 40 },
+                     *   'pebbles': { 'user': 'pebbles', 'age': 1 }
+                     * };
                      *
                      * _.mapValues(users, function(o) { return o.age; });
                      * // => { 'fred': 40, 'pebbles': 1 } (iteration order is not guaranteed)
@@ -14612,12 +14612,12 @@
                      * @example
                      *
                      * var object = {
-     *   'a': [{ 'b': 2 }, { 'd': 4 }]
-     * };
+                     *   'a': [{ 'b': 2 }, { 'd': 4 }]
+                     * };
                      *
                      * var other = {
-     *   'a': [{ 'c': 3 }, { 'e': 5 }]
-     * };
+                     *   'a': [{ 'c': 3 }, { 'e': 5 }]
+                     * };
                      *
                      * _.merge(object, other);
                      * // => { 'a': [{ 'b': 2, 'c': 3 }, { 'd': 4, 'e': 5 }] }
@@ -14646,10 +14646,10 @@
                      * @example
                      *
                      * function customizer(objValue, srcValue) {
-     *   if (_.isArray(objValue)) {
-     *     return objValue.concat(srcValue);
-     *   }
-     * }
+                     *   if (_.isArray(objValue)) {
+                     *     return objValue.concat(srcValue);
+                     *   }
+                     * }
                      *
                      * var object = { 'a': [1], 'b': [2] };
                      * var other = { 'a': [3], 'b': [4] };
@@ -14906,9 +14906,9 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     *   this.b = 2;
-     * }
+                     *   this.a = 1;
+                     *   this.b = 2;
+                     * }
                      *
                      * Foo.prototype.c = 3;
                      *
@@ -14932,9 +14932,9 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     *   this.b = 2;
-     * }
+                     *   this.a = 1;
+                     *   this.b = 2;
+                     * }
                      *
                      * Foo.prototype.c = 3;
                      *
@@ -14963,14 +14963,14 @@
                      * @example
                      *
                      * _.transform([2, 3, 4], function(result, n) {
-     *   result.push(n *= n);
-     *   return n % 2 == 0;
-     * }, []);
+                     *   result.push(n *= n);
+                     *   return n % 2 == 0;
+                     * }, []);
                      * // => [4, 9]
                      *
                      * _.transform({ 'a': 1, 'b': 2, 'c': 1 }, function(result, value, key) {
-     *   (result[value] || (result[value] = [])).push(key);
-     * }, {});
+                     *   (result[value] || (result[value] = [])).push(key);
+                     * }, {});
                      * // => { '1': ['a', 'c'], '2': ['b'] }
                      */
                     function transform(object, iteratee, accumulator) {
@@ -15101,9 +15101,9 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     *   this.b = 2;
-     * }
+                     *   this.a = 1;
+                     *   this.b = 2;
+                     * }
                      *
                      * Foo.prototype.c = 3;
                      *
@@ -15132,9 +15132,9 @@
                      * @example
                      *
                      * function Foo() {
-     *   this.a = 1;
-     *   this.b = 2;
-     * }
+                     *   this.a = 1;
+                     *   this.b = 2;
+                     * }
                      *
                      * Foo.prototype.c = 3;
                      *
@@ -15936,10 +15936,10 @@
                      * var compiled = _.template('hi <%= data.user %>!', { 'variable': 'data' });
                      * compiled.source;
                      * // => function(data) {
-     * //   var __t, __p = '';
-     * //   __p += 'hi ' + ((__t = ( data.user )) == null ? '' : __t) + '!';
-     * //   return __p;
-     * // }
+                     * //   var __t, __p = '';
+                     * //   __p += 'hi ' + ((__t = ( data.user )) == null ? '' : __t) + '!';
+                     * //   return __p;
+                     * // }
                      *
                      * // Use custom template delimiters.
                      * _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
@@ -15951,8 +15951,8 @@
                      * // line numbers in error messages and stack traces.
                      * fs.writeFileSync(path.join(process.cwd(), 'jst.js'), '\
                      *   var JST = {\
-     *     "main": ' + _.template(mainText).source + '\
-     *   };\
+                     *     "main": ' + _.template(mainText).source + '\
+                     *   };\
                      * ');
                      */
                     function template(string, options, guard) {
@@ -16238,20 +16238,20 @@
                      * // => 'hi-diddly-ho there, neighbo...'
                      *
                      * _.truncate('hi-diddly-ho there, neighborino', {
-     *   'length': 24,
-     *   'separator': ' '
-     * });
+                     *   'length': 24,
+                     *   'separator': ' '
+                     * });
                      * // => 'hi-diddly-ho there,...'
                      *
                      * _.truncate('hi-diddly-ho there, neighborino', {
-     *   'length': 24,
-     *   'separator': /,? +/
-     * });
+                     *   'length': 24,
+                     *   'separator': /,? +/
+                     * });
                      * // => 'hi-diddly-ho there...'
                      *
                      * _.truncate('hi-diddly-ho there, neighborino', {
-     *   'omission': ' [...]'
-     * });
+                     *   'omission': ' [...]'
+                     * });
                      * // => 'hi-diddly-ho there, neig [...]'
                      */
                     function truncate(string, options) {
@@ -16425,12 +16425,12 @@
                      *
                      * // Avoid throwing errors for invalid selectors.
                      * var elements = _.attempt(function(selector) {
-     *   return document.querySelectorAll(selector);
-     * }, '>_>');
+                     *   return document.querySelectorAll(selector);
+                     * }, '>_>');
                      *
                      * if (_.isError(elements)) {
-     *   elements = [];
-     * }
+                     *   elements = [];
+                     * }
                      */
                     var attempt = baseRest(function (func, args) {
                         try {
@@ -16456,11 +16456,11 @@
                      * @example
                      *
                      * var view = {
-     *   'label': 'docs',
-     *   'click': function() {
-     *     console.log('clicked ' + this.label);
-     *   }
-     * };
+                     *   'label': 'docs',
+                     *   'click': function() {
+                     *     console.log('clicked ' + this.label);
+                     *   }
+                     * };
                      *
                      * _.bindAll(view, ['click']);
                      * jQuery(element).on('click', view.click);
@@ -16617,8 +16617,8 @@
                      * @example
                      *
                      * function square(n) {
-     *   return n * n;
-     * }
+                     *   return n * n;
+                     * }
                      *
                      * var addSquare = _.flow([_.add, square]);
                      * addSquare(1, 2);
@@ -16640,8 +16640,8 @@
                      * @example
                      *
                      * function square(n) {
-     *   return n * n;
-     * }
+                     *   return n * n;
+                     * }
                      *
                      * var addSquare = _.flowRight([square, _.add]);
                      * addSquare(1, 2);
@@ -16703,10 +16703,10 @@
                      *
                      * // Create custom iteratee shorthands.
                      * _.iteratee = _.wrap(_.iteratee, function(iteratee, func) {
-     *   return !_.isRegExp(func) ? iteratee(func) : function(string) {
-     *     return func.test(string);
-     *   };
-     * });
+                     *   return !_.isRegExp(func) ? iteratee(func) : function(string) {
+                     *     return func.test(string);
+                     *   };
+                     * });
                      *
                      * _.filter(['abc', 'def'], /ef/);
                      * // => ['def']
@@ -16856,10 +16856,10 @@
                      * @example
                      *
                      * function vowels(string) {
-     *   return _.filter(string, function(v) {
-     *     return /[aeiou]/i.test(v);
-     *   });
-     * }
+                     *   return _.filter(string, function(v) {
+                     *     return /[aeiou]/i.test(v);
+                     *   });
+                     * }
                      *
                      * _.mixin({ 'vowels': vowels });
                      * _.vowels('fred');
@@ -25564,7 +25564,7 @@
             jQuery.speed = function (speed, easing, fn) {
                 var opt = speed && typeof speed === "object" ? jQuery.extend({}, speed) : {
                     complete: fn || !fn && easing ||
-                    isFunction(speed) && speed,
+                        isFunction(speed) && speed,
                     duration: speed,
                     easing: fn && easing || easing && !isFunction(easing) && easing
                 };
@@ -27947,7 +27947,7 @@
             jQuery.ajaxSetup({
                 accepts: {
                     script: "text/javascript, application/javascript, " +
-                    "application/ecmascript, application/x-ecmascript"
+                        "application/ecmascript, application/x-ecmascript"
                 },
                 contents: {
                     script: /\b(?:java|ecma)script\b/

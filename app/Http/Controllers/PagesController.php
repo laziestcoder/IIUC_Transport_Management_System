@@ -9,10 +9,9 @@ use App\Notice;
 use App\Schedule;
 use App\Time;
 use Carbon\Carbon;
-use Mail;
 use DB;
 use Illuminate\Http\Request;
-
+use Mail;
 
 
 class PagesController extends Controller
@@ -34,8 +33,10 @@ class PagesController extends Controller
         //Next Bus
         $times = Time::where('time', '>=', $now)->orderBy('time')->get();
         $todayid = Day::where('dayname', $today)->first();
-        if($todayid){
+        if ($todayid) {
             $todayid = $todayid->id;
+        } else {
+            $todayid = 0;
         }
 
 //        if ($now >= $theTime){
@@ -50,18 +51,18 @@ class PagesController extends Controller
                 foreach ($times as $time) {
 //                    $check = Time::where('id', $time->id)->where($direction,1)->get();
 //                    if($check) {
-                        $nowid = $time->id;
-                        $route = Schedule::where('day', $todayid)
-                            ->where('time', $nowid)
-                            ->where($direction, 1)
-                            ->where($gender, 1)
-                            ->first();
-                        if ($route == true) {
-                            return $route;
-                            //return var_dump($route);
-                        }
+                    $nowid = $time->id;
+                    $route = Schedule::where('day', $todayid)
+                        ->where('time', $nowid)
+                        ->where($direction, 1)
+                        ->where($gender, 1)
+                        ->first();
+                    if ($route == true) {
+                        return $route;
+                        //return var_dump($route);
                     }
-                    return false;
+                }
+                return false;
 //                }
 //                return false;
             }
@@ -88,7 +89,7 @@ class PagesController extends Controller
         //var_dump($toIIUCMaleSchedule !== false);
 
 
-        if ($toIIUCMaleSchedule !== false ) //&& $now >= $theTime)
+        if ($toIIUCMaleSchedule !== false) //&& $now >= $theTime)
         {
             $toIIUCRouteM = getRouteName($toIIUCMaleSchedule->route);
             $toIIUCMale = getTime($toIIUCMaleSchedule->time);
@@ -118,8 +119,7 @@ class PagesController extends Controller
         $toIIUCFemaleSchedule = getRoute($times, $todayid, 'toiiuc', 'female');
         //var_dump($toIIUCFemaleSchedule !== false);
 
-        if ($fromIIUCMaleSchedule !== false && $now <= "12:00:00")
-        {
+        if ($fromIIUCMaleSchedule !== false && $now <= "12:00:00") {
             $toIIUCRouteF = getRouteName($toIIUCFemaleSchedule->route);
             $toIIUCFemale = getTime($toIIUCFemaleSchedule->time);
         } else {
@@ -132,8 +132,7 @@ class PagesController extends Controller
         $fromIIUCFemaleSchedule = getRoute($times, $todayid, 'fromiiuc', 'female');
         //var_dump($fromIIUCFemaleSchedule !== false);
 
-        if ($fromIIUCFemaleSchedule !== false && $now <= "2:30:00")
-        {
+        if ($fromIIUCFemaleSchedule !== false && $now <= "2:30:00") {
             $fromIIUCRouteF = getRouteName($fromIIUCFemaleSchedule->route);
             $toCityFemale = getTime($fromIIUCFemaleSchedule->time);
         } else {
@@ -144,7 +143,11 @@ class PagesController extends Controller
         // Todays Schedule
         $day = Day::where('dayname', $today)->first();
         $timeAll = Time::orderBy('time')->get();
-        $schedules = Schedule::where('day', $day->id)->get();
+        if ($day) {
+            $schedules = Schedule::where('day', $day->id)->get();
+        } else {
+            $schedules = null;
+        }
         //$males = Schedule::where('male','1');
         //$females = Schedule::where('female','1');
 
@@ -198,25 +201,25 @@ class PagesController extends Controller
     // Report
     public function report(Request $request)
     {
-        $this->validate($request ,[
-            'name' => 'required|string', 
+        $this->validate($request, [
+            'name' => 'required|string',
             'email' => 'required',
             'phone' => 'required',
-            'message' => 'required|string', 
+            'message' => 'required|string',
         ]);
 
-        Mail::send('mails.report',[
+        Mail::send('mails.report', [
             'msg' => $request->message,
             'phone' => $request->phone,
             'email' => $request->email,
             'name' => $request->name,
-        ], function($mail) use($request) {
-            $mail->from( $request->email, $request->name);
-            $mail->to('towfiq.projects@gmail.com','IIUC TMD')->subject('Report Message From ITMS'); 
+        ], function ($mail) use ($request) {
+            $mail->from($request->email, $request->name);
+            $mail->to('towfiq.projects@gmail.com', 'IIUC TMD')->subject('Report Message From ITMS');
         });
-        
-        return redirect('/#contact')->with('success_flash_message', $request->name.', Thank you for your message.');
-        
+
+        return redirect('/#contact')->with('success_flash_message', $request->name . ', Thank you for your message.');
+
         //dd($request->all());
 
         //return view('mails.report');

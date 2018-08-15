@@ -24,12 +24,12 @@
 
             </small>
         </h1>
-    <br>
+        <br>
         <a href="/admin/auth/notices/create" class="btn btn-facebook">New Notice</a>
 
-    
+        
         <br><br>
-    
+        
         <?php if(count($notices) > 0): ?>
             <?php $count = 0; ?>
             <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>

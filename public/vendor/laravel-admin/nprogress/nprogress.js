@@ -35,8 +35,8 @@
      * Updates configuration.
      *
      *     NProgress.configure({
-   *       minimum: 0.1
-   *     });
+     *       minimum: 0.1
+     *     });
      */
     NProgress.configure = function (options) {
         var key, value;

@@ -212,7 +212,7 @@ class NoticesController extends Controller
 
         //Check for correct user
 
-        if ((Admin::user()->id == $notice->user_id)||(DB::table('admin_role_users')->where('user_id',(Admin::user()->id))->first()->role_id <= 4)) {
+        if ((Admin::user()->id == $notice->user_id) || (DB::table('admin_role_users')->where('user_id', (Admin::user()->id))->first()->role_id <= 4)) {
             if ($notice->cover_image != 'noimage.jpeg') {
                 //Delete Image From Windows Directory
                 Storage::delete('public/cover_images/' . $notice->cover_image);

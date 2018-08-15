@@ -116,33 +116,40 @@ class ScheduleController extends Controller
             'route' => 'required|int',
         ]);
 
-        function dataCheck($day, $route, $time, $male, $female, $toiiuc, $fromiiuc,$user){
-            $data = Schedule::where('day','=',$day)
-                ->where('route','=',$route)
-                ->where('time','=',$time)
-                ->where('male','=',$male)
-                ->where('female','=',$female)
-                ->where('toiiuc','=',$toiiuc)
-                ->where('fromiiuc','=',$fromiiuc)
-                ->where('user','=',$user)
+        function dataCheck($day, $route, $time, $male, $female, $toiiuc, $fromiiuc, $user)
+        {
+            $data = Schedule::where('day', '=', $day)
+                ->where('route', '=', $route)
+                ->where('time', '=', $time)
+                ->where('male', '=', $male)
+                ->where('female', '=', $female)
+                ->where('toiiuc', '=', $toiiuc)
+                ->where('fromiiuc', '=', $fromiiuc)
+                ->where('user', '=', $user)
                 ->get();
-            if(count($data) > 0)
+            if (count($data) > 0)
                 return null;
             else
                 return true;
 
         }
-        $day= $request->input('day'); $route= $request->input('route'); $time= $request->input('time');
-        $male= $request->input('male'); $female= $request->input('female');
-        $toiiuc= $request->input('toiiuc'); $fromiiuc= $request->input('fromiiuc'); $user = $request->input('user');
-        $flag= '';
-        $save= 0;
+
+        $day = $request->input('day');
+        $route = $request->input('route');
+        $time = $request->input('time');
+        $male = $request->input('male');
+        $female = $request->input('female');
+        $toiiuc = $request->input('toiiuc');
+        $fromiiuc = $request->input('fromiiuc');
+        $user = $request->input('user');
+        $flag = '';
+        $save = 0;
 
 
         if ($day == '9') {
             $flag = 'if';
             for ($i = 1; $i <= 5; $i = $i + 1) {
-                if(dataCheck($i, $route, $time, $male, $female, $toiiuc, $fromiiuc,$user) == null){
+                if (dataCheck($i, $route, $time, $male, $female, $toiiuc, $fromiiuc, $user) == null) {
                     continue;
                 }
                 $schedule = new Schedule;
@@ -156,14 +163,14 @@ class ScheduleController extends Controller
                 $schedule->route = $request->input('route');
                 $schedule->user_id = Admin::user()->id;
                 $save = $schedule->save();
-                if($save){
+                if ($save) {
                     $flag .= $save;
                 }
             }
 
         } else {
             $flag = 'else';
-            if(dataCheck($day, $route, $time, $male, $female, $toiiuc, $fromiiuc,$user)==null){
+            if (dataCheck($day, $route, $time, $male, $female, $toiiuc, $fromiiuc, $user) == null) {
                 return redirect('/admin/auth/schedule/create')->with('error', 'Error! Data Exist');
             }
             //Create BusRoute
@@ -248,8 +255,7 @@ class ScheduleController extends Controller
 
         //Check for correct user
 
-        if((Admin::user()->id == $schedule->user_id)||(DB::table('admin_role_users')->where('user_id',(Admin::user()->id))->first()->role_id <= 4))
-        {
+        if ((Admin::user()->id == $schedule->user_id) || (DB::table('admin_role_users')->where('user_id', (Admin::user()->id))->first()->role_id <= 4)) {
 
 
             // Check other Tables if the time is used
@@ -269,8 +275,7 @@ class ScheduleController extends Controller
                 return redirect('/admin/auth/allschedule')->with('success', 'Day > "' . $name . '" Time > "' . $time . '" Route > "' . $route . '"<br>=> Bus Schedule Removed Successfully!');
                 //return redirect('/admin/auth/schedule')->with('success', 'Day '.$name.$time);
             }
-        }
-        else{
+        } else {
             return redirect('/admin/auth/allschedule')->with('error', 'Unauthorized Access Denied!');
 
         }

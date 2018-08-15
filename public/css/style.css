@@ -158,8 +158,13 @@ header.masthead .intro-text {
 
 .userrouteinfo table thead {
     /*float: right;*/
+    background-color: black;
     color: yellow;
     font-weight: bold;
+}
+
+.userrouteinfo tbody tr:hover td {
+    background-color: black;
 }
 
 .userRouteForm {

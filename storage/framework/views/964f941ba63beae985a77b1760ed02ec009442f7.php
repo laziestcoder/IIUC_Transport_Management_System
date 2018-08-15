@@ -36,7 +36,7 @@
 <?php echo $__env->make('common.nav', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 
 <!-- <div class="container"> -->
-<?php echo $__env->make('inc.messages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+
 
 <!-- <div id="main" class="row"> -->
 <?php echo $__env->yieldContent('content'); ?>

@@ -14,39 +14,39 @@
                     <thead class="tableSpace">
                     <tr>
                         <td>
-                            <img src="storage/image/user/{{Auth::user()->image}}"/>
+                            <img src="storage/image/user/{{$user->image}}"/>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            Name: {{Auth::user()->name}}
+                            Name: {!! $user->name !!}
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            ID: {{Auth::user()->jobid}}
+                            ID: {{$user->jobid}}
                         </td>
 
                     </tr>
                     <tr>
                         <td>
-                            Gender: {{Auth::user()->gender == 0 ? 'Male' : 'Female'}}
+                            Gender: {{$user->gender == 0 ? 'Male' : 'Female'}}
                         </td>
                     </tr>
                     <tr>
                         <td>
                             Registered
-                            As: {{Auth::user()->userrole == 1 ? 'Student' : ( Auth::user()->userrole == 2 ? 'Faculty Member' :(Auth::user()->userrole == 3 ? 'Officer/Staff' : 'undefined')) }}
+                            As: {{$user->userrole == 1 ? 'Student' : ( $user->userrole == 2 ? 'Faculty Member' :($user->userrole == 3 ? 'Officer/Staff' : 'undefined')) }}
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            Email: {{Auth::user()->email}}
+                            Email: {{$user->email}}
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            Contact: {{Auth::user()->contact ? Auth::user()->contact : 'none'}}
+                            Contact: {{$user->contact ? $user->contact : 'none'}}
                         </td>
                     </tr>
                     </thead>
@@ -54,10 +54,22 @@
             </div>
         </div>
         <br><br>
-        <div class="container">
+        <div id='transport' class="container">
             <div class="userrouteinfo">
                 <b><h3>Transport Schedule:</h3></b>
                 <hr>
+
+                @if(Session::has('transport_message'))
+                    <div id="success">
+                        <div class="alert alert-success">
+                            <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
+                            <strong>
+                                {{session::get('transport_message')}}
+                            </strong>
+                        </div>
+                    </div>
+                @endif
+
                 <table class="table table-bordered">
                     <thead class="">
                     <tr>
@@ -79,125 +91,83 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>
-                            Saturday
-                        </td>
-                        <td>
-                            Pick Up Point
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            Drop Point
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Sunday
-                        </td>
-                        <td>
-                            Pick Up Point
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            Drop Point
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Monday
-                        </td>
-                        <td>
-                            Pick Up Point
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            Drop Point
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Tuesday
-                        </td>
-                        <td>
-                            Pick Up Point
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            Drop Point
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Wednesday
-                        </td>
-                        <td>
-                            Pick Up Point
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            Drop Point
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Thursday
-                        </td>
-                        <td>
-                            Pick Up Point
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            Drop Point
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Friday
-                        </td>
-                        <td>
-                            Pick Up Point
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            Drop Point
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
+                    @if(count($days) > 0 )
+                        @foreach( $days as $day )
+                            @if( $day->id < 8)
+                                <tr>
+                                    <td>
+                                        {!! $day->dayname !!}
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $place = App\StudentSchedule::where('user_id', $user->id)
+                                            ->where('day', $day->id)->first();
+                                        if ($place) {
+                                            $place = App\BusPoint::where('id', $place->pickpoint)->first();
+                                            if ($place) {
+                                                echo $place->pointname;
+                                            } else {
+                                                echo "Not Selected";
+                                            }
+                                        } else {
+                                            echo "Not Selected";
+                                        }
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $time = App\StudentSchedule::where('user_id', $user->id)
+                                            ->where('day', $day->id)->first();
+                                        if ($time) {
+                                            $time = App\Time::where('id', ($time->picktime))->first();
+                                            if ($time) {
+                                                echo Carbon\Carbon::parse($time->time)->format('g:i A');
+                                            } else {
+                                                echo "Not Selected";
+                                            }
+                                        } else {
+                                            echo "Not Selected";
+                                        }
+
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $place = App\StudentSchedule::where('user_id', $user->id)
+                                            ->where('day', $day->id)->first();
+                                        if ($place) {
+                                            $place = App\BusPoint::where('id', ($place->droppoint))->first();
+                                            if ($place) {
+                                                echo $place->pointname;
+                                            } else {
+                                                echo "Not Selected";
+                                            }
+                                        } else {
+                                            echo "Not Selected";
+                                        }
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $time = App\StudentSchedule::where('user_id', $user->id)
+                                            ->where('day', $day->id)->first();
+                                        if ($time) {
+                                            $time = App\Time::where('id', ($time->droptime))->first();
+                                            if ($time) {
+                                                echo Carbon\Carbon::parse($time->time)->format('g:i A');
+                                            } else {
+                                                echo "Not Selected";
+                                            }
+                                        } else {
+                                            echo "Not Selected";
+                                        }
+                                        ?>
+                                    </td>
+                                </tr>
+                            @endif
+                        @endforeach
+                    @endif
+
 
                     </tbody>
                 </table>

@@ -27,35 +27,35 @@
                     </tr>
                     <tr>
                         <td>
-                            Name: {{Auth::user()->name}}
+                            Name: {{$user->name}}
                         </td>
 
                     </tr>
                     <tr>
                         <td>
-                            ID: {{Auth::user()->jobid}}
+                            ID: {{$user->jobid}}
                         </td>
 
                     </tr>
                     <tr>
                         <td>
-                            Gender: {{Auth::user()->gender == 0 ? 'Male' : 'Female'}}
+                            Gender: {{$user->gender == 0 ? 'Male' : 'Female'}}
                         </td>
                     </tr>
                     <tr>
                         <td>
                             Registered
-                            As: {{Auth::user()->userrole == 1 ? 'Student' : ( Auth::user()->userrole == 2 ? 'Faculty Member' :(Auth::user()->userrole == 3 ? 'Officer/Staff' : 'undefined')) }}
+                            As: {{$user->userrole == 1 ? 'Student' : ( $user->userrole == 2 ? 'Faculty Member' :($user->userrole == 3 ? 'Officer/Staff' : 'undefined')) }}
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            Email: {{Auth::user()->email}}
+                            Email: {{$user->email}}
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            Contact: {{Auth::user()->contact ? Auth::user()->contact : 'none'}}
+                            Contact: {{$user->contact ? $user->contact : 'none'}}
                         </td>
                     </tr>
                     </thead>
@@ -67,8 +67,9 @@
             <div class="userrouteinfo">
                 <b><h3>Transport Schedule</h3></b>
                 <hr>
-                {!! Form :: open(['action' => 'BusPointsController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data' ]) !!}
-                <table class="table table-bordered">
+                {!! Form :: open(['action' => 'ManagementController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data' ]) !!}
+                {{ csrf_field() }}
+                <table class="table table-hover table-bordered">
                     <thead class="">
                     <tr>
                         <td>
@@ -88,323 +89,179 @@
                         </td>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr>
-                        <td>
-                            Saturday
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnamesatp" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnamesatd" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Sunday
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnamesunp" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnamesund" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Monday
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnamemonp" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnamemond" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Tuesday
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnametuep" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnametued" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Wednesday
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnamewedp" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnamewedd" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Thursday
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnamethup" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnamethud" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Friday
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnamefrip" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Pick Up Time
-                        </td>
-                        <td>
-                            <div class="userRouteForm">
-                                @if(count( $BusPoints ) > 0  )
-                                    <select name="pointnamefrid" required="True">
-                                        <option value="" disabled="true" selected="true" required>Select A Point Name
-                                        </option>
-                                        @foreach ($BusPoints as $point)
-                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <select name="pointname">
-                                        <option value="" disabled="true" selected="true">No Point Available</option>
-                                    </select>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            Leaving Time
-                        </td>
-                    </tr>
+                    <tbody class="">
+                    @if( count($days) > 0 )
+                        @foreach($days as $day)
+                            @if($day->id < 8)
+                                <tr>
+                                    <td>
+                                        {!! $day->dayname !!}
+                                    </td>
+                                    <td>
+                                        <div class="userRouteForm">
+                                            @if(count( $BusPoints ) > 0  )
+                                                <select name="pickpoint{{$day->id}}" required="True">
+                                                    <option value="" disabled="true" selected="true">Select A Point
+                                                        Name
+                                                    </option>
+                                                    <option value="0" required>No Need</option>
 
+                                                    <?php
+                                                    $place = App\StudentSchedule::where('user_id', $user->id)
+                                                        ->where('day', $day->id)->first();
+                                                    if ($place) {
+                                                        $place = App\BusPoint::where('id', ($place->pickpoint))->first();
+                                                        if ($place) {
+                                                            $flag = $place->id;
+                                                        } else {
+                                                            $flag = 0;
+                                                        }
+                                                    } else {
+                                                        $flag = 0;
+                                                    }
+                                                    ?>
+                                                    @foreach ($BusPoints as $point)
+                                                        @if($flag == $point->id)
+                                                            <option selected="true"
+                                                                    value="{{$point->id}}">{{$point->pointname}}</option>
+                                                        @else
+                                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            @else
+                                                <select name="pickpoint{{$day->id}}">
+                                                    <option value="" disabled="true" selected="true">No Point
+                                                        Available
+                                                    </option>
+                                                </select>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userRouteForm">
+                                            @if(count( $picktimes ) > 0  )
+                                                <select name="picktime{{$day->id}}" required="True">
+                                                    <option value="" disabled="true" selected="true" required>Select A
+                                                        Time
+                                                    </option>
+                                                    <option value="0" required>No Need</option>
+
+                                                    <?php
+                                                    $time = App\StudentSchedule::where('user_id', $user->id)
+                                                        ->where('day', $day->id)->first();
+                                                    if ($time) {
+                                                        $time = App\Time::where('id', ($time->picktime))->first();
+                                                        if ($time) {
+                                                            $flag = $time->id;
+                                                        } else {
+                                                            $flag = 0;
+                                                        }
+                                                    } else {
+                                                        $flag = 0;
+                                                    }
+                                                    ?>
+                                                    @foreach ($picktimes as $picktime)
+                                                        @if($flag == $picktime->id)
+                                                            <option selected="true"
+                                                                    value="{{$picktime->id}}">{{Carbon\Carbon::parse($picktime->time)->format('g:i A')}}</option>
+                                                        @else
+                                                            <option value="{{$picktime->id}}">{{Carbon\Carbon::parse($picktime->time)->format('g:i A')}}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            @else
+                                                <select name="picktime{{$day->id}}">
+                                                    <option value="" disabled="true" selected="true">No Time Available
+                                                    </option>
+                                                </select>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userRouteForm">
+                                            @if(count( $BusPoints ) > 0  )
+                                                <select name="droppoint{{$day->id}}" required="True">
+                                                    <option value="" disabled="true" selected="true" required>Select A
+                                                        Point Name
+                                                    </option>
+                                                    <option value="0" required>No Need</option>
+                                                    <?php
+                                                    $place = App\StudentSchedule::where('user_id', $user->id)
+                                                        ->where('day', $day->id)->first();
+                                                    if ($place) {
+                                                        $place = App\BusPoint::where('id', ($place->droppoint))->first();
+                                                        if ($place) {
+                                                            $flag = $place->id;
+                                                        } else {
+                                                            $flag = 0;
+                                                        }
+                                                    } else {
+                                                        $flag = 0;
+                                                    }
+                                                    ?>
+                                                    @foreach ($BusPoints as $point)
+                                                        @if($flag == $point->id)
+                                                            <option selected="true"
+                                                                    value="{{$point->id}}">{{$point->pointname}}</option>
+                                                        @else
+                                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            @else
+                                                <select name="droppoint{{$day->id}}">
+                                                    <option value="" disabled="true" selected="true">No Point
+                                                        Available
+                                                    </option>
+                                                </select>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="userRouteForm">
+                                            @if(count( $droptimes ) > 0  )
+                                                <select name="droptime{{$day->id}}" required="True">
+                                                    <option value="" disabled="true" selected="true" required>Select A
+                                                        Time
+                                                    </option>
+                                                    <option value="0" required>No Need</option>
+                                                    <?php
+                                                    $time = App\StudentSchedule::where('user_id', $user->id)
+                                                        ->where('day', $day->id)->first();
+                                                    if ($time) {
+                                                        $time = App\Time::where('id', ($time->droptime))->first();
+                                                        if ($time) {
+                                                            $flag = $time->id;
+                                                        } else {
+                                                            $flag = 0;
+                                                        }
+                                                    } else {
+                                                        $flag = 0;
+                                                    }
+
+                                                    ?>
+                                                    @foreach ($droptimes as $droptime)
+                                                        @if($flag == $droptime->id)
+                                                            <option selected="true"
+                                                                    value="{{$droptime->id}}">{{Carbon\Carbon::parse($droptime->time)->format('g:i A')}}</option>
+                                                        @else
+                                                            <option value="{{$droptime->id}}">{{Carbon\Carbon::parse($droptime->time)->format('g:i A')}}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            @else
+                                                <select name="droptime{{$day->id}}">
+                                                    <option value="" disabled="true" selected="true">No Time Available
+                                                    </option>
+                                                </select>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endif
+                        @endforeach
+                    @endif
                     </tbody>
                 </table>
                 {{ Form :: submit('Submit',['class' => 'btn btn-primary']) }}

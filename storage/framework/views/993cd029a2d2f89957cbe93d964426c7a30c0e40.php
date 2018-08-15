@@ -15,7 +15,7 @@
         //     console.log("2");
         //     return confirm("Do you want to delete this item?");
         // });
-        </script>
+    </script>
     <script>
         $(document).ready(function () {
             $('[data-toggle=confirmation]').confirmation({
@@ -69,15 +69,15 @@
             </div>
             <?php if(Admin::user()): ?>
                 <?php if((Admin::user()->id == $notice->user_id)||(DB::table('admin_role_users')->where('user_id',(Admin::user()->id))->first()->role_id <= 4)): ?>
-                    <a href="/admin/auth/notices/<?php echo e($notice->id); ?>/edit" class="btn btn-default">Edit</a>
+                    <a href="/admin/auth/notices/<?php echo e($notice->id, false); ?>/edit" class="btn btn-default">Edit</a>
                     
                     <?php echo Form::open(['action' => ['NoticesController@destroy', $notice->id], 'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline'  ]); ?>
 
-                    <?php echo e(Form::hidden('_method','DELETE')); ?>
+                    <?php echo e(Form::hidden('_method','DELETE'), false); ?>
 
-                    <?php echo e(csrf_field()); ?>
+                    <?php echo e(csrf_field(), false); ?>
 
-                    <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top'])); ?>
+                    <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top']), false); ?>
 
                     <?php echo Form::close(); ?>
 

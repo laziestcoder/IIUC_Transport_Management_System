@@ -51,17 +51,17 @@
                         <td><?php echo e($schedule->fromiiuc? 'YES' : 'NO', false); ?></td>
                         <td>
                             <?php if((Admin::user()->id == $schedule->user_id)||(DB::table('admin_role_users')->where('user_id',(Admin::user()->id))->first()->role_id <= 4)): ?>
-                            <a href="" class="btn btn-primary">Edit</a>
-                            <?php echo Form::open(['action'=>['ScheduleController@destroy', $schedule->id],'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline' /* ,'onclick' => 'function deleteMe()' */]); ?>
+                                <a href="" class="btn btn-primary">Edit</a>
+                                <?php echo Form::open(['action'=>['ScheduleController@destroy', $schedule->id],'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline' /* ,'onclick' => 'function deleteMe()' */]); ?>
 
-                            
-                            <?php echo e(Form::hidden('_method','DELETE'), false); ?>
+                                
+                                <?php echo e(Form::hidden('_method','DELETE'), false); ?>
 
-                            <?php echo e(csrf_field(), false); ?>
+                                <?php echo e(csrf_field(), false); ?>
 
-                            <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top']), false); ?>
+                                <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top']), false); ?>
 
-                            <?php echo Form::close(); ?>
+                                <?php echo Form::close(); ?>
 
                             <?php else: ?>
                                 <?php echo e("You are not eligible", false); ?>

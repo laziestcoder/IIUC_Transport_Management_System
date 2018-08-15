@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Day;
-use Encore\Admin\Facades\Admin;
 use DB;
+use Illuminate\Http\Request;
 
 class DayController extends Controller
 {
@@ -49,7 +48,7 @@ class DayController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -61,12 +60,12 @@ class DayController extends Controller
         //Create BusRoute
         $day = new Day;
         $day->dayname = $request->input('day');
-//        $day->user_id = Admin::user()->id;
+        $day->user_id = Admin::user()->id;
         $day->save();
         $name = $day->dayname;
         $data = array(
 //            'newday' => 'Add Bus Day',
-            'success' => $name.' => Bus Day Added Successfully!'
+            'success' => $name . ' => Bus Day Added Successfully!'
         );
 
         return redirect('/admin/auth/newday')->with($data);
@@ -76,7 +75,7 @@ class DayController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -87,7 +86,7 @@ class DayController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -98,8 +97,8 @@ class DayController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -110,7 +109,7 @@ class DayController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -129,7 +128,7 @@ class DayController extends Controller
 
         // Check other Tables if the time is used
         $points = null;
-        $name =$day->dayname;
+        $name = $day->dayname;
         if (!$points && $points) {
             if ($points->routeid == $id) {
                 return redirect('/admin/auth/addtime')->with('error', '"' . $name . '" => This Bus Route has assigned one or more bus stop point. Delete all bus stop point related to the route. Then delete the route.');

@@ -14,11 +14,11 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav text-uppercase ml-auto">
                 <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#home">Home</a></li>
-                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#services">Emergency</a></li>
+                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#emergency">Emergency</a></li>
                 <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#schedule">Schedule</a></li>
                 <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#notice">News</a></li>
-                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#contact">Report</a></li>
-                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#about">About</a></li>
+                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#report">Report</a></li>
+                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#about-us">About</a></li>
 
                 <!-- <li class="nav-item"><a class="nav-link" href="/admin">Admin Panel</a></li>
                 <li class="nav-item"><a class="nav-link" href="/test">Test</a></li>
@@ -38,7 +38,7 @@
 
                 <?php else: ?>
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                        <a href="/dashboard" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                            aria-expanded="false" aria-haspopup="true" v-pre>
                         <?php echo e(Auth::user()->name, false); ?>
 
@@ -78,7 +78,7 @@
 
 
 <!--    student form-->
-<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<!-- <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
 
     <div class="modal-dialog" role="document">
@@ -100,7 +100,7 @@
         </div>
     </div>
 
-</div>
+</div> -->
 
 
 <!--   teacher form-->

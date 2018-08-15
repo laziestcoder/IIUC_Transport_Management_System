@@ -25,7 +25,7 @@ class BusInfoController extends Controller
      */
     public function index()
     {
-        return(view("businfo.index"));
+        return (view("businfo.index"));
     }
 
     /**

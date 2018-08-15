@@ -73,10 +73,10 @@
 
     <!-- Todays Bus Schedule -->
     <section id="about">
-        <div class="container">
+        <div id="schedule" class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2 id="schedule" class="section-heading text-uppercase">Today's Bus Schedule</h2>
+                    <h2  class="section-heading text-uppercase">Today's Bus Schedule</h2>
                     <h3 class="section-subheading text-muted">Here is '<?php echo $day->dayname; ?>' bus schedule</h3>
                 </div>
             </div>
@@ -203,11 +203,11 @@
 
     <!-- Notice Board -->
 
-    <section class="bg-light" id="portfolio">
-        <div class="container">
+    <section id="portfolio" class="bg-light">
+        <div id="notice" class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2 id="notice" class="section-heading text-uppercase"><?php echo e($noticetitle, false); ?></h2>
+                    <h2  class="section-heading text-uppercase"><?php echo e($noticetitle, false); ?></h2>
                     <h3 class="section-subheading text-muted"><?php echo e($description, false); ?></h3>
                 </div>
             </div>
@@ -218,7 +218,7 @@
                     <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <?php $count = $count + 1; ?>
                         
-                            <div class="col-md-4 col-sm-6 portfolio-item">
+                        <div class="col-md-4 col-sm-6 portfolio-item">
                             <a class="portfolio-link" data-toggle="modal" href="#portfolioModal<?php echo e($count, false); ?>">
                                 <div class="portfolio-hover">
                                     <div class="portfolio-hover-content">
@@ -262,10 +262,10 @@
     <!-- Emergency Contact -->
 
     <section id="services">
-        <div class="container">
+        <div id="emergency" class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2 id="services" class="section-heading text-uppercase">Emergency Contact</h2>
+                    <h2  class="section-heading text-uppercase">Emergency Contact</h2>
                     <h3 class="section-subheading text-muted">Feel Free To Contact With Us</h3>
                 </div>
             </div>
@@ -304,11 +304,12 @@
 
 
     <section class="bg-light" id="team">
-        <div class="container">
+        <div id="about-us" class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2 id="about" class="section-heading text-uppercase">Developed By</h2>
-                    <h3 class="section-subheading text-muted">The frontend and The backend are designed and coded by </h3>
+                    <h2  class="section-heading text-uppercase">Developed By</h2>
+                    <h3 class="section-subheading text-muted">The frontend and The backend are designed and coded
+                        by </h3>
                 </div>
             </div>
 
@@ -387,18 +388,18 @@
 
 
     <!-- Report -->
-<style>
+    <style>
 
-.invalid-feedback {
-    display: block;
-}
+        .invalid-feedback {
+            display: block;
+        }
 
-</style>
+    </style>
     <section id="contact">
-        <div class="container">
+        <div id="report" class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2 class="section-heading text-uppercase">Report A Problem</h2>
+                    <h2  class="section-heading text-uppercase">Report A Problem</h2>
                     <h3 class="section-subheading text-muted">You can complain us through this message box</h3>
                 </div>
             </div>
@@ -409,64 +410,66 @@
 
                     <?php echo e(csrf_field(), false); ?>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
                                 <?php echo e(Form :: text('name' , '', ['id' => 'name','class' => 'form-control', 'placeholder' => 'Your Name *',
                                    'required','data-validation-required-message'=>'Please enter your your name.']), false); ?>
 
-                                    <p class="help-block text-danger"></p>
-                                    <!-- <?php if($errors->has('name')): ?>
-                                    <small class="form-text invalid-feedback"><?php echo e($errors->first('name'), false); ?></small>                                                                                                    
+                                <p class="help-block text-danger"></p>
+                            <!-- <?php if($errors->has('name')): ?>
+                                <small class="form-text invalid-feedback"><?php echo e($errors->first('name'), false); ?></small>
                                     <?php endif; ?> -->
-                                </div>
-                                <div class="form-group">
+                            </div>
+                            <div class="form-group">
                                 <?php echo e(Form :: email('email' , '', ['id' => 'email','class' => 'form-control', 'placeholder' => 'Your Email *',
                                            'required','data-validation-required-message'=>'Please enter your email address.']), false); ?>
 
-                                    <p class="help-block text-danger"></p>
-                                    <!-- <?php if($errors->has('email')): ?>
-                                    <small class="form-text invalid-feedback"><?php echo e($errors->first('email'), false); ?></small>                                                                                                    
+                                <p class="help-block text-danger"></p>
+                            <!-- <?php if($errors->has('email')): ?>
+                                <small class="form-text invalid-feedback"><?php echo e($errors->first('email'), false); ?></small>
                                     <?php endif; ?> -->
-                                </div>
-                                <div class="form-group">
+                            </div>
+                            <div class="form-group">
                                 <?php echo e(Form :: tel('phone' , '', ['id' => 'phone','class' => 'form-control', 'placeholder' => 'Your Phone *',
                                            'required','data-validation-required-message'=>'Please enter your phone number.']), false); ?>
 
-                                    <p class="help-block text-danger"></p>
-                                    <!-- <?php if($errors->has('phone')): ?>
-                                    <div class="form-text invalid-feedback"><?php echo e($errors->first('phone'), false); ?></div>                                                                                                    
+                                <p class="help-block text-danger"></p>
+                            <!-- <?php if($errors->has('phone')): ?>
+                                <div class="form-text invalid-feedback"><?php echo e($errors->first('phone'), false); ?></div>
                                     <?php endif; ?> -->
-                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
                                 <?php echo e(Form :: textarea('message' , '', ['id' => 'message','class' => 'form-control', 'placeholder' => 'Your Message *',
                                 'required','data-validation-required-message'=>'Please enter your message.']), false); ?>
 
-                                    <p class="help-block text-danger"></p>
-                                    <!-- <?php if($errors->has('message')): ?>
-                                    <small class="form-text invalid-feedback"><?php echo e($errors->first('message'), false); ?></small>                                                                                                    
+                                <p class="help-block text-danger"></p>
+                            <!-- <?php if($errors->has('message')): ?>
+                                <small class="form-text invalid-feedback"><?php echo e($errors->first('message'), false); ?></small>
                                     <?php endif; ?> -->
-                                </div>
                             </div>
-                            <div class="clearfix"></div>
-                            <div class="col-lg-12 text-center">
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="col-lg-12 text-center">
                             <div id="success">
-                            <?php if(Session::has('success_flash_message')): ?>
-                            <div class="alert alert-success">
-                            <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-                            <strong>
-                            <?php echo e(Session::get('success_flash_message'), false); ?>
+                                <?php if(Session::has('success_flash_message')): ?>
+                                    <div class="alert alert-success">
+                                        <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>
+                                            &times;
+                                        </button>
+                                        <strong>
+                                            <?php echo e(Session::get('success_flash_message'), false); ?>
 
-                            </strong>                            
-                            </div>            
-                            <?php endif; ?>
+                                        </strong>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             <?php echo e(Form :: submit('Send Message',['class' => 'btn btn-primary btn-xl text-uppercase','id'=>'sendMessageButton']), false); ?>
 
-                            </div>
                         </div>
+                    </div>
                     <?php echo Form::close(); ?>
 
                 </div>

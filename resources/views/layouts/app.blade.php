@@ -36,7 +36,7 @@
 @include('common.nav')
 
 <!-- <div class="container"> -->
-@include('inc.messages')
+{{-- @include('inc.messages') --}}
 
 <!-- <div id="main" class="row"> -->
 @yield('content')

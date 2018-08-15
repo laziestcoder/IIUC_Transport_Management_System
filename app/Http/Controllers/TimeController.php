@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Time;
+use Carbon\Carbon;
 use DB;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class TimeController extends Controller
 {
@@ -103,7 +103,7 @@ class TimeController extends Controller
      */
     public function update(Request $request, $id)
     {
-       //
+        //
     }
 
     /**
@@ -128,7 +128,7 @@ class TimeController extends Controller
 
         // Check other Tables if the time is used
         $points = null;
-        $name =Carbon::parse($time->time)->format('g:i A');
+        $name = Carbon::parse($time->time)->format('g:i A');
         if ($points) {
             if ($points->routeid == $id) {
                 return redirect('/admin/auth/addtime')->with('error', '"' . $name . '" => This Bus Route has assigned one or more bus stop point. Delete all bus stop point related to the route. Then delete the route.');
