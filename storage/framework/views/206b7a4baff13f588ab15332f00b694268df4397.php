@@ -1,18 +1,17 @@
-<div class="<?php echo e($viewClass['form-group']); ?> <?php echo !$errors->has($errorKey) ? '' : 'has-error'; ?>">
+<div class="<?php echo e($viewClass['form-group'], false); ?> <?php echo !$errors->has($errorKey) ? '' : 'has-error'; ?>">
 
-    <label for="<?php echo e($id); ?>" class="<?php echo e($viewClass['label']); ?> control-label"><?php echo e($label); ?></label>
+    <label for="<?php echo e($id, false); ?>" class="<?php echo e($viewClass['label'], false); ?> control-label"><?php echo e($label, false); ?></label>
 
-    <div class="<?php echo e($viewClass['field']); ?>">
+    <div class="<?php echo e($viewClass['field'], false); ?>">
 
         <?php echo $__env->make('admin::form.error', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 
-        <select class="form-control <?php echo e($class); ?>" style="width: 100%;" name="<?php echo e($name); ?>[]" multiple="multiple"
-                data-placeholder="<?php echo e($placeholder); ?>" <?php echo $attributes; ?> >
+        <select class="form-control <?php echo e($class, false); ?>" style="width: 100%;" name="<?php echo e($name, false); ?>[]" multiple="multiple" data-placeholder="<?php echo e($placeholder, false); ?>" <?php echo $attributes; ?> >
             <?php $__currentLoopData = $options; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $select => $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <option value="<?php echo e($select); ?>" <?php echo e(in_array($select, (array)old($column, $value)) ?'selected':''); ?>><?php echo e($option); ?></option>
+                <option value="<?php echo e($select, false); ?>" <?php echo e(in_array($select, (array)old($column, $value)) ?'selected':'', false); ?>><?php echo e($option, false); ?></option>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </select>
-        <input type="hidden" name="<?php echo e($name); ?>[]"/>
+        <input type="hidden" name="<?php echo e($name, false); ?>[]" />
 
         <?php echo $__env->make('admin::form.help-block', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 

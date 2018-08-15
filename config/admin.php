@@ -37,7 +37,7 @@ return [
     /*
      * Laravel-admin html title.
      */
-    'title' => 'Admin',
+    'title' => 'ITMS Admin Panel',
 
     /*
      * Use `https`.
@@ -130,7 +130,12 @@ return [
     /*
      * @see https://adminlte.io/docs/2.4/layout
      */
-    'skin' => 'skin-blue-light',
+    //'skin' => 'skin-blue',
+    //'skin' => 'skin-blue-light',
+
+    'skin' => 'skin-green',
+    //'skin' => 'skin-green-light',
+
 
     /*
     |---------------------------------------------------------|
@@ -156,7 +161,7 @@ return [
         'media-manager' => [
 
             // Select a local disk that you configured in `config/filesystem.php`
-            'disk' => 'local'
+            'disk' => 'public'
         ],
     ],
 ];

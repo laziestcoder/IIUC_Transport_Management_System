@@ -13,6 +13,7 @@
     "doctrine/dbal": "^2.8",
     "encore/laravel-admin": "^1.5.16",
     "fideloper/proxy": "~4.0",
+    "laravel-admin-ext/helpers": "^1.0",
     "laravel-admin-ext/media-manager": "^1.0",
     "laravel-admin-ext/messages": "@dev",
     "laravel/framework": "5.6.*",
