@@ -45,6 +45,13 @@
       0 => 'Encore\\Admin\\Message\\MessageServiceProvider',
     ),
   ),
+  'laravel-admin-ext/reporter' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Encore\\Admin\\Reporter\\ReporterServiceProvider',
+    ),
+  ),
   'laravel/tinker' => 
   array (
     'providers' => 
