@@ -35,14 +35,14 @@
                             </tr>
                             <tr>
                                 <td><?php echo $fromRouteM; ?></td>
-                                <td><?php echo e("IIUC CAMPUS", false); ?></td>
-                                <td><?php echo e($toIIUCMale, false); ?></td>
+                                <td><?php echo "IIUC CAMPUS"; ?></td>
+                                <td><?php echo $toIIUCMale; ?></td>
                             </tr>
 
                             <tr>
-                                <td><?php echo e("IIUC CAMPUS", false); ?></td>
-                                <td><?php echo e($toRouteM, false); ?></td>
-                                <td><?php echo e($toCityMale, false); ?></td>
+                                <td><?php echo "IIUC CAMPUS"; ?></td>
+                                <td><?php echo $toRouteM; ?></td>
+                                <td><?php echo $toCityMale; ?></td>
                             </tr>
                             <tr>
                                 <td colspan="4">
@@ -52,15 +52,15 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><?php echo e($fromRouteF, false); ?></td>
-                                <td><?php echo e("IIUC CAMPUS", false); ?></td>
-                                <td><?php echo e($toIIUCFemale, false); ?></td>
+                                <td><?php echo $fromRouteF; ?></td>
+                                <td><?php echo "IIUC CAMPUS"; ?></td>
+                                <td><?php echo $toIIUCFemale; ?></td>
                             </tr>
 
                             <tr>
-                                <td><?php echo e("IIUC CAMPUS", false); ?></td>
-                                <td><?php echo e($toRouteF, false); ?></td>
-                                <td><?php echo e($toCityFemale, false); ?></td>
+                                <td><?php echo "IIUC CAMPUS"; ?></td>
+                                <td><?php echo $toRouteF; ?></td>
+                                <td><?php echo $toCityFemale; ?></td>
                             </tr>
                             </tbody>
 
@@ -77,7 +77,7 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2  class="section-heading text-uppercase">Today's Bus Schedule</h2>
-                    <h3 class="section-subheading text-muted">Here is '<?php echo $day->dayname; ?>' bus schedule</h3>
+                    <h3 class="section-subheading text-muted">Here is '<?php echo $day->dayname?$day->dayname:'today\'s'; ?>' bus schedule</h3>
                 </div>
             </div>
             <div class="row">
@@ -92,7 +92,8 @@
                                 <?php $flagSchedules = 1;?>
                                 <li class="<?php echo ($sl+=1)%2 == 0? "timeline-inverted":""; ?>">
                                     <div class="timeline-image">
-                                        <h4><?php echo e(\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A'), false); ?>
+                                        
+                                        <h4><?php echo \Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A'); ?>
 
                                             <br>
                                             
@@ -103,16 +104,16 @@
                                                 ->get();
                                             $female = App\Schedule::where('day', $day->id)
                                                 ->where('time', $time->id)
-                                                ->where('Female', '1')
+                                                ->where('female', '1')
                                                 ->get();?>
 
-                                            <?php echo e(count($male)? 'Male':'', false); ?>
+                                            <?php echo count($male)? 'Male':''; ?>
 
                                             <?php if(count($male) && count($female)): ?>
                                                 <?php echo "<br>"; ?>
 
                                             <?php endif; ?>
-                                            <?php echo e(count($female)? 'Female':'', false); ?>
+                                            <?php echo count($female)? 'Female':''; ?>
 
                                         </h4>
                                     </div>
@@ -129,13 +130,13 @@
                                                     ->where('time', $time->id)
                                                     ->where('fromiiuc', '1')
                                                     ->get();?>
-                                                <?php echo e(count($toiiuc)? 'To IIUC Campus':'', false); ?>
+                                                <?php echo count($toiiuc)? 'To IIUC Campus':''; ?>
 
                                                 <?php if(count($toiiuc) && count($fromiiuc)): ?>
-                                                    <?php echo e(",", false); ?>
+                                                    <?php echo ","; ?>
 
                                                 <?php endif; ?>
-                                                <?php echo e(count($fromiiuc)? 'From IIUC Campus':'', false); ?>
+                                                <?php echo count($fromiiuc)? 'From IIUC Campus':''; ?>
 
                                             </h4>
                                             Routes:
@@ -151,10 +152,10 @@
                                                     $routeFlag = 0;
                                                 }?>
                                                 <?php $__currentLoopData = $routes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                    <?php echo e(\App\BusRoute::where('id',$route->route)->first()->routename, false); ?>
+                                                    <?php echo \App\BusRoute::where('id',$route->route)->first()->routename; ?>
 
                                                     <?php if($routeFlag): ?>
-                                                        <?php echo e(", ", false); ?>
+                                                        <?php echo ", "; ?>
 
                                                     <?php endif; ?>
                                                     <?php $routeFlag -= 1;?>
@@ -207,8 +208,8 @@
         <div id="notice" class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2  class="section-heading text-uppercase"><?php echo e($noticetitle, false); ?></h2>
-                    <h3 class="section-subheading text-muted"><?php echo e($description, false); ?></h3>
+                    <h2  class="section-heading text-uppercase"><?php echo $noticetitle; ?></h2>
+                    <h3 class="section-subheading text-muted"><?php echo $description; ?></h3>
                 </div>
             </div>
 
@@ -219,21 +220,21 @@
                         <?php $count = $count + 1; ?>
                         
                         <div class="col-md-4 col-sm-6 portfolio-item">
-                            <a class="portfolio-link" data-toggle="modal" href="#portfolioModal<?php echo e($count, false); ?>">
+                            <a class="portfolio-link" data-toggle="modal" href="#portfolioModal<?php echo $count; ?>">
                                 <div class="portfolio-hover">
                                     <div class="portfolio-hover-content">
                                         <i class="fa fa-eye fa-2x">Read Me</i>
                                     </div>
                                 </div>
-                                <img class="img-fluid" src="/storage/cover_images/<?php echo e($notice->cover_image, false); ?>"
-                                     alt="<?php echo e($notice->title, false); ?>"> </a>
+                                <img class="img-fluid" src="/storage/cover_images/<?php echo $notice->cover_image; ?>"
+                                     alt="<?php echo $notice->title; ?>"> </a>
                             <div class="portfolio-caption">
-                                <h4><?php echo e($notice->title, false); ?></h4>
+                                <h4><?php echo $notice->title; ?></h4>
                                 <small>
                                     <p class="text-muted">
                                         Posted By:
                                         <i>
-                                            <?php echo e(DB::table('admin_users')->where('id', $notice->user_id)->first()->name, false); ?>
+                                            <?php echo DB::table('admin_users')->where('id', $notice->user_id)->first()->name; ?>
 
                                         </i><br>
                                         Posted
@@ -253,7 +254,7 @@
                 <?php endif; ?>
 
             </div>
-            <?php echo e($notices->links(), false); ?>
+            <?php echo $notices->links(); ?>
 
         </div>
     </section>
@@ -270,29 +271,32 @@
                 </div>
             </div>
             <div class="row text-center">
-                <div class="col-md-4">
-                    <span class="fa-stack fa-4x">
-              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-headphones fa-stack-1x fa-inverse"></i>
-            </span>
+                <div class="col-md-4"> 
+                    <ul class="timeline"><li>
+                        <div class="timeline-image">
+                            <img class="auto rounded-circle img-fluid" src="/storage/img/emergency/mriqbal.jpg" alt="Md. Iqbal">
+                        </div>  
+                    </li></ul>
                     <h4 class="service-heading">Md. Iqbal</h4>
-                    <p class="text-muted"><i class="fa fa-mobile"></i> +8801824979830</p>
+                    <p class="text"><i class="fa fa-mobile"></i> +8801824979830</p>
                 </div>
                 <div class="col-md-4">
-                    <span class="fa-stack fa-4x">
-              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-headphones fa-stack-1x fa-inverse"></i>
-            </span>
-                    <h4 class="service-heading">Md. Habib</h4>
-                    <p class="text-muted"><i class="fa fa-mobile"></i> +8801843471983</p>
+                        <ul class="timeline"><li>
+                    <div class="timeline-image">
+                            <img class="auto rounded-circle img-fluid" src="/storage/img/emergency/mrhabib.jpg" alt="Md. Habib">                       
+                    </div> 
+                </li></ul>
+                                    <h4 class="service-heading">Md. Habib</h4>
+                    <p class="text"><i class="fa fa-mobile"></i> +8801843471983</p>
                 </div>
                 <div class="col-md-4">
-                    <span class="fa-stack fa-4x">
-              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-headphones fa-stack-1x fa-inverse"></i>
-            </span>
+                        <ul class="timeline"><li>
+                    <div class="timeline-image">
+                            <img class="auto rounded-circle img-fluid" src="/storage/img/emergency/mrshabuj.jpg" alt="Md. Shabuj">                        
+                    </div> 
+                </li></ul>
                     <h4 class="service-heading">Md. Shabuj</h4>
-                    <p class="text-muted"><i class="fa fa-mobile"></i> +8801861642510</p>
+                    <p class="text"><i class="fa fa-mobile"></i> +8801861642510</p>
                 </div>
             </div>
         </div>
@@ -408,46 +412,46 @@
                     <?php echo Form :: open(['action'=>'PagesController@report','id'=>'contactForm', 'method' => 'POST',
                     'enctype' => 'multipart/form-data','name'=>'sentMessage', 'novalidate']); ?>
 
-                    <?php echo e(csrf_field(), false); ?>
+                    <?php echo csrf_field(); ?>
 
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <?php echo e(Form :: text('name' , '', ['id' => 'name','class' => 'form-control', 'placeholder' => 'Your Name *',
-                                   'required','data-validation-required-message'=>'Please enter your your name.']), false); ?>
+                                <?php echo Form :: text('name' , '', ['id' => 'name','class' => 'form-control', 'placeholder' => 'Your Name *',
+                                   'required','data-validation-required-message'=>'Please enter your your name.']); ?>
 
                                 <p class="help-block text-danger"></p>
                             <!-- <?php if($errors->has('name')): ?>
-                                <small class="form-text invalid-feedback"><?php echo e($errors->first('name'), false); ?></small>
+                                <small class="form-text invalid-feedback"><?php echo $errors->first('name'); ?></small>
                                     <?php endif; ?> -->
                             </div>
                             <div class="form-group">
-                                <?php echo e(Form :: email('email' , '', ['id' => 'email','class' => 'form-control', 'placeholder' => 'Your Email *',
-                                           'required','data-validation-required-message'=>'Please enter your email address.']), false); ?>
+                                <?php echo Form :: email('email' , '', ['id' => 'email','class' => 'form-control', 'placeholder' => 'Your Email *',
+                                           'required','data-validation-required-message'=>'Please enter your email address.']); ?>
 
                                 <p class="help-block text-danger"></p>
                             <!-- <?php if($errors->has('email')): ?>
-                                <small class="form-text invalid-feedback"><?php echo e($errors->first('email'), false); ?></small>
+                                <small class="form-text invalid-feedback"><?php echo $errors->first('email'); ?></small>
                                     <?php endif; ?> -->
                             </div>
                             <div class="form-group">
-                                <?php echo e(Form :: tel('phone' , '', ['id' => 'phone','class' => 'form-control', 'placeholder' => 'Your Phone *',
-                                           'required','data-validation-required-message'=>'Please enter your phone number.']), false); ?>
+                                <?php echo Form :: tel('phone' , '', ['id' => 'phone','class' => 'form-control', 'placeholder' => 'Your Phone *',
+                                           'required','data-validation-required-message'=>'Please enter your phone number.']); ?>
 
                                 <p class="help-block text-danger"></p>
                             <!-- <?php if($errors->has('phone')): ?>
-                                <div class="form-text invalid-feedback"><?php echo e($errors->first('phone'), false); ?></div>
+                                <div class="form-text invalid-feedback"><?php echo $errors->first('phone'); ?></div>
                                     <?php endif; ?> -->
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <?php echo e(Form :: textarea('message' , '', ['id' => 'message','class' => 'form-control', 'placeholder' => 'Your Message *',
-                                'required','data-validation-required-message'=>'Please enter your message.']), false); ?>
+                                <?php echo Form :: textarea('message' , '', ['id' => 'message','class' => 'form-control', 'placeholder' => 'Your Message *',
+                                'required','data-validation-required-message'=>'Please enter your message.']); ?>
 
                                 <p class="help-block text-danger"></p>
                             <!-- <?php if($errors->has('message')): ?>
-                                <small class="form-text invalid-feedback"><?php echo e($errors->first('message'), false); ?></small>
+                                <small class="form-text invalid-feedback"><?php echo $errors->first('message'); ?></small>
                                     <?php endif; ?> -->
                             </div>
                         </div>
@@ -460,13 +464,13 @@
                                             &times;
                                         </button>
                                         <strong>
-                                            <?php echo e(Session::get('success_flash_message'), false); ?>
+                                            <?php echo Session::get('success_flash_message'); ?>
 
                                         </strong>
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            <?php echo e(Form :: submit('Send Message',['class' => 'btn btn-primary btn-xl text-uppercase','id'=>'sendMessageButton']), false); ?>
+                            <?php echo Form :: submit('Send Message',['class' => 'btn btn-primary btn-xl text-uppercase','id'=>'sendMessageButton']); ?>
 
                         </div>
                     </div>
@@ -487,7 +491,7 @@
         <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <?php $count = $count + 1; ?>
             
-            <div class="portfolio-modal modal fade" id="portfolioModal<?php echo e($count, false); ?>" tabindex="-1" role="dialog"
+            <div class="portfolio-modal modal fade" id="portfolioModal<?php echo $count; ?>" tabindex="-1" role="dialog"
                  aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">

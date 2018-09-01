@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Day;
+use Admin;
 use DB;
 use Illuminate\Http\Request;
 

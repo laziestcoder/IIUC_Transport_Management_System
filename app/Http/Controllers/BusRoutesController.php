@@ -51,7 +51,7 @@ class BusRoutesController extends Controller
             'BusRoutes' => $BusRoutes,
             'titleinfo' => 'Available Bus Routes',
         );
-        return view('BusRoutes.create')->with($data);
+        return view('busroutes.create')->with($data);
     }
 
     /**

@@ -61,7 +61,7 @@
                                         ->get();
                                     $female = App\Schedule::where('day', $day->id)
                                         ->where('time', $time->id)
-                                        ->where('Female', '1')
+                                        ->where('female', '1')
                                         ->get();?>
 
                                     <td>

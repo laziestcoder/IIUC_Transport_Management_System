@@ -36,14 +36,14 @@
                             </tr>
                             <tr>
                                 <td>{!! $fromRouteM !!}</td>
-                                <td>{{"IIUC CAMPUS"}}</td>
-                                <td>{{$toIIUCMale}}</td>
+                                <td>{!! "IIUC CAMPUS" !!}</td>
+                                <td>{!! $toIIUCMale !!}</td>
                             </tr>
 
                             <tr>
-                                <td>{{"IIUC CAMPUS"}}</td>
-                                <td>{{$toRouteM}}</td>
-                                <td>{{$toCityMale}}</td>
+                                <td>{!! "IIUC CAMPUS" !!}</td>
+                                <td>{!! $toRouteM !!}</td>
+                                <td>{!! $toCityMale !!}</td>
                             </tr>
                             <tr>
                                 <td colspan="4">
@@ -53,15 +53,15 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>{{$fromRouteF}}</td>
-                                <td>{{"IIUC CAMPUS"}}</td>
-                                <td>{{$toIIUCFemale}}</td>
+                                <td>{!! $fromRouteF !!}</td>
+                                <td>{!! "IIUC CAMPUS" !!}</td>
+                                <td>{!! $toIIUCFemale !!}</td>
                             </tr>
 
                             <tr>
-                                <td>{{"IIUC CAMPUS"}}</td>
-                                <td>{{$toRouteF}}</td>
-                                <td>{{$toCityFemale}}</td>
+                                <td>{!! "IIUC CAMPUS" !!}</td>
+                                <td>{!! $toRouteF !!}</td>
+                                <td>{!! $toCityFemale !!}</td>
                             </tr>
                             </tbody>
 
@@ -78,7 +78,7 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2  class="section-heading text-uppercase">Today's Bus Schedule</h2>
-                    <h3 class="section-subheading text-muted">Here is '{!! $day->dayname !!}' bus schedule</h3>
+                    <h3 class="section-subheading text-muted">Here is '{!! $day->dayname?$day->dayname:'today\'s' !!}' bus schedule</h3>
                 </div>
             </div>
             <div class="row">
@@ -93,7 +93,8 @@
                                 <?php $flagSchedules = 1;?>
                                 <li class="{!! ($sl+=1)%2 == 0? "timeline-inverted":""!!}">
                                     <div class="timeline-image">
-                                        <h4>{{\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A')}}
+                                        {{-- Time --}}
+                                        <h4>{!!\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A') !!}
                                             <br>
                                             {{--Gender--}}
 
@@ -103,14 +104,14 @@
                                                 ->get();
                                             $female = App\Schedule::where('day', $day->id)
                                                 ->where('time', $time->id)
-                                                ->where('Female', '1')
+                                                ->where('female', '1')
                                                 ->get();?>
 
-                                            {{count($male)? 'Male':''}}
+                                            {!! count($male)? 'Male':'' !!}
                                             @if(count($male) && count($female))
                                                 {!! "<br>" !!}
                                             @endif
-                                            {{count($female)? 'Female':''}}
+                                            {!! count($female)? 'Female':'' !!}
                                         </h4>
                                     </div>
                                     <div class="timeline-panel">
@@ -126,11 +127,11 @@
                                                     ->where('time', $time->id)
                                                     ->where('fromiiuc', '1')
                                                     ->get();?>
-                                                {{count($toiiuc)? 'To IIUC Campus':''}}
+                                                {!! count($toiiuc)? 'To IIUC Campus':'' !!}
                                                 @if(count($toiiuc) && count($fromiiuc))
-                                                    {{","}}
+                                                    {!! "," !!}
                                                 @endif
-                                                {{count($fromiiuc)? 'From IIUC Campus':''}}
+                                                {!! count($fromiiuc)? 'From IIUC Campus':'' !!}
                                             </h4>
                                             Routes:
                                             <h4 class="subheading">
@@ -145,9 +146,9 @@
                                                     $routeFlag = 0;
                                                 }?>
                                                 @foreach($routes as $route)
-                                                    {{\App\BusRoute::where('id',$route->route)->first()->routename}}
+                                                    {!! \App\BusRoute::where('id',$route->route)->first()->routename !!}
                                                     @if($routeFlag)
-                                                        {{", "}}
+                                                        {!! ", " !!}
                                                     @endif
                                                     <?php $routeFlag -= 1;?>
                                                 @endforeach
@@ -199,8 +200,8 @@
         <div id="notice" class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2  class="section-heading text-uppercase">{{$noticetitle}}</h2>
-                    <h3 class="section-subheading text-muted">{{$description}}</h3>
+                    <h2  class="section-heading text-uppercase">{!! $noticetitle !!}</h2>
+                    <h3 class="section-subheading text-muted">{!! $description !!}</h3>
                 </div>
             </div>
 
@@ -211,21 +212,21 @@
                         <?php $count = $count + 1; ?>
                         {{--@if($count<=12)--}}
                         <div class="col-md-4 col-sm-6 portfolio-item">
-                            <a class="portfolio-link" data-toggle="modal" href="#portfolioModal{{$count}}">
+                            <a class="portfolio-link" data-toggle="modal" href="#portfolioModal{!! $count !!}">
                                 <div class="portfolio-hover">
                                     <div class="portfolio-hover-content">
                                         <i class="fa fa-eye fa-2x">Read Me</i>
                                     </div>
                                 </div>
-                                <img class="img-fluid" src="/storage/cover_images/{{$notice->cover_image}}"
-                                     alt="{{$notice->title}}"> </a>
+                                <img class="img-fluid" src="/storage/cover_images/{!! $notice->cover_image !!}"
+                                     alt="{!! $notice->title !!}"> </a>
                             <div class="portfolio-caption">
-                                <h4>{{$notice->title}}</h4>
+                                <h4>{!! $notice->title !!}</h4>
                                 <small>
                                     <p class="text-muted">
                                         Posted By:
                                         <i>
-                                            {{DB::table('admin_users')->where('id', $notice->user_id)->first()->name}}
+                                            {!! DB::table('admin_users')->where('id', $notice->user_id)->first()->name !!}
                                         </i><br>
                                         Posted
                                         At: {!!  \Carbon\Carbon::parse($notice->created_at)->format('l, d-M-Y g:i: A') !!}
@@ -243,7 +244,7 @@
                 @endif
 
             </div>
-            {{$notices->links()}}
+            {!! $notices->links() !!}
         </div>
     </section>
 
@@ -259,29 +260,32 @@
                 </div>
             </div>
             <div class="row text-center">
-                <div class="col-md-4">
-                    <span class="fa-stack fa-4x">
-              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-headphones fa-stack-1x fa-inverse"></i>
-            </span>
+                <div class="col-md-4"> 
+                    <ul class="timeline"><li>
+                        <div class="timeline-image">
+                            <img class="auto rounded-circle img-fluid" src="/storage/img/emergency/mriqbal.jpg" alt="Md. Iqbal">
+                        </div>  
+                    </li></ul>
                     <h4 class="service-heading">Md. Iqbal</h4>
-                    <p class="text-muted"><i class="fa fa-mobile"></i> +8801824979830</p>
+                    <p class="text"><i class="fa fa-mobile"></i> +8801824979830</p>
                 </div>
                 <div class="col-md-4">
-                    <span class="fa-stack fa-4x">
-              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-headphones fa-stack-1x fa-inverse"></i>
-            </span>
-                    <h4 class="service-heading">Md. Habib</h4>
-                    <p class="text-muted"><i class="fa fa-mobile"></i> +8801843471983</p>
+                        <ul class="timeline"><li>
+                    <div class="timeline-image">
+                            <img class="auto rounded-circle img-fluid" src="/storage/img/emergency/mrhabib.jpg" alt="Md. Habib">                       
+                    </div> 
+                </li></ul>
+                                    <h4 class="service-heading">Md. Habib</h4>
+                    <p class="text"><i class="fa fa-mobile"></i> +8801843471983</p>
                 </div>
                 <div class="col-md-4">
-                    <span class="fa-stack fa-4x">
-              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-              <i class="fa fa-headphones fa-stack-1x fa-inverse"></i>
-            </span>
+                        <ul class="timeline"><li>
+                    <div class="timeline-image">
+                            <img class="auto rounded-circle img-fluid" src="/storage/img/emergency/mrshabuj.jpg" alt="Md. Shabuj">                        
+                    </div> 
+                </li></ul>
                     <h4 class="service-heading">Md. Shabuj</h4>
-                    <p class="text-muted"><i class="fa fa-mobile"></i> +8801861642510</p>
+                    <p class="text"><i class="fa fa-mobile"></i> +8801861642510</p>
                 </div>
             </div>
         </div>
@@ -396,41 +400,41 @@
                 <div class="col-lg-12">
                     {!! Form :: open(['action'=>'PagesController@report','id'=>'contactForm', 'method' => 'POST',
                     'enctype' => 'multipart/form-data','name'=>'sentMessage', 'novalidate']) !!}
-                    {{ csrf_field() }}
+                    {!! csrf_field()  !!}
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                {{Form :: text('name' , '', ['id' => 'name','class' => 'form-control', 'placeholder' => 'Your Name *',
-                                   'required','data-validation-required-message'=>'Please enter your your name.'])}}
+                                {!! Form :: text('name' , '', ['id' => 'name','class' => 'form-control', 'placeholder' => 'Your Name *',
+                                   'required','data-validation-required-message'=>'Please enter your your name.']) !!}
                                 <p class="help-block text-danger"></p>
                             <!-- @if($errors->has('name'))
-                                <small class="form-text invalid-feedback">{{ $errors->first('name') }}</small>
+                                <small class="form-text invalid-feedback">{!! $errors->first('name')  !!}</small>
                                     @endif -->
                             </div>
                             <div class="form-group">
-                                {{Form :: email('email' , '', ['id' => 'email','class' => 'form-control', 'placeholder' => 'Your Email *',
-                                           'required','data-validation-required-message'=>'Please enter your email address.'])}}
+                                {!! Form :: email('email' , '', ['id' => 'email','class' => 'form-control', 'placeholder' => 'Your Email *',
+                                           'required','data-validation-required-message'=>'Please enter your email address.']) !!}
                                 <p class="help-block text-danger"></p>
                             <!-- @if($errors->has('email'))
-                                <small class="form-text invalid-feedback">{{ $errors->first('email') }}</small>
+                                <small class="form-text invalid-feedback">{!! $errors->first('email')  !!}</small>
                                     @endif -->
                             </div>
                             <div class="form-group">
-                                {{Form :: tel('phone' , '', ['id' => 'phone','class' => 'form-control', 'placeholder' => 'Your Phone *',
-                                           'required','data-validation-required-message'=>'Please enter your phone number.'])}}
+                                {!! Form :: tel('phone' , '', ['id' => 'phone','class' => 'form-control', 'placeholder' => 'Your Phone *',
+                                           'required','data-validation-required-message'=>'Please enter your phone number.']) !!}
                                 <p class="help-block text-danger"></p>
                             <!-- @if($errors->has('phone'))
-                                <div class="form-text invalid-feedback">{{ $errors->first('phone') }}</div>
+                                <div class="form-text invalid-feedback">{!! $errors->first('phone')  !!}</div>
                                     @endif -->
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                {{Form :: textarea('message' , '', ['id' => 'message','class' => 'form-control', 'placeholder' => 'Your Message *',
-                                'required','data-validation-required-message'=>'Please enter your message.'])}}
+                                {!! Form :: textarea('message' , '', ['id' => 'message','class' => 'form-control', 'placeholder' => 'Your Message *',
+                                'required','data-validation-required-message'=>'Please enter your message.']) !!}
                                 <p class="help-block text-danger"></p>
                             <!-- @if($errors->has('message'))
-                                <small class="form-text invalid-feedback">{{ $errors->first('message') }}</small>
+                                <small class="form-text invalid-feedback">{!! $errors->first('message')  !!}</small>
                                     @endif -->
                             </div>
                         </div>
@@ -443,12 +447,12 @@
                                             &times;
                                         </button>
                                         <strong>
-                                            {{ Session::get('success_flash_message') }}
+                                            {!! Session::get('success_flash_message')  !!}
                                         </strong>
                                     </div>
                                 @endif
                             </div>
-                            {{ Form :: submit('Send Message',['class' => 'btn btn-primary btn-xl text-uppercase','id'=>'sendMessageButton']) }}
+                            {!! Form :: submit('Send Message',['class' => 'btn btn-primary btn-xl text-uppercase','id'=>'sendMessageButton'])  !!}
                         </div>
                     </div>
                     {!! Form::close() !!}
@@ -467,7 +471,7 @@
         @foreach($notices as $notice)
             <?php $count = $count + 1; ?>
             {{--@if($count<=12)--}}
-            <div class="portfolio-modal modal fade" id="portfolioModal{{$count}}" tabindex="-1" role="dialog"
+            <div class="portfolio-modal modal fade" id="portfolioModal{!! $count !!}" tabindex="-1" role="dialog"
                  aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
