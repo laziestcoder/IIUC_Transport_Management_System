@@ -13,7 +13,7 @@
 
             <!-- Branding Image -->
             <a class="navbar-brand" href="{{ url('/') }}">
-                {{ config('app.name', 'LScratch') }}
+                {{ config('app.name', 'ITMS') }}
             </a>
         </div>
 

@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('content')
 
+@section('content')
     <header id="home" class="masthead">
         <div class="container" id="page-top">
             <div class="intro-text">
-                <div class="intro-lead-in" style="padding:10px 0;">Welcome To IIUC Transport Website!</div>
+                <div class="intro-lead-in" style="padding:10px 0;">Welcome To IIUC Transport Management Website!</div>
                 <div class="intro-heading text-uppercase">It's Nice To Meet You</div>
                 <div class="nextBus">
                     <div class="nextBus-info">
@@ -13,8 +13,13 @@
                             <tr>
                                 <td colspan="4">
                                     <div class="nextBus-title">
-                                        NEXT BUS<br>
-                                        <hr>
+                                        <big><marquee behavior="alternate">NEXT BUS</marquee></big><br>
+                                    </div>
+                                </td>                                
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="nextBus-time">
                                         ( Day : <i> {!! $today !!} </i>, Time: {!! $now !!} )
                                     </div>
                                 </td>
@@ -29,11 +34,14 @@
                             <tbody>
                             <tr>
                                 <td colspan="4">
-                                    <div class="nextBus-title" style="text-align: left;">
-                                        <i>MALE</i>
-                                    </div>
+                                    <marquee behavior="alternate">
+                                        <div class="nextBus-gender">
+                                            MALE
+                                        </div>
+                                    </marquee>
                                 </td>
                             </tr>
+                            
                             <tr>
                                 <td>{!! $fromRouteM !!}</td>
                                 <td>{!! "IIUC CAMPUS" !!}</td>
@@ -47,9 +55,11 @@
                             </tr>
                             <tr>
                                 <td colspan="4">
-                                    <div class="nextBus-title" style="text-align: left;">
-                                        <i>FEMALE</i>
-                                    </div>
+                                    <marquee behavior="alternate">
+                                        <div class="nextBus-gender">
+                                            FEMALE
+                                        </div>
+                                    </marquee>
                                 </td>
                             </tr>
                             <tr>
@@ -64,7 +74,6 @@
                                 <td>{!! $toCityFemale !!}</td>
                             </tr>
                             </tbody>
-
                         </table>
                     </div>
                 </div>
@@ -291,6 +300,86 @@
         </div>
     </section>
 
+    <!-- Report -->
+    <style>
+
+            .invalid-feedback {
+                display: block;
+            }
+    
+        </style>
+        <section id="contact">
+            <div id="report" class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2  class="section-heading text-uppercase">Report A Problem</h2>
+                        <h3 class="section-subheading text-muted">You can complain us through this message box</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        {!! Form :: open(['action'=>'PagesController@report','id'=>'contactForm', 'method' => 'POST',
+                        'enctype' => 'multipart/form-data','name'=>'sentMessage', 'novalidate']) !!}
+                        {!! csrf_field()  !!}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {!! Form :: text('name' , '', ['id' => 'name','class' => 'form-control', 'placeholder' => 'Your Name *',
+                                       'required','data-validation-required-message'=>'Please enter your your name.']) !!}
+                                    <p class="help-block text-danger"></p>
+                                <!-- @if($errors->has('name'))
+                                    <small class="form-text invalid-feedback">{!! $errors->first('name')  !!}</small>
+                                        @endif -->
+                                </div>
+                                <div class="form-group">
+                                    {!! Form :: email('email' , '', ['id' => 'email','class' => 'form-control', 'placeholder' => 'Your Email *',
+                                               'required','data-validation-required-message'=>'Please enter your email address.']) !!}
+                                    <p class="help-block text-danger"></p>
+                                <!-- @if($errors->has('email'))
+                                    <small class="form-text invalid-feedback">{!! $errors->first('email')  !!}</small>
+                                        @endif -->
+                                </div>
+                                <div class="form-group">
+                                    {!! Form :: tel('phone' , '', ['id' => 'phone','class' => 'form-control', 'placeholder' => 'Your Phone *',
+                                               'required','data-validation-required-message'=>'Please enter your phone number.']) !!}
+                                    <p class="help-block text-danger"></p>
+                                <!-- @if($errors->has('phone'))
+                                    <div class="form-text invalid-feedback">{!! $errors->first('phone')  !!}</div>
+                                        @endif -->
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {!! Form :: textarea('message' , '', ['id' => 'message','class' => 'form-control', 'placeholder' => 'Your Message *',
+                                    'required','data-validation-required-message'=>'Please enter your message.']) !!}
+                                    <p class="help-block text-danger"></p>
+                                <!-- @if($errors->has('message'))
+                                    <small class="form-text invalid-feedback">{!! $errors->first('message')  !!}</small>
+                                        @endif -->
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-lg-12 text-center">
+                                <div id="success">
+                                    @if(Session::has('success_flash_message'))
+                                        <div class="alert alert-success">
+                                            <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>
+                                                &times;
+                                            </button>
+                                            <strong>
+                                                {!! Session::get('success_flash_message')  !!}
+                                            </strong>
+                                        </div>
+                                    @endif
+                                </div>
+                                {!! Form :: submit('Send Message',['class' => 'btn btn-primary btn-xl text-uppercase','id'=>'sendMessageButton'])  !!}
+                            </div>
+                        </div>
+                        {!! Form::close() !!}
+                    </div>
+                </div>
+            </div>
+        </section>
 
     <!-- Team -->
 
@@ -380,86 +469,7 @@
     </section>
 
 
-    <!-- Report -->
-    <style>
-
-        .invalid-feedback {
-            display: block;
-        }
-
-    </style>
-    <section id="contact">
-        <div id="report" class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h2  class="section-heading text-uppercase">Report A Problem</h2>
-                    <h3 class="section-subheading text-muted">You can complain us through this message box</h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    {!! Form :: open(['action'=>'PagesController@report','id'=>'contactForm', 'method' => 'POST',
-                    'enctype' => 'multipart/form-data','name'=>'sentMessage', 'novalidate']) !!}
-                    {!! csrf_field()  !!}
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {!! Form :: text('name' , '', ['id' => 'name','class' => 'form-control', 'placeholder' => 'Your Name *',
-                                   'required','data-validation-required-message'=>'Please enter your your name.']) !!}
-                                <p class="help-block text-danger"></p>
-                            <!-- @if($errors->has('name'))
-                                <small class="form-text invalid-feedback">{!! $errors->first('name')  !!}</small>
-                                    @endif -->
-                            </div>
-                            <div class="form-group">
-                                {!! Form :: email('email' , '', ['id' => 'email','class' => 'form-control', 'placeholder' => 'Your Email *',
-                                           'required','data-validation-required-message'=>'Please enter your email address.']) !!}
-                                <p class="help-block text-danger"></p>
-                            <!-- @if($errors->has('email'))
-                                <small class="form-text invalid-feedback">{!! $errors->first('email')  !!}</small>
-                                    @endif -->
-                            </div>
-                            <div class="form-group">
-                                {!! Form :: tel('phone' , '', ['id' => 'phone','class' => 'form-control', 'placeholder' => 'Your Phone *',
-                                           'required','data-validation-required-message'=>'Please enter your phone number.']) !!}
-                                <p class="help-block text-danger"></p>
-                            <!-- @if($errors->has('phone'))
-                                <div class="form-text invalid-feedback">{!! $errors->first('phone')  !!}</div>
-                                    @endif -->
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {!! Form :: textarea('message' , '', ['id' => 'message','class' => 'form-control', 'placeholder' => 'Your Message *',
-                                'required','data-validation-required-message'=>'Please enter your message.']) !!}
-                                <p class="help-block text-danger"></p>
-                            <!-- @if($errors->has('message'))
-                                <small class="form-text invalid-feedback">{!! $errors->first('message')  !!}</small>
-                                    @endif -->
-                            </div>
-                        </div>
-                        <div class="clearfix"></div>
-                        <div class="col-lg-12 text-center">
-                            <div id="success">
-                                @if(Session::has('success_flash_message'))
-                                    <div class="alert alert-success">
-                                        <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>
-                                            &times;
-                                        </button>
-                                        <strong>
-                                            {!! Session::get('success_flash_message')  !!}
-                                        </strong>
-                                    </div>
-                                @endif
-                            </div>
-                            {!! Form :: submit('Send Message',['class' => 'btn btn-primary btn-xl text-uppercase','id'=>'sendMessageButton'])  !!}
-                        </div>
-                    </div>
-                    {!! Form::close() !!}
-                </div>
-            </div>
-        </div>
-    </section>
+    
 
 
 
@@ -522,5 +532,6 @@
             {{--@endif--}}
         @endforeach
     @endif
+
 @endsection
 

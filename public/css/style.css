@@ -81,12 +81,12 @@ header.masthead .intro-text {
     /* background: #000000; */
     /* box-sizing: border-box; */
     /* margin-bottom: 250px; */
-    /* margin-left: 250px; */
+    /* margina-left: 250px; */
     /* padding: 0px 250px 0px 200px; */
     text-align: center;
     margin: auto;
     /* height: 100px; */
-    width: 550px;
+     max-width: 800px;
 }
 
 /* .nextBus table {
@@ -96,20 +96,31 @@ header.masthead .intro-text {
 .nextBus-title {
     /*background:#212529;*/
     font-size: 20px;
-    color: yellow;
+    font-weight: bold;
+    color: #d4d440;
+}
+.nextBus-time{
+    color: #acac28;
 
+}
+.nextBus-gender{
+    font-weight: bold;
+    color: #acac28;
+    text-align: left;
 }
 
 .nextBus-info {
     background: #212529;
-    font-size: 18px;
-    color: yellow;
+    /* font-size: 18px; */
+    color: #cbcbcb;
 }
 
 .nextBus thead {
-    color: white;
+    color: #e7e7e7;
     font-weight: bold;
 }
+
+
 
 /*.nextBus table{*/
 /*border-color: yellow;*/
