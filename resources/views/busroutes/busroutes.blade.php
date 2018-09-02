@@ -1,18 +1,18 @@
 @extends('layouts.userlayout')
 
 @section('usercontent')
-    <div class="panel-body" style="background:#212529">
+    <div class="panel-body backGround">
         <h1>Bus Schedules</h1>
     </div>
     <hr>
-    <div class="panel-body" style="background:#212529">
+    <div class="panel-body">
         <div id='transport' class="container">
             <div class="userrouteinfo">
                     @if( count($days) > 0 )
                         @foreach($days as $day)
                             @if($day->id != 9)
                             <h3><b>{{"$day->dayname"}}</b></h3>
-                            <table class="table table-bordered">
+                            <table class="table table-bordered table-responsive-lg">
                                 <thead class="">
                                 <tr>
                                     <td>{{"No."}}</td>
@@ -29,8 +29,7 @@
                                         ->where('time', $time->id)
                                         ->get();?>
                                     @if(count($schedules) > 0)
-                                        <tr>
-        
+                                        <tr>        
                                             <td>{{$sl +=1}}</td>
                                             <td>{{\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A')}}</td>
         

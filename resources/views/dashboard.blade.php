@@ -1,18 +1,18 @@
 @extends('layouts.userlayout')
 
 @section('usercontent')
-    <div class="panel-body" style="background:#212529">
+    <div class="panel-body backGround" >
         <h1>Profile</h1>
     </div>
     <hr>
-    <div class="panel-body" style="background:#212529">
+    <div class="panel-body" >
         <div class="container">
             <div class="userinfo">
                 @include('inc.messages')
                 <b><h3>Basic Info:</h3></b>
                 <hr>
-                <table class="table-active">
-                    <thead class="tableSpace">
+                <table class="table-active table-responsive-lg">
+                    <thead class="">
                     <tr>
                         <td>
                         @if("http://upanel.iiuc.ac.bd:81/Picture/{!! $user->jobid !!}"==True)
@@ -75,7 +75,7 @@
                     </div>
                 @endif
 
-                <table class="table table-bordered">
+                <table class="table table-bordered table-responsive-lg">
                     <thead class="">
                     <tr>
                         <td>

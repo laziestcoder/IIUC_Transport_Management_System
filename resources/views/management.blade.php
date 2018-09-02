@@ -3,11 +3,11 @@
 @section('usercontent')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
 
-    <div class="panel-body" style="background:#212529">
+    <div class="panel-body backGround" >
         <h1>Edit Schedule</h1>
     </div>
     <hr>
-    <div class="panel-body" style="background:#212529">
+    <div class="panel-body ">
         @if (session('status'))
             <div class="alert alert-success">
                 {{ session('status') }}
@@ -19,7 +19,7 @@
                 <hr>
                 {!! Form :: open(['action' => 'ManagementController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data' ]) !!}
                 {{ csrf_field() }}
-                <table class="table table-hover table-bordered">
+                <table class="table table-hover table-bordered table-responsive-lg">
                     <thead class="">
                     <tr>
                         <td>

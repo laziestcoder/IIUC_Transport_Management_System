@@ -1,16 +1,16 @@
 <?php $__env->startSection('usercontent'); ?>
-    <div class="panel-body" style="background:#212529">
+    <div class="panel-body backGround" >
         <h1>Profile</h1>
     </div>
     <hr>
-    <div class="panel-body" style="background:#212529">
+    <div class="panel-body" >
         <div class="container">
             <div class="userinfo">
                 <?php echo $__env->make('inc.messages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
                 <b><h3>Basic Info:</h3></b>
                 <hr>
-                <table class="table-active">
-                    <thead class="tableSpace">
+                <table class="table-active table-responsive-lg">
+                    <thead class="">
                     <tr>
                         <td>
                         <?php if("http://upanel.iiuc.ac.bd:81/Picture/<?php echo $user->jobid; ?>"==True): ?>
@@ -80,7 +80,7 @@
                     </div>
                 <?php endif; ?>
 
-                <table class="table table-bordered">
+                <table class="table table-bordered table-responsive-lg">
                     <thead class="">
                     <tr>
                         <td>
