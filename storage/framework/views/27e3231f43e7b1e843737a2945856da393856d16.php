@@ -6,13 +6,18 @@
     <div class="panel-body" style="background:#212529">
         <div class="container">
             <div class="userinfo">
+                <?php echo $__env->make('inc.messages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
                 <b><h3>Basic Info:</h3></b>
                 <hr>
                 <table class="table-active">
                     <thead class="tableSpace">
                     <tr>
                         <td>
+                        <?php if("http://upanel.iiuc.ac.bd:81/Picture/<?php echo $user->jobid; ?>"==True): ?>
+                            <img src="http://upanel.iiuc.ac.bd:81/Picture/<?php echo e($user->jobid, false); ?>"/>
+                        <?php else: ?>
                             <img src="storage/image/user/<?php echo e($user->image, false); ?>"/>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <tr>
@@ -95,7 +100,7 @@
                         </td>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="">
                     <?php if(count($days) > 0 ): ?>
                         <?php $__currentLoopData = $days; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <?php if( $day->id < 8): ?>

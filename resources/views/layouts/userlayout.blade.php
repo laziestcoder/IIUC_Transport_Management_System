@@ -20,6 +20,7 @@
                                     @endif
                                     <a href="/dashboard" class="btn btn-primary">Profile</a>
                                     <a href="/management" class="btn btn-primary">Edit Schedule</a>
+                                    <a href="/busschedules" class="btn btn-primary">Bus Schedules</a>
                                     <!-- <a href="/notices/create" class="btn btn-primary">Create Notice</a>
                                     <a href="/settings" disabled='True' class="btn btn-primary">Settings</a>
                                     <a href="/statistics" disabled='True' class="btn btn-primary">Statistics</a>

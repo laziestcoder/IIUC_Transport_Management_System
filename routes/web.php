@@ -63,6 +63,7 @@ Auth::routes();
 //Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::get('/dashboard', 'DashboardController@index');
 Route::resource('/management', 'ManagementController');
+Route::get('/busschedules', 'ManagementController@busroutes');
 
 //User Confirmation Routing
 //Email Verification 1

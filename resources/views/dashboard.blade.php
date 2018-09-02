@@ -8,13 +8,18 @@
     <div class="panel-body" style="background:#212529">
         <div class="container">
             <div class="userinfo">
+                @include('inc.messages')
                 <b><h3>Basic Info:</h3></b>
                 <hr>
                 <table class="table-active">
                     <thead class="tableSpace">
                     <tr>
                         <td>
+                        @if("http://upanel.iiuc.ac.bd:81/Picture/{!! $user->jobid !!}"==True)
+                            <img src="http://upanel.iiuc.ac.bd:81/Picture/{{$user->jobid}}"/>
+                        @else
                             <img src="storage/image/user/{{$user->image}}"/>
+                            @endif
                         </td>
                     </tr>
                     <tr>
@@ -90,7 +95,7 @@
                         </td>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="">
                     @if(count($days) > 0 )
                         @foreach( $days as $day )
                             @if( $day->id < 8)

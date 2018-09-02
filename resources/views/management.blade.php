@@ -12,57 +12,7 @@
             <div class="alert alert-success">
                 {{ session('status') }}
             </div>
-        @endif
-        <div class="container">
-            <div class="userinfo">
-                <b><h3>Basic Info:</h3></b>
-                <hr>
-
-                <table class="table-active">
-                    <thead class="tableSpace">
-                    <tr>
-                        <td>
-                            <img src="storage/image/user/{{Auth::user()->image}}">
-                        <td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Name: {{$user->name}}
-                        </td>
-
-                    </tr>
-                    <tr>
-                        <td>
-                            ID: {{$user->jobid}}
-                        </td>
-
-                    </tr>
-                    <tr>
-                        <td>
-                            Gender: {{$user->gender == 0 ? 'Male' : 'Female'}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Registered
-                            As: {{$user->userrole == 1 ? 'Student' : ( $user->userrole == 2 ? 'Faculty Member' :($user->userrole == 3 ? 'Officer/Staff' : 'undefined')) }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Email: {{$user->email}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Contact: {{$user->contact ? $user->contact : 'none'}}
-                        </td>
-                    </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-        <br><br>
+        @endif            
         <div class="container">
             <div class="userrouteinfo">
                 <b><h3>Transport Schedule</h3></b>

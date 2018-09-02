@@ -8,6 +8,7 @@ use App\Day;
 use App\StudentSchedule;
 use App\Time;
 use App\User;
+use App\Schedule;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ class ManagementController extends Controller
     {
         $this->middleware('auth');
     }
-
+    
     /**
      * Display a listing of the resource.
      *
@@ -35,15 +36,18 @@ class ManagementController extends Controller
         $user_id = auth()->user()->id;
         $user_gender = auth()->user()->gender;
         $user_role = auth()->user()->userrole;
-        $check = StudentSchedule::where('user_id', $user_id)->get();
+        $check = StudentSchedule::where('user_id', $user_id)->first();
         $today = Carbon::now();
-        // if($check){
-        //     $entrydate = Carbon::parse($check->entrydate->addDays(45));
-        //     $date = $entrydate->diffInDays($today);
-        //     if( $date == 0){
-        //         return reditect('/dashboard')->with('error','You are not allowed to edit now! Wait till '.$today->addDays($date));
-        //     }
-        // }
+        if($check){
+            $entrydate = Carbon::parse($check->entrydate);
+            $expiredate = $entrydate->addDays(15);
+            $entrydate = Carbon::parse($check->entrydate);
+            $datedifference = $expiredate->diffInDays($today);
+            if( $datedifference > 0){
+                //$date = $today->addDays($date)->toDateString();
+                return redirect('/dashboard')->with('error','You have changed you bus routine on '.$check->entrydate.'. You are not allowed to edit now! Wait till '.$expiredate->toDateString().' .');
+            }
+        }
 
         $user = User::find($user_id);
         $BusRoutes = BusRoute::orderBy('routename')->get();
@@ -59,10 +63,8 @@ class ManagementController extends Controller
             'droptimes' => $droptimes,
             'days' => $days,
             'user' => $user,
+            "gender" => $user_gender,
         );
-        //dd($data);
-        //return view('buspoints.create',compact('data')); 
-        //return view('buspoints.create')->with($data);
         return view('management')->with($data);
     }
 
@@ -179,5 +181,30 @@ class ManagementController extends Controller
     public function destroy($id)
     {
         //
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function busroutes()
+    {
+        $schedules = Schedule::all();
+        //$days = Day::all();//->where('day', '1');
+        //$times = Time::all();//->where('day', '1');
+
+        $data = array(
+            'schedules' => $schedules,
+            'title' => 'Schedule Information',
+            'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
+            'titlenew' => 'Create New Schedule',
+            'titleinfo' => 'Available Schedule',
+            'times' => Time::all('id', 'time'),
+            'days' => Day::all('id', 'dayname'),
+            'points' => BusPoint::all('id', 'pointname'),
+            //'days' => $days,
+            //'times' => $times,
+        );
+        return view("busroutes.busroutes")->with($data);
     }
 }

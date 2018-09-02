@@ -11,63 +11,7 @@
                 <?php echo e(session('status'), false); ?>
 
             </div>
-        <?php endif; ?>
-        <div class="container">
-            <div class="userinfo">
-                <b><h3>Basic Info:</h3></b>
-                <hr>
-
-                <table class="table-active">
-                    <thead class="tableSpace">
-                    <tr>
-                        <td>
-                            <img src="storage/image/user/<?php echo e(Auth::user()->image, false); ?>">
-                        <td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Name: <?php echo e($user->name, false); ?>
-
-                        </td>
-
-                    </tr>
-                    <tr>
-                        <td>
-                            ID: <?php echo e($user->jobid, false); ?>
-
-                        </td>
-
-                    </tr>
-                    <tr>
-                        <td>
-                            Gender: <?php echo e($user->gender == 0 ? 'Male' : 'Female', false); ?>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Registered
-                            As: <?php echo e($user->userrole == 1 ? 'Student' : ( $user->userrole == 2 ? 'Faculty Member' :($user->userrole == 3 ? 'Officer/Staff' : 'undefined')), false); ?>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Email: <?php echo e($user->email, false); ?>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Contact: <?php echo e($user->contact ? $user->contact : 'none', false); ?>
-
-                        </td>
-                    </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-        <br><br>
+        <?php endif; ?>            
         <div class="container">
             <div class="userrouteinfo">
                 <b><h3>Transport Schedule</h3></b>
