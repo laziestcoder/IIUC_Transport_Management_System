@@ -65,14 +65,14 @@
             <div class="form-group">
                 <?php echo e(Form :: label('title','Male'), false); ?>
 
-                <?php echo e(Form :: checkbox('male' , 1, ['class' => 'checkbox form-control',]), false); ?>
+                <?php echo e(Form :: checkbox('male' , false, ['class' => 'checkbox form-control','checked'=>'false']), false); ?>
 
                 
 
                 
                 <?php echo e(Form :: label('title','Female'), false); ?>
 
-                <?php echo e(Form :: checkbox('female' , 1, ['class' => 'checkbox form-control',]), false); ?>
+                <?php echo e(Form :: checkbox('female' , 0, ['class' => 'checkbox form-control',]), false); ?>
 
             </div>
         </fieldset>

@@ -43,6 +43,7 @@ Route::delete('/hello', function () {
 
 // Pages routing Index, About, Servces
 Route::get('/', 'PagesController@index');
+Route::get('404', ['as'=>'notfound','uses'=>'PagesController@pagenotfound']);
 //Route::get('/about', 'PagesController@index');
 //Route::get('/services', 'PagesController@index');
 Route::get('/test', 'PagesController@test');

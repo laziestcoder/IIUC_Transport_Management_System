@@ -25,29 +25,46 @@
                                 <tbody class="">
                                 <?php $sl = 0; ?>
                                 @foreach($times as $time)
-                                    <?php $schedules = App\Schedule::where('day', $day->id)
+                                    <?php 
+                                    if($gender == 0){
+                                        $schedules = App\Schedule::where('day', $day->id)
                                         ->where('time', $time->id)
-                                        ->get();?>
+                                        ->where('male','1')
+                                        ->get();
+                                    }else{
+                                        $schedules = App\Schedule::where('day', $day->id)
+                                        ->where('time', $time->id)
+                                        ->where('female','1')
+                                        ->get();
+                                    }
+                                        
+                                        ?>
                                     @if(count($schedules) > 0)
                                         <tr>        
                                             <td>{{$sl +=1}}</td>
                                             <td>{{\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A')}}</td>
-        
-                                            <?php $male = App\Schedule::where('day', $day->id)
+                                            <td>
+                                            <?php
+                                            if($gender == 0){
+                                                 $male = App\Schedule::where('day', $day->id)
                                                 ->where('time', $time->id)
                                                 ->where('male', '1')
                                                 ->get();
+                                            if(count($male)) {
+                                                echo "Male";
+                                            }
+                                            //$female = 0;
+                                            }else{
+                                            //$male = 0;
                                             $female = App\Schedule::where('day', $day->id)
                                                 ->where('time', $time->id)
                                                 ->where('female', '1')
-                                                ->get();?>
-        
-                                            <td>
-                                                {{count($male)? 'Male':''}}
-                                                @if(count($male) && count($female))
-                                                    {{","}}
-                                                @endif
-                                                {{count($female)? 'Female':''}}
+                                                ->get();
+                                            if(count($female)) {
+                                                echo "Female";
+                                            }
+                                            }
+                                            ?>  
                                             </td>
         
                                             <?php $toiiuc = App\Schedule::where('day', $day->id)

@@ -1,11 +1,11 @@
 <?php $__env->startSection('usercontent'); ?>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
 
-    <div class="panel-body" style="background:#212529">
+    <div class="panel-body backGround" >
         <h1>Edit Schedule</h1>
     </div>
     <hr>
-    <div class="panel-body" style="background:#212529">
+    <div class="panel-body ">
         <?php if(session('status')): ?>
             <div class="alert alert-success">
                 <?php echo e(session('status'), false); ?>
@@ -20,7 +20,7 @@
 
                 <?php echo e(csrf_field(), false); ?>
 
-                <table class="table table-hover table-bordered">
+                <table class="table table-hover table-bordered table-responsive-lg">
                     <thead class="">
                     <tr>
                         <td>

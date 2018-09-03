@@ -189,12 +189,17 @@ class ManagementController extends Controller
      */
     public function busroutes()
     {
-        $schedules = Schedule::all();
+        $user_gender = auth()->user()->gender;
+        if($user_gender == 0){
+            $schedules = Schedule::where('male','1')->get();
+        }else{
+            $schedules = Schedule::where('female','1')->get();
+        }
         //$days = Day::all();//->where('day', '1');
         //$times = Time::all();//->where('day', '1');
 
         $data = array(
-            'schedules' => $schedules,
+            //'schedules' => $schedules,
             'title' => 'Schedule Information',
             'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
             'titlenew' => 'Create New Schedule',
@@ -202,6 +207,7 @@ class ManagementController extends Controller
             'times' => Time::all('id', 'time'),
             'days' => Day::all('id', 'dayname'),
             'points' => BusPoint::all('id', 'pointname'),
+            'gender' => $user_gender,
             //'days' => $days,
             //'times' => $times,
         );

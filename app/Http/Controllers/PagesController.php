@@ -235,5 +235,10 @@ class PagesController extends Controller
         );
         return view('pages.test')->with($data);
     }
+    public function pagenotfound()
+    {
+        return view('pages.404');
+        //return redirect('http://google.com/404');
+    }
 
 }
