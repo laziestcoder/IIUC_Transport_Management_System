@@ -15,21 +15,17 @@
                     <thead class="">
                     <tr>
                         <td>
-                        @if("http://upanel.iiuc.ac.bd:81/Picture/{!! $user->jobid !!}"==True)
-                            <img src="http://upanel.iiuc.ac.bd:81/Picture/{{$user->jobid}}"/>
-                        @else
-                            <img src="storage/image/user/{{$user->image}}"/>
-                            @endif
+                            {!! $image !!}
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            Name: {!! $user->name !!}
+                            Name: {!! $user->name !!}  {!! $verified? '<i style="font-size:20px; color:green;" class="fa fa-check-circle"></i>': '<i style="font-size:20px;" class="fa">&#x2753;</i>' !!}
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            ID: {{$user->jobid}}
+                            ID: {{$user->jobid}} {!! $verified? '<i style="font-size:20px; color:green;" class="fa fa-check-circle"></i>': '<i style="font-size:20px; color:red;" class="fa fa-close"></i>' !!}
                         </td>
 
                     </tr>
@@ -52,6 +48,11 @@
                     <tr>
                         <td>
                             Contact: {{$user->contact ? $user->contact : 'none'}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Verified: {!! $verified? 'Yes': 'No' !!}
                         </td>
                     </tr>
                     </thead>

@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use App\BusPoint;
 use App\BusRoute;
 use App\Day;
+use App\Schedule;
 use App\StudentSchedule;
 use App\Time;
 use App\User;
-use App\Schedule;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
@@ -24,7 +24,7 @@ class ManagementController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -38,14 +38,14 @@ class ManagementController extends Controller
         $user_role = auth()->user()->userrole;
         $check = StudentSchedule::where('user_id', $user_id)->first();
         $today = Carbon::now();
-        if($check){
+        if ($check) {
             $entrydate = Carbon::parse($check->entrydate);
             $expiredate = $entrydate->addDays(15);
             $entrydate = Carbon::parse($check->entrydate);
             $datedifference = $expiredate->diffInDays($today);
-            if( $datedifference > 0){
+            if ($datedifference > 0) {
                 //$date = $today->addDays($date)->toDateString();
-                return redirect('/dashboard')->with('error','You have changed you bus routine on '.$check->entrydate.'. You are not allowed to edit now! Wait till '.$expiredate->toDateString().' .');
+                return redirect('/dashboard')->with('error', 'You have changed you bus routine on ' . $check->entrydate . '. You are not allowed to edit now! Wait till ' . $expiredate->toDateString() . ' .');
             }
         }
 
@@ -55,7 +55,30 @@ class ManagementController extends Controller
         $days = Day::orderBy('id')->get();
         $pickuptimes = Time::where('toiiuc', 1)->orderBy('time')->get();
         $droptimes = Time::where('fromiiuc', 1)->orderBy('time')->get();
+        //account verification
+        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg";
+        $ch = curl_init();
+        $timeout = 5;
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+        $lines_string = curl_exec($ch);
+        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $file2 = $lines_string;
+        $file = $retcode;
+        $verified = false;
+        if ($file == 200 && $file2[0] != '<') {
+            $verified = true;
+            $image = "<img src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
+        } else {
+            $verified = false;
+            $image = "<img src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
+        }
+        if (!$verified) {
+            return redirect('/dashboard')->with('error', 'Your account is not verified. Please check you Varsity ID and Name.');
 
+        }
         $data = array(
             'BusRoutes' => $BusRoutes,
             'BusPoints' => $BusPoints,
@@ -94,6 +117,7 @@ class ManagementController extends Controller
             return $this->update($request, $id);
         }
         $days = Day::orderBy('id')->get();
+
         foreach ($days as $day) {
 
             if ($day->id > 7) {
@@ -182,6 +206,7 @@ class ManagementController extends Controller
     {
         //
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -189,11 +214,38 @@ class ManagementController extends Controller
      */
     public function busroutes()
     {
+        //account verification
+        $user = User::find(auth()->user()->id);
+        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg";
+        $ch = curl_init();
+        $timeout = 5;
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+        $lines_string = curl_exec($ch);
+        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $file2 = $lines_string;
+        $file = $retcode;
+        $verified = false;
+        if ($file == 200 && $file2[0] != '<') {
+            $verified = true;
+            $image = "<img src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
+        } else {
+            $verified = false;
+            $image = "<img src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
+        }
+        if (!$verified) {
+            return redirect('/dashboard')->with('error', 'Your account is not verified. Please check you Varsity ID and Name.');
+
+        }
+        //account verification end
+        
         $user_gender = auth()->user()->gender;
-        if($user_gender == 0){
-            $schedules = Schedule::where('male','1')->get();
-        }else{
-            $schedules = Schedule::where('female','1')->get();
+        if ($user_gender == 0) {
+            $schedules = Schedule::where('male', '1')->get();
+        } else {
+            $schedules = Schedule::where('female', '1')->get();
         }
         //$days = Day::all();//->where('day', '1');
         //$times = Time::all();//->where('day', '1');

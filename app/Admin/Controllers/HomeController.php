@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\User;
 use DB;
 use Encore\Admin\Controllers\Dashboard;
+use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Column;
@@ -15,6 +16,8 @@ use Encore\Admin\Layout\Row;
 
 class HomeController extends Controller
 {
+    use HasResourceActions;
+
     public function index()
     {
         return Admin::content(function (Content $content) {
@@ -103,6 +106,7 @@ class HomeController extends Controller
         });
 
     }
+
     public function OfficerList()
     {
         return Admin::content(function (Content $content) {
@@ -112,6 +116,7 @@ class HomeController extends Controller
         });
 
     }
+
     /**
      * Make a grid builder.
      *
@@ -123,9 +128,9 @@ class HomeController extends Controller
 
             $grid->model()->where('userrole', '=', 1);
             $grid->id('ID')->sortable();
-            $grid->jobid(trans('Varsity ID'));
+            $grid->jobid(trans('Varsity ID'))->sortable();;
             $grid->image(trans('admin.avatar'))->display(function ($s) {
-                $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid.".jpg";
+                $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
 //                $file = file($url);
 //                $file = file_exists($url);
 //                $file = file_get_contents($url);
@@ -144,14 +149,24 @@ class HomeController extends Controller
 
                 // Get URL content
                 $lines_string = curl_exec($ch);
+                $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 // close handle to release resources
                 curl_close($ch);
                 //output, you can also save it locally on the server
-                $file = $lines_string;
-                if ($file[0] != '<') {
-                    return "<img style='max-height:100px; max-width:100px;' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='".$this->name."'/>";
+                $file2 = $lines_string;
+                $file = $retcode;
+
+
+                // $retcode >= 400 -> not found, $retcode = 200, found.
+//                if ($retcode == 200) {
+//                    return true;
+//                }
+
+
+                if ($file == 200 && $file2[0] != '<') {
+                    return "<img style='max-height:100px; max-width:100px;' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
                 } else {
-                    return "<img style='max-height:100px; max-width:100px;' src='/storage/image/user/" . $this->image . "' alt='".$this->name."'/>";
+                    return "<img style='max-height:100px; max-width:100px;' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
                 }
             });
             $grid->name(trans('Name'));
@@ -173,6 +188,8 @@ class HomeController extends Controller
                 if ($actions->getKey() == 1) {
                     $actions->disableDelete();
                 }
+                $actions->disableEdit();
+                $actions->disableview();
             });
 
             $grid->tools(function (Grid\Tools $tools) {
@@ -181,26 +198,26 @@ class HomeController extends Controller
                 });
             });
             $grid->filter(function ($filter) {
-
                 // Sets the range query for the created_at field
                 $filter->between('jobid', 'Search by Varsity ID');
             });
 
             $grid->disableCreateButton();
-            $grid->perPages([10, 25, 20, 25, 30, 35, 40, 45, 50, 100]);
+            $grid->perPages([10, 15, 20, 25, 30, 35, 40, 45, 50, 100]);
 
 
         });
     }
+
     protected function FacultyGrid()
     {
         return User::grid(function (Grid $grid) {
 
             $grid->model()->where('userrole', '=', 2);
             $grid->id('ID')->sortable();
-            $grid->jobid(trans('Varsity ID'));
+            $grid->jobid(trans('Varsity ID'))->sortable();
             $grid->image(trans('admin.avatar'))->display(function ($s) {
-                $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid.".jpg";
+                $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
 //                $file = file($url);
 //                $file = file_exists($url);
 //                $file = file_get_contents($url);
@@ -224,9 +241,9 @@ class HomeController extends Controller
                 //output, you can also save it locally on the server
                 $file = $lines_string;
                 if ($file[0] != '<') {
-                    return "<img style='max-height:100px; max-width:100px;' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='".$this->name."'/>";
+                    return "<img style='max-height:100px; max-width:100px;' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
                 } else {
-                    return "<img style='max-height:100px; max-width:100px;' src='/storage/image/user/" . $this->image . "' alt='".$this->name."'/>";
+                    return "<img style='max-height:100px; max-width:100px;' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
                 }
             });
             $grid->name(trans('Name'));
@@ -248,6 +265,8 @@ class HomeController extends Controller
                 if ($actions->getKey() == 1) {
                     $actions->disableDelete();
                 }
+                $actions->disableEdit();
+                $actions->disableview();
             });
 
             $grid->tools(function (Grid\Tools $tools) {
@@ -267,15 +286,16 @@ class HomeController extends Controller
 
         });
     }
+
     protected function OfficerGrid()
     {
         return User::grid(function (Grid $grid) {
 
             $grid->model()->where('userrole', '=', 3);
             $grid->id('ID')->sortable();
-            $grid->jobid(trans('Varsity ID'));
+            $grid->jobid(trans('Varsity ID'))->sortable();
             $grid->image(trans('admin.avatar'))->display(function ($s) {
-                $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid.".jpg";
+                $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
 //                $file = file($url);
 //                $file = file_exists($url);
 //                $file = file_get_contents($url);
@@ -299,9 +319,9 @@ class HomeController extends Controller
                 //output, you can also save it locally on the server
                 $file = $lines_string;
                 if ($file[0] != '<') {
-                    return "<img style='max-height:100px; max-width:100px;' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='".$this->name."'/>";
+                    return "<img style='max-height:100px; max-width:100px;' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
                 } else {
-                    return "<img style='max-height:100px; max-width:100px;' src='/storage/image/user/" . $this->image . "' alt='".$this->name."'/>";
+                    return "<img style='max-height:100px; max-width:100px;' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
                 }
             });
             $grid->name(trans('Name'));
@@ -323,6 +343,8 @@ class HomeController extends Controller
                 if ($actions->getKey() == 1) {
                     $actions->disableDelete();
                 }
+                $actions->disableEdit();
+                $actions->disableview();
             });
 
             $grid->tools(function (Grid\Tools $tools) {
@@ -357,5 +379,6 @@ class HomeController extends Controller
 //            $content->body($this->form()->edit($id));
 //        });
 //    }
+
 
 }
