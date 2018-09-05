@@ -23,14 +23,15 @@
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
 
-                
+                <?php echo Admin::getNavbar()->render(); ?>
+
 
                 <!-- User Account Menu -->
                 <li class="dropdown user user-menu">
                     <!-- Menu Toggle Button -->
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <!-- The user image in the navbar-->
-                        <img src="<?php echo e(Admin::user()->avatar, false); ?>" class="user-image" alt="<?php echo e(Admin::user()->name, false); ?>">
+                        <img src="<?php echo e(Admin::user()->avatar, false); ?>" class="user-image" alt="User Image">
                         <!-- hidden-xs hides the username on small devices so only the image appears. -->
                         <span class="hidden-xs"><?php echo e(Admin::user()->name, false); ?></span>
                     </a>
@@ -42,7 +43,7 @@
                             <p>
                                 <?php echo e(Admin::user()->name, false); ?>
 
-                                <small>Member since: <?php echo e(Admin::user()->created_at, false); ?></small>
+                                <small>Member since admin <?php echo e(Admin::user()->created_at, false); ?></small>
                             </p>
                         </li>
                         <li class="user-footer">

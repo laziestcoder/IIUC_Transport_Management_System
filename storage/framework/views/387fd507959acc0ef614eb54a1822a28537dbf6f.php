@@ -7,7 +7,11 @@
                  <a href="<?php echo e(admin_base_path($item['uri']), false); ?>">
             <?php endif; ?>
                 <i class="fa <?php echo e($item['icon'], false); ?>"></i>
-                <span><?php echo e($item['title'], false); ?></span>
+                <?php if(Lang::has($titleTranslation = 'admin.menu_titles.' . trim(str_replace(' ', '_', strtolower($item['title']))))): ?>
+                    <span><?php echo e(__($titleTranslation), false); ?></span>
+                <?php else: ?>
+                    <span><?php echo e($item['title'], false); ?></span>
+                <?php endif; ?>
             </a>
         </li>
     <?php else: ?>

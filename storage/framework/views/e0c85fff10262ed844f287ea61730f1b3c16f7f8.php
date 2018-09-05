@@ -21,7 +21,7 @@
         
         <h3><b><?php echo e("All Schedule", false); ?></b><br><br></h3>
         <?php if(count($schedules) > 0): ?>
-            <table class="table table-hover">
+            <table class="table table-hover table-responsive-lg">
                 <thead class="table">
                 <tr>
                     <th>Sl</th>

@@ -65,7 +65,7 @@ class ManagementController extends Controller
             'user' => $user,
             "gender" => $user_gender,
         );
-        return view('management')->with($data);
+        return view('user.management')->with($data);
     }
 
     /**

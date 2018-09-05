@@ -46,7 +46,7 @@
             </small>
         </h3>
         <?php if( count($days) > 0 ): ?>
-            <table class="table table-hover">
+            <table class="table table-hover table-responsive-lg">
                 <thead class="table">
                 <tr>
                     <th>No</th>

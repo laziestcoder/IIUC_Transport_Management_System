@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             $table->boolean('gender')->default(false);
             $table->integer('adminrole')->default(1);
             $table->string('image')->nullable()->default('defaultAdmin.png');
-//            $table->boolean('confirmation')->default(false);
+            $table->boolean('confirmation')->default(false);
             $table->string('token')->nullable();
             $table->rememberToken();
             $table->timestamps();

@@ -31,7 +31,7 @@
             <?php $__currentLoopData = $days; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <?php if($day->id != 9): ?>
                     <h3><b><?php echo e("$day->dayname", false); ?></b></h3>
-                    <table class="table table-hover table-bordered">
+                    <table class="table table-hover table-bordered table-responsive-lg">
                         <thead class="table">
                         <tr>
                             <th><?php echo e("No.", false); ?></th>

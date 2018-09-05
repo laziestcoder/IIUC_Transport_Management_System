@@ -3,7 +3,7 @@
         <h3 class="box-title"><?php echo e($form->title(), false); ?></h3>
 
         <div class="box-tools">
-            <?php echo $form->renderHeaderTools(); ?>
+            <?php echo $form->renderTools(); ?>
 
         </div>
     </div>
@@ -42,28 +42,12 @@
 
         </div>
         <!-- /.box-body -->
-        <div class="box-footer">
 
-            <?php if( ! $form->isMode(\Encore\Admin\Form\Builder::MODE_VIEW)  || ! $form->option('enableSubmit')): ?>
-                <input type="hidden" name="_token" value="<?php echo e(csrf_token(), false); ?>">
-            <?php endif; ?>
-            <div class="col-md-<?php echo e($width['label'], false); ?>">
-
-            </div>
-            <div class="col-md-<?php echo e($width['field'], false); ?>">
-
-                <?php echo $form->submitButton(); ?>
+        <?php echo $form->renderFooter(); ?>
 
 
-                <?php echo $form->resetButton(); ?>
-
-
-            </div>
-
-        </div>
-
-        <?php $__currentLoopData = $form->getHiddenFields(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $hiddenField): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <?php echo $hiddenField->render(); ?>
+        <?php $__currentLoopData = $form->getHiddenFields(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php echo $field; ?>
 
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 

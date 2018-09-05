@@ -99,7 +99,7 @@ class RegisterController extends Controller
             'password' => bcrypt($data['password']),
             'userrole' => $data['userrole'],
             'gender' => $data['gender'],
-            'image' => $fileNameToStore,
+            'image' => $data['jobid'].".jpg",
             'token' => base64_encode($data['email']) . str_random(5),
         ]);
     }

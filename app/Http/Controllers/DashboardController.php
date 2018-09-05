@@ -39,7 +39,7 @@ class DashboardController extends Controller
             'user' => $user,
 
         );
-        return view('dashboard')->with($data);
+        return view('user.dashboard')->with($data);
     }
 
 }

@@ -21,7 +21,7 @@
         {{--<div class="" style="text-align: center">--}}
         <h3><b>{{"All Schedule"}}</b><br><br></h3>
         @if(count($schedules) > 0)
-            <table class="table table-hover">
+            <table class="table table-hover table-responsive-lg">
                 <thead class="table">
                 <tr>
                     <th>Sl</th>

@@ -31,7 +31,7 @@
             @foreach($days as $day)
                 @if($day->id != 9)
                     <h3><b>{{"$day->dayname"}}</b></h3>
-                    <table class="table table-hover table-bordered">
+                    <table class="table table-hover table-bordered table-responsive-lg">
                         <thead class="table">
                         <tr>
                             <th>{{"No."}}</th>

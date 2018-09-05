@@ -28,11 +28,11 @@ class EmailVerification extends Mailable
      *
      * @return $this
      */
-    public function build()
-    {
-        return $this->view('mails.confirmation')->with([
-            'token' => $this->user->token,
-            'name' => $this->user->name,
-        ]);
-    }
+//    public function build()
+//    {
+//        return $this->view('mails.confirmation')->with([
+//            'token' => $this->user->token,
+//            'name' => $this->user->name,
+//        ]);
+//    }
 }

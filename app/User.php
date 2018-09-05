@@ -4,10 +4,13 @@ namespace App;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Encore\Admin\Traits\AdminBuilder;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Model;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable,AdminBuilder; //HasPermissions;
 
     /**
      * The attributes that are mass assignable.
