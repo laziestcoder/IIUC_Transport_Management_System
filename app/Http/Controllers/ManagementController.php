@@ -240,7 +240,7 @@ class ManagementController extends Controller
 
         }
         //account verification end
-        
+
         $user_gender = auth()->user()->gender;
         if ($user_gender == 0) {
             $schedules = Schedule::where('male', '1')->get();
