@@ -45,7 +45,7 @@ class ManagementController extends Controller
             $datedifference = $expiredate->diffInDays($today);
             if ($datedifference > 0) {
                 //$date = $today->addDays($date)->toDateString();
-                return redirect('/dashboard')->with('error', 'You have changed you bus routine on ' . $check->entrydate . '. You are not allowed to edit now! Wait till ' . $expiredate->toDateString() . ' .');
+                return redirect('/dashboard')->with('error', 'You have changed your bus routine on ' . $check->entrydate . '. You are not allowed to edit now! Wait till ' . $expiredate->toDateString() . ' .');
             }
         }
 

@@ -12,6 +12,9 @@ use DB;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
 use Response;
+use Encore\Admin\Form;
+use Encore\Admin\Grid;
+
 
 class ScheduleController extends Controller
 {
@@ -65,7 +68,7 @@ class ScheduleController extends Controller
             'description' => 'Here you can add New Bus Schedule.',
             'titlenew' => 'Create New Schedule',
             'titleinfo' => 'Available Schedule',
-            'times' => Time::all('id', 'time'),
+            'times' => Time::all('id', 'time')->sortBy('time'),
             'days' => Day::all('id', 'dayname'),
             'points' => BusPoint::all('id', 'pointname'),
             'routes' => BusRoute::all()->sortBy('routename'),
@@ -255,7 +258,7 @@ class ScheduleController extends Controller
 
         //Check for correct user
 
-        if ((Admin::user()->id == $schedule->user_id) || (DB::table('admin_role_users')->where('user_id', (Admin::user()->id))->first()->role_id <= 4)) {
+        if ((Admin::user()->id == $schedule->user_id) || (DB::table('admin_role_users')->where('user_id', (Admin::user()->id))->first()->role_id <= 1)) {
 
 
             // Check other Tables if the time is used

@@ -118,7 +118,7 @@ class TimeController extends Controller
 
         //Check for correct user
 
-        if (Admin::user()->id !== $time->user_id) {
+        if ((Admin::user()->id !== $time->user_id) && !(DB::table('admin_role_users')->where('user_id', (Admin::user()->id))->first()->role_id <= 1)) {
             return redirect('/admin/auth/addtime')->with('error', 'Unauthorized Access Denied!');
         }
         /* if($BusRoute->cover_image != 'noimage.jpeg' ){

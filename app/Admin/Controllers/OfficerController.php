@@ -33,7 +33,7 @@ class OfficerController extends Controller
         return $content
             ->header(trans('Users'))
             ->description(trans('Officer-Staff List'))
-            ->body($this->grid()->render());
+            ->body($this->grid(2)->render());
     }
 
 
@@ -42,30 +42,18 @@ class OfficerController extends Controller
      *
      * @return Grid
      */
-    protected function grid()
+    protected function grid($value)
     {
-        return User::grid(function (Grid $grid) {
+        $self = $this;
+        return User::grid(function (Grid $grid) use ($value,$self) {
 
-            $grid->model()->where('userrole', '=', 3);
+
+            $grid->model()->where('userrole', '=', $value);
             $grid->id('ID')->sortable();
             $grid->jobid(trans('Varsity ID'))->sortable();
-            $grid->image(trans('admin.avatar'))->display(function ($s) {
-                $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
-                $ch = curl_init();
-                $timeout = 5;
-                curl_setopt($ch, CURLOPT_URL, $url);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-                // Get URL content
-                $lines_string = curl_exec($ch);
-                $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                // close handle to release resources
-                curl_close($ch);
-                //output, you can also save it locally on the server
-                $file2 = $lines_string;
-                $file = $retcode;
-
-                if ($file == 200 && $file2[0] != '<') {
+            $grid->image(trans('admin.avatar'))->display(function ($s) use ($self) {
+                $file= $self->imageValidate($this->jobid);  //I want to use this $file value
+                if($file){ // here I want to access $file
                     return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
                 } else {
                     return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
@@ -112,33 +100,35 @@ class OfficerController extends Controller
     }
 
 
-    /**
-     *  protected function grid()
-    {
-    $grid = new Grid(new Administrator());
+    // /**
+    //  *  protected function grid()
+    // {
+    // $grid = new Grid(new Administrator());
 
-    $grid->id('ID')->sortable();
-    $grid->username(trans('admin.username'));
-    $grid->name(trans('admin.name'));
-    $grid->roles(trans('admin.roles'))->pluck('name')->label();
-    $grid->created_at(trans('admin.created_at'));
-    $grid->updated_at(trans('admin.updated_at'));
+    // $grid->id('ID')->sortable();
+    // $grid->username(trans('admin.username'));
+    // $grid->name(trans('admin.name'));
+    // $grid->roles(trans('admin.roles'))->pluck('name')->label();
+    // $grid->created_at(trans('admin.created_at'));
+    // $grid->updated_at(trans('admin.updated_at'));
 
-    $grid->actions(function (Grid\Displayers\Actions $actions) {
-    if ($actions->getKey() == 1) {
-    $actions->disableDelete();
-    }
-    });
+    // $grid->actions(function (Grid\Displayers\Actions $actions) {
+    // if ($actions->getKey() == 1) {
+    // $actions->disableDelete();
+    // }
+    // });
 
-    $grid->tools(function (Grid\Tools $tools) {
-    $tools->batch(function (Grid\Tools\BatchActions $actions) {
-    $actions->disableDelete();
-    });
-    });
+    // $grid->tools(function (Grid\Tools $tools) {
+    // $tools->batch(function (Grid\Tools\BatchActions $actions) {
+    // $actions->disableDelete();
+    // });
+    // });
 
-    return $grid;
-    }
-     */
+    // return $grid;
+    // }
+    //  */
+
+    
     /**
      * Show interface.
      *
@@ -213,8 +203,10 @@ class OfficerController extends Controller
         $form->display('created_at', trans('Member Since'));
         $form->display('updated_at', trans('Last Updated'));
         $form->tools(function (Form\Tools $tools) {
+            // Add a button, the argument can be a string, or an instance of the object that implements the Renderable or Htmlable interface
+            //$tools->append('<a onclick="window.history.back()" class="btn btn-sm btn-primary"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back</a>');
             // Disable list btn
-            $tools->disableList();
+            //$tools->disableList();
             $tools->disableDelete();
             $tools->disableView();
         });
@@ -225,23 +217,23 @@ class OfficerController extends Controller
     }
 
 
-//    protected function imageValidate($pic){
-//        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $pic . ".jpg";
-//        $ch = curl_init();
-//        $timeout = 5;
-//        curl_setopt($ch, CURLOPT_URL, $url);
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-//
-//        $lines_string = curl_exec($ch);
-//        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-//        curl_close($ch);
-//        $file2 = $lines_string;
-//        $file = $retcode;
-//        if ($file == 200 && $file2[0] != '<') {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
+    protected function imageValidate($pic){
+        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $pic . ".jpg";
+        $ch = curl_init();
+        $timeout = 5;
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+
+        $lines_string = curl_exec($ch);
+        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $file2 = $lines_string;
+        $file = $retcode;
+        if ($file == 200 && $file2[0] != '<') {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

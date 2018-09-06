@@ -3,22 +3,14 @@
 namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
-use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 
 use App\User;
 use DB;
-use Encore\Admin\Controllers\Dashboard;
 use Encore\Admin\Controllers\HasResourceActions;
-use Encore\Admin\Layout\Column;
-use Encore\Admin\Layout\Row;
 
-use Encore\Admin\Auth\Database\Administrator;
-use Encore\Admin\Auth\Database\Permission;
-use Encore\Admin\Auth\Database\Role;
-use Encore\Admin\Show;
 
 class StudentController extends Controller
 {
@@ -44,28 +36,16 @@ class StudentController extends Controller
      */
     protected function grid($value)
     {
-        return User::grid(function (Grid $grid) use ($value) {
+        $self = $this;
+        return User::grid(function (Grid $grid) use ($value,$self) {
+
 
             $grid->model()->where('userrole', '=', $value);
             $grid->id('ID')->sortable();
-            $grid->jobid(trans('Varsity ID'))->sortable();;
-            $grid->image(trans('admin.avatar'))->display(function ($s) {
-                $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
-                $ch = curl_init();
-                $timeout = 5;
-                curl_setopt($ch, CURLOPT_URL, $url);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-                // Get URL content
-                $lines_string = curl_exec($ch);
-                $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                // close handle to release resources
-                curl_close($ch);
-                //output, you can also save it locally on the server
-                $file2 = $lines_string;
-                $file = $retcode;
-
-                if ($file == 200 && $file2[0] != '<') {
+            $grid->jobid(trans('Varsity ID'))->sortable();
+            $grid->image(trans('admin.avatar'))->display(function ($s) use ($self) {
+                $file= $self->imageValidate($this->jobid);  //I want to use this $file value
+                if($file){ // here I want to access $file
                     return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
                 } else {
                     return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
@@ -113,50 +93,6 @@ class StudentController extends Controller
 
 
     /**
-     *  protected function grid()
-    {
-    $grid = new Grid(new Administrator());
-
-    $grid->id('ID')->sortable();
-    $grid->username(trans('admin.username'));
-    $grid->name(trans('admin.name'));
-    $grid->roles(trans('admin.roles'))->pluck('name')->label();
-    $grid->created_at(trans('admin.created_at'));
-    $grid->updated_at(trans('admin.updated_at'));
-
-    $grid->actions(function (Grid\Displayers\Actions $actions) {
-    if ($actions->getKey() == 1) {
-    $actions->disableDelete();
-    }
-    });
-
-    $grid->tools(function (Grid\Tools $tools) {
-    $tools->batch(function (Grid\Tools\BatchActions $actions) {
-    $actions->disableDelete();
-    });
-    });
-
-    return $grid;
-    }
-     */
-    /**
-     * Show interface.
-     *
-     * @param mixed   $id
-     * @param Content $content
-     *
-     * @return Content
-     */
-//    public function show($id, Content $content)
-//    {
-//        return $content
-//            ->header(trans('User'))
-//            ->description(trans('Details'))
-//            ->body($this->detail($id));
-//    }
-
-
-    /**
      * Edit interface.
      *
      * @param $id
@@ -177,11 +113,12 @@ class StudentController extends Controller
      */
     public function form()
     {
+        $self = $this;
         $form = new Form(new User());
 
         $form->display('id', 'ID');
         $form->display('jobid', 'Varsity ID');
-        $form->display('avatar', trans('admin.avatar'))->with(function ($s){
+        $form->display('avatar', trans('admin.avatar'))->with(function ($s) use ($self){
             $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
             $ch = curl_init();
             $timeout = 5;
@@ -195,6 +132,8 @@ class StudentController extends Controller
             $file2 = $lines_string;
             $file = $retcode;
             if ($file == 200 && $file2[0] != '<') {
+//            $file = $self->imageValidate($this->jobid);
+//            if($file){
                 return "<img style='max-height:100px; max-width:100px;' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
             } else {
                 return "<img style='max-height:100px; max-width:100px;' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
@@ -213,8 +152,10 @@ class StudentController extends Controller
         $form->display('created_at', trans('Member Since'));
         $form->display('updated_at', trans('Last Updated'));
         $form->tools(function (Form\Tools $tools) {
+            // Add a button, the argument can be a string, or an instance of the object that implements the Renderable or Htmlable interface
+            //$tools->append('<a onclick="window.history.back()" class="btn btn-sm btn-primary"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back</a>');
             // Disable list btn
-            $tools->disableList();
+            //$tools->disableList();
             $tools->disableDelete();
             $tools->disableView();
         });
