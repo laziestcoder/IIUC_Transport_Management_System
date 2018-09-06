@@ -14,5 +14,5 @@ Route::group([
     $router->resource('/auth/students', 'StudentController');
     $router->resource('/auth/teachers', 'FacultyController');
     $router->resource('/auth/officer-staff', 'OfficerController');
-
+    $router->resource('/auth/bus-route-info', 'BusRouteStudentInfoController');
 });

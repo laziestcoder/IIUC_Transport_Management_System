@@ -131,6 +131,7 @@ class ManagementController extends Controller
             $schedule->droppoint = $request->input('droppoint' . $day->id);
             $schedule->droptime = $request->input('droptime' . $day->id);
             $schedule->user_id = auth()->user()->id;
+            $schedule->userrole = auth()->user()->userrole;
             $schedule->entrydate = Carbon::now()->toDateString();
             $schedule->save();
         }
@@ -164,6 +165,7 @@ class ManagementController extends Controller
             $schedule->droppoint = $request->input('droppoint' . $day->id);
             $schedule->droptime = $request->input('droptime' . $day->id);
             $schedule->user_id = auth()->user()->id;
+            $schedule->userrole = auth()->user()->userrole;
             $schedule->entrydate = Carbon::now()->toDateString();
             $schedule->save();
         }
@@ -260,9 +262,10 @@ class ManagementController extends Controller
             'days' => Day::all('id', 'dayname'),
             'points' => BusPoint::all('id', 'pointname'),
             'gender' => $user_gender,
+            'userrole' => $user->userrole,
             //'days' => $days,
             //'times' => $times,
         );
-        return view("busroutes.busroutes")->with($data);
+        return view("user.busSchedule")->with($data);
     }
 }

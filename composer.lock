@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5d33955779849d416cb549fad90474e4",
+    "content-hash": "5a5c8f531434caa230349424d6a66836",
     "packages": [
         {
             "name": "bestmomo/laravel-email-confirmation",
@@ -1743,16 +1743,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.9.7",
+            "version": "v0.9.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "4f5b6c090948773a8bfeea6a0f07ab7d0b24e932"
+                "reference": "ed3c32c4304e1a678a6e0f9dc11dd2d927d89555"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/4f5b6c090948773a8bfeea6a0f07ab7d0b24e932",
-                "reference": "4f5b6c090948773a8bfeea6a0f07ab7d0b24e932",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/ed3c32c4304e1a678a6e0f9dc11dd2d927d89555",
+                "reference": "ed3c32c4304e1a678a6e0f9dc11dd2d927d89555",
                 "shasum": ""
             },
             "require": {
@@ -1813,7 +1813,7 @@
                 "interactive",
                 "shell"
             ],
-            "time": "2018-08-11T15:54:43+00:00"
+            "time": "2018-09-05T11:40:09+00:00"
         },
         {
             "name": "ramsey/uuid",

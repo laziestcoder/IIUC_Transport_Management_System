@@ -33,7 +33,7 @@ class StudentController extends Controller
         return $content
            ->header(trans('Users'))
             ->description(trans('Student List'))
-            ->body($this->grid()->render());
+            ->body($this->grid(1)->render());
     }
 
 
@@ -42,11 +42,11 @@ class StudentController extends Controller
      *
      * @return Grid
      */
-    protected function grid()
+    protected function grid($value)
     {
-        return User::grid(function (Grid $grid) {
+        return User::grid(function (Grid $grid) use ($value) {
 
-            $grid->model()->where('userrole', '=', 1);
+            $grid->model()->where('userrole', '=', $value);
             $grid->id('ID')->sortable();
             $grid->jobid(trans('Varsity ID'))->sortable();;
             $grid->image(trans('admin.avatar'))->display(function ($s) {
@@ -66,9 +66,9 @@ class StudentController extends Controller
                 $file = $retcode;
 
                 if ($file == 200 && $file2[0] != '<') {
-                    return "<img style='max-height:100px; max-width:100px;' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
+                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
                 } else {
-                    return "<img style='max-height:100px; max-width:100px;' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
+                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
                 }
             });
             $grid->name(trans('Name'));
@@ -79,10 +79,10 @@ class StudentController extends Controller
 
             $grid->confirmed(trans('Activated'))->display(function ($s) {
                 return $s ? 'Yes' : 'No';
-            });
+            })->label();
             $grid->confirmation(trans('Verified'))->display(function ($s) {
                 return $s ? 'Yes' : 'No';
-            });
+            })->label();
             $grid->created_at(trans('Member Since'));
             $grid->updated_at(trans('Last Updated'));
 
@@ -212,29 +212,36 @@ class StudentController extends Controller
         $form->radio('confirmation', 'Verified')->options([0 => 'No', 1 => 'Yes'])->stacked();
         $form->display('created_at', trans('Member Since'));
         $form->display('updated_at', trans('Last Updated'));
+        $form->tools(function (Form\Tools $tools) {
+            // Disable list btn
+            $tools->disableList();
+            $tools->disableDelete();
+            $tools->disableView();
+        });
+
         $form->save();
 
         return $form;
     }
 
 
-//    protected function imageValidate($pic){
-//        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $pic . ".jpg";
-//        $ch = curl_init();
-//        $timeout = 5;
-//        curl_setopt($ch, CURLOPT_URL, $url);
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-//
-//        $lines_string = curl_exec($ch);
-//        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-//        curl_close($ch);
-//        $file2 = $lines_string;
-//        $file = $retcode;
-//        if ($file == 200 && $file2[0] != '<') {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
+    protected function imageValidate($pic){
+        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $pic . ".jpg";
+        $ch = curl_init();
+        $timeout = 5;
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+
+        $lines_string = curl_exec($ch);
+        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $file2 = $lines_string;
+        $file = $retcode;
+        if ($file == 200 && $file2[0] != '<') {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

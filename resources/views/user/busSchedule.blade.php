@@ -27,12 +27,14 @@
                                 @foreach($times as $time)
                                     <?php 
                                     if($gender == 0){
-                                        $schedules = App\Schedule::where('day', $day->id)
+                                        $schedules = App\Schedule::where('user','=',$userrole)
+                                        ->where('day', $day->id)
                                         ->where('time', $time->id)
                                         ->where('male','1')
                                         ->get();
                                     }else{
-                                        $schedules = App\Schedule::where('day', $day->id)
+                                        $schedules = App\Schedule::where('user','=',$userrole)
+                                        ->where('day', $day->id)
                                         ->where('time', $time->id)
                                         ->where('female','1')
                                         ->get();

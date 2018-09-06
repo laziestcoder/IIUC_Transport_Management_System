@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Authenticatable
 {
-    use Notifiable,AdminBuilder; //HasPermissions;
+    use Notifiable, AdminBuilder; //HasPermissions;
 
     /**
      * The attributes that are mass assignable.

@@ -47,10 +47,10 @@ class DashboardController extends Controller
         $verified = false;
         if ($file == 200 && $file2[0] != '<') {
             $verified = true;
-            $image = "<img src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
+            $image = "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
         } else {
             $verified = false;
-            $image = "<img src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
+            $image = "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
         }
 
         $data = array(

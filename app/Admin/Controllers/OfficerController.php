@@ -48,7 +48,7 @@ class OfficerController extends Controller
 
             $grid->model()->where('userrole', '=', 3);
             $grid->id('ID')->sortable();
-            $grid->jobid(trans('Varsity ID'))->sortable();;
+            $grid->jobid(trans('Varsity ID'))->sortable();
             $grid->image(trans('admin.avatar'))->display(function ($s) {
                 $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
                 $ch = curl_init();
@@ -66,9 +66,9 @@ class OfficerController extends Controller
                 $file = $retcode;
 
                 if ($file == 200 && $file2[0] != '<') {
-                    return "<img style='max-height:100px; max-width:100px;' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
+                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
                 } else {
-                    return "<img style='max-height:100px; max-width:100px;' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
+                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
                 }
             });
             $grid->name(trans('Name'));
@@ -79,10 +79,10 @@ class OfficerController extends Controller
 
             $grid->confirmed(trans('Activated'))->display(function ($s) {
                 return $s ? 'Yes' : 'No';
-            });
+            })->label();
             $grid->confirmation(trans('Verified'))->display(function ($s) {
                 return $s ? 'Yes' : 'No';
-            });
+            })->label();
             $grid->created_at(trans('Member Since'));
             $grid->updated_at(trans('Last Updated'));
 
@@ -195,9 +195,9 @@ class OfficerController extends Controller
             $file2 = $lines_string;
             $file = $retcode;
             if ($file == 200 && $file2[0] != '<') {
-                return "<img style='max-height:100px; max-width:100px;' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
+                return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
             } else {
-                return "<img style='max-height:100px; max-width:100px;' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
+                return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
             }
         });
         $form->display('name', trans('admin.name'))->rules('required');
@@ -212,6 +212,13 @@ class OfficerController extends Controller
         $form->radio('confirmation', 'Verified')->options([0 => 'No', 1 => 'Yes'])->stacked();
         $form->display('created_at', trans('Member Since'));
         $form->display('updated_at', trans('Last Updated'));
+        $form->tools(function (Form\Tools $tools) {
+            // Disable list btn
+            $tools->disableList();
+            $tools->disableDelete();
+            $tools->disableView();
+        });
+
         $form->save();
 
         return $form;

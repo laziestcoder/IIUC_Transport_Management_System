@@ -48,8 +48,8 @@
                     <tr>
                         <td>{{$flag+=1}}</td>
                         <td><a href="/admin/auth/routes/{{$route->id}}">{{$route->routename}}</a></td>
-                        <td>{{DB::table('admin_users')->where('id', $route->user_id)->first()->name}}</td>
                         <td>{{$route->id}}</td>
+                        <td>{{DB::table('admin_users')->where('id', $route->user_id)->first()->name}}</td>
                         <td>{{$route->created_at}}</td>
                         <td><a href="/admin/auth/routes/{{$route->id}}/edit" class="btn btn-default">Edit</a>
                             {!! Form::open(['action' => ['BusRoutesController@destroy', $route->id], 'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline'  /* ,'onclick' => 'function deleteMe()' */  ]) !!} {{-- 'onclick' => 'return confirm("Are you sure?")' --}}
