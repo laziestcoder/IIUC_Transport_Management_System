@@ -18,4 +18,5 @@ Route::group([
     $router->resource('/auth/driver', 'DriverInfoController');
     $router->resource('/auth/helper', 'HelperInfoController');
     $router->resource('/auth/user-role', 'UserRoleController');
+    $router->resource('/auth/transport-notice', 'NoticeController');
 });

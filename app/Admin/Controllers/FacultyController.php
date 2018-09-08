@@ -66,11 +66,13 @@ class FacultyController extends Controller
             });
 
             $grid->confirmed(trans('Activated'))->display(function ($s) {
-                return $s ? 'Yes' : 'No';
-            })->label();
-            $grid->confirmation(trans('Verified'))->display(function ($s) {
-                return $s ? 'Yes' : 'No';
-            })->label();
+                return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
+            });
+            $states = [
+                'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+                'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
+            ];
+            $grid->confirmation(trans('Verified'))->switch($states);
             $grid->created_at(trans('Member Since'));
             $grid->updated_at(trans('Last Updated'));
 
@@ -78,7 +80,7 @@ class FacultyController extends Controller
                 if ($actions->getKey() == 1) {
                     $actions->disableDelete();
                 }
-//                $actions->disableEdit();
+                $actions->disableEdit();
                 $actions->disableview();
             });
 
@@ -152,10 +154,16 @@ class FacultyController extends Controller
             return $s? 'Female':'Male';
         });
         $form->display('confirmed', trans('Activated'))->with(function ($s){
-            return $s? 'Yes':'No';
+            return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
         });
 
-        $form->radio('confirmation', 'Verified')->options([0 => 'No', 1 => 'Yes'])->stacked();
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('confirmation','Verified')->states($states);
+
+        //$form->radio('confirmation', 'Verified')->options([0 => 'No', 1 => 'Yes'])->stacked();
         $form->display('created_at', trans('Member Since'));
         $form->display('updated_at', trans('Last Updated'));
 

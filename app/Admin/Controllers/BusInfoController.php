@@ -4,11 +4,17 @@ namespace App\Admin\Controllers;
 
 use App\BusInfo;
 use App\Http\Controllers\Controller;
+use DB;
+use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+
+//use Encore\Admin\Admin;
+
 
 class BusInfoController extends Controller
 {
@@ -31,7 +37,7 @@ class BusInfoController extends Controller
     /**
      * Show interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      * @return Content
      */
@@ -46,7 +52,7 @@ class BusInfoController extends Controller
     /**
      * Edit interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      * @return Content
      */
@@ -81,15 +87,19 @@ class BusInfoController extends Controller
     {
         $grid = new Grid(new BusInfo);
 
-        $grid->id('Id');
-        $grid->busid('Busid');
-        $grid->registration('Registration');
-        $grid->license('License');
-        $grid->seat('Seat');
-        $grid->availability('Availability');
-        $grid->user_id('User id');
-        $grid->created_at('Created at');
-        $grid->updated_at('Updated at');
+        $grid->id('ID')->sortable();
+        $grid->busid('Bus ID')->sortable();
+        $grid->registration('Registration No')->sortable();
+        $grid->license('License No')->sortable();
+        $grid->seat('Seat Capacity')->sortable();
+        $grid->availability('Availability')->display(function ($s) {
+            return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
+        })->sortable();
+        $grid->user_id('Created By')->display(function ($s) {
+            return Administrator::all()->find($s)->name;
+        })->sortable()->label();
+        $grid->created_at('Created At')->sortable();
+        $grid->updated_at('Updated At')->sortable();
 
         return $grid;
     }
@@ -97,22 +107,29 @@ class BusInfoController extends Controller
     /**
      * Make a show builder.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @return Show
      */
     protected function detail($id)
     {
         $show = new Show(BusInfo::findOrFail($id));
+        $show->panel()
+            //->style('danger') // could be primary, info, danger, warning, default
+            ->title('Details');
 
-        $show->id('Id');
-        $show->busid('Busid');
-        $show->registration('Registration');
-        $show->license('License');
-        $show->seat('Seat');
-        $show->availability('Availability');
-        $show->user_id('User id');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
+        $show->id('ID');
+        $show->busid('Bus ID');
+        $show->registration('Registration No');
+        $show->license('License No');
+        $show->seat('Seat Capacity');
+        $show->availability('Availability')->as(function ($s) {
+            return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
+        });
+        $show->user_id('Created By')->as(function ($s) {
+            return Administrator::all()->find($s)->name;
+        })->label();
+        $show->created_at('Created At');
+        $show->updated_at('Updated At');
 
         return $show;
     }
@@ -126,12 +143,19 @@ class BusInfoController extends Controller
     {
         $form = new Form(new BusInfo);
 
-        $form->text('busid', 'Busid');
-        $form->text('registration', 'Registration');
-        $form->text('license', 'License');
-        $form->number('seat', 'Seat');
-        $form->switch('availability', 'Availability')->default(1);
-        $form->number('user_id', 'User id');
+
+        $form->text('busid', 'Bus ID');
+        $form->text('registration', 'Registration No');
+        $form->text('license', 'License No');
+        $form->number('seat', 'Seat Capacity');
+        $states = [
+            'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('availability', 'Availability')->states($states);
+        $form->hidden('user_id', 'Created By')->default(function () {
+            return Admin::user()->id;
+        });
 
         return $form;
     }

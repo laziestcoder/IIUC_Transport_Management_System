@@ -73,7 +73,8 @@ class NoticesController extends Controller
         $this->validate($request, [
             'title' => 'required',
             'body' => 'required',
-            'cover_image' => 'image|nullable|max:1999'
+            'cover_image' => 'image|nullable|max:1999',
+            'regno' => 'string',
         ]);
 
         //Handle File Upload
@@ -102,6 +103,7 @@ class NoticesController extends Controller
         $notice = new Notice;
         $notice->title = $request->input('title');
         $notice->body = $request->input('body');
+        $notice->noticeregistration = $request->input('regno');
         $notice->user_id = Admin::user()->id;
         $notice->cover_image = $fileNameToStore;
         //$post->cover_image = 'noimage.jpeg';
@@ -133,10 +135,10 @@ class NoticesController extends Controller
 
         //Check for correct user
 
-        if (Admin::user()->id !== $notice->user_id) {
-            return redirect('/admin/auth/notices')->with('error', 'Unauthorized Access Denied!');
-
-        }
+//        if (Admin::user()->id !== $notice->user_id) {
+//            return redirect('/admin/auth/notices')->with('error', 'Unauthorized Access Denied!');
+//
+//        }
 
         // Edit notice
 

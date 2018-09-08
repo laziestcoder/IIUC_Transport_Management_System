@@ -227,7 +227,7 @@
                                         <i class="fa fa-eye fa-2x">Read Me</i>
                                     </div>
                                 </div>
-                                <img class="img-fluid" src="/storage/cover_images/{!! $notice->cover_image !!}"
+                                <img class="img-fluid" src="/storage/{!! $notice->cover_image !!}"
                                      alt="{!! $notice->title !!}"> </a>
                             <div class="portfolio-caption">
                                 <h4>{!! $notice->title !!}</h4>
@@ -492,7 +492,7 @@
                         </div>
                         <div class="container">
                             <div class="row">
-                                <div class="col-lg-8 mx-auto">
+                                <div class="col-lg-10 mx-auto">
                                     <div class="modal-body">
 
                                         <!-- Project Details Go Here -->
@@ -501,7 +501,7 @@
                                         <p class="item-intro text-muted">Posted
                                             By: {!! DB::table('admin_users')->where('id', $notice->user_id)->first()->name !!}</p>
                                         <img class="img-fluid d-block mx-auto"
-                                             src="/storage/cover_images/{!! $notice->cover_image !!}"
+                                             src="/storage/{!! $notice->cover_image !!}"
                                              alt="{!! $notice->title !!}">
                                         <div style="text-align:left;">
                                             {!! $notice->body !!}

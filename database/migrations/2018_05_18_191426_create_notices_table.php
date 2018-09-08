@@ -19,7 +19,7 @@ class CreateNoticesTable extends Migration
             $table->mediumText('body')->nullable();
             $table->string('cover_image')->nullable();
             $table->integer('user_id');
-            $table->string('noticeregistration')->nullable();
+            $table->string('noticeregistration')->default('cover_images/noimage.jpeg')->nullable();
             $table->timestamps();
         });
     }

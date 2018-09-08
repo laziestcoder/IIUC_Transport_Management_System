@@ -58,11 +58,13 @@ class StudentController extends Controller
             });
 
             $grid->confirmed(trans('Activated'))->display(function ($s) {
-                return $s ? 'Yes' : 'No';
-            })->label();
-            $grid->confirmation(trans('Verified'))->display(function ($s) {
-                return $s ? 'Yes' : 'No';
-            })->label();
+                return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
+            });
+            $states = [
+                'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+                'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
+            ];
+            $grid->confirmation(trans('Verified'))->switch($states);
             $grid->created_at(trans('Member Since'));
             $grid->updated_at(trans('Last Updated'));
 
@@ -70,7 +72,7 @@ class StudentController extends Controller
                 if ($actions->getKey() == 1) {
                     $actions->disableDelete();
                 }
-//                $actions->disableEdit();
+                $actions->disableEdit();
                 $actions->disableview();
             });
 
@@ -134,9 +136,9 @@ class StudentController extends Controller
             if ($file == 200 && $file2[0] != '<') {
 //            $file = $self->imageValidate($this->jobid);
 //            if($file){
-                return "<img style='max-height:100px; max-width:100px;' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
+                return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
             } else {
-                return "<img style='max-height:100px; max-width:100px;' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
+                return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
             }
         });
         $form->display('name', trans('admin.name'))->rules('required');
@@ -145,10 +147,15 @@ class StudentController extends Controller
             return $s? 'Female':'Male';
         });
         $form->display('confirmed', trans('Activated'))->with(function ($s){
-            return $s? 'Yes':'No';
+            return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
         });
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('confirmation','Verified')->states($states);
 
-        $form->radio('confirmation', 'Verified')->options([0 => 'No', 1 => 'Yes'])->stacked();
+        //$form->radio('confirmation', 'Verified')->options([0 => 'No', 1 => 'Yes'])->stacked();
         $form->display('created_at', trans('Member Since'));
         $form->display('updated_at', trans('Last Updated'));
         $form->tools(function (Form\Tools $tools) {

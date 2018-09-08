@@ -21,7 +21,12 @@
 //Encore\Admin\Form::forget(['map', 'editor']);
 //Encore\Admin\Form::forget(['map']);
 //Encore\Admin\Form::forget(['editor']);
+use Encore\Admin\Form;
+use App\Admin\Extensions\Form\CKEditor;
 
+Form::forget(['map', 'editor']);
+Form::extend('ckeditor', CKEditor::class);
 
-app('view')->prependNamespace('admin', resource_path('/views/admin/views/'));
+app('view')->prependNamespace('admin', resource_path('/views/admin/'));
+
 ?>

@@ -22,7 +22,7 @@ class PagesController extends Controller
 
         // Latest News
         $noticetitle = 'Latest News';
-        $notices = Notice::orderBy('id', 'desc')->paginate(4);
+        $notices = Notice::orderBy('id', 'desc')->paginate(6);
         $description = "";
 
         //Time and Today

@@ -31,7 +31,7 @@ class DriverInfoController extends Controller
     /**
      * Show interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      * @return Content
      */
@@ -46,7 +46,7 @@ class DriverInfoController extends Controller
     /**
      * Edit interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      * @return Content
      */
@@ -81,19 +81,26 @@ class DriverInfoController extends Controller
     {
         $grid = new Grid(new Driver);
 
-        $grid->id('Id');
+        $grid->id('ID');
+        $grid->image('Photo')->display(function ($s) {
+            return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+        });
         $grid->name('Name');
-        $grid->nid('Nid');
-        $grid->driverid('Driverid');
-        $grid->licensepic('Licensepic');
-        $grid->license('License');
-        $grid->contactno('Contactno');
-        $grid->busno('Busno');
+        $grid->gender('Gender')->display(function ($s) {
+            return $s ? 'Female' : 'Male';
+        });
+        $grid->nid('NID');
+        $grid->driverid('Driver ID');
+        $grid->licensepic('License Photo')->display(function ($s) {
+            return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+        });
+        $grid->license('License No');
+        $grid->contactno('Contact No');
+        $grid->busno('Bus No');
         $grid->address('Address');
-        $grid->gender('Gender');
-        $grid->image('Image');
-        $grid->created_at('Created at');
-        $grid->updated_at('Updated at');
+
+        $grid->created_at('Created At');
+        $grid->updated_at('Updated At');
 
         return $grid;
     }
@@ -101,26 +108,34 @@ class DriverInfoController extends Controller
     /**
      * Make a show builder.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @return Show
      */
     protected function detail($id)
     {
         $show = new Show(Driver::findOrFail($id));
+        $show->panel()
+            ->title(trans('Driver Details'));
 
-        $show->id('Id');
+        $show->id('ID');
+        $show->image('Photo')->as(function ($s) {
+            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+        });
         $show->name('Name');
-        $show->nid('Nid');
-        $show->driverid('Driverid');
-        $show->licensepic('Licensepic');
-        $show->license('License');
-        $show->contactno('Contactno');
-        $show->busno('Busno');
+        $show->gender('Gender')->as(function ($s) {
+            return $s ? 'Female' : 'Male';
+        });
+        $show->nid('NID');
+        $show->driverid('Driver ID');
+        $show->licensepic('License Photo')->as(function ($s) {
+            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+        });
+        $show->license('License No');
+        $show->contactno('Contact No');
+        $show->busno('Bus No');
         $show->address('Address');
-        $show->gender('Gender');
-        $show->image('Image');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
+        $show->created_at('Created At');
+        $show->updated_at('Updated At');
 
         return $show;
     }
@@ -135,15 +150,19 @@ class DriverInfoController extends Controller
         $form = new Form(new Driver);
 
         $form->text('name', 'Name');
-        $form->text('nid', 'Nid');
-        $form->text('driverid', 'Driverid');
-        $form->image('licensepic', 'Licensepic');
+        $form->image('image', 'Photo')->uniqueName()->default('defaultAdmin.png');
+        $form->text('nid', 'NID');
+        $form->text('driverid', 'Driver ID');
+        // change upload path ->move('/storage/images/Driver/')
+        $form->image('licensepic', 'License Photo')->uniqueName();
+        // use a unique name (md5(uniqid()).extension)
+        //$form->image('licensepic')->uniqueName();
+        //$form->image('licensepic', 'Licensepic');
         $form->text('license', 'License');
-        $form->text('contactno', 'Contactno');
-        $form->text('busno', 'Busno');
+        $form->text('contactno', 'Contact No');
+        $form->text('busno', 'Bus No');
         $form->textarea('address', 'Address');
         $form->radio('gender', 'Gender')->options([0 => 'Male', 1 => 'Female'])->stacked();
-        $form->image('image', 'Image')->default('defaultAdmin.png');
 
         return $form;
     }

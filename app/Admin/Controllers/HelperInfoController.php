@@ -81,19 +81,26 @@ class HelperInfoController extends Controller
     {
         $grid = new Grid(new Helper);
 
-        $grid->id('Id');
+        $grid->id('ID');
+        $grid->image('Photo')->display(function ($s) {
+            return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+        });
         $grid->name('Name');
-        $grid->nid('Nid');
-        $grid->helperid('Helperid');
-        $grid->licensepic('Licensepic');
-        $grid->license('License');
-        $grid->contactno('Contactno');
-        $grid->busno('Busno');
+        $grid->gender('Gender')->display(function ($s) {
+            return $s ? 'Female' : 'Male';
+        });
+        $grid->nid('NID');
+        $grid->helperid('Helper ID');
+        $grid->licensepic('License Photo')->display(function ($s) {
+            return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+        });
+        $grid->license('License No');
+        $grid->contactno('Contact No');
+        $grid->busno('Bus No');
         $grid->address('Address');
-        $grid->gender('Gender');
-        $grid->image('Image');
-        $grid->created_at('Created at');
-        $grid->updated_at('Updated at');
+
+        $grid->created_at('Created At');
+        $grid->updated_at('Updated At');
 
         return $grid;
     }
@@ -108,19 +115,28 @@ class HelperInfoController extends Controller
     {
         $show = new Show(Helper::findOrFail($id));
 
-        $show->id('Id');
+        $show->panel()
+            ->title(trans('Helper Details'));
+
+        $show->id('ID');
+        $show->image('Photo')->as(function ($s) {
+            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+        });
         $show->name('Name');
-        $show->nid('Nid');
-        $show->helperid('Helperid');
-        $show->licensepic('Licensepic');
-        $show->license('License');
-        $show->contactno('Contactno');
-        $show->busno('Busno');
+        $show->gender('Gender')->as(function ($s) {
+            return $s ? 'Female' : 'Male';
+        });
+        $show->nid('NID');
+        $show->helperid('Helper ID');
+        $show->licensepic('License Photo')->as(function ($s) {
+            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+        });
+        $show->license('License No');
+        $show->contactno('Contact No');
+        $show->busno('Bus No');
         $show->address('Address');
-        $show->gender('Gender');
-        $show->image('Image');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
+        $show->created_at('Created At');
+        $show->updated_at('Updated At');
 
         return $show;
     }
@@ -135,15 +151,19 @@ class HelperInfoController extends Controller
         $form = new Form(new Helper);
 
         $form->text('name', 'Name');
-        $form->text('nid', 'Nid');
-        $form->text('helperid', 'Helperid');
-        $form->image('licensepic', 'Licensepic');
+        $form->image('image', 'Photo')->uniqueName()->default('defaultAdmin.png');
+        $form->text('nid', 'NID');
+        $form->text('helperid', 'Helper ID');
+        // change upload path ->move('/storage/images/Driver/')
+        $form->image('licensepic', 'License Photo')->uniqueName();
+        // use a unique name (md5(uniqid()).extension)
+        //$form->image('licensepic')->uniqueName();
+        //$form->image('licensepic', 'Licensepic');
         $form->text('license', 'License');
-        $form->text('contactno', 'Contactno');
-        $form->text('busno', 'Busno');
+        $form->text('contactno', 'Contact No');
+        $form->text('busno', 'Bus No');
         $form->textarea('address', 'Address');
         $form->radio('gender', 'Gender')->options([0 => 'Male', 1 => 'Female'])->stacked();
-        $form->image('image', 'Image')->default('defaultAdmin.png');
 
         return $form;
     }
