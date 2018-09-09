@@ -1,14 +1,16 @@
 <!-- Navigation -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <nav class="navbar navbar-expand-xl navbar-default navbar-fixed-top" id="mainNav">
     {{--<nav class="navbar navbar-expand-lg navbar-dark navbar-fixed-top"  id="mainNav">--}}
     <div class="container">
         <a class="navbar-brand js-scroll-trigger" href="/">
             <img src="/storage/img/logos/itms-logo.png" alt="IIUC TMD LOGO">
         </a>
+        {{-- 4508 app.css--}}
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
                 data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
                 aria-label="Toggle navigation">
-            Menu
             <i class="fa fa-bars"></i>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">

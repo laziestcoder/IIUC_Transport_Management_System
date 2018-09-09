@@ -1,7 +1,7 @@
 <input type="checkbox" class="<?php echo e($selectAllName, false); ?>" />&nbsp;
 
 <div class="btn-group">
-    <a class="btn btn-sm btn-default">  <?php echo e(trans('admin.action'), false); ?></a>
+    <a class="btn btn-sm btn-default">&nbsp;<span class="hidden-xs"><?php echo e(trans('admin.action'), false); ?></span></a>
     <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
         <span class="caret"></span>
         <span class="sr-only">Toggle Dropdown</span>

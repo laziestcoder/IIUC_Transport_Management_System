@@ -21,6 +21,7 @@
     "laravel/tinker": "^1.0",
     "laravelcollective/html": "^5.4.0",
     "maatwebsite/excel": "~2.1.0",
+    "phpoffice/phpspreadsheet": "^1.4",
     "unisharp/laravel-ckeditor": "^4.7"
   },
   "require-dev": {

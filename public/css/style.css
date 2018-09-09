@@ -1,16 +1,16 @@
-/* .container{
-    width: 100%;
-} */
-/* .navbar-shrink{
-    text-align: center;
-} */
+.container{
+    /*width: 100%;*/
+}
+.navbar-shrink{
+    /*text-align: center;*/
+}
 #footer {
     padding-top: 15px;
     margin: auto;
 }
 
 .portfolio-item .img-fluid {
-    height: 200px;
+    max-height: 200px;
     width: 100%;
 }
 
@@ -56,25 +56,26 @@ nav img {
     background-attachment: fixed;
 } */
 section {
-    padding: 50px 25px;
+    /*padding: 50px 25px;*/
 }
 
-/* section .container{
-    background: transparent;
-} */
+section .container{
+    /*background: transparent;*/
+}
 .modal-content {
     position: absolute;
 }
 
 header.masthead {
     background-image: url('/storage/img/transport-bg.png');
-    background-repeat: round;
+    /*margin: auto;*/
+    /*background-repeat: round;*/
     background-attachment: fixed;
 }
 
-header.masthead .intro-text {
-    padding-top: 180px;
-}
+/*header.masthead .intro-text {*/
+    /*padding-top: auto;*/
+/*}*/
 
 .nextBus {
     /* position: absolute; */

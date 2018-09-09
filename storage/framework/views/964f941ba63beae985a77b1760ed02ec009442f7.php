@@ -7,13 +7,21 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    <link href="<?php echo e(asset('/vendor/bootstrap/css/bootstrap.css'), false); ?>" rel="stylesheet">
     <link href="<?php echo e(asset('/vendor/bootstrap/css/bootstrap.min.css'), false); ?>" rel="stylesheet">
 
+    <link href="<?php echo e(asset('/vendor/bootstrap/css/bootstrap-grid.css'), false); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('/vendor/bootstrap/css/bootstrap-grid.min.css'), false); ?>" rel="stylesheet">
+
+    <link href="<?php echo e(asset('/vendor/bootstrap/css/bootstrap-reboot.css'), false); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('/vendor/bootstrap/css/bootstrap-reboot.min.css'), false); ?>" rel="stylesheet">
+
     <link href="<?php echo e(asset ('vendor/font-awesome/css/font-awesome.min.css'), false); ?>" rel="stylesheet" type="text/css">
-    <!-- <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css"> -->
-    <!-- <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'> -->
-    <!-- <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'> -->
-    <!-- <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'> -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet'
+          type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
 
 
     <!-- CSRF Token -->
@@ -33,19 +41,11 @@
 <body>
 <div id="app">
 
-<?php echo $__env->make('common.nav', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-
-<!-- <div class="container"> -->
-
-
-<!-- <div id="main" class="row"> -->
+<?php echo $__env->make('common.nav', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 <?php echo $__env->yieldContent('content'); ?>
-<!-- </div> -->
-
     <footer class="row">
-        <?php echo $__env->make('common.footer', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+        <?php echo $__env->make('common.footer', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
     </footer>
-    <!-- </div> -->
 </div>
 
 
@@ -60,6 +60,6 @@
 <script>
     CKEDITOR.replace('article-ckeditor');
 </script>
-<?php echo $__env->make('common.script', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php echo $__env->make('common.script', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 </body>
 </html>

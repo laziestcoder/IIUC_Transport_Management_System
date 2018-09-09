@@ -52,6 +52,7 @@ class DashboardController extends Controller
             $verified = false;
             $image = "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
         }
+        $adminVerification = $user->confirmation;
 
         $data = array(
             //'BusRoutes' => $BusRoutes,
@@ -60,6 +61,7 @@ class DashboardController extends Controller
             'user' => $user,
             'image' => $image,
             'verified' => $verified,
+            'adminVerification' => $adminVerification,
 
         );
         return view('user.dashboard')->with($data);

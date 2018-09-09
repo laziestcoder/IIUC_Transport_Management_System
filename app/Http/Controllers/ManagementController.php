@@ -68,16 +68,16 @@ class ManagementController extends Controller
         $file2 = $lines_string;
         $file = $retcode;
         $verified = false;
+        $adminVerification = $user->confirmation;
         if ($file == 200 && $file2[0] != '<') {
             $verified = true;
             $image = "<img src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
         } else {
-            $verified = false;
+            //$verified = false;
             $image = "<img src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
         }
-        if (!$verified) {
-            return redirect('/dashboard')->with('error', 'Your account is not verified. Please check you Varsity ID and Name.');
-
+        if (!$verified && !$adminVerification) {
+            return redirect('/dashboard')->with('error', 'Your account is not verified. Please check you \'Varsity ID\' and \'Name\' or contact with an administrative person. Thank you.');
         }
         $data = array(
             'BusRoutes' => $BusRoutes,
@@ -230,6 +230,7 @@ class ManagementController extends Controller
         $file2 = $lines_string;
         $file = $retcode;
         $verified = false;
+        $adminVerification = $user->confirmation;
         if ($file == 200 && $file2[0] != '<') {
             $verified = true;
             $image = "<img src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
@@ -237,8 +238,8 @@ class ManagementController extends Controller
             $verified = false;
             $image = "<img src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
         }
-        if (!$verified) {
-            return redirect('/dashboard')->with('error', 'Your account is not verified. Please check you Varsity ID and Name.');
+        if (!$verified && !$adminVerification) {
+            return redirect('/dashboard')->with('error', 'Your account is not verified. Please check you \'Varsity ID\' and \'Name\' or contact with an administrative person. Thank you.');
 
         }
         //account verification end

@@ -19,4 +19,6 @@ Route::group([
     $router->resource('/auth/helper', 'HelperInfoController');
     $router->resource('/auth/user-role', 'UserRoleController');
     $router->resource('/auth/transport-notice', 'NoticeController');
+    $router->resource('/auth/bus-type', 'BusTypeController');
+    $router->resource('/auth/bus-schedule', 'BusScheduleController');
 });

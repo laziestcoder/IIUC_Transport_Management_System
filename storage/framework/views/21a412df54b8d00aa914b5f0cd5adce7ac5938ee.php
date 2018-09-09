@@ -9,18 +9,13 @@
     </div>
     <!-- /.box-header -->
     <!-- form start -->
-    <?php if($form->hasRows()): ?>
-        <?php echo $form->open(); ?>
+    <?php echo $form->open(['class' => "form-horizontal"]); ?>
 
-    <?php else: ?>
-        <?php echo $form->open(['class' => "form-horizontal"]); ?>
-
-    <?php endif; ?>
 
         <div class="box-body">
 
             <?php if(!$tabObj->isEmpty()): ?>
-                <?php echo $__env->make('admin::form.tab', compact('tabObj'), array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                <?php echo $__env->make('admin::form.tab', compact('tabObj'), \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
             <?php else: ?>
                 <div class="fields-group">
 
@@ -47,7 +42,7 @@
 
 
         <?php $__currentLoopData = $form->getHiddenFields(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <?php echo $field; ?>
+            <?php echo $field->render(); ?>
 
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 

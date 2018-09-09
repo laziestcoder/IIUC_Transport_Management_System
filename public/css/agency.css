@@ -55,7 +55,7 @@ section h3.section-subheading {
 
 @media (min-width: 768px) {
     section {
-        padding: 150px 0;
+        padding: 100px 0;
     }
 }
 
@@ -180,7 +180,7 @@ body {
 header.masthead {
     text-align: center;
     color: white;
-    background: url("storage/img/transport-bg.png") no-repeat scroll center center;
+    background: url("/storage/img/transport-bg.png") no-repeat scroll center center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -188,7 +188,7 @@ header.masthead {
 }
 
 header.masthead .intro-text {
-    padding-top: 150px;
+    padding-top: 100px;
     padding-bottom: 100px;
 }
 

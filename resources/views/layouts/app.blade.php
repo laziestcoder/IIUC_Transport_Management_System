@@ -7,13 +7,21 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    <link href="{{ asset('/vendor/bootstrap/css/bootstrap.css') }}" rel="stylesheet">
     <link href="{{ asset('/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 
+    <link href="{{ asset('/vendor/bootstrap/css/bootstrap-grid.css') }}" rel="stylesheet">
+    <link href="{{ asset('/vendor/bootstrap/css/bootstrap-grid.min.css') }}" rel="stylesheet">
+
+    <link href="{{ asset('/vendor/bootstrap/css/bootstrap-reboot.css') }}" rel="stylesheet">
+    <link href="{{ asset('/vendor/bootstrap/css/bootstrap-reboot.min.css') }}" rel="stylesheet">
+
     <link href="{{ asset ('vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
-    <!-- <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css"> -->
-    <!-- <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'> -->
-    <!-- <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'> -->
-    <!-- <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'> -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet'
+          type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
 
 
     <!-- CSRF Token -->
@@ -34,18 +42,10 @@
 <div id="app">
 
 @include('common.nav')
-
-<!-- <div class="container"> -->
-{{-- @include('inc.messages') --}}
-
-<!-- <div id="main" class="row"> -->
 @yield('content')
-<!-- </div> -->
-
     <footer class="row">
         @include('common.footer')
     </footer>
-    <!-- </div> -->
 </div>
 
 

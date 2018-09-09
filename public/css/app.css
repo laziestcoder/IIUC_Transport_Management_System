@@ -4505,7 +4505,7 @@ input[type="button"].btn-block {
 }
 
 .collapse.in {
-    display: block;
+    display: none;
 }
 
 tr.collapse.in {

@@ -18,7 +18,7 @@
 
     <link rel="stylesheet" href="<?php echo e(admin_asset("/vendor/laravel-admin/laravel-admin/laravel-admin.css"), false); ?>">
     <link rel="stylesheet" href="<?php echo e(admin_asset("/vendor/laravel-admin/nprogress/nprogress.css"), false); ?>">
-    <link rel="stylesheet" href="<?php echo e(admin_asset("/vendor/laravel-admin/sweetalert/dist/sweetalert.css"), false); ?>">
+    <link rel="stylesheet" href="<?php echo e(admin_asset("/vendor/laravel-admin/sweetalert2/dist/sweetalert2.css"), false); ?>">
     <link rel="stylesheet" href="<?php echo e(admin_asset("/vendor/laravel-admin/nestable/nestable.css"), false); ?>">
     <link rel="stylesheet" href="<?php echo e(admin_asset("/vendor/laravel-admin/toastr/build/toastr.min.css"), false); ?>">
     <link rel="stylesheet" href="<?php echo e(admin_asset("/vendor/laravel-admin/bootstrap3-editable/css/bootstrap-editable.css"), false); ?>">
@@ -43,9 +43,9 @@
 <body class="hold-transition <?php echo e(config('admin.skin'), false); ?> <?php echo e(join(' ', config('admin.layout')), false); ?>">
 <div class="wrapper">
 
-    <?php echo $__env->make('admin::partials.header', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+    <?php echo $__env->make('admin::partials.header', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 
-    <?php echo $__env->make('admin::partials.sidebar', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+    <?php echo $__env->make('admin::partials.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 
     <div class="content-wrapper" id="pjax-container">
         <?php echo $__env->yieldContent('content'); ?>
@@ -53,7 +53,7 @@
 
     </div>
 
-    <?php echo $__env->make('admin::partials.footer', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+    <?php echo $__env->make('admin::partials.footer', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 
 </div>
 
@@ -68,7 +68,7 @@
 <script src="<?php echo e(admin_asset ("/vendor/laravel-admin/nestable/jquery.nestable.js"), false); ?>"></script>
 <script src="<?php echo e(admin_asset ("/vendor/laravel-admin/toastr/build/toastr.min.js"), false); ?>"></script>
 <script src="<?php echo e(admin_asset ("/vendor/laravel-admin/bootstrap3-editable/js/bootstrap-editable.min.js"), false); ?>"></script>
-<script src="<?php echo e(admin_asset ("/vendor/laravel-admin/sweetalert/dist/sweetalert.min.js"), false); ?>"></script>
+<script src="<?php echo e(admin_asset ("/vendor/laravel-admin/sweetalert2/dist/sweetalert2.min.js"), false); ?>"></script>
 <?php echo Admin::js(); ?>
 
 <script src="<?php echo e(admin_asset ("/vendor/laravel-admin/laravel-admin/laravel-admin.js"), false); ?>"></script>

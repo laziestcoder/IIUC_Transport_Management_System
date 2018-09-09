@@ -65,13 +65,14 @@ class OfficerController extends Controller
                 return $s ? 'Female' : 'Male';
             });
 
-            $grid->confirmed(trans('Activated'))->display(function ($s) {
-                return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
-            });
+//            $grid->confirmed(trans('Activated'))->display(function ($s) {
+//                return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
+//            });
             $states = [
                 'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
                 'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
             ];
+            $grid->confirmed(trans('Activated'))->switch($states);
             $grid->confirmation(trans('Verified'))->switch($states);
             $grid->created_at(trans('Member Since'));
             $grid->updated_at(trans('Last Updated'));
@@ -197,14 +198,15 @@ class OfficerController extends Controller
         $form->display('gender',trans('Gender'))->with(function ($s){
             return $s? 'Female':'Male';
         });
-        $form->display('confirmed', trans('Activated'))->with(function ($s){
-            return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
-        });
+//        $form->display('confirmed', trans('Activated'))->with(function ($s){
+//            return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
+//        });
 
         $states = [
             'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
         ];
+        $form->switch('confirmed','Activated')->states($states);
         $form->switch('confirmation','Verified')->states($states);
 
         //$form->radio('confirmation', 'Verified')->options([0 => 'No', 1 => 'Yes'])->stacked();

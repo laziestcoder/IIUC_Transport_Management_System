@@ -2,7 +2,7 @@
     <header id="home" class="masthead">
         <div class="container" id="page-top">
             <div class="intro-text">
-                <div class="intro-lead-in" style="padding:10px 0;">Welcome To IIUC Transport Management Website!</div>
+                <div class="intro-lead-in">Welcome To IIUC Transport Management Website!</div>
                 <div class="intro-heading text-uppercase">It's Nice To Meet You</div>
                 <div class="nextBus">
                     <div class="nextBus-info">
@@ -409,14 +409,14 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2  class="section-heading text-uppercase">Developed By</h2>
-                    <h3 class="section-subheading text-muted">The frontend and The backend are designed and coded
+                    <h3 class="section-subheading text-muted">The frontend and the backend are designed and coded
                         by </h3>
                 </div>
             </div>
 
-            <div class="col-sm-6">
+            <div class="col-sm-6 responsive">
                 <div class="team-member">
-                    <img class="mx-auto rounded-circle" src="/storage/img/team/1.jpg" alt="Towfiqul Islam">
+                    <img class="mx-auto rounded-circle responsive" src="/storage/img/team/1.jpg" alt="Towfiqul Islam">
                     <h4>Towfiqul Islam</h4><span>Dept. of CSE, IIUC</span>
                     <p class="text-muted">Full-Stack Developer</p>
                     <ul class="list-inline social-buttons">
@@ -446,7 +446,7 @@
 
             <div class="col-sm-6">
                 <div class="team-member">
-                    <img class="mx-auto rounded-circle" src="/storage/img/team/2.jpg" alt="Sina Ibn Amin">
+                    <img class="mx-auto rounded-circle responsive" src="/storage/img/team/2.jpg" alt="Sina Ibn Amin">
                     <h4>Sina Ibn Amin </h4><span>Dept. of CSE, IIUC</span>
                     <p class="text-muted">UI/UX Designer</p>
                     <ul class="list-inline social-buttons">
@@ -478,9 +478,13 @@
             <div class="col-lg-8 mx-auto text-center">
                 <p class="large text-muted">
                     This project is developed to automate the transport management system and to reduce hassles
-                    regarding transportation. This version is an early release and is being observed to
+                    regarding transportation.
+                </p>
+                <p class="large text-muted">
+                    This version is an early release and is being observed to
                     improve the facilities.<br>If you have any query, don't hesitate to contact:<br>
-                    <b>info@itms.com || itms@gmail.com</b>
+                    <b><i class="fa fa-envelope"></i> towfiq.106@gmail.com || <i class="fa fa-envelope"></i> towfiq.projects@gmail.com</b> <br>
+                    You can also message us through this website '<b><a href="/#report">Reporting Box</a></b>'.
                 </p>
             </div>
         </div>
@@ -557,4 +561,4 @@
 <?php $__env->stopSection(); ?>
 
 
-<?php echo $__env->make('layouts.app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>

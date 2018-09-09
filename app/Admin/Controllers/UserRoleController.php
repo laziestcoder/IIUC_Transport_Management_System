@@ -81,13 +81,20 @@ class UserRoleController extends Controller
     {
         $grid = new Grid(new UserRole);
 
-        $grid->id('Id');
+        $grid->id('ID');
         $grid->name('Role Name');
         $grid->created_at('Created At');
         $grid->updated_at('Updated At');
-        $grid->disableActions();
+        $grid->actions(function (Grid\Displayers\Actions $actions) {
+            if ($actions->getKey() <= 3) {
+                $actions->disableDelete();
+            }
+            //$actions->disableEdit();
+            //$actions->disableview();
+        });
+//        $grid->disableActions();
         $grid->disableRowSelector();
-        $grid->disableCreateButton();
+//        $grid->disableCreateButton();
 
         return $grid;
     }
@@ -101,11 +108,25 @@ class UserRoleController extends Controller
     protected function detail($id)
     {
         $show = new Show(UserRole::findOrFail($id));
+        $show->panel()->title('View');
 
-        $show->id('Id');
-        $show->name('Name');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
+        $show->id('ID');
+        $show->name('Role Name');
+        $show->created_at('Created At');
+        $show->updated_at('Updated At');
+//        $show->actions(function (Grid\Displayers\Actions $actions) {
+//            if ($actions->getKey() <= 3) {
+//                $actions->disableDelete();
+//            }
+//            //$actions->disableEdit();
+//            $actions->disableview();
+//        });
+        $show->panel()
+            ->tools(function ($tools) {
+                //$tools->disableEdit();
+                //$tools->disableList();
+                $tools->disableDelete();
+            });;
 
         return $show;
     }
@@ -119,7 +140,19 @@ class UserRoleController extends Controller
     {
         $form = new Form(new UserRole);
 
-        $form->text('name', 'Name');
+        $form->text('name', 'Role Name');
+        $form->tools(function (Form\Tools $tools) {
+            $tools->disableDelete();
+
+            // Disable back btn.
+            //$tools->disableBackButton();
+
+            // Disable list btn
+            //$tools->disableListButton();
+
+            // Add a button, the argument can be a string, or an instance of the object that implements the Renderable or Htmlable interface
+            //$tools->add('<a class="btn btn-sm btn-danger"><i class="fa fa-trash"></i>&nbsp;&nbsp;delete</a>');
+        });
 
         return $form;
     }

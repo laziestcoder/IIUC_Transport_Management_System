@@ -52,7 +52,7 @@
                     </tr>
                     <tr>
                         <td>
-                            Verified: {!! $verified? 'Yes': 'No' !!}
+                            Verified: {!! ($verified && $adminVerification)? 'Yes': 'No' !!}
                         </td>
                     </tr>
                     </thead>
