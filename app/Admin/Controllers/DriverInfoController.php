@@ -149,20 +149,20 @@ class DriverInfoController extends Controller
     {
         $form = new Form(new Driver);
 
-        $form->text('name', 'Name');
-        $form->image('image', 'Photo')->uniqueName()->default('defaultAdmin.png');
-        $form->text('nid', 'NID');
-        $form->text('driverid', 'Driver ID');
+        $form->text('name', 'Name')->rules('required');
+        $form->image('image', 'Photo')->uniqueName()->default('defaultAdmin.png')->rules('required');
+        $form->text('nid', 'NID')->rules('required');
+        $form->text('driverid', 'Driver ID')->rules('required');
         // change upload path ->move('/storage/images/Driver/')
-        $form->image('licensepic', 'License Photo')->uniqueName();
+        $form->image('licensepic', 'License Photo')->uniqueName()->rules('required');
         // use a unique name (md5(uniqid()).extension)
         //$form->image('licensepic')->uniqueName();
         //$form->image('licensepic', 'Licensepic');
-        $form->text('license', 'License');
-        $form->text('contactno', 'Contact No');
-        $form->text('busno', 'Bus No');
-        $form->textarea('address', 'Address');
-        $form->radio('gender', 'Gender')->options([0 => 'Male', 1 => 'Female'])->stacked();
+        $form->text('license', 'License')->rules('required');
+        $form->text('contactno', 'Contact No')->rules('required');
+        $form->text('busno', 'Bus No')->rules('required');
+        $form->textarea('address', 'Address')->rules('required');
+        $form->radio('gender', 'Gender')->options([0 => 'Male', 1 => 'Female'])->stacked()->rules('required');
 
         return $form;
     }

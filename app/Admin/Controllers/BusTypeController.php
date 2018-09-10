@@ -23,8 +23,8 @@ class BusTypeController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Index')
-            ->description('description')
+            ->header('Bus Type')
+            ->description('List')
             ->body($this->grid());
     }
 
@@ -39,7 +39,7 @@ class BusTypeController extends Controller
     {
         return $content
             ->header('Detail')
-            ->description('description')
+            ->description('')
             ->body($this->detail($id));
     }
 
@@ -54,7 +54,7 @@ class BusTypeController extends Controller
     {
         return $content
             ->header('Edit')
-            ->description('description')
+            ->description('')
             ->body($this->form()->edit($id));
     }
 
@@ -68,7 +68,7 @@ class BusTypeController extends Controller
     {
         return $content
             ->header('Create')
-            ->description('description')
+            ->description('')
             ->body($this->form());
     }
 
@@ -98,6 +98,8 @@ class BusTypeController extends Controller
     protected function detail($id)
     {
         $show = new Show(BusType::findOrFail($id));
+        $show->panel()
+            ->title(trans('Bus Type Details'));
 
         $show->id('ID');
         $show->name('Bus Type');
