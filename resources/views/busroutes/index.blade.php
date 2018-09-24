@@ -7,7 +7,7 @@
         @include('inc.messages')
         <h1>
             {{$title}}
-            <small>{{'Here you will get available route information. You can also add, remove and edit Bus Routes.'}}</small>
+            <small>{{$smallTitle}}</small>
         </h1>
     </section>
     <br><br>

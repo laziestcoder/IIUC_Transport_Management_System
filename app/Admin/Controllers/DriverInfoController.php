@@ -81,26 +81,27 @@ class DriverInfoController extends Controller
     {
         $grid = new Grid(new Driver);
 
-        $grid->id('ID');
+        $grid->id('ID')->sortable();
         $grid->image('Photo')->display(function ($s) {
             return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
         });
-        $grid->name('Name');
+        $grid->name('Name')->sortable();
         $grid->gender('Gender')->display(function ($s) {
             return $s ? 'Female' : 'Male';
         });
         $grid->nid('NID');
-        $grid->driverid('Driver ID');
-        $grid->licensepic('License Photo')->display(function ($s) {
-            return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
-        });
-        $grid->license('License No');
+        $grid->driverid('Driver ID')->sortable();
+//        $grid->licensepic('License Photo')->display(function ($s) {
+//            return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+//        });
+        $grid->license('License No')->sortable();
+        $grid->experience('Experience')->sortable();
         $grid->contactno('Contact No');
-        $grid->busno('Bus No');
-        $grid->address('Address');
+        $grid->busno('Bus No')->sortable();
+//        $grid->address('Address');
 
-        $grid->created_at('Created At');
-        $grid->updated_at('Updated At');
+        $grid->created_at('Created At')->sortable();
+        $grid->updated_at('Updated At')->sortable();
 
         return $grid;
     }
@@ -118,19 +119,22 @@ class DriverInfoController extends Controller
             ->title(trans('Driver Details'));
 
         $show->id('ID');
-        $show->image('Photo')->as(function ($s) {
-            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
-        });
+        $show->image('Photo')->image();
+//          ->as(function ($s) {
+//            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+//        });
         $show->name('Name');
         $show->gender('Gender')->as(function ($s) {
             return $s ? 'Female' : 'Male';
         });
         $show->nid('NID');
         $show->driverid('Driver ID');
-        $show->licensepic('License Photo')->as(function ($s) {
-            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
-        });
+        $show->licensepic('License Photo')->image();
+//            ->as(function ($s) {
+//            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+//        });
         $show->license('License No');
+        $show->experience('Experience');
         $show->contactno('Contact No');
         $show->busno('Bus No');
         $show->address('Address');
@@ -158,7 +162,8 @@ class DriverInfoController extends Controller
         // use a unique name (md5(uniqid()).extension)
         //$form->image('licensepic')->uniqueName();
         //$form->image('licensepic', 'Licensepic');
-        $form->text('license', 'License')->rules('required');
+        $form->text('license', 'License ID')->rules('required');
+        $form->number('experience', 'Experience')->rules('required');
         $form->text('contactno', 'Contact No')->rules('required');
         $form->text('busno', 'Bus No')->rules('required');
         $form->textarea('address', 'Address')->rules('required');

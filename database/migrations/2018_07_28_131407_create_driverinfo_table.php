@@ -20,6 +20,7 @@ class CreateDriverinfoTable extends Migration
             $table->string('driverid')->unique();
             $table->string('licensepic')->nullable();
             $table->string('license')->unique();
+            $table->integer('experience')->default(0);
             $table->string('contactno')->unique();
             $table->string('busno');
             $table->mediumText('address');

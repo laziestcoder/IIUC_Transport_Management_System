@@ -10,7 +10,7 @@
                     <div class="row">
                         <div class="col-md-8 col-md-offset-2">
                             <div class="panel panel-default">
-                                <!-- <div class="panel-heading">Dashboard</div> -->
+                                <!-- <div class="panel-heading">AdminDashboard</div> -->
 
                                 <div class="panel-body" style="background:#212529">
                                     @if (session('status'))
@@ -24,7 +24,7 @@
                                     <!-- <a href="/notices/create" class="btn btn-primary">Create Notice</a>
                                     <a href="/settings" disabled='True' class="btn btn-primary">Settings</a>
                                     <a href="/statistics" disabled='True' class="btn btn-primary">Statistics</a>
-                                    <a href="/dashboard" class="btn btn-primary">Dashboard</a>    -->
+                                    <a href="/dashboard" class="btn btn-primary">AdminDashboard</a>    -->
                                     <a href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                     document.getElementById('logout-form').submit();" class="btn btn-primary">

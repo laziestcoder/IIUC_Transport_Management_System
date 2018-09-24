@@ -3,16 +3,16 @@
 namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\User;
 use DB;
 use Encore\Admin\Controllers\Dashboard;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Grid;
+use Encore\Admin\Form;
 use Encore\Admin\Layout\Column;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Layout\Row;
-
+use App\AdminDashboard;
 
 class HomeController extends Controller
 {
@@ -24,37 +24,16 @@ class HomeController extends Controller
 
             $content->header('Dashboard');
             $content->description('This is Super Admin Dashboard');
-            $content->row("<style>
-                                    .title {
-                                        font-size: 50px;
-                                        color: #636b6f;
-                                        font-family: 'Raleway', sans-serif;
-                                        font-weight: 100;
-                                        display: block;
-                                        text-align: center;
-                                        margin: 20px 0 10px 0px;
-                                    }
-                                
-                                    .links {
-                                        text-align: center;
-                                        margin-bottom: 20px;
-                                    }
-                                
-                                    .links > a {
-                                        color: #636b6f;
-                                        padding: 0 25px;
-                                        font-size: 12px;
-                                        font-weight: 600;
-                                        letter-spacing: .1rem;
-                                        text-decoration: none;
-                                        text-transform: uppercase;
-                                    }
-                                    </style>");
-            $content->row("<div class='title'><i>Welcome to <b>ITMS</b> Admin Panel</i></div>");
+            $content->row(Dashboard::title());
 
-            //$content->row(Dashboard::title());
-            $content->row("<div class=\"links\"><a>Warmth wishes to Admin <i>" . Admin::user()->name . "</i></a></div>");
+
+//            $content->row('<br><br><br>');
+//            $content->row($this->grid());
+
+
+
             if (DB::table('admin_role_users')->where('user_id', (Admin::user()->id))->first()->role_id == 1) {
+                $content->row('<br><br><br>');
                 $content->row(function (Row $row) {
 
                     $row->column(4, function (Column $column) {
@@ -70,48 +49,46 @@ class HomeController extends Controller
                     });
                 });
             }
+
+
         });
     }
 
+    protected function grid()
+    {
+        $grid = new Grid(new AdminDashboard);
+        $grid->setTitle('Schedule Dashborad');
 
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
+        ];
+        $grid->special_schedule('Special Schedule')->switch($states);
+        $grid->regular_schedule('Regular Schedule')->switch($states);
+        $grid->holiday('Holiday')->switch($states);
+        $grid->schedule_suspend('Schedule Suspend')->switch($states);
+        $grid->schedule_edit('Schedule Edit')->switch($states);
+        $grid->disableActions();
+        $grid->disableRowSelector();
+        $grid->disableExport();
+        $grid->disableFilter();
+        $grid->disablePagination();
+        $grid->disableCreateButton();
 
-    /**
-     * Make a grid builder.
-     *
-     * @return Grid
-     */
+        return $grid;
+    }
 
+    protected function form()
+    {
+        $form = new Form(new AdminDashboard);
 
-//    public function edit($id)
-//    {
-//        return Admin::content(function (Content $content) use ($id) {
-//
-//            $content->header('header');
-//            $content->description('description');
-//
-//            $content->body($this->form()->edit($id));
-//        });
-//    }
+        $form->switch('special_schedule', 'Special schedule');
+        $form->switch('regular_schedule', 'Regular schedule');
+        $form->switch('holiday', 'Holiday');
+        $form->switch('schedule_suspend', 'Schedule suspend');
+        $form->switch('schedule_edit', 'Schedule edit');
 
-
-
-    /**
-     * Edit interface.
-     *
-     * @param $id
-     *
-     * @return Content
-     */
-
-
-//    public function edit($id)
-//    {
-//        return Admin::content(function (Content $content) use ($id) {
-//            $content->header(trans('user.user'));
-//            $content->description(trans('user.edit'));
-//            $content->body($this->form()->edit($id));
-//        });
-//    }
-
+        return $form;
+    }
 
 }

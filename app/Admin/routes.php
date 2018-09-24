@@ -10,6 +10,7 @@ Route::group([
     'middleware' => config('admin.route.middleware'),
 ], function (Router $router) {
     $router->get('/', 'HomeController@index');
+    $router->resource('/admin-dashboard', 'AdminDashboardController');
     $router->resource('/auth/students', 'StudentController');
     $router->resource('/auth/teachers', 'FacultyController');
     $router->resource('/auth/officer-staff', 'OfficerController');

@@ -1,11 +1,11 @@
 <?php $__env->startSection('content'); ?>
 
     <section class="content-header">
-        <?php echo $__env->make('inc.messages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+        <?php echo $__env->make('inc.messages', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         <h1>
             <?php echo e($title, false); ?>
 
-            <small><?php echo e('Here you will get available route information. You can also add, remove and edit Bus Routes.', false); ?></small>
+            <small><?php echo e($smallTitle, false); ?></small>
         </h1>
     </section>
     <br><br>
@@ -77,4 +77,4 @@
         
     </section>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('admin::index', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php echo $__env->make('admin::index', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>

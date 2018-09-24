@@ -28,11 +28,13 @@ class BusRoutesController extends Controller
      */
     public function index()
     {
+        $this->calculate();
         //$BusRoutes =  BusRoute::orderBy('routename')->paginate(20);
         $BusRoutes = BusStudentInfo::orderBy('id')->paginate(15);
         $data = array(
             'title' => 'Bus Route Info',
-            'titleinfo' => 'Route wise Bus and Student information',
+            'smallTitle' =>'',
+            'titleinfo' => 'Route Wise Bus and Student Information',
             'BusRoutes' => $BusRoutes,
         );
         return view('busroutes.index')->with($data);
@@ -188,6 +190,10 @@ class BusRoutesController extends Controller
             $BusRoute->delete();
             return redirect('/admin/auth/routes/create/')->with('success', '"' . $name . '" => Bus Route Removed Successfully!');
         }
+
+    }
+
+    protected function calculate(){
 
     }
 }

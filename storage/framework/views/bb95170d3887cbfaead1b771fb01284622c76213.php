@@ -26,11 +26,10 @@
 </style>
 
 <div class="title">
-    <i>Welcome to <b>ITMS</b> Admin Panel</i>
+    Laravel-admin
 </div>
 <div class="links">
-    <a>Warmth wishes to Admin <i><?php echo e(Admin::user()->name, false); ?></i></a>
-    
-    
-    
+    <a href="https://github.com/z-song/laravel-admin" target="_blank">Github</a>
+    <a href="http://laravel-admin.org/docs"  target="_blank">Documentation</a>
+    <a href="http://laravel-admin.org/demo"  target="_blank">Demo</a>
 </div>

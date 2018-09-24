@@ -53,7 +53,7 @@
                             <li><a href="/management">Management</a></li>
                             <li><a href="/settings" disabled='True'>Settings</a></li>
                             <li><a href="/statistics" disabled='True'>Statistics</a></li>
-                            <li><a href="/dashboard">Dashboard</a></li>    -->
+                            <li><a href="/dashboard">AdminDashboard</a></li>    -->
                             <li>
                                 <a href="<?php echo e(route('logout'), false); ?>"
                                    onclick="event.preventDefault();
