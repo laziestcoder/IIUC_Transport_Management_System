@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\BusRoute;
 use App\BusStudentInfo;
+use App\Day;
+use App\Time;
 use DB;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
+use Encore\Admin\Form;
+
 
 
 class BusRoutesController extends Controller
@@ -16,6 +20,7 @@ class BusRoutesController extends Controller
      *
      * @return void
      */
+   // protected
     public function __construct()
     {
         $this->middleware('admin');
@@ -28,14 +33,18 @@ class BusRoutesController extends Controller
      */
     public function index()
     {
-        $this->calculate();
-        //$BusRoutes =  BusRoute::orderBy('routename')->paginate(20);
-        $BusRoutes = BusStudentInfo::orderBy('id')->paginate(15);
+        //$this->calculate();
+        $BusRoutes =  BusRoute::orderBy('routename')->paginate(50);
+        //$BusRoutes = BusStudentInfo::orderBy('id')->paginate(15);
+        $days= Day::all()->where('id','<',8);
+        $times = Time::orderBy('time');
         $data = array(
             'title' => 'Bus Route Info',
             'smallTitle' =>'',
             'titleinfo' => 'Route Wise Bus and Student Information',
             'BusRoutes' => $BusRoutes,
+            'days' => $days,
+            'times' => $times,
         );
         return view('busroutes.index')->with($data);
     }
@@ -196,4 +205,20 @@ class BusRoutesController extends Controller
     protected function calculate(){
 
     }
+
+    protected function form()
+    {
+        $form = new Form(new BusStudentInfo);
+
+        $form->number('routeid', 'Routeid');
+        $form->number('pointid', 'Pointid');
+        $form->number('studentno', 'Studentno');
+        $form->number('dayid', 'Dayid');
+        $form->number('timeid', 'Timeid');
+        $form->switch('gender', 'Gender');
+
+        return $form;
+    }
+
+
 }
