@@ -42,7 +42,7 @@ class StudentController extends Controller
 
             $grid->model()->where('userrole', '=', $value);
             $grid->id('ID')->sortable();
-            $grid->jobid(trans('Varsity ID'))->sortable();
+            $grid->jobid(trans('Varsity ID'))->sortable()->editable();
             $grid->image(trans('admin.avatar'))->display(function ($s) use ($self) {
                 $file= $self->imageValidate($this->jobid);  //I want to use this $file value
                 if($file){ // here I want to access $file
@@ -51,7 +51,7 @@ class StudentController extends Controller
                     return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
                 }
             });
-            $grid->name(trans('Name'));
+            $grid->name(trans('Name'))->sortable()->editable();
             $grid->email(trans('Email'));
             $grid->gender(trans('Gender'))->display(function ($s) {
                 return $s ? 'Female' : 'Male';

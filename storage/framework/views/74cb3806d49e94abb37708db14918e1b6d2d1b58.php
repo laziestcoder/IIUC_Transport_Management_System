@@ -12,64 +12,64 @@
                                 <div class="panel-body" style="padding-top: 50px; background:#212529">
                                     <?php if(session('confirmation-success')): ?>
                                         <div class="alert alert-success">
-                                            <?php echo e(session('confirmation-success')); ?>
+                                            <?php echo e(session('confirmation-success'), false); ?>
 
                                         </div>
                                     <?php else: ?>
                                         <form class="form-horizontal" role="form" method="POST"
-                                              action="<?php echo e(url('/register')); ?>">
-                                            <?php echo e(csrf_field()); ?>
+                                              action="<?php echo e(url('/register'), false); ?>">
+                                            <?php echo e(csrf_field(), false); ?>
 
 
-                                            <div class="form-group<?php echo e($errors->has('name') ? ' has-error' : ''); ?>">
+                                            <div class="form-group<?php echo e($errors->has('name') ? ' has-error' : '', false); ?>">
                                                 <label for="name" class="col-md-4 control-label">Name</label>
 
                                                 <div class="col-md-6">
                                                     <input id="name" type="text" class="form-control" name="name"
                                                            placeholder=" Enter Your Full Name "
-                                                           value="<?php echo e(old('name')); ?>" required autofocus>
+                                                           value="<?php echo e(old('name'), false); ?>" required autofocus>
 
                                                     <?php if($errors->has('name')): ?>
                                                         <span class="help-block">
-                                                        <strong><?php echo e($errors->first('name')); ?></strong>
+                                                        <strong><?php echo e($errors->first('name'), false); ?></strong>
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
 
-                                            <div class="form-group<?php echo e($errors->has('jobid') ? ' has-error' : ''); ?>">
-                                                <label for="jobid" class="col-md-4 control-label">Official ID</label>
+                                            <div class="form-group<?php echo e($errors->has('jobid') ? ' has-error' : '', false); ?>">
+                                                <label for="jobid" class="col-md-4 control-label">ID</label>
 
                                                 <div class="col-md-6">
                                                     <input id="jobid" type="text" class="form-control" name="jobid"
                                                            placeholder=" Enter Your Varsity ID "
-                                                           value="<?php echo e(old('jobid')); ?>" required>
+                                                           value="<?php echo e(old('jobid'), false); ?>" required>
 
                                                     <?php if($errors->has('jobid')): ?>
                                                         <span class="help-block">
-                                                        <strong><?php echo e($errors->first('jobid')); ?></strong>
+                                                        <strong><?php echo e($errors->first('jobid'), false); ?></strong>
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
 
-                                            <div class="form-group<?php echo e($errors->has('email') ? ' has-error' : ''); ?>">
+                                            <div class="form-group<?php echo e($errors->has('email') ? ' has-error' : '', false); ?>">
                                                 <label for="email" class="col-md-4 control-label">E-Mail Address</label>
 
                                                 <div class="col-md-6">
                                                     <input id="email" type="email" class="form-control" name="email"
                                                            placeholder=" Enter Your Valid Email ID "
-                                                           value="<?php echo e(old('email')); ?>" required>
+                                                           value="<?php echo e(old('email'), false); ?>" required>
 
                                                     <?php if($errors->has('email')): ?>
                                                         <span class="help-block">
-                                                        <strong><?php echo e($errors->first('email')); ?></strong>
+                                                        <strong><?php echo e($errors->first('email'), false); ?></strong>
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
 
-                                            <div class="form-group<?php echo e($errors->has('password') ? ' has-error' : ''); ?>">
+                                            <div class="form-group<?php echo e($errors->has('password') ? ' has-error' : '', false); ?>">
                                                 <label for="password" class="col-md-4 control-label">Password</label>
 
                                                 <div class="col-md-6">
@@ -79,7 +79,7 @@
 
                                                     <?php if($errors->has('password')): ?>
                                                         <span class="help-block">
-                                                        <strong><?php echo e($errors->first('password')); ?></strong>
+                                                        <strong><?php echo e($errors->first('password'), false); ?></strong>
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
@@ -165,43 +165,43 @@
 <div class="panel-body">
 <?php if(session('confirmation-success')): ?>
         <div class="alert alert-success">
-<?php echo e(session('confirmation-success')); ?>
+<?php echo e(session('confirmation-success'), false); ?>
 
                 </div>
 <?php else: ?>
-        <form class="form-horizontal" role="form" method="POST" action="<?php echo e(url('/register')); ?>">
-<?php echo e(csrf_field()); ?>
+        <form class="form-horizontal" role="form" method="POST" action="<?php echo e(url('/register'), false); ?>">
+<?php echo e(csrf_field(), false); ?>
 
 
-                <div class="form-group<?php echo e($errors->has('name') ? ' has-error' : ''); ?>">
+                <div class="form-group<?php echo e($errors->has('name') ? ' has-error' : '', false); ?>">
 <label for="name" class="col-md-4 control-label">Name</label>
 
 <div class="col-md-6">
-<input id="name" type="text" class="form-control" name="name" value="<?php echo e(old('name')); ?>" required autofocus>
+<input id="name" type="text" class="form-control" name="name" value="<?php echo e(old('name'), false); ?>" required autofocus>
 
 <?php if($errors->has('name')): ?>
             <span class="help-block">
-            <strong><?php echo e($errors->first('name')); ?></strong>
+            <strong><?php echo e($errors->first('name'), false); ?></strong>
 </span>
 <?php endif; ?>
                 </div>
                 </div>
 
-                <div class="form-group<?php echo e($errors->has('email') ? ' has-error' : ''); ?>">
+                <div class="form-group<?php echo e($errors->has('email') ? ' has-error' : '', false); ?>">
 <label for="email" class="col-md-4 control-label">E-Mail Address</label>
 
 <div class="col-md-6">
-<input id="email" type="email" class="form-control" name="email" value="<?php echo e(old('email')); ?>" required>
+<input id="email" type="email" class="form-control" name="email" value="<?php echo e(old('email'), false); ?>" required>
 
 <?php if($errors->has('email')): ?>
             <span class="help-block">
-            <strong><?php echo e($errors->first('email')); ?></strong>
+            <strong><?php echo e($errors->first('email'), false); ?></strong>
 </span>
 <?php endif; ?>
                 </div>
                 </div>
 
-                <div class="form-group<?php echo e($errors->has('password') ? ' has-error' : ''); ?>">
+                <div class="form-group<?php echo e($errors->has('password') ? ' has-error' : '', false); ?>">
 <label for="password" class="col-md-4 control-label">Password</label>
 
 <div class="col-md-6">
@@ -209,7 +209,7 @@
 
 <?php if($errors->has('password')): ?>
             <span class="help-block">
-            <strong><?php echo e($errors->first('password')); ?></strong>
+            <strong><?php echo e($errors->first('password'), false); ?></strong>
 </span>
 <?php endif; ?>
                 </div>
@@ -278,4 +278,4 @@
 
 
 
-<?php echo $__env->make('layouts.app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -38,7 +38,7 @@
                                             </div>
 
                                             <div class="form-group{{ $errors->has('jobid') ? ' has-error' : '' }}">
-                                                <label for="jobid" class="col-md-4 control-label">Official ID</label>
+                                                <label for="jobid" class="col-md-4 control-label">ID</label>
 
                                                 <div class="col-md-6">
                                                     <input id="jobid" type="text" class="form-control" name="jobid"
