@@ -2,15 +2,19 @@
 
 namespace App\Admin\Controllers;
 
-use App\BusType;
+use App\Day;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Encore\Admin\Facades\Admin;
+use Encore\Admin\Auth\Database\Administrator;
 
-class BusTypeController extends Controller
+
+
+class DaysController extends Controller
 {
     use HasResourceActions;
 
@@ -23,15 +27,15 @@ class BusTypeController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Bus Type')
-            ->description('List')
+            ->header('Day')
+            ->description('')
             ->body($this->grid());
     }
 
     /**
      * Show interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      * @return Content
      */
@@ -46,7 +50,7 @@ class BusTypeController extends Controller
     /**
      * Edit interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      * @return Content
      */
@@ -79,12 +83,28 @@ class BusTypeController extends Controller
      */
     protected function grid()
     {
-        $grid = new Grid(new BusType);
+        $grid = new Grid(new Day);
 
         $grid->id('ID');
-        $grid->name('Bus Type');
-        $grid->created_at('Created at');
-        $grid->updated_at('Updated at');
+        $grid->dayname('Day');
+        $grid->user_id('Created By')->display(function ($s) {
+            if($s) {
+                return Administrator::all()->find($s)->name;
+            }else{
+            return 'Default';
+            }
+        })->badge('blue')->sortable();
+        $grid->created_at('Created At');
+        $grid->updated_at('Updated At');
+        $grid->actions(function (Grid\Displayers\Actions $actions) {
+            if ($actions->getKey() <= 8) {
+                $actions->disableDelete();
+                $actions->disableEdit();
+            }
+            //$actions->disableEdit();
+            //$actions->disableview();
+        });
+        $grid->disableRowSelector();
         $grid->disableFilter();
 
         return $grid;
@@ -93,19 +113,31 @@ class BusTypeController extends Controller
     /**
      * Make a show builder.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @return Show
      */
     protected function detail($id)
     {
-        $show = new Show(BusType::findOrFail($id));
-        $show->panel()
-            ->title(trans('Bus Type Details'));
+        $show = new Show(Day::findOrFail($id));
 
         $show->id('ID');
-        $show->name('Bus Type');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
+        $show->dayname('Day');
+        $show->user_id('Created By')->as(function ($s) {
+            return Administrator::all()->find($s)->name;
+        })->label('primary');
+        $show->created_at('Created At');
+        $show->updated_at('Updated At');
+
+
+        $show->panel()
+            ->tools(function ($tools) use ($id) {
+                if( $id <= 8) {
+                    $tools->disableEdit();
+                    //$tools->disableList();
+                    $tools->disableDelete();
+                }
+            });
+
 
         return $show;
     }
@@ -117,9 +149,12 @@ class BusTypeController extends Controller
      */
     protected function form()
     {
-        $form = new Form(new BusType);
+        $form = new Form(new Day);
 
-        $form->text('name', 'Bus Type');
+        $form->text('dayname', 'Day');
+        $form->hidden('user_id', 'Created By')->default(function () {
+            return Admin::user()->id;
+        });
 
         return $form;
     }

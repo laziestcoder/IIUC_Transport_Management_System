@@ -88,7 +88,7 @@ class BusInfoController extends Controller
     {
         $grid = new Grid(new BusInfo);
 
-//        $grid->id('ID')->sortable();
+        $grid->id('ID')->sortable();
         $grid->busid('Bus ID')->sortable();
         $grid->registration('Registration No')->sortable();
         $grid->license('License No')->sortable();
@@ -113,7 +113,15 @@ class BusInfoController extends Controller
 //        })->sortable()->label();
 //        $grid->created_at('Created At')->sortable();
         $grid->updated_at('Last Updated')->sortable();
-
+        $grid->filter(function ($filter) {
+            // Sets the range query for the created_at field
+            //$filter->expand();
+            $filter->disableIdFilter();
+            $filter->like('busid','Bus ID');
+            $filter->like('registration','Registration No');
+            $filter->like('license', 'License No');
+            });
+        //$grid->expandFilter();
         return $grid;
     }
 

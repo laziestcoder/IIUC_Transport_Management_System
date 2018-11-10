@@ -92,6 +92,7 @@ class UserRoleController extends Controller
             //$actions->disableEdit();
             //$actions->disableview();
         });
+        $grid->disableFilter();
 //        $grid->disableActions();
         $grid->disableRowSelector();
 //        $grid->disableCreateButton();
@@ -126,7 +127,7 @@ class UserRoleController extends Controller
                 //$tools->disableEdit();
                 //$tools->disableList();
                 $tools->disableDelete();
-            });;
+            });
 
         return $show;
     }

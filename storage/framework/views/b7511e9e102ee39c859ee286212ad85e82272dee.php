@@ -418,7 +418,7 @@
                 <div class="team-member">
                     <img class="mx-auto rounded-circle responsive" src="/storage/img/team/1.jpg" alt="Towfiqul Islam">
                     <h4>Towfiqul Islam</h4><span>Dept. of CSE, IIUC</span>
-                    <p class="text-muted">Full-Stack Developer</p>
+                    <p class="text-muted">Back-end Developer</p>
                     <ul class="list-inline social-buttons">
                         <li class="list-inline-item">
                             <a href="http://twitter.com/TowfiqIslam">
@@ -448,7 +448,7 @@
                 <div class="team-member">
                     <img class="mx-auto rounded-circle responsive" src="/storage/img/team/2.jpg" alt="Sina Ibn Amin">
                     <h4>Sina Ibn Amin </h4><span>Dept. of CSE, IIUC</span>
-                    <p class="text-muted">UI/UX Designer</p>
+                    <p class="text-muted">Front-end Developer</p>
                     <ul class="list-inline social-buttons">
                         <li class="list-inline-item">
                             <a href="http://twitter.com/TowfiqIslam">

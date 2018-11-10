@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Bestmomo\LaravelEmailConfirmation\Traits\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 //use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
@@ -48,33 +49,33 @@ class LoginController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return void
      */
-    /* protected function validateLogin(Request $request)
-   {
-       $this->validate
-       ($request,
-           [
-               $this->username() =>
-               [
-                   'required','string',
-                   Rule::exists('users')->where(function($query){
-                       $query->where('confirmation',true);
-                   })
-               ],
-               'password' => 'required|string',
-           ], $this->validationError());
-   }  */
+    // protected function validateLogin(Request $request)
+    //     {
+    //         $this->validate($request,
+    //             [
+    //                 $this->username() =>
+    //                 [
+    //                     'required','string',
+    //                     Rule::exists('users')->where(function($query){
+    //                         $query->where('confirmation',true);
+    //                     })
+    //                 ],
+    //                 'password' => 'required|string',
+    //                 'g-recaptcha-response' => 'required|recaptcha',
+    //             ], $this->validationError());
+    //      }
     /**
      * Get the validation error for login
      *
      * @return array
      */
 
-    /* public function validationError()
-    {
-        return [
-                $this->username().'.exists' =>'Invalid email or activate your acount first!'
-        ];
+    //  public function validationError()
+    // {
+    //     return [
+    //             $this->username().'.exists' =>'Invalid email or activate your acount first!'
+    //     ];
 
-    } */
+    // } 
 
 }

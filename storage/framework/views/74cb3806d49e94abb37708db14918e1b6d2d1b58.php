@@ -1,4 +1,5 @@
 <?php $__env->startSection('content'); ?>
+<script src='https://www.google.com/recaptcha/api.js'></script>
     <header id="home" class="masthead">
         <div class="container">
             <div class="intro-text" style="padding-top: 140px; padding-bottom: 200px;">
@@ -136,6 +137,17 @@
                                                                    name="userrole" required>Officer/Staff
                                                         </label>
                                                     </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <div class="col-md-6 col-md-offset-4">
+                                                    <div class="g-recaptcha" data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
+                                                    <?php if($errors->has('recaptcha')): ?>
+                                                        <span class="help-block">
+                                                        <strong><?php echo e($errors->first('recaptcha'), false); ?></strong>
+                                                        </span>
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
 

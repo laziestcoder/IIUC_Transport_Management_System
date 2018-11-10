@@ -2,15 +2,19 @@
 
 namespace App\Admin\Controllers;
 
-use App\BusType;
+use App\BusRoute;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Encore\Admin\Auth\Database\Administrator;
+use Encore\Admin\Facades\Admin;
 
-class BusTypeController extends Controller
+
+
+class RoutesController extends Controller
 {
     use HasResourceActions;
 
@@ -23,15 +27,15 @@ class BusTypeController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Bus Type')
-            ->description('List')
+            ->header('Bus Route')
+            ->description('Here you will get all the bus route.')
             ->body($this->grid());
     }
 
     /**
      * Show interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      * @return Content
      */
@@ -46,7 +50,7 @@ class BusTypeController extends Controller
     /**
      * Edit interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      * @return Content
      */
@@ -79,12 +83,15 @@ class BusTypeController extends Controller
      */
     protected function grid()
     {
-        $grid = new Grid(new BusType);
+        $grid = new Grid(new BusRoute);
 
-        $grid->id('ID');
-        $grid->name('Bus Type');
-        $grid->created_at('Created at');
-        $grid->updated_at('Updated at');
+        //$grid->id('ID')->sortable();
+        $grid->routename('Route Name')->badge('green')->sortable();
+        $grid->user_id('Inputed By')->display(function ($s) {
+            return Administrator::all()->find($s)->name;
+        })->badge('blue')->sortable();
+        $grid->created_at('Created At')->sortable();
+        $grid->updated_at('Updated At')->sortable();
         $grid->disableFilter();
 
         return $grid;
@@ -93,19 +100,20 @@ class BusTypeController extends Controller
     /**
      * Make a show builder.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @return Show
      */
     protected function detail($id)
     {
-        $show = new Show(BusType::findOrFail($id));
-        $show->panel()
-            ->title(trans('Bus Type Details'));
+        $show = new Show(BusRoute::findOrFail($id));
 
         $show->id('ID');
-        $show->name('Bus Type');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
+        $show->routename('Route Name');
+        $show->user_id('Created By')->as(function ($s) {
+            return Administrator::all()->find($s)->name;
+        })->label('primary');
+        $show->created_at('Created At');
+        $show->updated_at('Updated At');
 
         return $show;
     }
@@ -117,9 +125,12 @@ class BusTypeController extends Controller
      */
     protected function form()
     {
-        $form = new Form(new BusType);
+        $form = new Form(new BusRoute);
 
-        $form->text('name', 'Bus Type');
+        $form->text('routename', 'Route Name')->label('green');
+        $form->hidden('user_id', 'Created By')->default(function () {
+            return Admin::user()->id;
+        });
 
         return $form;
     }

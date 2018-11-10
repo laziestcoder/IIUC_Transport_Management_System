@@ -42,8 +42,8 @@ class ManagementController extends Controller
             $entrydate = Carbon::parse($check->entrydate);
             $expiredate = $entrydate->addDays(15);
             $entrydate = Carbon::parse($check->entrydate);
-            $datedifference = $expiredate->diffInDays($today);
-            if ($datedifference > 0) {
+            //$datedifference = $expiredate->diffInDays($today);
+            if ($today <= $expiredate) {
                 //$date = $today->addDays($date)->toDateString();
                 return redirect('/dashboard')->with('error', 'You have changed your bus routine on ' . $check->entrydate . '. You are not allowed to edit now! Wait till ' . $expiredate->toDateString() . ' .');
             }
@@ -77,7 +77,7 @@ class ManagementController extends Controller
             $image = "<img src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
         }
         if (!$verified && !$adminVerification) {
-            return redirect('/dashboard')->with('error', 'Your account is not verified. Please check you \'Varsity ID\' and \'Name\' or contact with an administrative person. Thank you.');
+            return redirect('/dashboard')->with('error', 'Your account is not verified. Please check your \'Varsity ID\' and \'Name\' or contact with an administrative person. Thank you.');
         }
         $data = array(
             'BusRoutes' => $BusRoutes,
@@ -239,7 +239,7 @@ class ManagementController extends Controller
             $image = "<img src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
         }
         if (!$verified && !$adminVerification) {
-            return redirect('/dashboard')->with('error', 'Your account is not verified. Please check you \'Varsity ID\' and \'Name\' or contact with an administrative person. Thank you.');
+            return redirect('/dashboard')->with('error', 'Your account is not verified. Please check your \'Varsity ID\' and \'Name\' or contact with an administrative person. Thank you.');
 
         }
         //account verification end

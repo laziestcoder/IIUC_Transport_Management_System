@@ -102,6 +102,15 @@ class HelperInfoController extends Controller
         $grid->created_at('Created At');
         $grid->updated_at('Updated At');
 
+        $grid->filter(function ($filter) {
+            // Sets the range query for the created_at field
+            //$filter->expand();
+            $filter->disableIdFilter();
+            $filter->like('nid','NID');
+            $filter->like('helperid','Helper ID');
+            $filter->like('license', 'License No');
+        });
+
         return $grid;
     }
 

@@ -50,7 +50,7 @@ class FacultyController extends Controller
 
             $grid->model()->where('userrole', '=', $value);
             $grid->id('ID')->sortable();
-            $grid->jobid(trans('Varsity ID'))->sortable();
+            $grid->jobid(trans('Varsity ID'))->sortable()->editable();
             $grid->image(trans('admin.avatar'))->display(function ($s) use ($self) {
                 $file= $self->imageValidate($this->jobid);  //I want to use this $file value
                 if($file){ // here I want to access $file
@@ -59,7 +59,7 @@ class FacultyController extends Controller
                     return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
                 }
             });
-            $grid->name(trans('Name'));
+            $grid->name(trans('Name'))->editable();
             $grid->email(trans('Email'));
             $grid->gender(trans('Gender'))->display(function ($s) {
                 return $s ? 'Female' : 'Male';
@@ -79,20 +79,21 @@ class FacultyController extends Controller
 
             $grid->actions(function (Grid\Displayers\Actions $actions) {
                 if ($actions->getKey() == 1) {
-                    $actions->disableDelete();
+                   // $actions->disableDelete();
                 }
                 $actions->disableEdit();
                 $actions->disableview();
             });
 
-            $grid->tools(function (Grid\Tools $tools) {
+          /*  $grid->tools(function (Grid\Tools $tools) {
                 $tools->batch(function (Grid\Tools\BatchActions $actions) {
                     $actions->disableDelete();
                 });
-            });
+            });*/
             $grid->filter(function ($filter) {
                 // Sets the range query for the created_at field
-                $filter->between('jobid', 'Search by Varsity ID');
+                $filter->disableIdFilter();
+                $filter->like('jobid', 'Varsity ID');
             });
 
             $grid->disableCreateButton();
@@ -124,7 +125,7 @@ class FacultyController extends Controller
      */
     public function form()
     {
-        $form = new Form(new User());
+        $form = new Form(new User);
 
         $form->display('id', 'ID');
         $form->display('jobid', 'Varsity ID');
@@ -178,7 +179,7 @@ class FacultyController extends Controller
             $tools->disableView();
         });
 
-        $form->save();
+       // $form->save();
 
         return $form;
     }

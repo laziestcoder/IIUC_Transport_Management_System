@@ -67,24 +67,28 @@ class StudentController extends Controller
 
             $grid->actions(function (Grid\Displayers\Actions $actions) {
                 if ($actions->getKey() == 1) {
-                    $actions->disableDelete();
+                   // $actions->disableDelete();
                 }
                 $actions->disableEdit();
                 $actions->disableview();
             });
 
-            $grid->tools(function (Grid\Tools $tools) {
+           // $grid->disableTools();
+            //$grid->disableRowSelector();
+
+          /*  $grid->tools(function (Grid\Tools $tools) {
                 $tools->batch(function (Grid\Tools\BatchActions $actions) {
                     $actions->disableDelete();
                 });
-            });
+            });*/
             $grid->filter(function ($filter) {
                 // Sets the range query for the created_at field
-                $filter->between('jobid', 'Search by Varsity ID');
+                $filter->disableIdFilter();
+                $filter->like('jobid', 'Varsity ID');
             });
 
             $grid->disableCreateButton();
-            $grid->perPages([10, 15, 20, 25, 30, 35, 40, 45, 50, 100]);
+            $grid->perPages([25, 30, 35, 40, 45, 50, 100]);
 
 
         });
@@ -113,10 +117,10 @@ class StudentController extends Controller
     public function form()
     {
         $self = $this;
-        $form = new Form(new User());
+        $form = new Form(new User);
 
-        $form->display('id', 'ID');
-        $form->display('jobid', 'Varsity ID');
+       // $form->display('id', 'ID');
+        $form->text('jobid', 'Varsity ID');
         $form->display('avatar', trans('admin.avatar'))->with(function ($s) use ($self){
             $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
             $ch = curl_init();
@@ -138,7 +142,7 @@ class StudentController extends Controller
                 return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
             }
         });
-        $form->display('name', trans('admin.name'))->rules('required');
+        $form->text('name', trans('admin.name'))->rules('required');
         $form->display('email', trans('Email'))->rules('required');
         $form->display('gender',trans('Gender'))->with(function ($s){
             return $s? 'Female':'Male';
@@ -165,7 +169,7 @@ class StudentController extends Controller
             $tools->disableView();
         });
 
-        $form->save();
+        //$form->save();
 
         return $form;
     }

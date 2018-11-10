@@ -55,6 +55,16 @@
                             Verified: {!! ($verified && $adminVerification)? 'Yes': 'No' !!}
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                           Last Updated: {!! $lastupdated !!}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Next Update: {!! $nextDate!!}
+                        </td>
+                    </tr>
                     </thead>
                 </table>
             </div>

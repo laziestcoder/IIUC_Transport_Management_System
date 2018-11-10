@@ -2,7 +2,14 @@
 
 namespace App\Admin\Controllers;
 
+use App\BusRoute;
 use App\Schedule;
+use App\Day;
+use App\Time;
+use App\UserRole;
+use Carbon\Carbon;
+use Encore\Admin\Facades\Admin;
+use Encore\Admin\Auth\Database\Administrator;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -69,7 +76,7 @@ class BusScheduleController extends Controller
     {
         return $content
             ->header('Create')
-            ->description('')
+            ->description('Create New Bus Schedule')
             ->body($this->form());
     }
 
@@ -82,18 +89,37 @@ class BusScheduleController extends Controller
     {
         $grid = new Grid(new Schedule);
 
-        $grid->id('Id');
-        $grid->day('Day');
-        $grid->toiiuc('Toiiuc');
-        $grid->fromiiuc('Fromiiuc');
-        $grid->male('Male');
-        $grid->female('Female');
-        $grid->time('Time');
-        $grid->user('User');
-        $grid->route('Route');
-        $grid->user_id('User id');
-        $grid->created_at('Created at');
-        $grid->updated_at('Updated at');
+        $grid->id('ID')->sortable();
+        $grid->day('Day')->display(function ($s) {
+            return Day::all()->find($s)->dayname;
+        })->badge('green')->sortable();
+        $grid->toiiuc('To IIUC Capmus')->display(function ($s) {
+            return $s ? 'Yes' : 'No';
+        })->sortable();
+        $grid->fromiiuc('From IIUC Campus')->display(function ($s) {
+            return $s ? 'Yes' : 'No';
+        })->sortable();
+        $grid->male('Male')->display(function ($s) {
+            return $s ? 'Yes' : 'No';
+        })->sortable();
+        $grid->female('Female')->display(function ($s) {
+            return $s ? 'Yes' : 'No';
+        })->sortable();
+        $grid->time('Time')->display(function ($s) {
+            return Carbon::parse(Time::all()->find($s)->time)->format("g:i A");
+        })->sortable();
+        $grid->bususer('Bus For')->display(function ($s) {
+            return UserRole::all()->find($s)->name;
+        })->badge('orange')->sortable();
+        $grid->route('Route')->display(function ($s) {
+            return BusRoute::all()->find($s)->routename;
+        })->badge('purple')->sortable();
+        $grid->user_id('Inputed By')->display(function ($s) {
+            return Administrator::all()->find($s)->name;
+        })->badge('blue')->sortable();
+        //$grid->created_at('Created At');
+        $grid->updated_at('Last Updated');
+        $grid->disableFilter();
 
         return $grid;
     }
@@ -108,18 +134,37 @@ class BusScheduleController extends Controller
     {
         $show = new Show(Schedule::findOrFail($id));
 
-        $show->id('Id');
-        $show->day('Day');
-        $show->toiiuc('Toiiuc');
-        $show->fromiiuc('Fromiiuc');
-        $show->male('Male');
-        $show->female('Female');
-        $show->time('Time');
-        $show->user('User');
-        $show->route('Route');
-        $show->user_id('User id');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
+        $show->id('ID');
+        $show->day('Day')->as(function ($s) {
+            return Day::all()->find($s)->dayname;
+        });
+        $show->toiiuc('To IIUC Campus')->as(function ($s) {
+            return $s ? 'Yes' : 'No';
+        });
+        $show->fromiiuc('From IIUC Campus')->as(function ($s) {
+            return $s ? 'Yes' : 'No';
+        });
+        $show->male('Male')->as(function ($s) {
+            return $s ? 'Yes' : 'No';
+        });
+        $show->female('Female')->as(function ($s) {
+            return $s ? 'Yes' : 'No';
+        });
+        $show->time('Time')->as(function ($s) {
+            return Carbon::parse(Time::all()->find($s)->time)->format("g:i A");
+        });
+        $show->bususer('Bus For')->as(function ($s) {
+            return UserRole::all()->find($s)->name;
+        });
+        $show->route('Route')->as(function ($s) {
+            return BusRoute::all()->find($s)->routename;
+        });
+        $show->user_id('Inputed By')->as(function ($s) {
+            return Administrator::all()->find($s)->name;
+        });
+        $show->created_at('Created At');
+        $show->updated_at('Updated At');
+        $show->panel()->title('Details');
 
         return $show;
     }
@@ -133,15 +178,30 @@ class BusScheduleController extends Controller
     {
         $form = new Form(new Schedule);
 
-        $form->number('day', 'Day');
-        $form->switch('toiiuc', 'Toiiuc');
-        $form->switch('fromiiuc', 'Fromiiuc');
-        $form->switch('male', 'Male');
-        $form->switch('female', 'Female');
-        $form->number('time', 'Time');
-        $form->number('user', 'User')->default(1);
-        $form->number('route', 'Route');
-        $form->number('user_id', 'User id');
+        $form->select('day', 'Day')
+            ->options(Day::all()->pluck('dayname','id'))
+            ->rules('required');
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
+        ];
+
+        $form->switch('toiiuc', 'To IIUC Campus')->states($states);
+        $form->switch('fromiiuc', 'From IIUC Campus')->states($states);
+        $form->switch('male', 'Male')->states($states);
+        $form->switch('female', 'Female')->states($states);
+        $form->select('time', 'Time')
+            ->options(Time::all()->sortBy('time')->pluck('time','id'))
+            ->rules('required');
+        $form->select('bususer', 'Bus For')
+            ->options(UserRole::all()->sortBy('name')->pluck('name','id'))
+            ->rules('required');
+        $form->select('route', 'Route')
+            ->options(BusRoute::all()->sortBy('routename')->pluck('routename','id'))
+            ->rules('required');
+        $form->hidden('user_id', 'Created By')->default(function () {
+            return Admin::user()->id;
+        });
 
         return $form;
     }

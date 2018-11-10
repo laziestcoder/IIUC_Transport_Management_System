@@ -20,6 +20,7 @@ class CreateDashboardTable extends Migration
             $table->boolean('holiday')->default(0);
             $table->boolean('schedule_suspend')->default(0);
             $table->boolean('schedule_edit')->default(0);
+            $table->integer('editdate')->default(45);
             $table->timestamps();
         });
     }

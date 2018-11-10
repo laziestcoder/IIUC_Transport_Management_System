@@ -24,7 +24,7 @@
                                                 {!! session('confirmation-danger') !!}
                                             </div>
                                         @endif
-                                        <form class="form-horizontal" role="form" method="POST"
+                                        <form id="form" class="form-horizontal" role="form" method="POST"
                                               action="{{ url('/login') }}">
                                             {{ csrf_field() }}
 
@@ -33,7 +33,7 @@
 
                                                 <div class="col-md-6">
                                                     <input id="email" type="email" class="form-control" name="email"
-                                                           value="{{ old('email') }}" required autofocus>
+                                                           value="{{ old('email') }}" autofocus>
 
                                                     @if ($errors->has('email'))
                                                         <span class="help-block">
@@ -48,7 +48,7 @@
 
                                                 <div class="col-md-6">
                                                     <input id="password" type="password" class="form-control"
-                                                           name="password" required>
+                                                           name="password">
 
                                                     @if ($errors->has('password'))
                                                         <span class="help-block">
@@ -68,6 +68,23 @@
                                                         </label>
                                                     </div>
                                                 </div>
+                                            </div>
+                                            {{-- <div class="form-group">
+                                                 <div class="col-md-8 col-md-offset-4">
+                                                     {!! Recaptcha::render() !!}
+                                                 </div>
+                                             </div>--}}
+                                            <div class="form-group">
+                                                <div class="col-md-6 col-md-offset-4">
+                                                    <div id="recaptcha" class="g-recaptcha"
+                                                         data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
+                                                    @if ($errors->has('recaptcha'))
+                                                        <span class="help-block">
+                                                        <strong>{{ $errors->first('recaptcha') }}</strong>
+                                                        </span>
+                                                    @endif
+                                                </div>
+
                                             </div>
 
                                             <div class="form-group">
@@ -173,4 +190,5 @@
         </div>
     </div>
 </div> -->
+    @include('inc.recaptchaSubmitValidate')
 @endsection

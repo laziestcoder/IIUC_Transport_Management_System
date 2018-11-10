@@ -76,13 +76,13 @@ Route::get('/busschedules', 'ManagementController@busroutes');
 
 //Admin::routes();
 
-Route::resource('/admin/auth/routes', 'BusRoutesController');
-Route::resource('/admin/auth/points', 'BusPointsController');
-Route::resource('/admin/auth/notices', 'NoticesController');
-Route::resource('/admin/auth/addtime', 'TimeController');
-Route::resource('/admin/auth/newday', 'DayController');
-Route::resource('/admin/auth/schedule', 'ScheduleController');
-Route::get('/admin/auth/allschedule', 'ScheduleController@all');
+Route::get('/admin/auth/routes', 'BusRoutesController@index');
+//Route::resource('/admin/auth/points', 'BusPointsController');
+//Route::resource('/admin/auth/notices', 'NoticesController');
+//Route::resource('/admin/auth/addtime', 'TimeController');
+//Route::resource('/admin/auth/newday', 'DayController');
+Route::get('/admin/auth/schedule', 'ScheduleController@index');
+//Route::get('/admin/auth/allschedule', 'ScheduleController@all');
 
 //Route::resource('/admin/auth/schedule/addtime', 'ScheduleController@create');
 //Route::get('/admin/auth/notices/create','NoticesController@create');

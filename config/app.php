@@ -166,6 +166,11 @@ return [
         Collective\Html\HtmlServiceProvider::class,
         Unisharp\Ckeditor\ServiceProvider::class,
         Bestmomo\LaravelEmailConfirmation\ServiceProvider::class,
+
+        /*
+        *   google captcha
+        */ 
+        Greggilbert\Recaptcha\RecaptchaServiceProvider::class,
         /*
          * Package Service Providers...
          */
@@ -229,6 +234,11 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Form' => Collective\Html\FormFacades::class,
         'Html' => Collective\Html\HtmlFacade::class,
+
+        /*
+        *   google captcha
+        */ 
+        'Recaptcha' => Greggilbert\Recaptcha\Facades\Recaptcha::class,
 
     ],
 

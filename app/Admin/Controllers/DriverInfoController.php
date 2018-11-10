@@ -103,6 +103,15 @@ class DriverInfoController extends Controller
         $grid->created_at('Created At')->sortable();
         $grid->updated_at('Updated At')->sortable();
 
+        $grid->filter(function ($filter) {
+            // Sets the range query for the created_at field
+            //$filter->expand();
+            $filter->disableIdFilter();
+            $filter->like('nid','NID');
+            $filter->like('driverid','Driver ID');
+            $filter->like('license', 'License No');
+        });
+
         return $grid;
     }
 

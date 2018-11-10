@@ -36,6 +36,8 @@
     <link href="<?php echo e(asset('css/agency.min.css'), false); ?>" rel="stylesheet">
     <link href="<?php echo e(asset('css/style.css'), false); ?>" rel="stylesheet">
 
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
 
 </head>
 <body>

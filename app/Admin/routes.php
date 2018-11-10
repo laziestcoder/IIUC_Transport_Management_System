@@ -22,4 +22,9 @@ Route::group([
     $router->resource('/auth/transport-notice', 'NoticeController');
     $router->resource('/auth/bus-type', 'BusTypeController');
     $router->resource('/auth/bus-schedule', 'BusScheduleController');
+    $router->resource('/auth/point', 'PointsController');
+    $router->resource('/auth/route', 'RoutesController');
+    $router->resource('/auth/day', 'DaysController');
+    $router->resource('/auth/time', 'TimesController');
+
 });

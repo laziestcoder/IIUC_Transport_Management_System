@@ -36,6 +36,7 @@ class AdminDashboardController extends Controller
         $grid->holiday('Holiday')->switch($states);
         $grid->schedule_suspend('Schedule Suspend')->switch($states);
         $grid->schedule_edit('Schedule Edit')->switch($states);
+        $grid->editdate('Schedule Edit Limit')->editable();
         $grid->disableActions();
         $grid->disableRowSelector();
         $grid->disableExport();
@@ -55,6 +56,7 @@ class AdminDashboardController extends Controller
         $form->switch('holiday', 'Holiday');
         $form->switch('schedule_suspend', 'Schedule suspend');
         $form->switch('schedule_edit', 'Schedule edit');
+        $form->number('editdate', 'Schedule Edit Limit');
 
         return $form;
     }

@@ -57,7 +57,9 @@ class RegisterController extends Controller
             'userrole' => 'required|integer',
             'gender' => 'required|boolean',
             'image' => 'image|nullable|max:1999',
-            'jobid' => 'required|string|max:50|unique:users'
+            'jobid' => 'required|string|max:50|unique:users',
+            'g-recaptcha-response' => 'required|recaptcha',
+            
         ]);
     }
 

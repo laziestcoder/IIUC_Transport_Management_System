@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Day;
 use App\User;
+use App\StudentSchedule;
+use Carbon\Carbon;
+use App\AdminDashboard;
 
 class DashboardController extends Controller
 {
@@ -27,6 +30,17 @@ class DashboardController extends Controller
 
         $user_id = auth()->user()->id;
         $user = User::find($user_id);
+        $check = StudentSchedule::where('user_id', $user_id)->first();
+        $today = Carbon::now();
+        $entrydate = 0;
+        $expiredate = 0;
+        if ($check) {
+            $datelimit = AdminDashboard::all()->first();
+            $datelimit = $datelimit->editdate;
+            $entrydate = Carbon::parse($check->entrydate);
+            $expiredate = Carbon::parse($entrydate->addDays($datelimit))->format('d-m-Y  g:i A');
+            $entrydate = Carbon::parse($check->entrydate)->format('d-m-Y  g:i A');
+        }
         //$BusRoutes = BusRoute::orderBy('routename')->get();
         //$BusPoints = BusPoint::orderBy('pointname')->get();
         $days = Day::orderBy('id')->get();
@@ -62,6 +76,8 @@ class DashboardController extends Controller
             'image' => $image,
             'verified' => $verified,
             'adminVerification' => $adminVerification,
+            'lastupdated' => $entrydate?$entrydate:'N/A',
+            'nextDate' => $expiredate?$expiredate:'N/A',
 
         );
         return view('user.dashboard')->with($data);
