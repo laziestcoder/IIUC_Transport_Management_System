@@ -36,7 +36,6 @@ class OfficerController extends Controller
             ->body($this->grid(2)->render());
     }
 
-
     /**
      * Make a grid builder.
      *
@@ -51,14 +50,14 @@ class OfficerController extends Controller
             $grid->model()->where('userrole', '=', $value);
             $grid->id('ID')->sortable();
             $grid->jobid(trans('Varsity ID'))->sortable()->editable();
-            $grid->image(trans('admin.avatar'))->display(function ($s) use ($self) {
-                $file= $self->imageValidate($this->jobid);  //I want to use this $file value
-                if($file){ // here I want to access $file
-                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
-                } else {
-                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
-                }
-            });
+//            $grid->image(trans('admin.avatar'))->display(function ($s) use ($self) {
+//                $file= $self->imageValidate($this->jobid);  //I want to use this $file value
+//                if($file){ // here I want to access $file
+//                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
+//                } else {
+//                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
+//                }
+//            });
             $grid->name(trans('Name'))->editable();
             $grid->email(trans('Email'));
             $grid->gender(trans('Gender'))->display(function ($s) {
@@ -82,7 +81,7 @@ class OfficerController extends Controller
                     //$actions->disableDelete();
                 }
                 $actions->disableEdit();
-                $actions->disableview();
+                //$actions->disableview();
             });
 /*
             $grid->tools(function (Grid\Tools $tools) {
@@ -101,6 +100,67 @@ class OfficerController extends Controller
 
 
         });
+    }
+
+
+    public function show($id, Content $content)
+    {
+        return $content
+            ->header('Detail')
+            ->description('')
+            ->body($this->detail($id));
+    }
+
+    public function detail($id)
+    {
+        $self = $this;
+        $show = new Show(User::findOrFail($id));
+        $show->panel()->title('View Profile');
+
+        //$show->id('ID');
+        $show->name('Name');
+        $show->jobid(trans('Varsity ID'));
+        $show->divider();
+        $show->image(trans('admin.avatar'))
+            ->as(function () use ($self) {
+                $file= $self->imageValidate($this->jobid);  //I want to use this $file value
+                if($file){ // here I want to access $file
+                    return "http://upanel.iiuc.ac.bd:81/Picture/".$this->jobid.".jpg";
+                } else {
+                    return "/image/user/".$this->image;
+                }
+            })->image();
+
+        $show->email(trans('Email'));
+        $show->gender(trans('Gender'))->as(function ($s) {
+            return $s ? 'Female' : 'Male';
+        });
+
+        $show->confirmed(trans('Activated'))->as(function ($s) {
+            return $s ? 'YES' : 'NO';
+        });
+        $show->confirmation(trans('Verified'))->as(function ($s) {
+            return $s ? 'YES' : 'NO';
+        });
+
+
+        $show->created_at('Created At');
+        $show->updated_at('Updated At');
+//        $show->actions(function (Grid\Displayers\Actions $actions) {
+//            if ($actions->getKey() <= 3) {
+//                $actions->disableDelete();
+//            }
+//            //$actions->disableEdit();
+//            $actions->disableview();
+//        });
+        $show->panel()
+            ->tools(function ($tools) {
+                //$tools->disableEdit();
+                //$tools->disableList();
+                $tools->disableDelete();
+            });
+
+        return $show;
     }
 
 
@@ -228,7 +288,7 @@ class OfficerController extends Controller
     }
 
 
-    protected function imageValidate($pic){
+    public function imageValidate($pic){
         $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $pic . ".jpg";
         $ch = curl_init();
         $timeout = 5;

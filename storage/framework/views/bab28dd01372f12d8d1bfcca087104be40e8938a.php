@@ -15,24 +15,14 @@
                     </span>
         </div>
         <div class="col-md-4"></div>
-        <div class="col-md-4">
-            <ul class="list-inline social-buttons">
-                
-                
-                
-                
-                
-                <li class="list-inline-item">
-                    <a target="_blank" href="https://www.facebook.com/IIUCTMD/">
-                        <i class="fa fa-facebook"></i>
-                    </a>
-                </li>
-                
-                
-                
-                
-                
-            </ul>
+        <div class="col-md-4" >
+            <li class="list-inline" >
+            Join our  
+            <a style="color: #636b6f; font-weight:bold;text-decoration: none;" target="_blank" href="https://www.facebook.com/IIUCTMD/">facebook Group</a>
+            
+           & 
+            <a style="color: #636b6f; font-weight:bold;text-decoration: none;" target="_blank" href="https://www.facebook.com/groups/iiuc.transport/">facebook Page</a>
+            </li>
         </div>
         
         

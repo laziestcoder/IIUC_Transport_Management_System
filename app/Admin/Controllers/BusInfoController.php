@@ -88,7 +88,7 @@ class BusInfoController extends Controller
     {
         $grid = new Grid(new BusInfo);
 
-        $grid->id('ID')->sortable();
+       // $grid->id('ID')->sortable();
         $grid->busid('Bus ID')->sortable();
         $grid->registration('Registration No')->sortable();
         $grid->license('License No')->sortable();

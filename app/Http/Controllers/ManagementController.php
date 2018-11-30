@@ -9,6 +9,7 @@ use App\Schedule;
 use App\StudentSchedule;
 use App\Time;
 use App\User;
+use App\AdminDashboard;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
@@ -39,9 +40,13 @@ class ManagementController extends Controller
         $check = StudentSchedule::where('user_id', $user_id)->first();
         $today = Carbon::now();
         if ($check) {
+            $datelimit = AdminDashboard::all()->first();
+            $datelimit = $datelimit->editdate;
             $entrydate = Carbon::parse($check->entrydate);
-            $expiredate = $entrydate->addDays(15);
-            $entrydate = Carbon::parse($check->entrydate);
+            $expiredate = $entrydate->addDays($datelimit);
+//            $expiredate = Carbon::parse($entrydate->addDays($datelimit))->format('d-m-Y  g:i A');
+//            $entrydate = Carbon::parse($check->entrydate);
+//            $entrydate = Carbon::parse($check->entrydate)->format('d-m-Y  g:i A');
             //$datedifference = $expiredate->diffInDays($today);
             if ($today <= $expiredate) {
                 //$date = $today->addDays($date)->toDateString();
@@ -132,6 +137,7 @@ class ManagementController extends Controller
             $schedule->droptime = $request->input('droptime' . $day->id);
             $schedule->user_id = auth()->user()->id;
             $schedule->userrole = auth()->user()->userrole;
+            $schedule->user_gender = auth()->user()->gender;
             $schedule->entrydate = Carbon::now()->toDateString();
             $schedule->save();
         }
@@ -166,6 +172,7 @@ class ManagementController extends Controller
             $schedule->droptime = $request->input('droptime' . $day->id);
             $schedule->user_id = auth()->user()->id;
             $schedule->userrole = auth()->user()->userrole;
+            $schedule->user_gender = auth()->user()->gender;
             $schedule->entrydate = Carbon::now()->toDateString();
             $schedule->save();
         }
@@ -214,7 +221,7 @@ class ManagementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function busroutes()
+    protected function busroutes()
     {
         //account verification
         $user = User::find(auth()->user()->id);
@@ -268,5 +275,15 @@ class ManagementController extends Controller
             //'times' => $times,
         );
         return view("user.busSchedule")->with($data);
+    }
+
+    protected function busroutesdetails(){
+        $data = array(
+            'busroutes' => BusRoute::orderBy('routename','asc')->get(),
+            //'points' => BusPoint::all(),
+            'title' => 'Route Information',
+        );
+        return view("user.busRouteDetails")->with($data);
+
     }
 }

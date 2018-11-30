@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\BusPoint;
 use App\BusRoute;
 use App\BusStudentInfo;
 use App\Day;
+use App\StudentSchedule;
 use App\Time;
+use Carbon\Carbon;
 use DB;
 use Encore\Admin\Facades\Admin;
-use Illuminate\Http\Request;
 use Encore\Admin\Form;
-
+use Illuminate\Http\Request;
 
 
 class BusRoutesController extends Controller
@@ -20,7 +22,7 @@ class BusRoutesController extends Controller
      *
      * @return void
      */
-   // protected
+    // protected
     public function __construct()
     {
         $this->middleware('admin');
@@ -33,18 +35,18 @@ class BusRoutesController extends Controller
      */
     public function index()
     {
-        //$this->calculate();
-        $BusRoutes =  BusRoute::orderBy('routename')->paginate(50);
-        //$BusRoutes = BusStudentInfo::orderBy('id')->paginate(15);
-        $days= Day::all()->where('id','<',8);
-        $times = Time::orderBy('time');
+        $this->calculate();
+        $today = Carbon::today()->format('l');
         $data = array(
             'title' => 'Bus Route Info',
-            'smallTitle' =>'',
+            'smallTitle' => 'Here you will get route wise student number and required bus number for the students',
             'titleinfo' => 'Route Wise Bus and Student Information',
-            'BusRoutes' => $BusRoutes,
-            'days' => $days,
-            'times' => $times,
+            'routes' => BusRoute::orderBy('routename')->get(),
+            'days' => Day::all(),
+            'times' => Time::orderBy('time')->get(),
+            'today' => $today,
+            'todayid' => Day::all()->where('dayname', $today)->first()->id,
+            'datas' => BusStudentInfo::all(),
         );
         return view('busroutes.index')->with($data);
     }
@@ -202,10 +204,6 @@ class BusRoutesController extends Controller
 
     }
 
-    protected function calculate(){
-
-    }
-
     protected function form()
     {
         $form = new Form(new BusStudentInfo);
@@ -218,6 +216,75 @@ class BusRoutesController extends Controller
         $form->switch('gender', 'Gender');
 
         return $form;
+    }
+
+    protected function calculate()
+    {
+        $datas = StudentSchedule::all();
+        $routes = BusRoute::all();
+        $points = BusPoint::all();
+        $days = Day::all();
+        $times = Time::all();
+
+        $dayid = 0;
+        $routeid = 0;
+        $pointid = 0;
+        $timeid = 0;
+        $gender = 0;
+
+        foreach ($days as $day) {
+            foreach ($points as $point) {
+                foreach ($times as $time) {
+                    for ($genderid = 0; $genderid <= 1; $genderid++) {
+                        $studentNumber =
+                            StudentSchedule::where('day', $day->id)
+                                ->where('pickpoint', $point->id)
+                                ->where('picktime', $time->id)
+                                ->where('user_gender', $genderid)
+                                ->count();
+                        if ($studentNumber > 0) {
+                            $routeid = BusRoute::where('id', $point->routeid)->first()->id;
+                            $pointid = $point->id;
+                            $dayid = $day->id;
+                            $timeid = $time->id;
+                            $gender = $genderid;
+                            $exist = BusStudentInfo::where('dayid', $dayid)
+                                ->where('routeid', $routeid)
+                                ->where('pointid', $pointid)
+                                ->where('timeid', $timeid)
+                                ->where('gender', $gender)
+                                ->get();
+                            if (count($exist) > 0) {
+                                $dataid = $exist->first()->id;
+                                $form = BusStudentInfo::find($dataid);
+
+                                $form->routeid = $routeid;
+                                $form->pointid = $pointid;
+                                $form->studentno = $studentNumber;
+                                $form->dayid = $dayid;
+                                $form->timeid = $timeid;
+                                $form->gender = $gender;
+
+                                $form->save();
+
+                            } else {
+                                $form = new BusStudentInfo;
+
+                                $form->routeid = $routeid;
+                                $form->pointid = $pointid;
+                                $form->studentno = $studentNumber;
+                                $form->dayid = $dayid;
+                                $form->timeid = $timeid;
+                                $form->gender = $gender;
+
+                                $form->save();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
 

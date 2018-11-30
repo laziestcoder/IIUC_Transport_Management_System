@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\BusRoute;
+use App\EmergencyContact;
 use App\Day;
 use App\Notice;
 use App\Schedule;
@@ -32,7 +33,7 @@ class PagesController extends Controller
 
         //Next Bus
         $times = Time::where('time', '>=', $now)->orderBy('time')->get();
-        $todayid = Day::where('dayname', $today)->first();
+        $todayid = Day::where('dayname', $today)->get()->first();
         if ($todayid) {
             $todayid = $todayid->id;
         } else {
@@ -45,7 +46,7 @@ class PagesController extends Controller
 //        }
 
         // Get Route Information
-        function getRoute($times, $todayid, $direction, $gender)
+       function getBusRoute($times, $todayid, $direction, $gender)
         {
             if (count($times) > 0) {
                 foreach ($times as $time) {
@@ -63,14 +64,13 @@ class PagesController extends Controller
                     }
                 }
                 return false;
-//                }
-//                return false;
+//                }return false;
             }
             return false;
         }
 
         //Route Name Retrive From Table
-        function getRouteName($id)
+        function getBusRouteName($id)
         {
             return BusRoute::where('id', $id)->first()->routename;
         }
@@ -85,13 +85,13 @@ class PagesController extends Controller
         // To Campus
         // male
 
-        $toIIUCMaleSchedule = getRoute($times, $todayid, 'toiiuc', 'male');
+        $toIIUCMaleSchedule = getBusRoute($times, $todayid, 'toiiuc', 'male');
         //var_dump($toIIUCMaleSchedule !== false);
 
 
         if ($toIIUCMaleSchedule !== false) //&& $now >= $theTime)
         {
-            $toIIUCRouteM = getRouteName($toIIUCMaleSchedule->route);
+            $toIIUCRouteM = getBusRouteName($toIIUCMaleSchedule->route);
             $toIIUCMale = getTime($toIIUCMaleSchedule->time);
         } else {
             $toIIUCRouteM = 'No Route Available';
@@ -101,12 +101,12 @@ class PagesController extends Controller
 
         // From Campus
         //male
-        $fromIIUCMaleSchedule = getRoute($times, $todayid, 'fromiiuc', 'male');
+        $fromIIUCMaleSchedule = getBusRoute($times, $todayid, 'fromiiuc', 'male');
         //var_dump($fromIIUCMaleSchedule !== false);
 
         if ($fromIIUCMaleSchedule !== false)//&& $now >= $theTime)
         {
-            $fromIIUCRouteM = getRouteName($fromIIUCMaleSchedule->route);
+            $fromIIUCRouteM = getBusRouteName($fromIIUCMaleSchedule->route);
             $toCityMale = getTime($fromIIUCMaleSchedule->time);
         } else {
             $fromIIUCRouteM = 'No Route Available';
@@ -116,11 +116,11 @@ class PagesController extends Controller
 
         //To Campus
         // female
-        $toIIUCFemaleSchedule = getRoute($times, $todayid, 'toiiuc', 'female');
+        $toIIUCFemaleSchedule = getBusRoute($times, $todayid, 'toiiuc', 'female');
         //var_dump($toIIUCFemaleSchedule !== false);
 
         if ($fromIIUCMaleSchedule !== false && $now <= "12:00:00") {
-            $toIIUCRouteF = getRouteName($toIIUCFemaleSchedule->route);
+            $toIIUCRouteF = getBusRouteName($toIIUCFemaleSchedule->route);
             $toIIUCFemale = getTime($toIIUCFemaleSchedule->time);
         } else {
             $toIIUCRouteF = 'No Route Available';
@@ -129,11 +129,11 @@ class PagesController extends Controller
 
         //From Campus
         // female
-        $fromIIUCFemaleSchedule = getRoute($times, $todayid, 'fromiiuc', 'female');
+        $fromIIUCFemaleSchedule = getBusRoute($times, $todayid, 'fromiiuc', 'female');
         //var_dump($fromIIUCFemaleSchedule !== false);
 
         if ($fromIIUCFemaleSchedule !== false && $now <= "2:30:00") {
-            $fromIIUCRouteF = getRouteName($fromIIUCFemaleSchedule->route);
+            $fromIIUCRouteF = getBusRouteName($fromIIUCFemaleSchedule->route);
             $toCityFemale = getTime($fromIIUCFemaleSchedule->time);
         } else {
             $fromIIUCRouteF = 'No Route Available';
@@ -141,7 +141,7 @@ class PagesController extends Controller
         }
 
         // Todays Schedule
-        $day = Day::where('dayname', $today)->first();
+        $day = Day::where('dayname', $today)->get()->first();
         $timeAll = Time::orderBy('time')->get();
         if ($day) {
             $schedules = Schedule::where('day', $day->id)->get();
@@ -150,6 +150,7 @@ class PagesController extends Controller
         }
         //$males = Schedule::where('male','1');
         //$females = Schedule::where('female','1');
+        $emergency = EmergencyContact::where('active',1)->get();
 
 
         $data = array(
@@ -176,9 +177,11 @@ class PagesController extends Controller
             //Todays Schedules Informations
             //'males' => $males,
             // 'females' => $females,
-            'day' => $day,
+            'day' => $day ? $day : null,
             'times' => $timeAll,
             //'schedules' => $schedules,
+
+            'emergency' => $emergency,
 
         );
         return view('pages.index')->with($data);
@@ -198,6 +201,9 @@ class PagesController extends Controller
 //        );
 //        return  view('pages.services')->with($data);
 //    }
+
+
+
     // Report
     public function report(Request $request)
     {
@@ -235,6 +241,8 @@ class PagesController extends Controller
         );
         return view('pages.test')->with($data);
     }
+
+
     public function pagenotfound()
     {
         return view('pages.404');

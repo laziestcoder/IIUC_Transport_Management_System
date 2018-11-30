@@ -11,6 +11,7 @@ Route::group([
 ], function (Router $router) {
     $router->get('/', 'HomeController@index');
     $router->resource('/admin-dashboard', 'AdminDashboardController');
+    $router->resource('/emergency-contact', 'EmergencyContactsController');
     $router->resource('/auth/students', 'StudentController');
     $router->resource('/auth/teachers', 'FacultyController');
     $router->resource('/auth/officer-staff', 'OfficerController');
@@ -26,5 +27,6 @@ Route::group([
     $router->resource('/auth/route', 'RoutesController');
     $router->resource('/auth/day', 'DaysController');
     $router->resource('/auth/time', 'TimesController');
+    $router->resource('/auth/bus-student-info', 'BusStudentInfoController');
 
 });

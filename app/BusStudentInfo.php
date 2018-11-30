@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BusStudentInfo extends Model
 {
     // table name
-    public $timestamps = true;
+    public $timestamps = false;
     // primary key
     protected $table = 'bus_student_information';
     protected $primaryKey = 'id';

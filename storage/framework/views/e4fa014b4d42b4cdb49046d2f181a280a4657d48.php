@@ -11,7 +11,7 @@
     
     
     <section class="content-header">
-        <?php echo $__env->make('inc.messages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+        <?php echo $__env->make('inc.messages', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         <h1>
             <?php echo e($title, false); ?>
 
@@ -29,7 +29,6 @@
         </h2>
         <?php if( count($days) > 0 ): ?>
             <?php $__currentLoopData = $days; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <?php if($day->id != 9): ?>
                     <h3><b><?php echo e("$day->dayname", false); ?></b></h3>
                     <table class="table table-hover table-bordered table-responsive-lg">
                         <thead class="table">
@@ -125,8 +124,6 @@
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
                     </table>
-                    
-                <?php endif; ?>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         <?php else: ?>
             <p>No Schedule Found</p>
@@ -134,4 +131,4 @@
     </section>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('admin::index', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php echo $__env->make('admin::index', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>

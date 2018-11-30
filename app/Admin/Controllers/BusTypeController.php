@@ -81,11 +81,12 @@ class BusTypeController extends Controller
     {
         $grid = new Grid(new BusType);
 
-        $grid->id('ID');
-        $grid->name('Bus Type');
-        $grid->created_at('Created at');
-        $grid->updated_at('Updated at');
+        //$grid->id('ID');
+        $grid->name('Bus Type')->badge('purple');
+        $grid->created_at('Created At');
+        $grid->updated_at('Updated At');
         $grid->disableFilter();
+        $grid->disablePagination();
 
         return $grid;
     }

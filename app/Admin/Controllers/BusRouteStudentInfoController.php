@@ -43,6 +43,7 @@ class BusRouteStudentInfoController extends Controller
     protected function grid()
     {
         $grid = new Grid(new StudentSchedule);
+        $grid->model()->where('pickpoint', '!=', false);
 
         $grid->id('ID')->sortable();
         $grid->userrole('User')->display(function($id) {

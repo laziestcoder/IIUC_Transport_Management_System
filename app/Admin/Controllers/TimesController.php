@@ -84,7 +84,7 @@ class TimesController extends Controller
     {
         $grid = new Grid(new Time);
 
-        $grid->id('ID');
+       // $grid->id('ID');
         $grid->time('Time')->display(function ($s) {
             return Carbon::parse($s)->format("g:i A");
         })->badge('orange')->sortable();
@@ -100,6 +100,7 @@ class TimesController extends Controller
         $grid->created_at('Created At');
         $grid->updated_at('Updated At');
         $grid->disableFilter();
+        $grid->disablePagination();
 
         //$grid->disableTools();
        //$grid->disableRowSelector();

@@ -29,7 +29,6 @@
         </h2>
         @if( count($days) > 0 )
             @foreach($days as $day)
-                @if($day->id != 9)
                     <h3><b>{{"$day->dayname"}}</b></h3>
                     <table class="table table-hover table-bordered table-responsive-lg">
                         <thead class="table">
@@ -117,8 +116,6 @@
                         @endforeach
                         </tbody>
                     </table>
-                    {{--{{$schedules->links()}}--}}
-                @endif
             @endforeach
         @else
             <p>No Schedule Found</p>

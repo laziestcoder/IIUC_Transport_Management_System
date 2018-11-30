@@ -10,7 +10,6 @@
             <div class="userrouteinfo">
                     @if( count($days) > 0 )
                         @foreach($days as $day)
-                            @if($day->id != 9)
                             <h3><b>{{"$day->dayname"}}</b></h3>
                             <table class="table table-bordered table-responsive-lg">
                                 <thead class="">
@@ -27,13 +26,13 @@
                                 @foreach($times as $time)
                                     <?php 
                                     if($gender == 0){
-                                        $schedules = App\Schedule::where('user','=',$userrole)
+                                        $schedules = App\Schedule::where('bususer','=',$userrole)
                                         ->where('day', $day->id)
                                         ->where('time', $time->id)
                                         ->where('male','1')
                                         ->get();
                                     }else{
-                                        $schedules = App\Schedule::where('user','=',$userrole)
+                                        $schedules = App\Schedule::where('bususer','=',$userrole)
                                         ->where('day', $day->id)
                                         ->where('time', $time->id)
                                         ->where('female','1')
@@ -112,8 +111,6 @@
                                 @endforeach
                                 </tbody>
                             </table>
-                            {{--{{$schedules->links()}}--}}
-                        @endif
                     @endforeach
                 @else
                     <p>No Schedule Found</p>

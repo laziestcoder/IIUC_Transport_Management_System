@@ -86,7 +86,7 @@ class DaysController extends Controller
         $grid = new Grid(new Day);
 
         $grid->id('ID');
-        $grid->dayname('Day');
+        $grid->dayname('Day')->badge('green');
         $grid->user_id('Created By')->display(function ($s) {
             if($s) {
                 return Administrator::all()->find($s)->name;

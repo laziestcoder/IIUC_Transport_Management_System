@@ -81,25 +81,25 @@ class HelperInfoController extends Controller
     {
         $grid = new Grid(new Helper);
 
-        $grid->id('ID');
+        //$grid->id('ID');
         $grid->image('Photo')->display(function ($s) {
             return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
         });
-        $grid->name('Name');
-        $grid->gender('Gender')->display(function ($s) {
-            return $s ? 'Female' : 'Male';
-        });
-        $grid->nid('NID');
-        $grid->helperid('Helper ID');
-        $grid->licensepic('License Photo')->display(function ($s) {
-            return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
-        });
-        $grid->license('License No');
+        $grid->name('Name')->sortable()->badge("green");
+//        $grid->gender('Gender')->display(function ($s) {
+//            return $s ? 'Female' : 'Male';
+//        });
+        $grid->nid('NID')->badge("blue");
+        $grid->helperid('Helper ID')->sortable()->badge("purple");
+//        $grid->licensepic('License Photo')->display(function ($s) {
+//            return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+//        });
+        $grid->license('License No')->sortable()->badge("purple");
         $grid->contactno('Contact No');
         $grid->busno('Bus No');
-        $grid->address('Address');
+        //$grid->address('Address');
 
-        $grid->created_at('Created At');
+        //$grid->created_at('Created At');
         $grid->updated_at('Updated At');
 
         $grid->filter(function ($filter) {
@@ -128,18 +128,20 @@ class HelperInfoController extends Controller
             ->title(trans('Helper Details'));
 
         $show->id('ID');
-        $show->image('Photo')->as(function ($s) {
-            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
-        });
+        $show->image('Photo')->image();
+//            ->as(function ($s) {
+//            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+//        });
         $show->name('Name');
         $show->gender('Gender')->as(function ($s) {
             return $s ? 'Female' : 'Male';
         });
         $show->nid('NID');
         $show->helperid('Helper ID');
-        $show->licensepic('License Photo')->as(function ($s) {
-            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
-        });
+        $show->licensepic('License Photo')->image();
+//        ->as(function ($s) {
+//            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
+//        });
         $show->license('License No');
         $show->contactno('Contact No');
         $show->busno('Bus No');

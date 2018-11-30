@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\BusPoint;
 use App\BusRoute;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
@@ -29,7 +30,8 @@ class RoutesController extends Controller
         return $content
             ->header('Bus Route')
             ->description('Here you will get all the bus route.')
-            ->body($this->grid());
+            ->body($this->grid())
+            ->body($this->grid2());
     }
 
     /**
@@ -133,5 +135,41 @@ class RoutesController extends Controller
         });
 
         return $form;
+    }
+    protected  function grid2(){
+        $grid = new Grid(new BusRoute);
+        $grid->model()->orderBy("routename","asc")->where('routename','!=','All Route');
+        $grid->routename('Route Name');
+
+        $grid->id('Bus Stop Point')->display(function($s){
+            $points = BusPoint::where('routeid',$s)->orderBy('weight','asc')->get();
+            $s = "";
+            $flag =count($points)-1;
+            if(count($points)>0) {
+                foreach ($points as $point) {
+                    $s = $s . " " . $point->pointname;
+                    if ($flag) {
+                        $s = $s . " ==> ";
+                        $flag--;
+                    }
+                }
+            }else{
+                $s= "< No Bus Stop Point Found >";
+            }
+
+                return $s;
+
+        });
+        $grid->disableRowSelector();
+        $grid->disableTools();
+        $grid->disableFilter();
+        $grid->disableCreateButton();
+        $grid->disablePagination();
+        $grid->disableActions();
+        $grid->disableExport();
+        return $grid;
+
+
+
     }
 }

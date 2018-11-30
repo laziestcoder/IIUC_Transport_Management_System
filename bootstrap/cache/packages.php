@@ -24,6 +24,13 @@
       0 => 'Fideloper\\Proxy\\TrustedProxyServiceProvider',
     ),
   ),
+  'jxlwqq/material-ui' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Jxlwqq\\MaterialUI\\MaterialUIServiceProvider',
+    ),
+  ),
   'laravel-admin-ext/helpers' => 
   array (
     'providers' => 

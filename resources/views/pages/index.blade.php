@@ -84,10 +84,11 @@
     <!-- Todays Bus Schedule -->
     <section id="about">
         <div id="schedule" class="container">
+                @if($day!= null)
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2  class="section-heading text-uppercase">Today's Bus Schedule</h2>
-                    <h3 class="section-subheading text-muted">Here is '{!! $day->dayname?$day->dayname:'today\'s' !!}' bus schedule</h3>
+                    <h3 class="section-subheading text-muted">Here is '{!! $day->dayname !!}' bus schedule</h3>
                 </div>
             </div>
             <div class="row">
@@ -199,6 +200,14 @@
                     </ul>
                 </div>
             </div>
+            @else
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                        <h2  class="section-heading text-uppercase">No  Bus Schedule For Today</h2>
+                        <h3 class="section-subheading text-muted">Sorry For That</h3>
+                </div>
+            </div>
+            @endif
         </div>
     </section>
 
@@ -269,33 +278,27 @@
                 </div>
             </div>
             <div class="row text-center">
-                <div class="col-md-4"> 
-                    <ul class="timeline"><li>
-                        <div class="timeline-image">
-                            <img class="auto rounded-circle img-fluid" src="/storage/img/emergency/mriqbal.jpg" alt="Md. Iqbal">
-                        </div>  
-                    </li></ul>
-                    <h4 class="service-heading">Md. Iqbal</h4>
-                    <p class="text"><i class="fa fa-mobile"></i> +8801824979830</p>
-                </div>
-                <div class="col-md-4">
-                        <ul class="timeline"><li>
+                
+            @if(count($emergency)>0)
+            @foreach ($emergency as $person)
+                
+            
+            <div class="col-md-4"> 
+                <ul class="timeline"><li>
                     <div class="timeline-image">
-                            <img class="auto rounded-circle img-fluid" src="/storage/img/emergency/mrhabib.jpg" alt="Md. Habib">                       
-                    </div> 
+                        <img class="auto rounded-circle img-fluid" src="/storage/{!! $person->photo?$person->photo:'' !!}" alt="{!! $person->name !!}">
+                    </div>  
                 </li></ul>
-                                    <h4 class="service-heading">Md. Habib</h4>
-                    <p class="text"><i class="fa fa-mobile"></i> +8801843471983</p>
-                </div>
-                <div class="col-md-4">
-                        <ul class="timeline"><li>
-                    <div class="timeline-image">
-                            <img class="auto rounded-circle img-fluid" src="/storage/img/emergency/mrshabuj.jpg" alt="Md. Shabuj">                        
-                    </div> 
-                </li></ul>
-                    <h4 class="service-heading">Md. Shabuj</h4>
-                    <p class="text"><i class="fa fa-mobile"></i> +8801861642510</p>
-                </div>
+                <h4 class="service-heading"> {!! $person->name !!} </h4>
+                <p class="text"><i class="fa fa-mobile"></i> {!! $person->contact !!}</p>
+            </div>
+            @endforeach
+            @else
+            <div class="col-md-4">    
+                <h4 class="service-heading">No Person Found</h4>
+            </div>
+            
+            @endif
             </div>
         </div>
     </section>
@@ -384,7 +387,7 @@
     <!-- Team -->
 
 
-
+{{-- Developed By --}}
     <section class="bg-light" id="team">
         <div id="about-us" class="container">
             <div class="row">
@@ -432,7 +435,7 @@
                     <p class="text-muted">Front-end Developer</p>
                     <ul class="list-inline social-buttons">
                         <li class="list-inline-item">
-                            <a href="http://twitter.com/TowfiqIslam">
+                            <a href="http://twitter.com/">
                                 <i class="fa fa-twitter"></i>
                             </a>
                         </li>
@@ -447,7 +450,7 @@
                             </a>
                         </li>
                         <li class="list-inline-item">
-                            <a href="http://www.linkedin.com/in/towfiq106/">
+                            <a href="https://www.linkedin.com/in/sina-ibn-3a7091174/">
                                 <i class="fa fa-linkedin"></i>
                             </a>
                         </li>
@@ -455,27 +458,62 @@
                 </div>
             </div>
         </div>
+        <br>
+        <br>
+
+    {{-- Supervised By --}}
+
+    <div id="about-us" class="container">
         <div class="row">
-            <div class="col-lg-8 mx-auto text-center">
-                <p class="large text-muted">
-                    This project is developed to automate the transport management system and to reduce hassles
-                    regarding transportation.
-                </p>
-                <p class="large text-muted">
-                    This version is an early release and is being observed to
-                    improve the facilities.<br>If you have any query, don't hesitate to contact:<br>
-                    <b><i class="fa fa-envelope"></i> towfiq.106@gmail.com || <i class="fa fa-envelope"></i> towfiq.projects@gmail.com</b> <br>
-                    You can also message us through this website '<b><a href="/#report">Reporting Box</a></b>'.
-                </p>
+            <div class="col-lg-12 text-center">
+                <h2  class="section-heading text-uppercase">Supervised By</h2>
+                <h3 class="section-subheading text-muted"> This project is supervised by Mohammed Shamsul Alam. </h3>
             </div>
         </div>
 
-    </section>
+        <div class="">
+            <div class="team-member">
+                <img class="mx-auto rounded-circle responsive" src="/storage/img/team/3.jpg" alt="Mohammed Shamsul Alam">
+                <h4>Mohammed Shamsul Alam</h4>
+                <span>Professor</span><br><span>Dept. of CSE, IIUC</span>
+                <p class="text-muted"></p>
+                <ul class="list-inline social-buttons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/alam.cse/">
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </li>
 
+                    <li class="list-inline-item">
+                        <a href="https://www.linkedin.com/in/shamsul-alam-11575257/">
+                            <i class="fa fa-linkedin"></i>
+                        </a>
+                    </li>
 
-    
+                </ul>
+            </div>
+        </div>
 
+    </div>  
+    <br>
+    <br>
 
+    <div class="row">
+        <div class="col-lg-8 mx-auto text-center">
+            <p class="large text-muted">
+                This project is developed to automate the transport management system and to reduce hassles
+                regarding transportation.
+            </p>
+            <p class="large text-muted">
+                This version is an early release and is being observed to
+                improve the facilities.<br>If you have any query, don't hesitate to contact:<br>
+                <b><i class="fa fa-envelope"></i> towfiq.106@gmail.com || <i class="fa fa-envelope"></i> towfiq.projects@gmail.com</b> <br>
+                You can also message us through this website '<b><a class="js-scroll-trigger" style="color: #636b6f; font-weight:bold;text-decoration: none;" href="/#report">Reporting Box</a></b>'.
+            </p>
+        </div>
+    </div>
+</section>
 
     <!-- Portfolio Modals -->
 

@@ -81,26 +81,26 @@ class DriverInfoController extends Controller
     {
         $grid = new Grid(new Driver);
 
-        $grid->id('ID')->sortable();
+       // $grid->id('ID')->sortable();
         $grid->image('Photo')->display(function ($s) {
             return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
         });
-        $grid->name('Name')->sortable();
-        $grid->gender('Gender')->display(function ($s) {
-            return $s ? 'Female' : 'Male';
-        });
-        $grid->nid('NID');
-        $grid->driverid('Driver ID')->sortable();
+        $grid->name('Name')->sortable()->badge("green");
+//        $grid->gender('Gender')->display(function ($s) {
+//            return $s ? 'Female' : 'Male';
+//        });
+        $grid->nid('NID')->badge("blue");
+        $grid->driverid('Driver ID')->sortable()->badge("purple");
 //        $grid->licensepic('License Photo')->display(function ($s) {
 //            return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
 //        });
-        $grid->license('License No')->sortable();
+        $grid->license('License No')->sortable()->badge("red");
         $grid->experience('Experience')->sortable();
         $grid->contactno('Contact No');
         $grid->busno('Bus No')->sortable();
 //        $grid->address('Address');
 
-        $grid->created_at('Created At')->sortable();
+       // $grid->created_at('Created At')->sortable();
         $grid->updated_at('Updated At')->sortable();
 
         $grid->filter(function ($filter) {

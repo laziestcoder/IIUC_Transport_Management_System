@@ -130,11 +130,24 @@ return [
     /*
      * @see https://adminlte.io/docs/2.4/layout
      */
+
+    //'skin' => 'skin-red',
+    //'skin' => 'skin-red-light',
+
+    //'skin' => 'skin-black',
+    //'skin' => 'skin-black-light',
+
     //'skin' => 'skin-blue',
     //'skin' => 'skin-blue-light',
 
-    'skin' => 'skin-green',
-    //'skin' => 'skin-green-light',
+    //'skin' => 'skin-green',
+    'skin' => 'skin-green-light',
+
+    //'skin' => 'skin-purple',
+    //'skin' => 'skin-purple-light',
+
+    //'skin' => 'skin-yellow',
+    //'skin' => 'skin-yellow-light',
 
 
     /*
@@ -163,5 +176,10 @@ return [
             // Select a local disk that you configured in `config/filesystem.php`
             'disk' => 'public'
         ],
+
+        'material-ui' => [
+            // If the value is set to false, this extension will be disabled
+            'enable' => false
+        ]
     ],
 ];

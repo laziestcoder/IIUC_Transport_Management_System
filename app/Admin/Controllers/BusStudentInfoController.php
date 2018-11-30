@@ -50,13 +50,13 @@ class BusStudentInfoController extends Controller
      * @param Content $content
      * @return Content
      */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header('Edit')
-            ->description('description')
-            ->body($this->form()->edit($id));
-    }
+//    public function edit($id, Content $content)
+//    {
+//        return $content
+//            ->header('Edit')
+//            ->description('description')
+//            ->body($this->form()->edit($id));
+//    }
 
     /**
      * Create interface.
@@ -64,13 +64,13 @@ class BusStudentInfoController extends Controller
      * @param Content $content
      * @return Content
      */
-    public function create(Content $content)
-    {
-        return $content
-            ->header('Create')
-            ->description('description')
-            ->body($this->form());
-    }
+//    public function create(Content $content)
+//    {
+//        return $content
+//            ->header('Create')
+//            ->description('description')
+//            ->body($this->form());
+//    }
 
     /**
      * Make a grid builder.
@@ -88,8 +88,9 @@ class BusStudentInfoController extends Controller
         $grid->dayid('Dayid');
         $grid->timeid('Timeid');
         $grid->gender('Gender');
-        $grid->created_at('Created at');
-        $grid->updated_at('Updated at');
+   //     $grid->paginate('50','100','150','250','500','1000');
+        $grid->perPages([100,200,500,1000]);
+
 
         return $grid;
     }
@@ -111,8 +112,7 @@ class BusStudentInfoController extends Controller
         $show->dayid('Dayid');
         $show->timeid('Timeid');
         $show->gender('Gender');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
+
 
         return $show;
     }
@@ -122,17 +122,17 @@ class BusStudentInfoController extends Controller
      *
      * @return Form
      */
-    protected function form()
-    {
-        $form = new Form(new BusStudentInfo);
-
-        $form->number('routeid', 'Routeid');
-        $form->number('pointid', 'Pointid');
-        $form->number('studentno', 'Studentno');
-        $form->number('dayid', 'Dayid');
-        $form->number('timeid', 'Timeid');
-        $form->switch('gender', 'Gender');
-
-        return $form;
-    }
+//    protected function form()
+//    {
+//        $form = new Form(new BusStudentInfo);
+//
+//        $form->number('routeid', 'Routeid');
+//        $form->number('pointid', 'Pointid');
+//        $form->number('studentno', 'Studentno');
+//        $form->number('dayid', 'Dayid');
+//        $form->number('timeid', 'Timeid');
+//        $form->switch('gender', 'Gender');
+//
+//        return $form;
+//    }
 }
