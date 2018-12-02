@@ -87,6 +87,11 @@ class DaysController extends Controller
 
         $grid->id('ID');
         $grid->dayname('Day')->badge('green');
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
+        ];
+        $grid->active(trans('Active'))->switch($states);
         $grid->user_id('Created By')->display(function ($s) {
             if($s) {
                 return Administrator::all()->find($s)->name;
@@ -122,6 +127,9 @@ class DaysController extends Controller
 
         $show->id('ID');
         $show->dayname('Day');
+        $show->active(trans('Active'))->as(function ($s) {
+            return $s ? 'YES' : 'NO';
+        });
         $show->user_id('Created By')->as(function ($s) {
             return Administrator::all()->find($s)->name;
         })->label('primary');
@@ -152,6 +160,11 @@ class DaysController extends Controller
         $form = new Form(new Day);
 
         $form->text('dayname', 'Day');
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('active','Active')->states($states);
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;
         });

@@ -16,13 +16,13 @@
             <span class="sr-only">Toggle navigation</span>
         </a>
 
-        {!! Admin::getNavbar()->render('left') !!}
+       {{-- {!! Admin::getNavbar()->render('left') !!}--}}
 
         <!-- Navbar Right Menu -->
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
 
-                {!! Admin::getNavbar()->render() !!}
+             {{--   {!! Admin::getNavbar()->render() !!}--}}
 
                 <!-- User Account Menu -->
                 <li class="dropdown user user-menu">

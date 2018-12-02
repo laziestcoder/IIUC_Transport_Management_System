@@ -33,7 +33,7 @@ class PagesController extends Controller
 
         //Next Bus
         $times = Time::where('time', '>=', $now)->orderBy('time')->get();
-        $todayid = Day::where('dayname', $today)->get()->first();
+        $todayid = Day::where('dayname', $today)->where('active',1)->get()->first();
         if ($todayid) {
             $todayid = $todayid->id;
         } else {
@@ -141,7 +141,7 @@ class PagesController extends Controller
         }
 
         // Todays Schedule
-        $day = Day::where('dayname', $today)->get()->first();
+        $day = Day::where('dayname', $today)->where('active',1)->get()->first();
         $timeAll = Time::orderBy('time')->get();
         if ($day) {
             $schedules = Schedule::where('day', $day->id)->get();

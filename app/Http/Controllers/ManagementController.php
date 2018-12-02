@@ -267,7 +267,7 @@ class ManagementController extends Controller
             'titlenew' => 'Create New Schedule',
             'titleinfo' => 'Available Schedule',
             'times' => Time::all('id', 'time'),
-            'days' => Day::all('id', 'dayname'),
+            'days' => Day::where('active',1)->get(),
             'points' => BusPoint::all('id', 'pointname'),
             'gender' => $user_gender,
             'userrole' => $user->userrole,
