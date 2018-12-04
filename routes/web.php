@@ -46,7 +46,7 @@ Route::get('/', ['as'=> 'home page','uses'=>'PagesController@index']);
 Route::get('404', ['as'=>'notfound','uses'=>'PagesController@pagenotfound']);
 //Route::get('/about', 'PagesController@index');
 //Route::get('/services', 'PagesController@index');
-Route::get('/test', ['as'=> 'test page','uses'=>'PagesController@test']);
+//Route::get('/test', ['as'=> 'test page','uses'=>'PagesController@test']);
 
 // Report A Problem
 Route::post('/report', ['as'=> 'user report to admin','uses'=>'PagesController@report']);
@@ -64,7 +64,7 @@ Auth::routes();
 //Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::get('/dashboard', ['as'=> 'user dashboard','uses'=>'DashboardController@index']);
 Route::resource('/management', 'ManagementController');
-Route::get('/bus-schedules', ['as'=> 'user bus schedule','uses'=>'ManagementController@busroutes']);
+Route::get('/bus-schedules', ['as'=> 'user bus schedule','uses'=>'ManagementController@busSchedule']);
 Route::get('/bus-routes', ['as'=> 'user bus route','uses'=>'ManagementController@busroutesdetails']);
 
 //User Confirmation Routing
@@ -88,3 +88,9 @@ Route::get('/admin/auth/schedule', ['as'=> 'admin schedule','uses'=>'ScheduleCon
 //Route::resource('/admin/auth/schedule/addtime', 'ScheduleController@create');
 //Route::get('/admin/auth/notices/create','NoticesController@create');
 //Route::get('/admin/auth/notices/create','NoticesController@store');
+
+//PDF Converter Routes
+Route::get('/test',['as'=>'htmltopdfview','uses'=>'PDFConverterController@htmltopdfview']);
+Route::get('generate-pdf', 'PDFConverterController@pdfview')->name('generate-pdf');
+Route::get('bus-schedule-pdf', 'PDFConverterController@busSchedulePdf')->name('bus-schedule-pdf');
+Route::get('bus-schedule-friday', 'PDFConverterController@busScheduleFriday')->name('bus-schedule-friday');

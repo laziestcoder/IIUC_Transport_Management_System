@@ -184,6 +184,9 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        // PDF Service Provider
+        Barryvdh\DomPDF\ServiceProvider::class,
+
     ],
 
     /*
@@ -239,6 +242,9 @@ return [
         *   google captcha
         */ 
         'Recaptcha' => Greggilbert\Recaptcha\Facades\Recaptcha::class,
+        //PDF Facades
+
+        'PDF' => Barryvdh\DomPDF\Facade::class,
 
     ],
 

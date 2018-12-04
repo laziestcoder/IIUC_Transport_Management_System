@@ -27,9 +27,20 @@
 
             </small>
         </h2>
+
         <?php if( count($days) > 0 ): ?>
             <?php $__currentLoopData = $days; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <h3><b><?php echo e("$day->dayname", false); ?></b></h3>
+
+            <?php if( $day->id == 7  ): ?>
+                    <a class="btn btn-success" target="_blank" href='/bus-schedule-friday'>
+                        <i class="fa fa-print"></i>Print
+                    </a>
+                <?php elseif($day->id <= 5 && $day->id >= 1 ): ?>
+                <a class="btn btn-success" target="_blank" href='/bus-schedule-pdf'>
+                    <i class="fa fa-print"></i> Print
+                </a>
+                <?php endif; ?>
                     <table class="table table-hover table-bordered table-responsive-lg">
                         <thead class="table">
                         <tr>
@@ -37,7 +48,7 @@
                             <th><?php echo e("Starting Time", false); ?></th>
                             <th><?php echo e("Gender", false); ?></th>
                             <th><?php echo e("Direction", false); ?></th>
-                            <th><?php echo e("Starting Point", false); ?></th>
+                            <th><?php echo e("Route", false); ?></th>
                             <th><?php echo e("Added By", false); ?></th>
                             
                         </tr>
@@ -128,6 +139,7 @@
         <?php else: ?>
             <p>No Schedule Found</p>
         <?php endif; ?>
+
     </section>
 <?php $__env->stopSection(); ?>
 

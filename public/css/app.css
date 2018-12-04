@@ -8479,5 +8479,6 @@ ul.footer-top-widget li a:hover {
     line-height: 1.5;
 }
 
-
- 
+.page-break {
+    page-break-after: always;
+}

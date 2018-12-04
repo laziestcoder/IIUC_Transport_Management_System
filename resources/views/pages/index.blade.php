@@ -13,9 +13,11 @@
                             <tr>
                                 <td colspan="4">
                                     <div class="nextBus-title">
-                                        <big><marquee behavior="alternate">NEXT BUS</marquee></big><br>
+                                        <big>
+                                            <marquee behavior="alternate">NEXT BUS</marquee>
+                                        </big><br>
                                     </div>
-                                </td>                                
+                                </td>
                             </tr>
                             <tr>
                                 <td colspan="4">
@@ -41,7 +43,7 @@
                                     </marquee>
                                 </td>
                             </tr>
-                            
+
                             <tr>
                                 <td>{!! $fromRouteM !!}</td>
                                 <td>{!! "IIUC CAMPUS" !!}</td>
@@ -84,129 +86,129 @@
     <!-- Todays Bus Schedule -->
     <section id="about">
         <div id="schedule" class="container">
-                @if($day!= null)
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h2  class="section-heading text-uppercase">Today's Bus Schedule</h2>
-                    <h3 class="section-subheading text-muted">Here is '{!! $day->dayname !!}' bus schedule</h3>
+            @if($day!= null)
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading text-uppercase">Today's Bus Schedule</h2>
+                        <h3 class="section-subheading text-muted">Here is '{!! $day->dayname !!}' bus schedule</h3>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <ul class="timeline">
-                        <?php $flagSchedules = 0;$sl = 0;?>
-                        @foreach($times as $time)
-                            <?php   $schedules = App\Schedule::where('day', $day->id)
-                                ->where('time', $time->id)
-                                ->first(); ?>
-                            @if($schedules)
-                                <?php $flagSchedules = 1;?>
-                                <li class="{!! ($sl+=1)%2 == 0? "timeline-inverted":""!!}">
-                                    <div class="timeline-image">
-                                        {{-- Time --}}
-                                        <h4>{!!\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A') !!}
-                                            <br>
-                                            {{--Gender--}}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <ul class="timeline">
+                            <?php $flagSchedules = 0;$sl = 0;?>
+                            @foreach($times as $time)
+                                <?php   $schedules = App\Schedule::where('day', $day->id)
+                                    ->where('time', $time->id)
+                                    ->first(); ?>
+                                @if($schedules)
+                                    <?php $flagSchedules = 1;?>
+                                    <li class="{!! ($sl+=1)%2 == 0? "timeline-inverted":""!!}">
+                                        <div class="timeline-image">
+                                            {{-- Time --}}
+                                            <h4>{!!\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A') !!}
+                                                <br>
+                                                {{--Gender--}}
 
-                                            <?php $male = App\Schedule::where('day', $day->id)
-                                                ->where('time', $time->id)
-                                                ->where('male', '1')
-                                                ->get();
-                                            $female = App\Schedule::where('day', $day->id)
-                                                ->where('time', $time->id)
-                                                ->where('female', '1')
-                                                ->get();?>
-
-                                            {!! count($male)? 'Male':'' !!}
-                                            @if(count($male) && count($female))
-                                                {!! "<br>" !!}
-                                            @endif
-                                            {!! count($female)? 'Female':'' !!}
-                                        </h4>
-                                    </div>
-                                    <div class="timeline-panel">
-                                        <div class="timeline-heading">
-                                            {{--Direction--}}
-                                            Destination:
-                                            <h4>
-                                                <?php $toiiuc = App\Schedule::where('day', $day->id)
+                                                <?php $male = App\Schedule::where('day', $day->id)
                                                     ->where('time', $time->id)
-                                                    ->where('toiiuc', '1')
+                                                    ->where('male', '1')
                                                     ->get();
-                                                $fromiiuc = App\Schedule::where('day', $day->id)
+                                                $female = App\Schedule::where('day', $day->id)
                                                     ->where('time', $time->id)
-                                                    ->where('fromiiuc', '1')
+                                                    ->where('female', '1')
                                                     ->get();?>
-                                                {!! count($toiiuc)? 'To IIUC Campus':'' !!}
-                                                @if(count($toiiuc) && count($fromiiuc))
-                                                    {!! "," !!}
-                                                @endif
-                                                {!! count($fromiiuc)? 'From IIUC Campus':'' !!}
-                                            </h4>
-                                            Routes:
-                                            <h4 class="subheading">
 
-                                                {{--Routes--}}
-                                                <?php $routes = App\Schedule::where('day', $day->id)
-                                                    ->where('time', $time->id)
-                                                    ->get();
-                                                if (count($routes) > 1) {
-                                                    $routeFlag = count($routes) - 1;
-                                                } else {
-                                                    $routeFlag = 0;
-                                                }?>
-                                                @foreach($routes as $route)
-                                                    {!! \App\BusRoute::where('id',$route->route)->first()->routename !!}
-                                                    @if($routeFlag)
-                                                        {!! ", " !!}
-                                                    @endif
-                                                    <?php $routeFlag -= 1;?>
-                                                @endforeach
+                                                {!! count($male)? 'Male':'' !!}
+                                                @if(count($male) && count($female))
+                                                    {!! "<br>" !!}
+                                                @endif
+                                                {!! count($female)? 'Female':'' !!}
                                             </h4>
                                         </div>
-                                        <div class="timeline-body">
-                                            {{--<p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt--}}
-                                            {{--ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam,--}}
-                                            {{--recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium--}}
-                                            {{--consectetur!</p>--}}
+                                        <div class="timeline-panel">
+                                            <div class="timeline-heading">
+                                                {{--Direction--}}
+                                                Destination:
+                                                <h4>
+                                                    <?php $toiiuc = App\Schedule::where('day', $day->id)
+                                                        ->where('time', $time->id)
+                                                        ->where('toiiuc', '1')
+                                                        ->get();
+                                                    $fromiiuc = App\Schedule::where('day', $day->id)
+                                                        ->where('time', $time->id)
+                                                        ->where('fromiiuc', '1')
+                                                        ->get();?>
+                                                    {!! count($toiiuc)? 'To IIUC Campus':'' !!}
+                                                    @if(count($toiiuc) && count($fromiiuc))
+                                                        {!! "," !!}
+                                                    @endif
+                                                    {!! count($fromiiuc)? 'From IIUC Campus':'' !!}
+                                                </h4>
+                                                Routes:
+                                                <h4 class="subheading">
+
+                                                    {{--Routes--}}
+                                                    <?php $routes = App\Schedule::where('day', $day->id)
+                                                        ->where('time', $time->id)
+                                                        ->get();
+                                                    if (count($routes) > 1) {
+                                                        $routeFlag = count($routes) - 1;
+                                                    } else {
+                                                        $routeFlag = 0;
+                                                    }?>
+                                                    @foreach($routes as $route)
+                                                        {!! \App\BusRoute::where('id',$route->route)->first()->routename !!}
+                                                        @if($routeFlag)
+                                                            {!! ", " !!}
+                                                        @endif
+                                                        <?php $routeFlag -= 1;?>
+                                                    @endforeach
+                                                </h4>
+                                            </div>
+                                            <div class="timeline-body">
+                                                {{--<p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt--}}
+                                                {{--ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam,--}}
+                                                {{--recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium--}}
+                                                {{--consectetur!</p>--}}
+                                            </div>
                                         </div>
+                                    </li>
+                                @endif
+                            @endforeach
+                            @if($flagSchedules == 0)
+                                <li class="timeline-inverted">
+                                    <div class="timeline-image">
+                                        <h4>No
+                                            <br>
+                                            Bus
+                                            <br>
+                                            Today
+                                        </h4>
                                     </div>
                                 </li>
                             @endif
-                        @endforeach
-                        @if($flagSchedules == 0)
+
                             <li class="timeline-inverted">
                                 <div class="timeline-image">
-                                    <h4>No
+                                    <h4>Have a
                                         <br>
-                                        Bus
+                                        Safe
                                         <br>
-                                        Today
+                                        Journey
                                     </h4>
                                 </div>
                             </li>
-                        @endif
-
-                        <li class="timeline-inverted">
-                            <div class="timeline-image">
-                                <h4>Have a
-                                    <br>
-                                    Safe
-                                    <br>
-                                    Journey
-                                </h4>
-                            </div>
-                        </li>
-                    </ul>
+                        </ul>
+                    </div>
                 </div>
-            </div>
             @else
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                        <h2  class="section-heading text-uppercase">No  Bus Schedule For Today</h2>
-                        <h3 class="section-subheading text-muted">Sorry For That</h3>
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading text-uppercase">Bus Schedule For Today</h2>
+                        <h3 class="section-subheading text-muted">No Bus Today! Sorry For That! </h3>
+                    </div>
                 </div>
-            </div>
             @endif
         </div>
     </section>
@@ -218,7 +220,7 @@
         <div id="notice" class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2  class="section-heading text-uppercase">{!! $noticetitle !!}</h2>
+                    <h2 class="section-heading text-uppercase">{!! $noticetitle !!}</h2>
                     <h3 class="section-subheading text-muted">{!! $description !!}</h3>
                 </div>
             </div>
@@ -273,32 +275,36 @@
         <div id="emergency" class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2  class="section-heading text-uppercase">Emergency Contact</h2>
+                    <h2 class="section-heading text-uppercase">Emergency Contact</h2>
                     <h3 class="section-subheading text-muted">Feel Free To Contact With Us</h3>
                 </div>
             </div>
             <div class="row text-center">
-                
-            @if(count($emergency)>0)
-            @foreach ($emergency as $person)
-                
-            
-            <div class="col-md-4"> 
-                <ul class="timeline"><li>
-                    <div class="timeline-image">
-                        <img class="auto rounded-circle img-fluid" src="/storage/{!! $person->photo?$person->photo:'' !!}" alt="{!! $person->name !!}">
-                    </div>  
-                </li></ul>
-                <h4 class="service-heading"> {!! $person->name !!} </h4>
-                <p class="text"><i class="fa fa-mobile"></i> {!! $person->contact !!}</p>
-            </div>
-            @endforeach
-            @else
-            <div class="col-md-4">    
-                <h4 class="service-heading">No Person Found</h4>
-            </div>
-            
-            @endif
+
+                @if(count($emergency)>0)
+                    @foreach ($emergency as $person)
+
+
+                        <div class="col-md-4">
+                            <ul class="timeline">
+                                <li>
+                                    <div class="timeline-image">
+                                        <img class="auto rounded-circle img-fluid"
+                                             src="/storage/{!! $person->photo?$person->photo:'' !!}"
+                                             alt="{!! $person->name !!}">
+                                    </div>
+                                </li>
+                            </ul>
+                            <h4 class="service-heading"> {!! $person->name !!} </h4>
+                            <p class="text"><i class="fa fa-mobile"></i> {!! $person->contact !!}</p>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="col-md-4">
+                        <h4 class="service-heading">No Person Found</h4>
+                    </div>
+
+                @endif
             </div>
         </div>
     </section>
@@ -306,93 +312,93 @@
     <!-- Report -->
     <style>
 
-            .invalid-feedback {
-                display: block;
-            }
-    
-        </style>
-        <section id="contact">
-            <div id="report" class="container">
-                <div class="row">
-                    <div class="col-lg-12 text-center">
-                        <h2  class="section-heading text-uppercase">Report A Problem</h2>
-                        <h3 class="section-subheading text-muted">You can complain us through this message box</h3>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        {!! Form :: open(['action'=>'PagesController@report','id'=>'contactForm', 'method' => 'POST',
-                        'enctype' => 'multipart/form-data','name'=>'sentMessage', 'novalidate']) !!}
-                        {!! csrf_field()  !!}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    {!! Form :: text('name' , '', ['id' => 'name','class' => 'form-control', 'placeholder' => 'Your Name *',
-                                       'required','data-validation-required-message'=>'Please enter your your name.']) !!}
-                                    <p class="help-block text-danger"></p>
-                                <!-- @if($errors->has('name'))
-                                    <small class="form-text invalid-feedback">{!! $errors->first('name')  !!}</small>
-                                        @endif -->
-                                </div>
-                                <div class="form-group">
-                                    {!! Form :: email('email' , '', ['id' => 'email','class' => 'form-control', 'placeholder' => 'Your Email *',
-                                               'required','data-validation-required-message'=>'Please enter your email address.']) !!}
-                                    <p class="help-block text-danger"></p>
-                                <!-- @if($errors->has('email'))
-                                    <small class="form-text invalid-feedback">{!! $errors->first('email')  !!}</small>
-                                        @endif -->
-                                </div>
-                                <div class="form-group">
-                                    {!! Form :: tel('phone' , '', ['id' => 'phone','class' => 'form-control', 'placeholder' => 'Your Phone *',
-                                               'required','data-validation-required-message'=>'Please enter your phone number.']) !!}
-                                    <p class="help-block text-danger"></p>
-                                <!-- @if($errors->has('phone'))
-                                    <div class="form-text invalid-feedback">{!! $errors->first('phone')  !!}</div>
-                                        @endif -->
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    {!! Form :: textarea('message' , '', ['id' => 'message','class' => 'form-control', 'placeholder' => 'Your Message *',
-                                    'required','data-validation-required-message'=>'Please enter your message.']) !!}
-                                    <p class="help-block text-danger"></p>
-                                <!-- @if($errors->has('message'))
-                                    <small class="form-text invalid-feedback">{!! $errors->first('message')  !!}</small>
-                                        @endif -->
-                                </div>
-                            </div>
-                            <div class="clearfix"></div>
-                            <div class="col-lg-12 text-center">
-                                <div id="success">
-                                    @if(Session::has('success_flash_message'))
-                                        <div class="alert alert-success">
-                                            <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>
-                                                &times;
-                                            </button>
-                                            <strong>
-                                                {!! Session::get('success_flash_message')  !!}
-                                            </strong>
-                                        </div>
-                                    @endif
-                                </div>
-                                {!! Form :: submit('Send Message',['class' => 'btn btn-primary btn-xl text-uppercase','id'=>'sendMessageButton'])  !!}
-                            </div>
-                        </div>
-                        {!! Form::close() !!}
-                    </div>
+        .invalid-feedback {
+            display: block;
+        }
+
+    </style>
+    <section id="contact">
+        <div id="report" class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading text-uppercase">Report A Problem</h2>
+                    <h3 class="section-subheading text-muted">You can complain us through this message box</h3>
                 </div>
             </div>
-        </section>
+            <div class="row">
+                <div class="col-lg-12">
+                    {!! Form :: open(['action'=>'PagesController@report','id'=>'contactForm', 'method' => 'POST',
+                    'enctype' => 'multipart/form-data','name'=>'sentMessage', 'novalidate']) !!}
+                    {!! csrf_field()  !!}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {!! Form :: text('name' , '', ['id' => 'name','class' => 'form-control', 'placeholder' => 'Your Name *',
+                                   'required','data-validation-required-message'=>'Please enter your your name.']) !!}
+                                <p class="help-block text-danger"></p>
+                            <!-- @if($errors->has('name'))
+                                <small class="form-text invalid-feedback">{!! $errors->first('name')  !!}</small>
+                                        @endif -->
+                            </div>
+                            <div class="form-group">
+                                {!! Form :: email('email' , '', ['id' => 'email','class' => 'form-control', 'placeholder' => 'Your Email *',
+                                           'required','data-validation-required-message'=>'Please enter your email address.']) !!}
+                                <p class="help-block text-danger"></p>
+                            <!-- @if($errors->has('email'))
+                                <small class="form-text invalid-feedback">{!! $errors->first('email')  !!}</small>
+                                        @endif -->
+                            </div>
+                            <div class="form-group">
+                                {!! Form :: tel('phone' , '', ['id' => 'phone','class' => 'form-control', 'placeholder' => 'Your Phone *',
+                                           'required','data-validation-required-message'=>'Please enter your phone number.']) !!}
+                                <p class="help-block text-danger"></p>
+                            <!-- @if($errors->has('phone'))
+                                <div class="form-text invalid-feedback">{!! $errors->first('phone')  !!}</div>
+                                        @endif -->
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {!! Form :: textarea('message' , '', ['id' => 'message','class' => 'form-control', 'placeholder' => 'Your Message *',
+                                'required','data-validation-required-message'=>'Please enter your message.']) !!}
+                                <p class="help-block text-danger"></p>
+                            <!-- @if($errors->has('message'))
+                                <small class="form-text invalid-feedback">{!! $errors->first('message')  !!}</small>
+                                        @endif -->
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="col-lg-12 text-center">
+                            <div id="success">
+                                @if(Session::has('success_flash_message'))
+                                    <div class="alert alert-success">
+                                        <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>
+                                            &times;
+                                        </button>
+                                        <strong>
+                                            {!! Session::get('success_flash_message')  !!}
+                                        </strong>
+                                    </div>
+                                @endif
+                            </div>
+                            {!! Form :: submit('Send Message',['class' => 'btn btn-primary btn-xl text-uppercase','id'=>'sendMessageButton'])  !!}
+                        </div>
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Team -->
 
 
-{{-- Developed By --}}
+    {{-- Developed By --}}
     <section class="bg-light" id="team">
         <div id="about-us" class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2  class="section-heading text-uppercase">Developed By</h2>
+                    <h2 class="section-heading text-uppercase">Developed By</h2>
                     <h3 class="section-subheading text-muted">The frontend and the backend are designed and coded
                         by </h3>
                 </div>
@@ -461,59 +467,64 @@
         <br>
         <br>
 
-    {{-- Supervised By --}}
+        {{-- Supervised By --}}
 
-    <div id="about-us" class="container">
+        <div id="about-us" class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading text-uppercase">Supervised By</h2>
+                    <h3 class="section-subheading text-muted"> This project is supervised by Mohammed Shamsul
+                        Alam. </h3>
+                </div>
+            </div>
+
+            <div class="">
+                <div class="team-member">
+                    <img class="mx-auto rounded-circle responsive" src="/storage/img/team/3.jpg"
+                         alt="Mohammed Shamsul Alam">
+                    <h4>Mohammed Shamsul Alam</h4>
+                    <span>Professor</span><br><span>Dept. of CSE, IIUC</span>
+                    <p class="text-muted"></p>
+                    <ul class="list-inline social-buttons">
+
+                        <li class="list-inline-item">
+                            <a href="https://www.facebook.com/alam.cse/">
+                                <i class="fa fa-facebook"></i>
+                            </a>
+                        </li>
+
+                        <li class="list-inline-item">
+                            <a href="https://www.linkedin.com/in/shamsul-alam-11575257/">
+                                <i class="fa fa-linkedin"></i>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        <br>
+        <br>
+
         <div class="row">
-            <div class="col-lg-12 text-center">
-                <h2  class="section-heading text-uppercase">Supervised By</h2>
-                <h3 class="section-subheading text-muted"> This project is supervised by Mohammed Shamsul Alam. </h3>
+            <div class="col-lg-8 mx-auto text-center">
+                <p class="large text-muted">
+                    This project is developed to automate the transport management system and to reduce hassles
+                    regarding transportation.
+                </p>
+                <p class="large text-muted">
+                    This version is an early release and is being observed to
+                    improve the facilities.<br>If you have any query, don't hesitate to contact:<br>
+                    <b><i class="fa fa-envelope"></i> towfiq.106@gmail.com || <i class="fa fa-envelope"></i>
+                        towfiq.projects@gmail.com</b> <br>
+                    You can also message us through this website '<b><a class="js-scroll-trigger"
+                                                                        style="color: #636b6f; font-weight:bold;text-decoration: none;"
+                                                                        href="/#report">Reporting Box</a></b>'.
+                </p>
             </div>
         </div>
-
-        <div class="">
-            <div class="team-member">
-                <img class="mx-auto rounded-circle responsive" src="/storage/img/team/3.jpg" alt="Mohammed Shamsul Alam">
-                <h4>Mohammed Shamsul Alam</h4>
-                <span>Professor</span><br><span>Dept. of CSE, IIUC</span>
-                <p class="text-muted"></p>
-                <ul class="list-inline social-buttons">
-                    
-                    <li class="list-inline-item">
-                        <a href="https://www.facebook.com/alam.cse/">
-                            <i class="fa fa-facebook"></i>
-                        </a>
-                    </li>
-
-                    <li class="list-inline-item">
-                        <a href="https://www.linkedin.com/in/shamsul-alam-11575257/">
-                            <i class="fa fa-linkedin"></i>
-                        </a>
-                    </li>
-
-                </ul>
-            </div>
-        </div>
-
-    </div>  
-    <br>
-    <br>
-
-    <div class="row">
-        <div class="col-lg-8 mx-auto text-center">
-            <p class="large text-muted">
-                This project is developed to automate the transport management system and to reduce hassles
-                regarding transportation.
-            </p>
-            <p class="large text-muted">
-                This version is an early release and is being observed to
-                improve the facilities.<br>If you have any query, don't hesitate to contact:<br>
-                <b><i class="fa fa-envelope"></i> towfiq.106@gmail.com || <i class="fa fa-envelope"></i> towfiq.projects@gmail.com</b> <br>
-                You can also message us through this website '<b><a class="js-scroll-trigger" style="color: #636b6f; font-weight:bold;text-decoration: none;" href="/#report">Reporting Box</a></b>'.
-            </p>
-        </div>
-    </div>
-</section>
+    </section>
 
     <!-- Portfolio Modals -->
 

@@ -32,7 +32,18 @@
                 <?php endif; ?>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </ol>
+        <?php elseif(config('admin.enable_default_breadcrumb')): ?>
+        <ol class="breadcrumb" style="margin-right: 30px;">
+            <li><a href="<?php echo e(admin_url('/'), false); ?>"><i class="fa fa-dashboard"></i> Home</a></li>   
+            <?php for($i = 2; $i <= count(Request::segments()); $i++): ?>
+                <li>
+                <?php echo e(ucfirst(Request::segment($i)), false); ?>
+
+                </li>
+            <?php endfor; ?>
+        </ol>
         <?php endif; ?>
+
         <!-- breadcrumb end -->
 
     </section>
@@ -48,4 +59,4 @@
 
     </section>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('admin::index', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php echo $__env->make('admin::index', ['header' => $header], \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>

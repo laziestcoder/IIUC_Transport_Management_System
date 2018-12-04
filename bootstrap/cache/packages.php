@@ -1,4 +1,15 @@
 <?php return array (
+  'barryvdh/laravel-dompdf' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Barryvdh\\DomPDF\\ServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'PDF' => 'Barryvdh\\DomPDF\\Facade',
+    ),
+  ),
   'bestmomo/laravel-email-confirmation' => 
   array (
     'providers' => 
@@ -29,6 +40,20 @@
     'providers' => 
     array (
       0 => 'Jxlwqq\\MaterialUI\\MaterialUIServiceProvider',
+    ),
+  ),
+  'laravel-admin-ext/cropper' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Encore\\Cropper\\CropperServiceProvider',
+    ),
+  ),
+  'laravel-admin-ext/grid-lightbox' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Encore\\Grid\\Lightbox\\LightboxServiceProvider',
     ),
   ),
   'laravel-admin-ext/helpers' => 

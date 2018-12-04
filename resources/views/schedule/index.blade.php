@@ -27,9 +27,20 @@
                 {{'Before delete a schedule please ensure the schedule is not used in any other data.'}}
             </small>
         </h2>
+
         @if( count($days) > 0 )
             @foreach($days as $day)
                     <h3><b>{{"$day->dayname"}}</b></h3>
+
+            @if( $day->id == 7  )
+                    <a class="btn btn-success" target="_blank" href='/bus-schedule-friday'>
+                        <i class="fa fa-print"></i>Print
+                    </a>
+                @elseif ($day->id <= 5 && $day->id >= 1 )
+                <a class="btn btn-success" target="_blank" href='/bus-schedule-pdf'>
+                    <i class="fa fa-print"></i> Print
+                </a>
+                @endif
                     <table class="table table-hover table-bordered table-responsive-lg">
                         <thead class="table">
                         <tr>
@@ -37,7 +48,7 @@
                             <th>{{"Starting Time"}}</th>
                             <th>{{"Gender"}}</th>
                             <th>{{"Direction"}}</th>
-                            <th>{{"Starting Point"}}</th>
+                            <th>{{"Route"}}</th>
                             <th>{{"Added By"}}</th>
                             {{--<th>{{"Action"}}</th>--}}
                         </tr>
@@ -120,5 +131,6 @@
         @else
             <p>No Schedule Found</p>
         @endif
+
     </section>
 @endsection

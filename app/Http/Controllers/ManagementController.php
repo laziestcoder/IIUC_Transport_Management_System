@@ -221,7 +221,7 @@ class ManagementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    protected function busroutes()
+    protected function busSchedule()
     {
         //account verification
         $user = User::find(auth()->user()->id);

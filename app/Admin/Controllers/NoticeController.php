@@ -177,6 +177,7 @@ class NoticeController extends Controller
             ->move('/cover_images/')
             ->uniqueName()
             ->value('cover_images/noimage.jpeg');
+        //$form->cropper( 'cover_image' , ' Cover Image ' );
         $form->text('noticeregistration', 'Notice Registration No')
             ->rules('required');
         //$form->number('user_id', 'User id');

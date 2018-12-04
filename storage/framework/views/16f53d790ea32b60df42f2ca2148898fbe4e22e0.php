@@ -1,33 +1,29 @@
-<?php $__env->startSection('content'); ?>
-    <div class="content">
-    <?php
-    $url = "http://upanel.iiuc.ac.bd:81/Picture/";
-
-    $dir_path = $url ;
-    $extensions_array = array('jpg', 'png', 'jpeg', 'gif', 'JPG', 'JPEG', 'PNG');
-
-    if (is_dir($dir_path)) {
-        $files = scandir($dir_path);
-
-        for ($i = 0; $i < count($files); $i++) {
-            if ($files[$i] != '.' && $files[$i] != '..') {
-                // get file name
-                echo "File Name -> $files[$i]<br>";
-
-                // get file extension
-                $file = pathinfo($files[$i]);
-                $extension = $file['extension'];
-                echo "File Extension-> $extension<br>";
-
-                // check file extension
-                if (in_array($extension, $extensions_array)) {
-                    // show image
-                    echo "<img src='$dir_path$files[$i]' style='width:100px;height:100px;'><br>";
-                }
-            }
-        }
-    }
-    ?>
-    </div>
-<?php $__env->stopSection(); ?>
-<?php echo $__env->make('layouts.app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test-PDF</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <a href="<?php echo e(route('htmltopdfview',['download'=>'pdf',]), false); ?>">Download PDF</a>
+    <table class="table table-striped">
+        <thead>
+            <th>ID</th>
+            <th>Name</th>
+        </thead>
+        <?php if(count($products)>0): ?>
+        <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <tr>
+                <td><?php echo e($product->id, false); ?></td>
+                <td><?php echo e($product->routename, false); ?></td>
+            </tr>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        <?php else: ?>
+            <td>No Data</td>
+            <td>No Data</td>
+        <?php endif; ?>
+    </table>
+</div>
+</body>
+</html>
