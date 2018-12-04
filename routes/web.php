@@ -92,5 +92,3 @@ Route::get('/admin/auth/schedule', ['as'=> 'admin schedule','uses'=>'ScheduleCon
 //PDF Converter Routes
 Route::get('/test',['as'=>'htmltopdfview','uses'=>'PDFConverterController@htmltopdfview']);
 Route::get('generate-pdf', 'PDFConverterController@pdfview')->name('generate-pdf');
-Route::get('bus-schedule-pdf', 'PDFConverterController@busSchedulePdf')->name('bus-schedule-pdf');
-Route::get('bus-schedule-friday', 'PDFConverterController@busScheduleFriday')->name('bus-schedule-friday');

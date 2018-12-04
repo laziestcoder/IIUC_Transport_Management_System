@@ -10,6 +10,9 @@ Route::group([
     'middleware' => config('admin.route.middleware'),
 ], function (Router $router) {
     $router->get('/', 'HomeController@index');
+    $router->get('/auth/bus-schedule-pdf', 'PDFConverterController@busSchedulePdf')->name('bus-schedule-pdf');
+    $router->get('/auth/bus-schedule-friday', 'PDFConverterController@busScheduleFriday')->name('bus-schedule-friday');
+
     $router->resource('/admin-dashboard', 'AdminDashboardController');
     $router->resource('/emergency-contact', 'EmergencyContactsController');
     $router->resource('/auth/students', 'StudentController');

@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+//namespace App\Http\Controllers;
+namespace App\Admin\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use Illuminate\Http\Request;
 use DB;
@@ -11,10 +13,70 @@ use App\BusPoint;
 use App\Day;
 use App\Schedule;
 use App\Time;
+use Encore\Admin\Controllers\HasResourceActions;
 
 
 class PDFConverterController extends Controller
 {
+    use HasResourceActions;
+
+
+    public function busSchedulePdf(Request $request)
+    {
+        $users = DB::table("routes")->get();
+        $data = array(
+            'schedules' => Schedule::all(),
+            'title' => 'Bus Schedule Print',
+            'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
+            'titlenew' => 'Create New Schedule',
+            'titleinfo' => 'Available Schedule',
+            'times' => Time::all('id', 'time'),
+            'days' => Day::all('id','dayname'),
+            'points' => BusPoint::all('id', 'pointname'),
+        );
+        //view()->share('users',$users);
+        view()->share($data);
+
+        if($request->has('download')){
+            // Set extra option
+            //PDF::setOptions(['dpi' => 45, 'defaultFont' => 'sans-serif']);
+            //set paper orientation
+            //PDF::setPaper('a4', 'landscape');
+            // pass view file
+            $pdf = PDF::loadView('printPDF.busSchedule');
+            // download pdf
+            return $pdf->download('busSchedule.pdf');
+        }
+        return view('printPDF.busSchedule')->with($data);
+    }
+    public function busScheduleFriday(Request $request)
+    {
+        $users = DB::table("routes")->get();
+        $data = array(
+            'schedules' => Schedule::all(),
+            'title' => 'Bus Schedule Print',
+            'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
+            'titlenew' => 'Create New Schedule',
+            'titleinfo' => 'Available Schedule',
+            'times' => Time::all('id', 'time'),
+            'days' => Day::all('id','dayname'),
+            'points' => BusPoint::all('id', 'pointname'),
+        );
+        //view()->share('users',$users);
+        view()->share($data);
+
+        if($request->has('download')){
+            // Set extra option
+            //PDF::setOptions(['dpi' => 45, 'defaultFont' => 'sans-serif']);
+            //set paper orientation
+            //PDF::setPaper('a4', 'landscape');
+            // pass view file
+            $pdf = PDF::loadView('printPDF.busScheduleFriday');
+            // download pdf
+            return $pdf->download('busSchedule.pdf');
+        }
+        return view('printPDF.busScheduleFriday')->with($data);
+    }
 
 //    public function export_pdf($model,$fileName)
 //    {
@@ -66,60 +128,5 @@ class PDFConverterController extends Controller
         }
         return view('test.pdfview');
     }
-    public function busSchedulePdf(Request $request)
-    {
-        $users = DB::table("routes")->get();
-        $data = array(
-            'schedules' => Schedule::all(),
-            'title' => 'Bus Schedule Print',
-            'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
-            'titlenew' => 'Create New Schedule',
-            'titleinfo' => 'Available Schedule',
-            'times' => Time::all('id', 'time'),
-            'days' => Day::all('id','dayname'),
-            'points' => BusPoint::all('id', 'pointname'),
-        );
-        //view()->share('users',$users);
-        view()->share($data);
 
-        if($request->has('download')){
-            // Set extra option
-            PDF::setOptions(['dpi' => 45, 'defaultFont' => 'sans-serif']);
-            //set paper orientation
-            //PDF::setPaper('a4', 'landscape');
-            // pass view file
-            $pdf = PDF::loadView('printPDF.busSchedule');
-            // download pdf
-            return $pdf->download('busSchedule.pdf');
-        }
-        return view('printPDF.busSchedule')->with($data);
-    }
-    public function busScheduleFriday(Request $request)
-    {
-        $users = DB::table("routes")->get();
-        $data = array(
-            'schedules' => Schedule::all(),
-            'title' => 'Bus Schedule Print',
-            'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
-            'titlenew' => 'Create New Schedule',
-            'titleinfo' => 'Available Schedule',
-            'times' => Time::all('id', 'time'),
-            'days' => Day::all('id','dayname'),
-            'points' => BusPoint::all('id', 'pointname'),
-        );
-        //view()->share('users',$users);
-        view()->share($data);
-
-        if($request->has('download')){
-            // Set extra option
-            PDF::setOptions(['dpi' => 45, 'defaultFont' => 'sans-serif']);
-            //set paper orientation
-            //PDF::setPaper('a4', 'landscape');
-            // pass view file
-            $pdf = PDF::loadView('printPDF.busScheduleFriday');
-            // download pdf
-            return $pdf->download('busSchedule.pdf');
-        }
-        return view('printPDF.busScheduleFriday')->with($data);
-    }
 }

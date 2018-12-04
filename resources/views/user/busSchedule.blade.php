@@ -18,7 +18,7 @@
                                     <td>{{"Starting Time"}}</td>
                                     <td>{{"Gender"}}</td>
                                     <td>{{"Direction"}}</td>
-                                    <td>{{"Starting Point"}}</td>
+                                    <td>{{"Route"}}</td>
                                 </tr>
                                 </thead>
                                 <tbody class="">
@@ -105,7 +105,7 @@
                                             </td>
                                             <?php $userid = App\Schedule::where('day', $day->id)
                                                 ->where('time', $time->id)
-                                                ->first(); ?>      
+                                                ->first(); ?>
                                         </tr>
                                     @endif
                                 @endforeach
