@@ -1,9 +1,6 @@
 @extends('printPDF.layout')
 @section('content')
-    <div id="header-title" >
-        <h1><img src="storage/img/logos/iiuc.png" alt="International Islamic University Chittagong"></h1>
-        <h4>Kumira, Chittagong</h4>
-    </div>
+    
     <div id="print-it">
         <h2> Bus Schedule</h2>
         @if( count($schedules) > 0 )

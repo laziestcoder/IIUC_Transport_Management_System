@@ -33,11 +33,11 @@
                     <h3><b>{{"$day->dayname"}}</b></h3>
 
             @if( $day->id == 7  )
-                    <a class="btn btn-success" target="_blank" href='bus-schedule-friday'>
+                    <a class="btn btn-success" target="_blank" href='/bus-schedule-friday'>
                         <i class="fa fa-print"></i>Print
                     </a>
                 @elseif ($day->id <= 5 && $day->id >= 1 )
-                <a class="btn btn-success" target="_blank" href='bus-schedule-pdf'>
+                <a class="btn btn-success" target="_blank" href='/bus-schedule-pdf'>
                     <i class="fa fa-print"></i> Print
                 </a>
                 @endif

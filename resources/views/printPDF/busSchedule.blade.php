@@ -1,9 +1,6 @@
 @extends('printPDF.layout')
 @section('content')
-    <div id="header-title" >
-        <h1><img src="storage/img/logos/iiuc.png" alt="International Islamic University Chittagong"></h1>
-        <h4>Kumira, Chittagong</h4>
-    </div>
+   
     <div id="print-it">
         <h2> Bus Schedule</h2>
         @if( count($schedules) > 0 )
@@ -83,7 +80,7 @@
 
                             <td>
                                 @if(count($routes)>0)
-                                <table class="table-bordered">
+                                <table class="table table-bordered">
                                     @foreach($routes as $route)
                                         <tr>
                                             <td>{!!  \App\BusRoute::where('id',$route->route)->first()->routename !!}</td>
@@ -93,7 +90,7 @@
                                 @endif
                             </td>
                             <td>
-                                <table class="table-bordered">
+                                <table class="table table-bordered">
                                     @foreach($routes as $route)
                                         <?php  $stopPoints = \App\BusPoint::where('routeid', $route->route)->orderBy('weight', 'asc')->get();
                                         if (count($stopPoints) > 1) {

@@ -78,6 +78,9 @@ Route::get('/bus-routes', ['as'=> 'user bus route','uses'=>'ManagementController
 //Admin::routes();
 
 Route::get('/admin/auth/routes', ['as'=> 'admin routes','uses'=>'BusRoutesController@index']);
+Route::get('bus-schedule-pdf', 'PDFConverterController@busSchedulePdf')->name('bus-schedule-pdf');
+Route::get('bus-schedule-friday', 'PDFConverterController@busScheduleFriday')->name('bus-schedule-friday');
+
 //Route::resource('/admin/auth/points', 'BusPointsController');
 //Route::resource('/admin/auth/notices', 'NoticesController');
 //Route::resource('/admin/auth/addtime', 'TimeController');

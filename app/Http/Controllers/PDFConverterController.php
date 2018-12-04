@@ -1,12 +1,12 @@
 <?php
 
-//namespace App\Http\Controllers;
-namespace App\Admin\Controllers;
+namespace App\Http\Controllers;
+//namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
-//use App\Http\Requests;
+use App\Http\Requests;
 use Illuminate\Http\Request;
-//use DB;
+use DB;
 use PDF;
 
 use App\BusPoint;
