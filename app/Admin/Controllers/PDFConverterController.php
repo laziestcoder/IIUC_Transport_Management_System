@@ -4,9 +4,9 @@
 namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
+//use App\Http\Requests;
 use Illuminate\Http\Request;
-use DB;
+//use DB;
 use PDF;
 
 use App\BusPoint;
@@ -23,7 +23,6 @@ class PDFConverterController extends Controller
 
     public function busSchedulePdf(Request $request)
     {
-        $users = DB::table("routes")->get();
         $data = array(
             'schedules' => Schedule::all(),
             'title' => 'Bus Schedule Print',
@@ -51,7 +50,6 @@ class PDFConverterController extends Controller
     }
     public function busScheduleFriday(Request $request)
     {
-        $users = DB::table("routes")->get();
         $data = array(
             'schedules' => Schedule::all(),
             'title' => 'Bus Schedule Print',
