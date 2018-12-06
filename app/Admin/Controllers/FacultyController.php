@@ -51,7 +51,7 @@ class FacultyController extends Controller
         $show = new Show(User::findOrFail($id));
         $show->panel()->title('View Profile');
 
-        //$show->id('ID');
+        $show->id('ID');
         $show->name('Name');
         $show->jobid(trans('Varsity ID'));
         $show->divider();

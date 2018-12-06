@@ -1,50 +1,30 @@
 <?php
 
 namespace App\Admin\Controllers;
-use App\
-AdminDashboard;
-use App\
-BusInfo;
-use App\
-BusPoint;
-use App\
-BusRoute;
-use App\
-BusStudentInfo;
-use App\
-BusType;
-use App\
-CsvData;
-use App\
-Day;
-use App\
-Driver;
-use App\
-EmergencyContact;
-use App\
-GetTableColumns;
-use App\
-Helper ;
-use App\
-ModelList;
-use App\
-Notice;
-use App\
-Schedule;
-use App\
-StudentSchedule;
-use App\
-Time;
-use App\
-User;
-use App\
-UserRole ;
 
+use App\AdminDashboard;
+use App\BusInfo;
+use App\BusPoint;
+use App\BusRoute;
+use App\BusStudentInfo;
+use App\BusType;
+use App\CsvData;
+use App\Day;
+use App\Driver;
+use App\EmergencyContact;
+use App\Helper;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\CsvImportRequest;
+use App\ModelList;
+use App\Notice;
+use App\Schedule;
+use App\StudentSchedule;
+use App\Time;
+use App\User;
+use App\UserRole;
 use DB;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Http\Controllers\Controller;
 
 
 class ImportController extends Controller
@@ -54,7 +34,7 @@ class ImportController extends Controller
     {
         $data = array(
             'models' => ModelList::all(),
-            'allModels' =>  $allModels = $this->getModels(app_path()),
+            'allModels' => $allModels = $this->getModels(app_path()),
         );
         return view('import.import')->with($data);
     }
@@ -121,24 +101,60 @@ class ImportController extends Controller
             $flag = True;
             //$model_name = get_class($model_name);
             switch ($model_name) {
-                case 'AdminDashboard': $entry_data = new AdminDashboard(); break;
-                case 'BusInfo': $entry_data = new BusInfo(); break;
-                case 'BusPoint': $entry_data = new BusPoint(); break;
-                case 'BusRoute': $entry_data = new BusRoute(); break;
-                case 'BusStudentInfo': $entry_data = new BusStudentInfo(); break;
-                case 'BusType': $entry_data = new BusType(); break;
-                case 'CsvData': $entry_data = new CsvData(); break;
-                case 'Day': $entry_data = new Day(); break;
-                case 'Driver': $entry_data = new Driver(); break;
-                case 'EmergencyContact': $entry_data = new EmergencyContact(); break;
-                case 'Helper': $entry_data = new Helper(); break;
-                case 'ModelList': $entry_data = new ModelList(); break;
-                case 'Notice': $entry_data = new Notice(); break;
-                case 'Schedule': $entry_data = new Schedule(); break;
-                case 'StudentSchedule': $entry_data = new StudentSchedule(); break;
-                case 'Time': $entry_data = new Time(); break;
-                case 'User': $entry_data = new User(); break;
-                case 'UserRole': $entry_data = new UserRole(); break;
+                case 'AdminDashboard':
+                    $entry_data = new AdminDashboard();
+                    break;
+                case 'BusInfo':
+                    $entry_data = new BusInfo();
+                    break;
+                case 'BusPoint':
+                    $entry_data = new BusPoint();
+                    break;
+                case 'BusRoute':
+                    $entry_data = new BusRoute();
+                    break;
+                case 'BusStudentInfo':
+                    $entry_data = new BusStudentInfo();
+                    break;
+                case 'BusType':
+                    $entry_data = new BusType();
+                    break;
+                case 'CsvData':
+                    $entry_data = new CsvData();
+                    break;
+                case 'Day':
+                    $entry_data = new Day();
+                    break;
+                case 'Driver':
+                    $entry_data = new Driver();
+                    break;
+                case 'EmergencyContact':
+                    $entry_data = new EmergencyContact();
+                    break;
+                case 'Helper':
+                    $entry_data = new Helper();
+                    break;
+                case 'ModelList':
+                    $entry_data = new ModelList();
+                    break;
+                case 'Notice':
+                    $entry_data = new Notice();
+                    break;
+                case 'Schedule':
+                    $entry_data = new Schedule();
+                    break;
+                case 'StudentSchedule':
+                    $entry_data = new StudentSchedule();
+                    break;
+                case 'Time':
+                    $entry_data = new Time();
+                    break;
+                case 'User':
+                    $entry_data = new User();
+                    break;
+                case 'UserRole':
+                    $entry_data = new UserRole();
+                    break;
                 default:
                     $flag = false;
                     break;

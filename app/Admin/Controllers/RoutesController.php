@@ -109,10 +109,10 @@ class RoutesController extends Controller
     {
         $grid = new Grid(new BusRoute);
 
-        //$grid->id('ID')->sortable();
+        $grid->id('ID')->sortable();
         $grid->routename('Route Name')->badge('green')->sortable();
         $grid->user_id('Inputed By')->display(function ($s) {
-            return Administrator::all()->find($s)->name;
+            return Administrator::all()->find($s)->name?: 'n/a';
         })->badge('blue')->sortable();
         $grid->created_at('Created At')->sortable();
         $grid->updated_at('Updated At')->sortable();

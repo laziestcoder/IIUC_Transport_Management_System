@@ -81,7 +81,7 @@ class UserRoleController extends Controller
     {
         $grid = new Grid(new UserRole);
 
-       // $grid->id('ID');
+        $grid->id('ID');
         $grid->name('Role Name')->sortable()->badge("green");
         $grid->created_at('Created At');
         $grid->updated_at('Updated At');

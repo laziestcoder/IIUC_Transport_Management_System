@@ -82,7 +82,7 @@ class EmergencyContactsController extends Controller
         $grid = new Grid(new EmergencyContact);
         $grid->setTitle("Emergency Contact");
 
-        //$grid->id('ID');
+        $grid->id('ID');
         $grid->name('Name')->editable();
         $grid->contact('Contact No')->editable();
         $grid->photo('Photo')->image();

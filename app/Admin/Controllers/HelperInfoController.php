@@ -81,7 +81,7 @@ class HelperInfoController extends Controller
     {
         $grid = new Grid(new Helper);
 
-        //$grid->id('ID');
+        $grid->id('ID');
         $grid->image('Photo')->display(function ($s) {
             return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
         });

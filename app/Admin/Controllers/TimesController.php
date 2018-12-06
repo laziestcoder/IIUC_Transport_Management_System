@@ -84,9 +84,9 @@ class TimesController extends Controller
     {
         $grid = new Grid(new Time);
 
-       // $grid->id('ID');
+        $grid->id('ID');
         $grid->time('Time')->display(function ($s) {
-            return Carbon::parse($s)->format("g:i A");
+            return Carbon::parse($s)->format("g:i A")?: 'n/a';
         })->badge('orange')->sortable();
         $states = [
             'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
@@ -95,7 +95,7 @@ class TimesController extends Controller
         $grid->toiiuc('To IIUC Campus')->switch($states)->sortable();
         $grid->fromiiuc('From IIUC Campus')->switch($states)->sortable();
         $grid->user_id('Created By')->display(function ($s) {
-            return Administrator::all()->find($s)->name;
+            return Administrator::all()->find($s)->name?: 'n/a';
         })->label('primary');
         $grid->created_at('Created At');
         $grid->updated_at('Updated At');

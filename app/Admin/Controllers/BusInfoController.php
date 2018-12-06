@@ -88,7 +88,7 @@ class BusInfoController extends Controller
     {
         $grid = new Grid(new BusInfo);
 
-       // $grid->id('ID')->sortable();
+        $grid->id('ID')->sortable();
         $grid->busid('Bus ID')->sortable();
         $grid->registration('Registration No')->sortable();
         $grid->license('License No')->sortable();
@@ -103,7 +103,7 @@ class BusInfoController extends Controller
         ];
         $grid->availability('Availability')->switch($states)->sortable();
         $grid->bustype('Bus Type')->pluck('name')->display(function ($bustype) {
-            return BusType::all()->find($bustype)->name;
+            return BusType::all()->find($bustype)->name ?: 'n/a';
         })->sortable();
         $grid->bus_name('Bus Name')->sortable();
         $grid->busowner('Bus Owner')->sortable();

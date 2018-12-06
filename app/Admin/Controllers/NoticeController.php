@@ -99,7 +99,7 @@ class NoticeController extends Controller
         });
         $grid->noticeregistration('Registration No')->sortable();
         $grid->user_id('Created By')->display(function ($s) {
-            return Administrator::all()->find($s)->name;
+            return Administrator::all()->find($s)->name?: 'n/a';
         })->badge('primary')->sortable();
         $grid->created_at('Created At')->sortable();
         $grid->updated_at('Updated At')->sortable();

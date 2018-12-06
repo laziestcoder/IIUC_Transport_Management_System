@@ -48,51 +48,51 @@ class BusRouteStudentInfoController extends Controller
         $grid->id('ID')->sortable();
         $grid->userrole('User')->display(function($id) {
             if($id) {
-                return UserRole::find($id)->name;
+                return UserRole::find($id)->name?: 'n/a';
             }else{
                 return 'Not Selected';
             }
         })->sortable();
         $grid->user_id('Varsity ID')->display(function($id) {
-            return User::find($id)->jobid;
+            return User::find($id)->jobid?: 'n/a';
         })->sortable();
         $grid->day('Day')->display(function($id) {
-            return Day::find($id)->dayname;
+            return Day::find($id)->dayname?: 'n/a';
         })->sortable();
         $grid->pickpoint('Pickpoint')->display(function($id) {
             if($id) {
-                return BusPoint::find($id)->pointname;
+                return BusPoint::find($id)->pointname?: 'n/a';
             }else{
                 return 'Not Selected';
             }
         })->sortable();
         $grid->picktime('Picktime')->display(function($id) {
             if($id) {
-            return Carbon::parse(Time::find($id)->time)->format('g:i A');
+            return Carbon::parse(Time::find($id)->time)->format('g:i A')?: 'n/a';
             }else{
                 return 'Not Selected';
             }
         })->sortable();
         $grid->droppoint('Droppoint')->display(function($id) {
             if($id) {
-            return BusPoint::find($id)->pointname;
+            return BusPoint::find($id)->pointname?: 'n/a';
             }else{
                 return 'Not Selected';
             }
         })->sortable();
         $grid->droptime('Droptime')->display(function($id) {
             if($id) {
-            return Carbon::parse(Time::find($id)->time)->format('g:i A');
+            return Carbon::parse(Time::find($id)->time)->format('g:i A')?: 'n/a';
             }else{
                 return 'Not Selected';
             }
         })->sortable();
         $grid->entrydate('Entrydate');
         $grid->created_at('Created at')->display(function($id) {
-            return Carbon::parse($id)->format('Y-m-d g:i:s A');
+            return Carbon::parse($id)->format('Y-m-d g:i:s A')?: 'n/a';
         });
         $grid->updated_at('Updated at')->display(function($id) {
-            return Carbon::parse($id)->format('Y-m-d g:i:s A');
+            return Carbon::parse($id)->format('Y-m-d g:i:s A')?: 'n/a';
         });
         $grid->disableCreateButton();
         $grid->disableActions();

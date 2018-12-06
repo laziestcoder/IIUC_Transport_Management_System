@@ -94,7 +94,7 @@ class DaysController extends Controller
         $grid->active(trans('Active'))->switch($states);
         $grid->user_id('Created By')->display(function ($s) {
             if($s) {
-                return Administrator::all()->find($s)->name;
+                return Administrator::all()->find($s)->name?: 'n/a';
             }else{
             return 'Default';
             }

@@ -81,7 +81,7 @@ class DriverInfoController extends Controller
     {
         $grid = new Grid(new Driver);
 
-       // $grid->id('ID')->sortable();
+        $grid->id('ID')->sortable();
         $grid->image('Photo')->display(function ($s) {
             return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
         });

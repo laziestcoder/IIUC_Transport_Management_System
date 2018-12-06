@@ -86,14 +86,14 @@ class PointsController extends Controller
         $grid = new Grid(new BusPoint);
         $grid->model()->orderBy('routeid','asc')->orderBy('weight','asc');
 
-        //$grid->id('ID')->sortable();
+        $grid->id('ID')->sortable();
         $grid->routeid('Route Name')->display(function ($s) {
-            return BusRoute::all()->find($s)->routename;
+            return BusRoute::all()->find($s)->routename?: 'n/a';
         })->badge('green')->sortable();
         $grid->pointname('Point Name')->badge('purple')->sortable();
         $grid->weight('Sequence')->editable();
         $grid->user_id('Inputed By')->display(function ($s) {
-            return Administrator::all()->find($s)->name;
+            return Administrator::all()->find($s)->name?: 'n/a';
         })->badge('blue')->sortable();
        // $grid->orderable();
         $grid->created_at('Created At');

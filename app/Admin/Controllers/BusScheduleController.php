@@ -106,16 +106,16 @@ class BusScheduleController extends Controller
             return $s ? 'Yes' : 'No';
         })->sortable();
         $grid->time('Time')->display(function ($s) {
-            return Carbon::parse(Time::all()->find($s)->time)->format("g:i A");
+            return Carbon::parse(Time::all()->find($s)->time)->format("g:i A")?: 'n/a';
         })->sortable();
         $grid->bususer('Bus For')->display(function ($s) {
-            return UserRole::all()->find($s)->name;
+            return UserRole::all()->find($s)->name?: 'n/a';
         })->badge('orange')->sortable();
         $grid->route('Route')->display(function ($s) {
-            return BusRoute::all()->find($s)->routename;
+            return BusRoute::all()->find($s)->routename?: 'n/a';
         })->badge('purple')->sortable();
         $grid->user_id('Inputed By')->display(function ($s) {
-            return Administrator::all()->find($s)->name;
+            return Administrator::all()->find($s)->name?: 'n/a';
         })->badge('blue')->sortable();
         //$grid->created_at('Created At');
         $grid->updated_at('Last Updated');

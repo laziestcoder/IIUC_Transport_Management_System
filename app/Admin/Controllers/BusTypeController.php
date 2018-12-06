@@ -81,7 +81,7 @@ class BusTypeController extends Controller
     {
         $grid = new Grid(new BusType);
 
-        //$grid->id('ID');
+        $grid->id('ID');
         $grid->name('Bus Type')->badge('purple');
         $grid->created_at('Created At');
         $grid->updated_at('Updated At');
