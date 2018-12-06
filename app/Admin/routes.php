@@ -10,6 +10,10 @@ Route::group([
     'middleware' => config('admin.route.middleware'),
 ], function (Router $router) {
     $router->get('/', 'HomeController@index');
+    $router->get('/import', 'ImportController@getImport')->name('import');
+    $router->post('/import_parse', 'ImportController@parseImport')->name('import_parse');
+    $router->post('/import_process', 'ImportController@processImport')->name('import_process');
+
     $router->resource('/admin-dashboard', 'AdminDashboardController');
     $router->resource('/emergency-contact', 'EmergencyContactsController');
     $router->resource('/auth/students', 'StudentController');

@@ -1,8 +1,9 @@
 <?php
 
 //namespace Encore\Admin\Auth\Database;
-use Illuminate\Database\Seeder;
 use Encore\Admin\Auth\Database\AdminTablesSeed;
+use Illuminate\Database\Seeder;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -13,9 +14,13 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         //         $this->call(UsersTableSeeder::class);
-        $this->call(AdminTablesSeed::class);
-       // $this->runToo();
+        $this->call([
+          //  AdminTablesSeed::class,
+            ModelListTableSeeder::class,
+        ]);
+        // $this->runToo();
     }
+}
 
 //    public function runToo()
 //    {
@@ -450,5 +455,4 @@ class DatabaseSeeder extends Seeder
 //        // add role to menu.
 //        Menu::find(2)->roles()->save(Role::first());
 //    }
-
-}
+//}

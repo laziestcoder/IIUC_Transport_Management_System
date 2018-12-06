@@ -499,14 +499,19 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-circle-o',
                 'uri' => '/auth/officer-staff',
             ],
-
-
             [
                 'parent_id' => 42,
                 'order' => 46,
                 'title' => 'User-Role',
                 'icon' => 'fa-user-plus',
                 'uri' => '/auth/user-role',
+            ],
+            [
+                'parent_id' => 0,
+                'order' => 47,
+                'title' => 'Import Data Table',
+                'icon' => 'fa-user-plus',
+                'uri' => '/import',
             ],
 
 

@@ -67,6 +67,8 @@ Route::resource('/management', 'ManagementController');
 Route::get('/bus-schedules', ['as'=> 'user bus schedule','uses'=>'ManagementController@busSchedule']);
 Route::get('/bus-routes', ['as'=> 'user bus route','uses'=>'ManagementController@busroutesdetails']);
 
+
+
 //User Confirmation Routing
 //Email Verification 1
 //Route::get('/users/confirmation/{token}', 'Auth\RegisterController@confirmation')->name('confirmation');
