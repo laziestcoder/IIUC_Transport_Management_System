@@ -91,35 +91,83 @@ class BusScheduleController extends Controller
 
         $grid->id('ID')->sortable();
         $grid->day('Day')->display(function ($s) {
-            return Day::all()->find($s)->dayname;
+           if($s) {
+                $s = Day::all()->find($s);
+                if ($s) {
+                    return $s->dayname;
+                } else {
+                    return 'n/a';
+                }
+            }else{
+                return 'Not Selected';
+            }
         })->badge('green')->sortable();
-        $grid->toiiuc('To IIUC Capmus')->display(function ($s) {
-            return $s ? 'Yes' : 'No';
-        })->sortable();
-        $grid->fromiiuc('From IIUC Campus')->display(function ($s) {
-            return $s ? 'Yes' : 'No';
-        })->sortable();
-        $grid->male('Male')->display(function ($s) {
-            return $s ? 'Yes' : 'No';
-        })->sortable();
-        $grid->female('Female')->display(function ($s) {
-            return $s ? 'Yes' : 'No';
-        })->sortable();
-        $grid->time('Time')->display(function ($s) {
-            return Carbon::parse(Time::all()->find($s)->time)->format("g:i A")?: 'n/a';
-        })->sortable();
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
+        ];
+//        $grid->confirmed(trans('Activated'))->switch($states)->sortable();
+        $grid->toiiuc('To IIUC Capmus')->switch($states)->sortable();
+        $grid->fromiiuc('From IIUC Campus')->switch($states)->sortable();
+        $grid->male('Male')->switch($states)->sortable();
+        $grid->female('Female')->switch($states)->sortable();
+        $grid->time('Time')
+            ->options()
+            ->select(Time::all()->sortBy('time')->pluck('time','id'))
+//            ->display(function ($s) {
+//             if($s) {
+//                $s = Time::all()->find($s);
+//                if ($s) {
+//                    return Carbon::parse($s->time)->format("g:i A");
+//                } else {
+//                    return 'n/a';
+//                }
+//            }else{
+//                return 'Not Selected';
+//            }})
+            ->sortable();
         $grid->bususer('Bus For')->display(function ($s) {
-            return UserRole::all()->find($s)->name?: 'n/a';
+            if($s) {
+                $s = UserRole::all()->find($s);
+                if ($s) {
+                    return $s->name;
+                } else {
+                    return 'n/a';
+                }
+            }else{
+                return 'Not Selected';
+            }
         })->badge('orange')->sortable();
-        $grid->route('Route')->display(function ($s) {
-            return BusRoute::all()->find($s)->routename?: 'n/a';
-        })->badge('purple')->sortable();
+        $grid->route('Route')
+            ->display(function ($s) {
+            if($s) {
+                $s = BusRoute::all()->find($s);
+                if ($s) {
+                    return $s->routename;
+                } else {
+                    return 'n/a';
+                }
+            }else{
+                return 'Not Selected';
+            }})
+            ->badge('purple')->sortable();
         $grid->user_id('Inputed By')->display(function ($s) {
-            return Administrator::all()->find($s)->name?: 'n/a';
+            if($s) {
+                $s = Administrator::all()->find($s);
+                if ($s) {
+                    return $s->name;
+                } else {
+                    return 'n/a';
+                }
+            }else{
+                return 'Not Selected';
+            }
         })->badge('blue')->sortable();
         //$grid->created_at('Created At');
         $grid->updated_at('Last Updated');
         $grid->disableFilter();
+        $grid->paginate(25);
+        $grid->perPages([25, 50, 100, 200, 300]);
 
         return $grid;
     }
@@ -183,7 +231,7 @@ class BusScheduleController extends Controller
             ->rules('required');
         $states = [
             'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
-            'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
 
         $form->switch('toiiuc', 'To IIUC Campus')->states($states);

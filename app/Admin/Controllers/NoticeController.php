@@ -140,13 +140,13 @@ class NoticeController extends Controller
     {
         $show = new Show(Notice::findOrFail($id));
         $show->panel()->title('Post Details');
-
+        $value = $show;
         $show->id('ID');
         $show->title('Title');
         $show->body('Notice Text');
-        $show->cover_image('Cover Image')->as(function ($s) {
-            return "<img style='max-width:200px;max-height:200px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
-        });
+        $show->cover_image('Cover Image')->as(function ($s)  use ($value){
+            return $s;
+        })->image();
         $show->noticeregistration('Notice Registration Number');
         $show->user_id('Created By')->as(function ($s) {
             return Administrator::all()->find($s)->name;
@@ -174,7 +174,7 @@ class NoticeController extends Controller
             ->placeholder('Input Notice Message')
             ->rules('required');
         $form->image('cover_image', 'Cover Image')
-            ->move('/cover_images/')
+            ->move('/cover_images')
             ->uniqueName()
             ->value('cover_images/noimage.jpeg');
         //$form->cropper( 'cover_image' , ' Cover Image ' );

@@ -4,14 +4,14 @@ namespace App\Admin\Controllers;
 
 use App\BusPoint;
 use App\BusRoute;
-use Encore\Admin\Auth\Database\Administrator;
 use App\Http\Controllers\Controller;
+use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
-use Encore\Admin\Facades\Admin;
 
 
 class PointsController extends Controller
@@ -84,23 +84,33 @@ class PointsController extends Controller
     protected function grid()
     {
         $grid = new Grid(new BusPoint);
-        $grid->model()->orderBy('routeid','asc')->orderBy('weight','asc');
+        $grid->model()->orderBy('routeid', 'asc')->orderBy('weight', 'asc');
 
         $grid->id('ID')->sortable();
         $grid->routeid('Route Name')->display(function ($s) {
-            return BusRoute::all()->find($s)->routename?: 'n/a';
+            $sd = BusRoute::all()->find($s);
+            if ($sd) {
+                return $sd->routename;
+            } else {
+                return 'n/a';
+            }
         })->badge('green')->sortable();
         $grid->pointname('Point Name')->badge('purple')->sortable();
         $grid->weight('Sequence')->editable();
         $grid->user_id('Inputed By')->display(function ($s) {
-            return Administrator::all()->find($s)->name?: 'n/a';
+            $s = Administrator::all()->find($s);
+            if ($s) {
+                return $s->name;
+            } else {
+                return 'n/a';
+            }
         })->badge('blue')->sortable();
-       // $grid->orderable();
+        // $grid->orderable();
         $grid->created_at('Created At');
-       // $grid->updated_at('Updated At');
-       //$grid->disablePagination();
-       //$grid->perPages([25, 50, 100, 150]);
-       $grid->disablePagination();
+        // $grid->updated_at('Updated At');
+        //$grid->disablePagination();
+        //$grid->perPages([25, 50, 100, 150]);
+        $grid->disablePagination();
 
 
         return $grid;

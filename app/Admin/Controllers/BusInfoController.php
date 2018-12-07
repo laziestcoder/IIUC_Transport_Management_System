@@ -103,7 +103,12 @@ class BusInfoController extends Controller
         ];
         $grid->availability('Availability')->switch($states)->sortable();
         $grid->bustype('Bus Type')->pluck('name')->display(function ($bustype) {
-            return BusType::all()->find($bustype)->name ?: 'n/a';
+            $s = BusType::all()->find($bustype);
+            if ($s) {
+                return $s->name;
+            } else {
+                return 'n/a';
+            }
         })->sortable();
         $grid->bus_name('Bus Name')->sortable();
         $grid->busowner('Bus Owner')->sortable();
