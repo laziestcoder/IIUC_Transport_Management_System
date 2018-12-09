@@ -65,7 +65,7 @@ class PDFConverterController extends Controller
 
         if($request->has('download')){
             // Set extra option
-            //PDF::setOptions(['dpi' => 45, 'defaultFont' => 'sans-serif']);
+            PDF::setOptions(['dpi' => 600, 'defaultFont' => 'sans-serif','font-size' => 12]);
             //set paper orientation
             //PDF::setPaper('a4', 'landscape');
             // pass view file
@@ -88,43 +88,43 @@ class PDFConverterController extends Controller
 //        return $pdf->download($fileName.'.pdf');
 //    }
 
-    public function htmltopdfview(Request $request)
-    {
-        if($request->has('download')) {
-            $products = $request->input('download');
+//    public function htmltopdfview(Request $request)
+//    {
+//        if($request->has('download')) {
+//            $products = $request->input('download');
+//
+//        }/*else{
+//            $products = [];
+//        }*/
+//        view()->share('products',$products);
+//
+//        if($request->has('download')){
+//            //PDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
+//            //PDF::setPaper('a4', 'landscape');
+//            //setWarnings(false)->save('myfile.pdf')
+//            $pdf = PDF::loadView('pages.test');
+//            //$pdf = PDF::loadView('pages.test',$products);
+//            return $pdf->download('test.pdf');
+//        }
+//        return view('test.test');
+//    }
 
-        }/*else{
-            $products = [];
-        }*/
-        view()->share('products',$products);
-
-        if($request->has('download')){
-            //PDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
-            //PDF::setPaper('a4', 'landscape');
-            //setWarnings(false)->save('myfile.pdf')
-            $pdf = PDF::loadView('pages.test');
-            //$pdf = PDF::loadView('pages.test',$products);
-            return $pdf->download('test.pdf');
-        }
-        return view('test.test');
-    }
-
-    public function pdfview(Request $request)
-    {
-        $users = DB::table("routes")->get();
-        view()->share('users',$users);
-
-        if($request->has('download')){
-            // Set extra option
-            PDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
-            //set paper orientation
-            PDF::setPaper('a4', 'landscape');
-            // pass view file
-            $pdf = PDF::loadView('test.pdfview');
-            // download pdf
-            return $pdf->download('pdfview.pdf');
-        }
-        return view('test.pdfview');
-    }
+//    public function pdfview(Request $request)
+//    {
+//        $users = DB::table("routes")->get();
+//        view()->share('users',$users);
+//
+//        if($request->has('download')){
+//            // Set extra option
+//            PDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
+//            //set paper orientation
+//            PDF::setPaper('a4', 'landscape');
+//            // pass view file
+//            $pdf = PDF::loadView('test.pdfview');
+//            // download pdf
+//            return $pdf->download('pdfview.pdf');
+//        }
+//        return view('test.pdfview');
+//    }
 
 }

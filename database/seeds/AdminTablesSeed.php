@@ -18,10 +18,22 @@ class AdminTablesSeed extends Seeder
     {
         // create a user.
         Administrator::truncate();
-        Administrator::create([
-            'username' => 'admin',
-            'password' => bcrypt('i am master'),
-            'name' => 'Administrator',
+        Administrator::insert([
+            [
+                'username' => 'admin',
+                'password' => bcrypt('i am master'),
+                'name' => 'Administrator',
+            ],
+            [
+                'username' => 'towfiq',
+                'password' => bcrypt('i am boss'),
+                'name' => 'Towfiqul Islam',
+            ],
+            [
+                'username' => 'sina',
+                'password' => bcrypt('i am boss'),
+                'name' => 'Sina Ibn Amin',
+            ],
         ]);
 
         // create a role.
@@ -524,10 +536,10 @@ class AdminTablesSeed extends Seeder
         AdminDashboard::truncate();
         AdminDashboard::create([
             'special_schedule' => 0,
-            'regular_schedule' => 0,
+            'regular_schedule' => 1,
             'holiday' => 0,
             'schedule_suspend' => 0,
-            'schedule_edit' => 0,
+            'schedule_edit' => 1,
             'editdate' => 0,
         ]);
 
@@ -571,7 +583,7 @@ class AdminTablesSeed extends Seeder
             ],
             [
                 'dayname' => 'Exam Day',
-                'active' => 1,
+                'active' => 0,
                 'user_id' => 0,
             ],
         ]);

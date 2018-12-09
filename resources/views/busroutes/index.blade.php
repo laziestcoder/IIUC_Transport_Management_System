@@ -33,7 +33,9 @@
                         <tr> <?php $bus = 0; $studentSum = 0; $seat = 0;?>
                             <td>{{$flag+=1}}</td>
                             <td>
-                                <a href="/admin/auth/routes/{{$route->id}}">{{$route->routename}}</a>
+                                {{--<a href="/admin/auth/routes/{{$route->id}}">--}}
+                                    {{$route->routename}}
+                                {{--</a>--}}
                             </td>
                             <td><?php $studentSum = DB::table('bus_student_information')
                                     ->where('routeid', $route->id)
@@ -104,7 +106,9 @@
                         <tr> <?php $bus = 0;  $studentSum = 0; $seat = 0;?>
                             <td>{{$flag+=1}}</td>
                             <td>
-                                <a href="/admin/auth/routes/{{$route->id}}">{{$route->routename}}</a>
+                                {{--<a href="/admin/auth/routes/{{$route->id}}">--}}
+                                    {{$route->routename}}
+                                {{--</a>--}}
                             </td>
                             <td><?php $studentSum = DB::table('bus_student_information')
                                     ->where('routeid', $route->id)

@@ -23,8 +23,8 @@ class BusStudentInfoController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Index')
-            ->description('description')
+            ->header('Per Route Bus and Student Number')
+            ->description('Here Per Route Per Point wise route and student number details can be seen.')
             ->body($this->grid());
     }
 
@@ -81,15 +81,15 @@ class BusStudentInfoController extends Controller
     {
         $grid = new Grid(new BusStudentInfo);
 
-        $grid->id('Id');
-        $grid->routeid('Routeid');
-        $grid->pointid('Pointid');
-        $grid->studentno('Studentno');
-        $grid->dayid('Dayid');
-        $grid->timeid('Timeid');
-        $grid->gender('Gender');
-   //     $grid->paginate('50','100','150','250','500','1000');
-        $grid->perPages([100,200,500,1000]);
+        $grid->id('ID')->sortable();
+        $grid->routeid('Route ID')->sortable();
+        $grid->pointid('Point ID')->sortable();
+        $grid->studentno('Student No')->sortable();
+        $grid->dayid('Day ID')->sortable();
+        $grid->timeid('Time ID')->sortable();
+        $grid->gender('Gender')->sortable();
+        $grid->paginate('25');
+        $grid->perPages([25,50,100]);
 
 
         return $grid;
@@ -105,12 +105,12 @@ class BusStudentInfoController extends Controller
     {
         $show = new Show(BusStudentInfo::findOrFail($id));
 
-        $show->id('Id');
-        $show->routeid('Routeid');
-        $show->pointid('Pointid');
-        $show->studentno('Studentno');
-        $show->dayid('Dayid');
-        $show->timeid('Timeid');
+        $show->id('ID');
+        $show->routeid('Route ID');
+        $show->pointid('Point ID');
+        $show->studentno('Student No');
+        $show->dayid('Day ID');
+        $show->timeid('Time ID');
         $show->gender('Gender');
 
 

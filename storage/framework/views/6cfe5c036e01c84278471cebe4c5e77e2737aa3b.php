@@ -33,7 +33,10 @@
                         <tr> <?php $bus = 0; $studentSum = 0; $seat = 0;?>
                             <td><?php echo e($flag+=1, false); ?></td>
                             <td>
-                                <a href="/admin/auth/routes/<?php echo e($route->id, false); ?>"><?php echo e($route->routename, false); ?></a>
+                                
+                                    <?php echo e($route->routename, false); ?>
+
+                                
                             </td>
                             <td><?php $studentSum = DB::table('bus_student_information')
                                     ->where('routeid', $route->id)
@@ -105,7 +108,10 @@
                         <tr> <?php $bus = 0;  $studentSum = 0; $seat = 0;?>
                             <td><?php echo e($flag+=1, false); ?></td>
                             <td>
-                                <a href="/admin/auth/routes/<?php echo e($route->id, false); ?>"><?php echo e($route->routename, false); ?></a>
+                                
+                                    <?php echo e($route->routename, false); ?>
+
+                                
                             </td>
                             <td><?php $studentSum = DB::table('bus_student_information')
                                     ->where('routeid', $route->id)

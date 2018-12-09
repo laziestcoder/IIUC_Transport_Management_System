@@ -2,17 +2,18 @@
 
 namespace App\Admin\Controllers;
 
+use App\AdminDashboard;
 use App\Http\Controllers\Controller;
 use DB;
+use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\Dashboard;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
-use Encore\Admin\Grid;
 use Encore\Admin\Form;
+use Encore\Admin\Grid;
 use Encore\Admin\Layout\Column;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Layout\Row;
-use App\AdminDashboard;
 
 class HomeController extends Controller
 {
@@ -31,10 +32,11 @@ class HomeController extends Controller
 //            $content->row($this->grid());
 
 
-
-            if (DB::table('admin_role_users')->where('user_id', (Admin::user()->id))->first()->role_id == 1) {
+            $admin = Admin::user();
+            if (($admin->id) === 2 && ($admin->name)==='Towfiqul Islam' && ($admin->username)==='towfiq'  ) {
                 $content->row('<br><br><br>');
                 $content->row(function (Row $row) {
+
 
                     $row->column(4, function (Column $column) {
                         $column->append(Dashboard::environment());
@@ -60,8 +62,8 @@ class HomeController extends Controller
         $grid->setTitle('Schedule Dashborad');
 
         $states = [
-            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
-            'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
         $grid->special_schedule('Special Schedule')->switch($states);
         $grid->regular_schedule('Regular Schedule')->switch($states);

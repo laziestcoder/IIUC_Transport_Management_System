@@ -89,7 +89,7 @@ class DaysController extends Controller
         $grid->dayname('Day')->badge('green');
         $states = [
             'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
-            'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
         $grid->active(trans('Active'))->switch($states);
         $grid->user_id('Created By')->display(function ($s) {

@@ -17,7 +17,7 @@ use App\Time;
 use App\BusPoint;
 use App\UserRole;
 
-class BusRouteStudentInfoController extends Controller
+class StudentBusroutingInfoController extends Controller
 {
     use HasResourceActions;
 
@@ -30,8 +30,8 @@ class BusRouteStudentInfoController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Bus Student Route')
-            ->description('All Student Information')
+            ->header('Student Bus Route Per Day')
+            ->description('Students individual route information. Students Pick Up Point and Time and Drop Point and Time per day.')
             ->body($this->grid());
     }
 
@@ -75,7 +75,7 @@ class BusRouteStudentInfoController extends Controller
                 return 'n/a';
             }
         })->sortable();
-        $grid->pickpoint('Pickpoint')->display(function($id) {
+        $grid->pickpoint('Pick Point')->display(function($id) {
             if($id) {
 
                 $id = BusPoint::find($id);
@@ -88,7 +88,7 @@ class BusRouteStudentInfoController extends Controller
                 return 'Not Selected';
             }
         })->sortable();
-        $grid->picktime('Picktime')->display(function($id) {
+        $grid->picktime('Pick Time')->display(function($id) {
             if($id) {
                 $id = Time::find($id);
                 if ($id) {
@@ -100,7 +100,7 @@ class BusRouteStudentInfoController extends Controller
                 return 'Not Selected';
             }
         })->sortable();
-        $grid->droppoint('Droppoint')->display(function($id) {
+        $grid->droppoint('Drop Point')->display(function($id) {
             if($id) {
                 $id = BusPoint::find($id);
                 if ($id) {
@@ -112,7 +112,7 @@ class BusRouteStudentInfoController extends Controller
                 return 'Not Selected';
             }
         })->sortable();
-        $grid->droptime('Droptime')->display(function($id) {
+        $grid->droptime('Drop Time')->display(function($id) {
             if($id) {
                 $id = Time::find($id);
                 if ($id) {
@@ -124,15 +124,15 @@ class BusRouteStudentInfoController extends Controller
                 return 'Not Selected';
             }
         })->sortable();
-        $grid->entrydate('Entrydate');
-        $grid->created_at('Created at')->display(function($s) {
+        $grid->entrydate('Entry Date');
+        $grid->created_at('Created At')->display(function($s) {
             if ($s) {
                 return Carbon::parse($s)->format('Y-m-d g:i:s A');
             } else {
                 return 'n/a';
             }
         });
-        $grid->updated_at('Updated at')->display(function($s) {
+        $grid->updated_at('Updated At')->display(function($s) {
             if ($s) {
                 return Carbon::parse($s)->format('Y-m-d g:i:s A');
             } else {

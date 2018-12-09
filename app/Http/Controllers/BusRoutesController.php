@@ -35,7 +35,7 @@ class BusRoutesController extends Controller
      */
     public function index()
     {
-        $this->calculate();
+        //$this->calculate();
         $today = Carbon::today()->format('l');
         $data = array(
             'title' => 'Bus Route Info',

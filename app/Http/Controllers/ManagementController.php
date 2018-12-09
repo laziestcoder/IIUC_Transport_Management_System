@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\AdminDashboard;
 use App\BusPoint;
 use App\BusRoute;
+use App\BusStudentInfo;
 use App\Day;
 use App\Schedule;
 use App\StudentSchedule;
 use App\Time;
 use App\User;
-use App\AdminDashboard;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
@@ -130,16 +131,36 @@ class ManagementController extends Controller
             }
 
             $schedule = new StudentSchedule;
-            $schedule->day = $day->id;
-            $schedule->pickpoint = $request->input('pickpoint' . $day->id);
-            $schedule->picktime = $request->input('picktime' . $day->id);
-            $schedule->droppoint = $request->input('droppoint' . $day->id);
-            $schedule->droptime = $request->input('droptime' . $day->id);
+            $dayid = $schedule->day = $day->id;
+            $pickid = $schedule->pickpoint = $request->input('pickpoint' . $day->id);
+            $picktime = $schedule->picktime = $request->input('picktime' . $day->id);
+            $dropid = $schedule->droppoint = $request->input('droppoint' . $day->id);
+            $droptime = $schedule->droptime = $request->input('droptime' . $day->id);
             $schedule->user_id = auth()->user()->id;
             $schedule->userrole = auth()->user()->userrole;
-            $schedule->user_gender = auth()->user()->gender;
+            $gender = $schedule->user_gender = auth()->user()->gender;
             $schedule->entrydate = Carbon::now()->toDateString();
             $schedule->save();
+            if($pickid && $dropid) {
+                $routeid = BusPoint::where('id', $pickid)->first()->routeid;
+                $studentNo = BusStudentInfo::where('dayid', $dayid)
+                    ->where('routeid',$routeid)
+                    ->where('pointid',$pickid)
+                    ->where('timeid',$picktime)
+                    ->where('gender',$gender)
+                    ->get();
+                $studentNo = count($studentNo);
+                $this->bus_student_number_per_route($dayid, $routeid, $pickid, $picktime, $gender, $studentNo);
+                $routeid = BusPoint::where('id', $dropid)->first()->routeid;
+                $studentNo = BusStudentInfo::where('dayid', $dayid)
+                    ->where('routeid',$routeid)
+                    ->where('pointid',$pickid)
+                    ->where('timeid',$picktime)
+                    ->where('gender',$gender)
+                    ->get();
+                $studentNo = count($studentNo);
+                $this->bus_student_number_per_route($dayid, $routeid, $dropid, $droptime, $gender, $studentNo);
+            }
         }
 
         $success = array(
@@ -166,15 +187,36 @@ class ManagementController extends Controller
             }
             $dataid = StudentSchedule::where('user_id', $id)->where('day', $day->id)->first()->id;
             $schedule = StudentSchedule::find($dataid);
-            $schedule->pickpoint = $request->input('pickpoint' . $day->id);
-            $schedule->picktime = $request->input('picktime' . $day->id);
-            $schedule->droppoint = $request->input('droppoint' . $day->id);
-            $schedule->droptime = $request->input('droptime' . $day->id);
+            $dayid = $day->id;
+            $pickid = $schedule->pickpoint = $request->input('pickpoint' . $day->id); // days wise pickpoint
+            $picktime = $schedule->picktime = $request->input('picktime' . $day->id); //  days wise picktime
+            $dropid = $schedule->droppoint = $request->input('droppoint' . $day->id);  // days wise droppoint
+            $droptime = $schedule->droptime = $request->input('droptime' . $day->id); //  days wise droptime thats why dayId is concated with keyname.
             $schedule->user_id = auth()->user()->id;
             $schedule->userrole = auth()->user()->userrole;
-            $schedule->user_gender = auth()->user()->gender;
+            $gender = $schedule->user_gender = auth()->user()->gender;
             $schedule->entrydate = Carbon::now()->toDateString();
             $schedule->save();
+            if($pickid && $dropid) {
+                $routeid = BusPoint::where('id', $pickid)->first()->routeid;
+                $studentNo = BusStudentInfo::where('dayid', $dayid)
+                    ->where('routeid',$routeid)
+                    ->where('pointid',$pickid)
+                    ->where('timeid',$picktime)
+                    ->where('gender',$gender)
+                    ->get();
+                $studentNo = count($studentNo);
+                $this->bus_student_number_per_route($dayid, $routeid, $pickid, $picktime, $gender, $studentNo);
+                $routeid = BusPoint::where('id', $dropid)->first()->routeid;
+                $studentNo = BusStudentInfo::where('dayid', $dayid)
+                    ->where('routeid',$routeid)
+                    ->where('pointid',$pickid)
+                    ->where('timeid',$picktime)
+                    ->where('gender',$gender)
+                    ->get();
+                $studentNo = count($studentNo);
+                $this->bus_student_number_per_route($dayid, $routeid, $dropid, $droptime, $gender, $studentNo);
+            }
         }
 
         $success = array(
@@ -189,10 +231,10 @@ class ManagementController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
-    }
+//    public function show($id)
+//    {
+//        //
+//    }
 
     /**
      * Show the form for editing the specified resource.
@@ -200,10 +242,10 @@ class ManagementController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        //
-    }
+//    public function edit($id)
+//    {
+//        //
+//    }
 
     /**
      * Remove the specified resource from storage.
@@ -211,10 +253,10 @@ class ManagementController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
-    }
+    //    public function destroy($id)
+    //    {
+    //        //
+    //    }
 
     /**
      * Display a listing of the resource.
@@ -267,7 +309,7 @@ class ManagementController extends Controller
             'titlenew' => 'Create New Schedule',
             'titleinfo' => 'Available Schedule',
             'times' => Time::all('id', 'time'),
-            'days' => Day::where('active',1)->get(),
+            'days' => Day::where('active', 1)->get(),
             'points' => BusPoint::all('id', 'pointname'),
             'gender' => $user_gender,
             'userrole' => $user->userrole,
@@ -277,13 +319,50 @@ class ManagementController extends Controller
         return view("user.busSchedule")->with($data);
     }
 
-    protected function busroutesdetails(){
+    protected function busroutesdetails()
+    {
         $data = array(
-            'busroutes' => BusRoute::orderBy('routename','asc')->get(),
+            'busroutes' => BusRoute::orderBy('routename', 'asc')->get(),
             //'points' => BusPoint::all(),
             'title' => 'Route Information',
         );
         return view("user.busRouteDetails")->with($data);
+
+    }
+
+    protected function bus_student_number_per_route($dayid, $routeid, $pointid, $timeid, $gender, $studentNumber)
+    {
+        $exist = BusStudentInfo::where('dayid', $dayid)
+            ->where('routeid', $routeid)
+            ->where('pointid', $pointid)
+            ->where('timeid', $timeid)
+            ->where('gender', $gender)
+            ->get();
+        if (count($exist) > 0) {
+            $dataid = $exist->first()->id;
+            $form = BusStudentInfo::find($dataid);
+
+            $form->routeid = $routeid;
+            $form->pointid = $pointid;
+            $form->studentno = $studentNumber;
+            $form->dayid = $dayid;
+            $form->timeid = $timeid;
+            $form->gender = $gender;
+
+            $form->save();
+
+        } else {
+            $form = new BusStudentInfo;
+
+            $form->routeid = $routeid;
+            $form->pointid = $pointid;
+            $form->studentno = $studentNumber;
+            $form->dayid = $dayid;
+            $form->timeid = $timeid;
+            $form->gender = $gender;
+
+            $form->save();
+        }
 
     }
 }

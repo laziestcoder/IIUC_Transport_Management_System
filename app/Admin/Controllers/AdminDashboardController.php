@@ -32,7 +32,7 @@ class AdminDashboardController extends Controller
 
         $states = [
             'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
-            'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
         $grid->special_schedule('Special Schedule')->switch($states);
         $grid->regular_schedule('Regular Schedule')->switch($states);

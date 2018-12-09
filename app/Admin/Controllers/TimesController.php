@@ -90,7 +90,7 @@ class TimesController extends Controller
         })->badge('orange')->sortable();
         $states = [
             'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
-            'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
         $grid->toiiuc('To IIUC Campus')->switch($states)->sortable();
         $grid->fromiiuc('From IIUC Campus')->switch($states)->sortable();
@@ -130,7 +130,7 @@ class TimesController extends Controller
         })->badge('orange');
         $states = [
             'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
-            'off' => ['value' => 2, 'text' => 'NO', 'color' => 'danger'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
         $show->toiiuc('To IIUC Campus')->as(function ($s) {
             return $s ? 'Yes' : 'No';

@@ -88,7 +88,7 @@ class EmergencyContactsController extends Controller
         $grid->photo('Photo')->image();
         $states = [
                 'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
-                'off' => ['value' => 2, 'text' => 'No', 'color' => 'danger'],
+                'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
             ];
         $grid->active('Active')->switch($states);
         //$grid->created_at('Created At');
