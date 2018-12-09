@@ -28,6 +28,7 @@
     "maatwebsite/excel": "^2.1.0",
     "phpoffice/phpspreadsheet": "^1.4",
     "spatie/eloquent-sortable": "^3.4",
+    "spatie/laravel-image-optimizer": "^1.3",
     "unisharp/laravel-ckeditor": "^4.7"
   },
   "require-dev": {

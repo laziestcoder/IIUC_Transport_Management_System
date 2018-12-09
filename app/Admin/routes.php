@@ -34,3 +34,14 @@ Route::group([
     $router->resource('/auth/bus-student-info', 'BusStudentInfoController');
 
 });
+
+
+//Image Optimizer
+Route::middleware('optimizeImages')->group(function () {
+    // all images will be optimized automatically
+    //Route::post('upload-images', 'UploadController@index');
+    //Route::resource('/auth/transport-notice', 'NoticeController');
+    //Route::resource('/auth/driver', 'DriverInfoController');
+    //Route::resource('/auth/helper', 'HelperInfoController');
+
+});

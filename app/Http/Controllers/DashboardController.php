@@ -38,8 +38,8 @@ class DashboardController extends Controller
             $datelimit = AdminDashboard::all()->first();
             $datelimit = $datelimit->editdate;
             $entrydate = Carbon::parse($check->entrydate);
-            $expiredate = Carbon::parse($entrydate->addDays($datelimit))->format('d-m-Y  g:i A');
-            $entrydate = Carbon::parse($check->entrydate)->format('d-m-Y  g:i A');
+            $expiredate = Carbon::parse($entrydate->addDays($datelimit))->format('d-m-Y');
+            $entrydate = Carbon::parse($check->entrydate)->format('d+1-m-Y');
         }
         //$BusRoutes = BusRoute::orderBy('routename')->get();
         //$BusPoints = BusPoint::orderBy('pointname')->get();

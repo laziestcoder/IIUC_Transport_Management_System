@@ -64,6 +64,7 @@ Auth::routes();
 //Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::get('/dashboard', ['as'=> 'user dashboard','uses'=>'DashboardController@index']);
 Route::resource('/management', 'ManagementController');
+//Route::post('/management', 'ManagementController@store');
 Route::get('/bus-schedules', ['as'=> 'user bus schedule','uses'=>'ManagementController@busSchedule']);
 Route::get('/bus-routes', ['as'=> 'user bus route','uses'=>'ManagementController@busroutesdetails']);
 

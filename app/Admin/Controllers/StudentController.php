@@ -43,7 +43,7 @@ class StudentController extends Controller
         return User::grid(function (Grid $grid) use ($value,$self) {
 
 
-            $grid->model()->where('userrole', '=', $value);
+            $grid->model()->where('userrole', '=', $value)->orderBy('jobid', 'asc')->orderBy('created_at', 'asc');
             $grid->id('ID')->sortable();
             $grid->jobid(trans('Varsity ID'))->sortable()->editable();
 //            $grid->image(trans('admin.avatar'))->display(function ($s) use ($self) {

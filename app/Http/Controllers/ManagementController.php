@@ -117,9 +117,9 @@ class ManagementController extends Controller
     {
         //dd($request->all());
         //$datas = $request->all();
-        $available = StudentSchedule::where('user_id', auth()->user()->id);
-        if ($available) {
-            $id = auth()->user()->id;
+        $available = StudentSchedule::where('user_id', auth()->user()->id)->get();
+        if (count($available)) {
+           $id = auth()->user()->id;
             return $this->update($request, $id);
         }
         $days = Day::orderBy('id')->get();
@@ -135,6 +135,8 @@ class ManagementController extends Controller
             $pickid = $schedule->pickpoint = $request->input('pickpoint' . $day->id);
             $picktime = $schedule->picktime = $request->input('picktime' . $day->id);
             $dropid = $schedule->droppoint = $request->input('droppoint' . $day->id);
+            $schedule->pick_point_route = BusPoint::find($pickid)->first()->routeid;
+            $schedule->drop_point_route = BusPoint::find($dropid)->first()->routeid;
             $droptime = $schedule->droptime = $request->input('droptime' . $day->id);
             $schedule->user_id = auth()->user()->id;
             $schedule->userrole = auth()->user()->userrole;
@@ -164,7 +166,7 @@ class ManagementController extends Controller
         }
 
         $success = array(
-            'transport_message' => 'Information Added Successfully!'
+            'transport_message' => 'Information Added Successfully!',
         );
         return redirect('/dashboard#transport')->with($success);
     }
@@ -185,13 +187,21 @@ class ManagementController extends Controller
             if ($day->id > 7) {
                 break;
             }
-            $dataid = StudentSchedule::where('user_id', $id)->where('day', $day->id)->first()->id;
+            $dataid = StudentSchedule::where('user_id', $id)->where('day', $day->id)->first();
+            if($dataid){
+                $dataid = $dataid->id;
+            }
+            else{
+                continue;
+            }
             $schedule = StudentSchedule::find($dataid);
             $dayid = $day->id;
             $pickid = $schedule->pickpoint = $request->input('pickpoint' . $day->id); // days wise pickpoint
             $picktime = $schedule->picktime = $request->input('picktime' . $day->id); //  days wise picktime
             $dropid = $schedule->droppoint = $request->input('droppoint' . $day->id);  // days wise droppoint
             $droptime = $schedule->droptime = $request->input('droptime' . $day->id); //  days wise droptime thats why dayId is concated with keyname.
+            $schedule->pick_point_route = BusPoint::find($pickid)->first()->routeid;
+            $schedule->drop_point_route = BusPoint::find($dropid)->first()->routeid;
             $schedule->user_id = auth()->user()->id;
             $schedule->userrole = auth()->user()->userrole;
             $gender = $schedule->user_gender = auth()->user()->gender;

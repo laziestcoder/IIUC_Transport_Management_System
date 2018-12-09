@@ -6,7 +6,9 @@
 /public/storage
 /storage/*.key
 /vendor/
+/backup
 /.vagrant
+/Laravel-Import-CSV-Demo
 Homestead.json
 Homestead.yaml
 npm-debug.log
