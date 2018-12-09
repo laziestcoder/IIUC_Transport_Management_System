@@ -308,7 +308,7 @@ class ManagementController extends Controller
             'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
             'titlenew' => 'Create New Schedule',
             'titleinfo' => 'Available Schedule',
-            'times' => Time::all('id', 'time'),
+            'times' => Time::orderBy('time','asc')->get(),
             'days' => Day::where('active', 1)->get(),
             'points' => BusPoint::all('id', 'pointname'),
             'gender' => $user_gender,
