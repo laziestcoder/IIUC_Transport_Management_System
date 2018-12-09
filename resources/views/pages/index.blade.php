@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <header id="home" class="masthead">
-        <div class="container" id="page-top">
+    <header id="home" class="masthead ">
+        <div class="container home-main" id="page-top">
             <div class="intro-text">
                 <div class="intro-lead-in">Welcome To IIUC Transport Management Website!</div>
                 <div class="intro-heading text-uppercase">It's Nice To Meet You</div>

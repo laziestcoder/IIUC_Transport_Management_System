@@ -1,6 +1,6 @@
 <?php $__env->startSection('content'); ?>
     <header id="home" class="masthead">
-        <div class="container">
+        <div class="container home-main">
             <div class="intro-text" style="padding-top: 140px; padding-bottom: 200px;">
                 <div class="intro-lead-in" style="font-style: initial">Welcome <i><?php echo e(Auth::user()->name, false); ?> </i></div>
                 <!-- <div class="intro-heading text-uppercase">It's Nice To Meet You</div> -->

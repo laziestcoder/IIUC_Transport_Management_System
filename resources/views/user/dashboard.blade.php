@@ -6,7 +6,7 @@
     </div>
     <hr>
     <div class="panel-body" >
-        <div class="container">
+        <div class="container ">
             <div class="userinfo">
                 @include('inc.messages')
                 <b><h3>Basic Info:</h3></b>
