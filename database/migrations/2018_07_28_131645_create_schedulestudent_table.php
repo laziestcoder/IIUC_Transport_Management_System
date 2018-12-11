@@ -17,8 +17,10 @@ class CreateSchedulestudentTable extends Migration
             $table->increments('id')->unique();
             $table->integer('day');
             $table->integer('pickpoint');
+            $table->integer('pick_point_route');
             $table->integer('picktime');
             $table->integer('droppoint');
+            $table->integer('drop_point_route');
             $table->integer('droptime');
             $table->integer('user_id');
             $table->integer('userrole');

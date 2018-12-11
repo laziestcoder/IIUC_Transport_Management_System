@@ -33,7 +33,7 @@ class OfficerController extends Controller
         return $content
             ->header(trans('Users'))
             ->description(trans('Officer-Staff List'))
-            ->body($this->grid(2)->render());
+            ->body($this->grid(3)->render());
     }
 
     /**

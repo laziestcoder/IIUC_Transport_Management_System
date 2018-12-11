@@ -34,7 +34,7 @@ class FacultyController extends Controller
         return $content
             ->header(trans('Users'))
             ->description(trans('Faculty List'))
-            ->body($this->grid(3)->render());
+            ->body($this->grid(2)->render());
     }
 
     public function show($id, Content $content)
