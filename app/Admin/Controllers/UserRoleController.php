@@ -83,6 +83,11 @@ class UserRoleController extends Controller
 
         $grid->id('ID');
         $grid->name('Role Name')->sortable()->badge("green");
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
+        ];
+        $grid->active('Active')->switch($states)->editable()->sortable();
         $grid->created_at('Created At');
         $grid->updated_at('Updated At');
         $grid->actions(function (Grid\Displayers\Actions $actions) {
@@ -113,6 +118,9 @@ class UserRoleController extends Controller
 
         $show->id('ID');
         $show->name('Role Name');
+        $show->active(trans('Active'))->as(function ($s) {
+            return $s ? 'YES' : 'NO';
+        });
         $show->created_at('Created At');
         $show->updated_at('Updated At');
 //        $show->actions(function (Grid\Displayers\Actions $actions) {
@@ -142,6 +150,11 @@ class UserRoleController extends Controller
         $form = new Form(new UserRole);
 
         $form->text('name', 'Role Name');
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('active','Active')->states($states);
         $form->tools(function (Form\Tools $tools) {
             $tools->disableDelete();
 

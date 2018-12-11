@@ -10,6 +10,8 @@ use Encore\Admin\Layout\Content;
 
 use App\User;
 use DB;
+use App\UserRole;
+
 use Encore\Admin\Controllers\Dashboard;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Layout\Column;
@@ -58,11 +60,11 @@ class OfficerController extends Controller
 //                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
 //                }
 //            });
-            $grid->name(trans('Name'))->editable();
-            $grid->email(trans('Email'));
+            $grid->name(trans('Name'))->sortable()->editable();
+            $grid->email(trans('Email'))->sortable();
             $grid->gender(trans('Gender'))->display(function ($s) {
                 return $s ? 'Female' : 'Male';
-            });
+            })->sortable();
 
 //            $grid->confirmed(trans('Activated'))->display(function ($s) {
 //                return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
@@ -73,8 +75,8 @@ class OfficerController extends Controller
             ];
             $grid->confirmed(trans('Activated'))->switch($states);
             $grid->confirmation(trans('Verified'))->switch($states);
-            $grid->created_at(trans('Member Since'));
-            $grid->updated_at(trans('Last Updated'));
+            $grid->created_at(trans('Member Since'))->sortable();
+            $grid->updated_at(trans('Last Updated'))->sortable();
 
             $grid->actions(function (Grid\Displayers\Actions $actions) {
                 if ($actions->getKey() == 1) {
@@ -134,6 +136,9 @@ class OfficerController extends Controller
         $show->email(trans('Email'));
         $show->gender(trans('Gender'))->as(function ($s) {
             return $s ? 'Female' : 'Male';
+        });
+        $show->userrole(trans('Registered As'))->as(function ($s) {
+            return UserRole::find($s)->name;
         });
 
         $show->confirmed(trans('Activated'))->as(function ($s) {
@@ -233,8 +238,8 @@ class OfficerController extends Controller
     {
         $form = new Form(new User);
 
-        $form->display('id', 'ID');
-        $form->display('jobid', 'Varsity ID');
+        //$form->display('id', 'ID');
+        $form->text('jobid', 'Varsity ID');
         $form->display('avatar', trans('admin.avatar'))->with(function ($s){
             $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
             $ch = curl_init();
@@ -254,11 +259,15 @@ class OfficerController extends Controller
                 return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
             }
         });
-        $form->display('name', trans('admin.name'))->rules('required');
+        $form->text('name', trans('admin.name'))->rules('required');
+//        $form->display('name', trans('admin.name'))->rules('required');
         $form->display('email', trans('Email'))->rules('required');
         $form->display('gender',trans('Gender'))->with(function ($s){
             return $s? 'Female':'Male';
         });
+        $form->select('userrole', 'Registered As')
+            ->options(UserRole::all()->sortBy('name')->pluck('name','id'))
+            ->rules('required');
 //        $form->display('confirmed', trans('Activated'))->with(function ($s){
 //            return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
 //        });

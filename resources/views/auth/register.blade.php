@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
     <header id="home" class="masthead">
         <div class="container">
             <div class="intro-text" style="padding-top: 140px; padding-bottom: 200px;">
@@ -32,7 +32,7 @@
 
                                                     @if ($errors->has('name'))
                                                         <span class="help-block">
-                                                        <strong>{{ $errors->first('name') }}</strong>
+                                                            <strong>{{ $errors->first('name') }}</strong>
                                                         </span>
                                                     @endif
                                                 </div>
@@ -48,7 +48,9 @@
 
                                                     @if ($errors->has('jobid'))
                                                         <span class="help-block">
-                                                        <strong>{{ $errors->first('jobid') }}</strong>
+
+                                                            <strong>{{ $errors->first('jobid') }}</strong>
+
                                                         </span>
                                                     @endif
                                                 </div>
@@ -64,7 +66,9 @@
 
                                                     @if ($errors->has('email'))
                                                         <span class="help-block">
-                                                        <strong>{{ $errors->first('email') }}</strong>
+
+                                                            <strong>{{ $errors->first('email') }}</strong>
+
                                                         </span>
                                                     @endif
                                                 </div>
@@ -80,7 +84,9 @@
 
                                                     @if ($errors->has('password'))
                                                         <span class="help-block">
-                                                        <strong>{{ $errors->first('password') }}</strong>
+
+                                                            <strong>{{ $errors->first('password') }}</strong>
+
                                                         </span>
                                                     @endif
                                                 </div>
@@ -114,42 +120,71 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="user-gender" class="col-md-4 control-label">Register
-                                                    As</label>
 
+                                            <div class="form-group">
+                                                <label for="user-role" class="col-md-4 control-label">
+                                                    Register As
+                                                </label>
                                                 <div class="col-md-6">
-                                                    <div class="radio-inline">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input" value="1"
-                                                                   name="userrole" required>Student
-                                                        </label>
-                                                    </div>
-                                                    <div class="radio-inline">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input" value="2"
-                                                                   name="userrole" required>Faculty
-                                                        </label>
-                                                    </div>
-                                                    <div class="radio-inline">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input" value="3"
-                                                                   name="userrole" required>Officer/Staff
-                                                        </label>
-                                                    </div>
+                                                        <?php $userroles = DB::table('user_role')->where('active',true)->get();?>
+                                                        {{--{!! Form::select('userrole', $userroles, null,--}}
+                                                        {{--['class' => 'form form-control']) !!}--}}
+                                                    <select name="userrole" class="form-control" style="height: 36px" required>
+                                                        <option disabled selected>Select Your Role At IIUC</option>
+                                                        @foreach($userroles as $userrole)
+                                                        <option value="{!! $userrole->id !!}">
+                                                            {!! $userrole->name !!}
+                                                        </option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                             </div>
+                                            {{--<div class="form-group">--}}
+                                            {{--<label for="user-role" class="col-md-4 control-label">Register--}}
+                                            {{--As</label>--}}
+                                            {{--<div class="col-md-6">--}}
+                                            {{--@if(count($userroles))--}}
+                                            {{--@foreach($userroles as $userrole)--}}
+                                            {{--<div class="radio-inline">--}}
+                                            {{--<label class="form-check-label">--}}
+                                            {{--<input type="radio" class="form-check-input"--}}
+                                            {{--value="{!! $userrole->id !!}"--}}
+                                            {{--name="userrole"--}}
+                                            {{--required>{!! $userrole->name !!}--}}
+                                            {{--</label>--}}
+                                            {{--</div>--}}
+                                            {{--<div class="radio-inline">--}}
+                                            {{--<label class="form-check-label">--}}
+                                            {{--<input type="radio" class="form-check-input" value="2"--}}
+                                            {{--name="userrole" required>Faculty--}}
+                                            {{--</label>--}}
+                                            {{--</div>--}}
+                                            {{--<div class="radio-inline">--}}
+                                            {{--<label class="form-check-label">--}}
+                                            {{--<input type="radio" class="form-check-input" value="3"--}}
+                                            {{--name="userrole" required>Officer/Staff--}}
+                                            {{--</label>--}}
+                                            {{--</div>--}}
+                                            {{--@endforeach--}}
+                                            {{--@else--}}
+                                            {{--{{var_dump($userroles)}}--}}
+                                            {{--@endif--}}
+                                            {{--</div>--}}
+                                            {{--</div>--}}
                                             {{--<div class="form-group">
-                                                <div class="col-md-6 col-md-offset-4">
-                                                    {!! Recaptcha::render() !!}
-                                                </div>
+                                            <div class="col-md-6 col-md-offset-4">
+                                            {!! Recaptcha::render() !!}
+                                            </div>
                                             </div>--}}
                                             <div class="form-group">
                                                 <div class="col-md-6 col-md-offset-4">
-                                                    <div class="g-recaptcha" data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
+                                                    <div class="g-recaptcha"
+                                                         data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
                                                     @if ($errors->has('recaptcha'))
                                                         <span class="help-block">
-                                                        <strong>{{ $errors->first('recaptcha') }}</strong>
+
+                                                            <strong>{{ $errors->first('recaptcha') }}</strong>
+
                                                         </span>
                                                     @endif
                                                 </div>

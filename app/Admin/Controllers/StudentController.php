@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\UserRole;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
@@ -55,18 +56,18 @@ class StudentController extends Controller
 //                }
 //            });
             $grid->name(trans('Name'))->sortable()->editable();
-            $grid->email(trans('Email'));
+            $grid->email(trans('Email'))->sortable();
             $grid->gender(trans('Gender'))->display(function ($s) {
                 return $s ? 'Female' : 'Male';
-            });
+            })->sortable();
             $states = [
                 'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
                 'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
             ];
             $grid->confirmed(trans('Activated'))->switch($states)->sortable();
             $grid->confirmation(trans('Verified'))->switch($states)->sortable();
-            $grid->created_at(trans('Member Since'));
-            $grid->updated_at(trans('Last Updated'));
+            $grid->created_at(trans('Member Since'))->sortable();
+            $grid->updated_at(trans('Last Updated'))->sortable();
 
             $grid->actions(function (Grid\Displayers\Actions $actions) {
                 if ($actions->getKey() == 1) {
@@ -129,6 +130,10 @@ class StudentController extends Controller
         $show->email(trans('Email'));
         $show->gender(trans('Gender'))->as(function ($s) {
             return $s ? 'Female' : 'Male';
+        });
+
+        $show->userrole(trans('Registered As'))->as(function ($s) {
+            return UserRole::find($s)->name;
         });
 
         $show->confirmed(trans('Activated'))->as(function ($s) {
@@ -211,9 +216,12 @@ class StudentController extends Controller
         $form->display('gender',trans('Gender'))->with(function ($s){
             return $s? 'Female':'Male';
         });
+        $form->select('userrole', 'Registered As')
+            ->options(UserRole::all()->sortBy('name')->pluck('name','id'))
+            ->rules('required');
 //        $form->display('confirmed', trans('Activated'))->with(function ($s){
 //            return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
-//        });
+//        });1
         $states = [
             'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],

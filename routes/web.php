@@ -44,6 +44,7 @@ Route::delete('/hello', function () {
 // Pages routing Index, About, Servces
 Route::get('/', ['as'=> 'home page','uses'=>'PagesController@index']);
 Route::get('404', ['as'=>'notfound','uses'=>'PagesController@pagenotfound']);
+//Route::get('register', ['as'=>'register','uses'=>'RegisterController@index']);
 //Route::get('/about', 'PagesController@index');
 //Route::get('/services', 'PagesController@index');
 //Route::get('/test', ['as'=> 'test page','uses'=>'PagesController@test']);

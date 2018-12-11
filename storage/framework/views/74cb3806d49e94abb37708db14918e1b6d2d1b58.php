@@ -1,5 +1,5 @@
 <?php $__env->startSection('content'); ?>
-<script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
     <header id="home" class="masthead">
         <div class="container">
             <div class="intro-text" style="padding-top: 140px; padding-bottom: 200px;">
@@ -32,7 +32,7 @@
 
                                                     <?php if($errors->has('name')): ?>
                                                         <span class="help-block">
-                                                        <strong><?php echo e($errors->first('name'), false); ?></strong>
+                                                            <strong><?php echo e($errors->first('name'), false); ?></strong>
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
@@ -48,7 +48,9 @@
 
                                                     <?php if($errors->has('jobid')): ?>
                                                         <span class="help-block">
-                                                        <strong><?php echo e($errors->first('jobid'), false); ?></strong>
+
+                                                            <strong><?php echo e($errors->first('jobid'), false); ?></strong>
+
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
@@ -64,7 +66,9 @@
 
                                                     <?php if($errors->has('email')): ?>
                                                         <span class="help-block">
-                                                        <strong><?php echo e($errors->first('email'), false); ?></strong>
+
+                                                            <strong><?php echo e($errors->first('email'), false); ?></strong>
+
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
@@ -80,7 +84,9 @@
 
                                                     <?php if($errors->has('password')): ?>
                                                         <span class="help-block">
-                                                        <strong><?php echo e($errors->first('password'), false); ?></strong>
+
+                                                            <strong><?php echo e($errors->first('password'), false); ?></strong>
+
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
@@ -114,38 +120,68 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="user-gender" class="col-md-4 control-label">Register
-                                                    As</label>
 
+                                            <div class="form-group">
+                                                <label for="user-role" class="col-md-4 control-label">
+                                                    Register As
+                                                </label>
                                                 <div class="col-md-6">
-                                                    <div class="radio-inline">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input" value="1"
-                                                                   name="userrole" required>Student
-                                                        </label>
-                                                    </div>
-                                                    <div class="radio-inline">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input" value="2"
-                                                                   name="userrole" required>Faculty
-                                                        </label>
-                                                    </div>
-                                                    <div class="radio-inline">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input" value="3"
-                                                                   name="userrole" required>Officer/Staff
-                                                        </label>
-                                                    </div>
+                                                        <?php $userroles = DB::table('user_role')->where('active',true)->get();?>
+                                                        
+                                                        
+                                                    <select name="userrole" class="form-control" style="height: 36px" required>
+                                                        <option disabled selected>Select Your Role At IIUC</option>
+                                                        <?php $__currentLoopData = $userroles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $userrole): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <option value="<?php echo $userrole->id; ?>">
+                                                            <?php echo $userrole->name; ?>
+
+                                                        </option>
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                    </select>
                                                 </div>
                                             </div>
                                             
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
                                             <div class="form-group">
                                                 <div class="col-md-6 col-md-offset-4">
-                                                    <div class="g-recaptcha" data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
+                                                    <div class="g-recaptcha"
+                                                         data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
                                                     <?php if($errors->has('recaptcha')): ?>
                                                         <span class="help-block">
-                                                        <strong><?php echo e($errors->first('recaptcha'), false); ?></strong>
+
+                                                            <strong><?php echo e($errors->first('recaptcha'), false); ?></strong>
+
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
