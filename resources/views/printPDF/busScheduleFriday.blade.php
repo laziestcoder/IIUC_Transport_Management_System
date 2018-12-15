@@ -1,11 +1,14 @@
 @extends('printPDF.layout')
+@section('headline')
+<h3> Bus Schedule for <b>Students</b></h3> 
+@endsection
 @section('content')
     {{--<div id="print-it">--}}
         @if( count($schedules) > 0 )
             {{-- @foreach($days as $day)--}}
-            <b>{!! "Friday" !!}</b><br>
+            <b>{!! "Friday" !!}</b><br> <br>
             <a class="btn btn-default" href="{{ route('bus-schedule-friday',['download' => 'pdf'],['title' => 'Print Bus Schedule']) }}">
-                <i class="fa fa-print"></i> PDF</a>
+                <i class="fa fa-print"></i> PDF/Print </a>
             {{--<a class="btn btn-default" href="#" onclick="window.print()" ><i class="fa fa-print"></i> Print </a>--}}
             <h4><b>Towards IIUC</b></h4>
             <table class="table table-bordered table-condensed" style="text-align:center; margin: auto; font-size: 12px; ">

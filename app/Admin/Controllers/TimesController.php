@@ -84,7 +84,7 @@ class TimesController extends Controller
     {
         $grid = new Grid(new Time);
         $grid->model()->orderBy('time', 'asc');
-        $grid->id('ID');
+        $grid->id('ID')->sortable();
         $grid->time('Time')->display(function ($s) {
             return Carbon::parse($s)->format("g:i A")?: 'n/a';
         })->badge('orange')->sortable();

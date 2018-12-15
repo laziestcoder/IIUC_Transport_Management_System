@@ -85,13 +85,13 @@ class DaysController extends Controller
     {
         $grid = new Grid(new Day);
 
-        $grid->id('ID');
-        $grid->dayname('Day')->badge('green');
+        $grid->id('ID')->sortable();
+        $grid->dayname('Day')->badge('green')->sortable();
         $states = [
             'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
-        $grid->active(trans('Active'))->switch($states);
+        $grid->active(trans('Active'))->switch($states)->sortable();
         $grid->user_id('Created By')->display(function ($s) {
             if($s) {
                 return Administrator::all()->find($s)->name?: 'n/a';

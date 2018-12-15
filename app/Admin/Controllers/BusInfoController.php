@@ -74,8 +74,8 @@ class BusInfoController extends Controller
     public function create(Content $content)
     {
         return $content
-            ->header('Create')
-            ->description('')
+            ->header('Add New Bus')
+            ->description(' ')
             ->body($this->form());
     }
 
@@ -91,7 +91,7 @@ class BusInfoController extends Controller
         $grid->id('ID')->sortable();
         $grid->busid('Bus ID')->sortable();
         $grid->registration('Registration No')->sortable();
-        $grid->license('License No')->sortable();
+        //$grid->license('License No')->sortable();
         $grid->insurance_no('Insurance No')->sortable();
         $grid->insurance_validity('Insurance Validity')->sortable();
         $grid->route_permit('Route Permit')->sortable();
@@ -147,13 +147,13 @@ class BusInfoController extends Controller
         $show->busid('Bus ID');
         $show->registration('Registration No');
         $show->license('License No');
-        $show->insurance_no('Insurance No');
+        //$show->insurance_no('Insurance No');
         $show->insurance_validity('Insurance Validity');
         $show->route_permit('Route Permit');
         $show->route_permit_validity('Route Permit Validity');
         $show->seat('Seat Capacity');
         $show->availability('Availability')->as(function ($s) {
-            return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
+            return $s ? "Yes" : "No";
         });
         $show->bustype('Bus Type')->as(function ($bustype) {
             return BusType::all()->find($bustype)->name;
@@ -182,7 +182,10 @@ class BusInfoController extends Controller
 
         $form->text('busid', 'Bus ID')->rules('required');
         $form->text('registration', 'Registration No')->rules('required');
-        $form->text('license', 'License No')->rules('required');
+        //$form->text('license', 'License No')->rules('required');
+        $form->hidden('license', 'License No')->default(function () use ($form) {
+            return crypt($form->text('registration'),'none');
+        });
         $form->text('insurance_no','Insurance No')->rules('required');
         $form->date('insurance_validity','Insurance Validity')->rules('required');
         $form->text('route_permit','Route Permit')->rules('required');

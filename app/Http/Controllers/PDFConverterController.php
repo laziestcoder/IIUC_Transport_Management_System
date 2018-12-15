@@ -13,6 +13,9 @@ use App\BusPoint;
 use App\Day;
 use App\Schedule;
 use App\Time;
+use Carbon\Carbon;
+use App\BusRoute;
+use App\BusStudentInfo;
 use Encore\Admin\Controllers\HasResourceActions;
 
 
@@ -74,6 +77,35 @@ class PDFConverterController extends Controller
             return $pdf->download('busSchedule.pdf');
         }
         return view('printPDF.busScheduleFriday')->with($data);
+    }
+
+    public function busRequiremenrForTomorrow(Request $request)
+    {
+        $today = Carbon::tomorrow()->format('l');
+        $data = array(
+            'title' => 'Bus Requiremet Print',
+            'routes' => BusRoute::orderBy('routename')->get(),
+            'days' => Day::all(),
+            'times' => Time::orderBy('time')->get(),
+            'today' => $today,
+            'todayid' => Day::all()->where('dayname', $today)->first(),
+            'datas' => BusStudentInfo::all(),
+        );
+    
+        //view()->share('users',$users);
+        view()->share($data);
+
+        if($request->has('download')){
+            // Set extra option
+            PDF::setOptions(['dpi' => 600, 'defaultFont' => 'sans-serif','font-size' => 12]);
+            //set paper orientation
+            //PDF::setPaper('a4', 'landscape');
+            // pass view file
+            $pdf = PDF::loadView('printPDF.tomorrowsBusRequirement');
+            // download pdf
+            return $pdf->download($today.'BusRequirementInformation.pdf');
+        }
+        return view('printPDF.tomorrowsBusRequirement')->with($data);
     }
 
 //    public function export_pdf($model,$fileName)

@@ -15,7 +15,7 @@
                                        alt="International Islamic University Chittagong"/>
             International Islamic University Chittagong
             <h4 style="color: black;"><br>Kumira, Sitakunda, Chittagong</h4>
-            <h3> Bus Schedule for <b>Students</b></h3>
+            @yield('headline')
         </h2>
     </div>
 </div>

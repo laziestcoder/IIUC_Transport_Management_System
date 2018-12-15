@@ -31,7 +31,7 @@ class AdminTablesSeed extends Seeder
             ],
             [
                 'username' => 'sina',
-                'password' => bcrypt('i am boss'),
+                'password' => bcrypt('i am another boss'),
                 'name' => 'Sina Ibn Amin',
             ],
         ]);
@@ -44,7 +44,7 @@ class AdminTablesSeed extends Seeder
         ]);
 
         // add role to user.
-        Administrator::first()->roles()->save(Role::first());
+        Administrator::all()->roles()->save(Role::first());
 
         //create a permission
         Permission::truncate();
@@ -257,7 +257,7 @@ class AdminTablesSeed extends Seeder
                 'order' => 12,
                 'title' => 'Helpers',
                 'icon' => 'fa-gears',
-                'uri' => '/helpers/',
+                'uri' => '/helpers',
             ],
 
             [
@@ -371,84 +371,76 @@ class AdminTablesSeed extends Seeder
             ],
 
             [
-                'parent_id' => 24,
-                'order' => 27,
-                'title' => 'Bus Student Infomation',
-                'icon' => 'fa-bars',
-                'uri' => '/auth/bus-student-info',
-            ],
-
-            [
                 //'id' => 8,
                 'parent_id' => 0,
-                'order' => 28,
+                'order' => 27,
                 'title' => 'Bus-Routinig',
                 'icon' => 'fa-road',
-                'uri' => '/auth/',
+                'uri' => '/auth',
             ],
 
             [
                 //'id' => 10,
-                'parent_id' => 28,
-                'order' => 29,
+                'parent_id' => 27,
+                'order' => 28,
                 'title' => 'Bus Route',
                 'icon' => 'fa-plus-square-o',
                 'uri' => '/auth/route',
             ],
 
             [
-                'parent_id' => 28,
-                'order' => 30,
+                'parent_id' => 27,
+                'order' => 29,
                 'title' => 'Bus Stop Point',
                 'icon' => 'fa-plus-square',
                 'uri' => '/auth/point',
             ],
             [
-                'parent_id' => 28,
-                'order' => 31,
-                'title' => 'Add Time',
+                'parent_id' => 27,
+                'order' => 30,
+                'title' => 'Time',
                 'icon' => 'fa-clock-o',
                 'uri' => '/auth/time',
             ],
             [
-                'parent_id' => 28,
-                'order' => 32,
-                'title' => 'New Day',
+                'parent_id' => 27,
+                'order' => 31,
+                'title' => 'Day',
                 'icon' => 'fa-calendar',
                 'uri' => '/auth/day',
             ],
             [
-                'parent_id' => 28,
-                'order' => 33,
+                'parent_id' => 27,
+                'order' => 32,
                 'title' => 'Bus Type',
                 'icon' => 'fa-simplybuilt',
                 'uri' => '/auth/bus-type',
             ],
             [
                 'parent_id' => 0,
-                'order' => 34,
+                'order' => 33,
                 'title' => 'Bus Schedule',
                 'icon' => 'fa-bars',
                 'uri' => '/auth/schedule',
             ],
             [
-                'parent_id' => 34,
-                'order' => 35,
+                'parent_id' => 33,
+                'order' => 34,
                 'title' => 'Day Wise Schedule',
                 'icon' => 'fa-bars',
                 'uri' => '/auth/schedule',
             ],
             [
-                'parent_id' => 34,
-                'order' => 36,
+                'parent_id' => 33,
+                'order' => 35,
                 'title' => 'New Schedule',
                 'icon' => 'fa-cube',
                 'uri' => '/auth/bus-schedule/create',
             ],
 
             [
-                'parent_id' => 34,
-                'order' => 37,
+                'parent_id' => 33,
+                'order' => 36,
                 'title' => 'Schedule',
                 'icon' => 'fa-cubes',
                 'uri' => '/auth/bus-schedule',
@@ -456,28 +448,28 @@ class AdminTablesSeed extends Seeder
 
             [
                 'parent_id' => 0,
-                'order' => 38,
+                'order' => 37,
                 'title' => 'Bus-Driver-Helper',
                 'icon' => 'fa-bus',
-                'uri' => '/auth/',
+                'uri' => '/auth',
             ],
             [
-                'parent_id' => 38,
-                'order' => 39,
+                'parent_id' => 37,
+                'order' => 38,
                 'title' => 'Bus',
                 'icon' => 'fa-train',
                 'uri' => '/auth/bus',
             ],
             [
-                'parent_id' => 38,
-                'order' => 40,
+                'parent_id' => 37,
+                'order' => 39,
                 'title' => 'Driver',
                 'icon' => 'fa-odnoklassniki',
                 'uri' => '/auth/driver',
             ],
             [
-                'parent_id' => 38,
-                'order' => 41,
+                'parent_id' => 37,
+                'order' => 40,
                 'title' => 'Helper',
                 'icon' => 'fa-odnoklassniki-square',
                 'uri' => '/auth/helper',
@@ -485,34 +477,41 @@ class AdminTablesSeed extends Seeder
 
             [
                 'parent_id' => 0,
-                'order' => 42,
+                'order' => 41,
                 'title' => 'User',
                 'icon' => 'fa-users',
                 'uri' => '/auth/user',
             ],
             [
-                'parent_id' => 42,
-                'order' => 43,
+                'parent_id' => 41,
+                'order' => 42,
                 'title' => 'Student',
                 'icon' => 'fa-scribd',
                 'uri' => '/auth/students',
             ],
             [
-                'parent_id' => 42,
-                'order' => 44,
+                'parent_id' => 41,
+                'order' => 43,
                 'title' => 'Faculty',
                 'icon' => 'fa-facebook-f',
                 'uri' => '/auth/teachers',
             ],
             [
-                'parent_id' => 42,
-                'order' => 45,
+                'parent_id' => 41,
+                'order' => 44,
                 'title' => 'Officer-Staff',
                 'icon' => 'fa-circle-o',
                 'uri' => '/auth/officer-staff',
             ],
             [
-                'parent_id' => 42,
+                'parent_id' => 41,
+                'order' => 45,
+                'title' => 'Other User',
+                'icon' => 'fa-users',
+                'uri' => '/auth/other-users',
+            ],
+            [
+                'parent_id' => 41,
                 'order' => 46,
                 'title' => 'User-Role',
                 'icon' => 'fa-user-plus',
@@ -525,6 +524,13 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-user-plus',
                 'uri' => '/import',
             ],
+            // [
+            //     'parent_id' => 24,
+            //     'order' => 48,
+            //     'title' => 'Bus Student Infomation',
+            //     'icon' => 'fa-bars',
+            //     'uri' => '/auth/bus-student-info',
+            // ],
 
 
         ]);

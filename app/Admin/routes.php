@@ -19,6 +19,7 @@ Route::group([
     $router->resource('/auth/students', 'StudentController');
     $router->resource('/auth/teachers', 'FacultyController');
     $router->resource('/auth/officer-staff', 'OfficerController');
+    $router->resource('/auth/other-users', 'OtherUsersController');
     $router->resource('/auth/bus-route-info', 'StudentBusroutingInfoController');
     $router->resource('/auth/bus', 'BusInfoController');
     $router->resource('/auth/driver', 'DriverInfoController');

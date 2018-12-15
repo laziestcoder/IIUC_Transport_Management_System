@@ -39,7 +39,7 @@ class HelperInfoController extends Controller
     {
         return $content
             ->header('Detail')
-            ->description('')
+            ->description(' ')
             ->body($this->detail($id));
     }
 
@@ -54,7 +54,7 @@ class HelperInfoController extends Controller
     {
         return $content
             ->header('Edit')
-            ->description('')
+            ->description(' ')
             ->body($this->form()->edit($id));
     }
 
@@ -67,8 +67,8 @@ class HelperInfoController extends Controller
     public function create(Content $content)
     {
         return $content
-            ->header('Create')
-            ->description('')
+            ->header('Add New Helper')
+            ->description(' ')
             ->body($this->form());
     }
 
