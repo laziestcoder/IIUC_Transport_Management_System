@@ -168,7 +168,7 @@ class UsersController extends Controller
         $form->tools(function (Form\Tools $tools) {
             $tools->disableDelete();
             $tools->disableView();
-            $tools->disableEdit();
+            //$tools->disableEdit();
         });
 
         return $form;
