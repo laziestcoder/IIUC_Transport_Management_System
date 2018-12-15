@@ -13,7 +13,7 @@
                         <input type="hidden" name="csv_data_file_name" value="{!! $csv_table_name !!}"/>
                         <input type="hidden" name="model_name" value="{!! $model_name !!}"/>
 
-                        <table class="table table-condensed table-responsive-lg">
+                        <table class="table table-condensed table-responsive-sm">
                             <thead class="table">
                                 <th> Table Name: {!! $csv_table_name !!}</th>
                                 <th> Model Name: {!! $model_name !!}</th>

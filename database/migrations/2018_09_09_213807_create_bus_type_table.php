@@ -16,6 +16,7 @@ class CreateBusTypeTable extends Migration
         Schema::create('bus_type', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }

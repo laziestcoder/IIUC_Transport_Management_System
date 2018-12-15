@@ -98,32 +98,17 @@ class NoticeController extends Controller
             return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
         });
         $grid->noticeregistration('Registration No')->sortable();
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
+        ];
+        $grid->active('Published')->switch($states)->sortable();
         $grid->user_id('Created By')->display(function ($s) {
             return Administrator::all()->find($s)->name?: 'n/a';
         })->badge('primary')->sortable();
         $grid->created_at('Created At')->sortable();
         $grid->updated_at('Updated At')->sortable();
-
-
-        // Disabled Buttons
-
-        //$grid->orderable();
-        //$grid->disableCreateButton();
-
         $grid->actions(function ($actions) {
-
-            // Disabled Actions
-            //$actions->disableEdit();
-            //$actions->disableDelete();
-            //$actions->disableView();
-
-            //Active Actions
-
-            // append an action.
-            //$actions->append('<a href=""><i class="fa fa-eye"></i></a>');
-
-            // prepend an action.
-            //$actions->prepend('<a href="/admin/auth/notices/'.$actions->getKey().'/edit"><i class="fa fa-edit"></i></a>'); //"/admin/auth/notices/'.$this->id.'/edit"
         });
 
 
@@ -181,6 +166,11 @@ class NoticeController extends Controller
         $form->text('noticeregistration', 'Notice Registration No')
             ->rules('required');
         //$form->number('user_id', 'User id');
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('active','Published')->states($states);
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;
         });

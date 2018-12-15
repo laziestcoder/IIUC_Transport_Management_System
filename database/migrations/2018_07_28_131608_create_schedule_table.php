@@ -21,8 +21,9 @@ class CreateScheduleTable extends Migration
             $table->boolean('male')->default(false);
             $table->boolean('female')->default(false);
             $table->integer('time')->length(3);
-            $table->integer('bususer')->length(2)->default(1);// 1 Student || 2 Faculty || 3 Officer/Staff
+            $table->integer('bususer')->length(2)->default(0);// 1 Student || 2 Faculty || 3 Officer/Staff
             $table->integer('route')->length(2);
+            $table->boolean('active')->default(false);
             $table->integer('user_id');
             $table->timestamps();
         });

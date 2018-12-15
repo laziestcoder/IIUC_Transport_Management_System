@@ -6,7 +6,7 @@
                 <div class="intro-heading text-uppercase">It's Nice To Meet You</div>
                 <div class="nextBus">
                     <div class="nextBus-info">
-                        <table class="table table-responsive-lg">
+                        <table class="table table-condensed table-responsive-md">
                             <thead>
                             <tr>
                                 <td colspan="4">
@@ -174,10 +174,7 @@
                                                 </h4>
                                             </div>
                                             <div class="timeline-body">
-                                                
-                                                
-                                                
-                                                
+                                    
                                             </div>
                                         </div>
                                     </li>
@@ -237,7 +234,7 @@
                     <?php $count = 0; ?>
                     <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <?php $count = $count + 1; ?>
-                        
+                
                         <div class="col-md-4 col-sm-6 portfolio-item">
                             <a class="portfolio-link" data-toggle="modal" href="#portfolioModal<?php echo $count; ?>">
                                 <div class="portfolio-hover">
@@ -263,10 +260,6 @@
                                 </small>
                             </div>
                         </div>
-
-                        
-                        
-                        
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 <?php else: ?>
                     <h4>No notices found</h4>
@@ -587,8 +580,6 @@
 
                                                 </small>
                                             </li>
-                                            
-                                            
                                         </ul>
                                         <button class="btn btn-primary" data-dismiss="modal" type="button">
                                             <i class="fa fa-times"></i>
@@ -601,9 +592,7 @@
                     </div>
                 </div>
             </div>
-            
-            
-            
+        
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     <?php endif; ?>
 

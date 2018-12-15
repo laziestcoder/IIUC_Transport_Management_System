@@ -111,6 +111,11 @@ class RoutesController extends Controller
 
         $grid->id('ID')->sortable();
         $grid->routename('Route Name')->badge('green')->sortable();
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
+        ];
+        $grid->active('Published')->switch($states)->sortable();
         $grid->user_id('Inputed By')->display(function ($s) {
             return Administrator::all()->find($s)->name?: 'n/a';
         })->badge('blue')->sortable();
@@ -152,6 +157,11 @@ class RoutesController extends Controller
         $form = new Form(new BusRoute);
 
         $form->text('routename', 'Route Name')->label('green');
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('active','Published')->states($states);
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;
         });

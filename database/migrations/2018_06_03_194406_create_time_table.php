@@ -18,6 +18,7 @@ class CreateTimeTable extends Migration
             $table->time('time')->nullable();
             $table->boolean('toiiuc')->default(false)->nullable();
             $table->boolean('fromiiuc')->default(false)->nullable();
+            $table->boolean('active')->default(false);
             $table->integer('user_id');
             $table->timestamps();
         });

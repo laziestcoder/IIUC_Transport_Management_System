@@ -8,7 +8,7 @@
                 <div class="intro-heading text-uppercase">It's Nice To Meet You</div>
                 <div class="nextBus">
                     <div class="nextBus-info">
-                        <table class="table table-responsive-lg">
+                        <table class="table table-condensed table-responsive-md">
                             <thead>
                             <tr>
                                 <td colspan="4">
@@ -167,10 +167,7 @@
                                                 </h4>
                                             </div>
                                             <div class="timeline-body">
-                                                {{--<p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt--}}
-                                                {{--ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam,--}}
-                                                {{--recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium--}}
-                                                {{--consectetur!</p>--}}
+                                    
                                             </div>
                                         </div>
                                     </li>
@@ -230,7 +227,7 @@
                     <?php $count = 0; ?>
                     @foreach($notices as $notice)
                         <?php $count = $count + 1; ?>
-                        {{--@if($count<=12)--}}
+                
                         <div class="col-md-4 col-sm-6 portfolio-item">
                             <a class="portfolio-link" data-toggle="modal" href="#portfolioModal{!! $count !!}">
                                 <div class="portfolio-hover">
@@ -254,10 +251,6 @@
                                 </small>
                             </div>
                         </div>
-
-                        {{--@else--}}
-                        {{--@break--}}
-                        {{--@endif--}}
                     @endforeach
                 @else
                     <h4>No notices found</h4>
@@ -566,8 +559,6 @@
                                                     Date: {!! $notice->created_at !!}
                                                 </small>
                                             </li>
-                                            {{--<li>Client: Threads</li>--}}
-                                            {{--<li>Category: Illustration</li>--}}
                                         </ul>
                                         <button class="btn btn-primary" data-dismiss="modal" type="button">
                                             <i class="fa fa-times"></i>
@@ -580,9 +571,7 @@
                     </div>
                 </div>
             </div>
-            {{--@else--}}
-            {{--@break--}}
-            {{--@endif--}}
+        
         @endforeach
     @endif
 

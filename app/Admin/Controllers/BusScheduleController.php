@@ -151,6 +151,8 @@ class BusScheduleController extends Controller
                 return 'Not Selected';
             }})
             ->badge('purple')->sortable();
+           
+        //$grid->active('Published')->switch($states)->sortable();
         $grid->user_id('Inputed By')->display(function ($s) {
             if($s) {
                 $s = Administrator::all()->find($s);
@@ -247,6 +249,7 @@ class BusScheduleController extends Controller
         $form->select('route', 'Route')
             ->options(BusRoute::all()->sortBy('routename')->pluck('routename','id'))
             ->rules('required');
+        //$form->switch('active','Published')->states($states);
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;
         });

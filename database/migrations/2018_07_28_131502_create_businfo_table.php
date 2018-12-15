@@ -29,6 +29,8 @@ class CreateBusinfoTable extends Migration
             $table->string('bus_name');
             $table->string('busowner');
             $table->string('comments')->nullable();
+            $table->date('starting_date');
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }

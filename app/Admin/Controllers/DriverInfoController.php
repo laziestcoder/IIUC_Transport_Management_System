@@ -98,6 +98,7 @@ class DriverInfoController extends Controller
         $grid->experience('Experience')->sortable();
         $grid->contactno('Contact No');
         $grid->busno('Bus No')->sortable();
+        $grid->join_date('Join Date')->sortable();
 //        $grid->address('Address');
 
        // $grid->created_at('Created At')->sortable();
@@ -177,7 +178,7 @@ class DriverInfoController extends Controller
         $form->text('busno', 'Bus No')->rules('required');
         $form->textarea('address', 'Address')->rules('required');
         $form->radio('gender', 'Gender')->options([0 => 'Male', 1 => 'Female'])->stacked()->rules('required');
-
+        $form->date('join_date','Join Date');
         return $form;
     }
 }

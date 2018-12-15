@@ -83,6 +83,11 @@ class BusTypeController extends Controller
 
         $grid->id('ID');
         $grid->name('Bus Type')->badge('purple');
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
+        ];
+        $grid->active('Published')->switch($states)->sortable();
         $grid->created_at('Created At');
         $grid->updated_at('Updated At');
         $grid->disableFilter();
@@ -121,6 +126,11 @@ class BusTypeController extends Controller
         $form = new Form(new BusType);
 
         $form->text('name', 'Bus Type');
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('active','Published')->states($states);
 
         return $form;
     }

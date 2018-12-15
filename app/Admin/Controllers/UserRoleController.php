@@ -87,7 +87,7 @@ class UserRoleController extends Controller
             'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
-        $grid->active('Active')->switch($states)->editable()->sortable();
+        $grid->active('Active')->switch($states)->sortable();
         $grid->created_at('Created At');
         $grid->updated_at('Updated At');
         $grid->actions(function (Grid\Displayers\Actions $actions) {

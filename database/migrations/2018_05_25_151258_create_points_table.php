@@ -17,6 +17,7 @@ class CreatePointsTable extends Migration
             $table->increments('id');
             $table->string('pointname')->unique();
             $table->integer('routeid');
+            $table->boolean('active')->default(false);
             $table->integer('user_id');
             $table->integer('weight')->length(2)->default(0);
             $table->timestamps();

@@ -3,7 +3,7 @@
 @section('content')
     <script src='https://www.google.com/recaptcha/api.js'></script>
     <header id="home" class="masthead">
-        <div class="container">
+        <div class="container home-main">
             <div class="intro-text" style="padding-top: 140px; padding-bottom: 200px;">
                 <div class="intro-lead-in" style="font-style: initial"><b>REGISTRATION</b></div>
                 <!-- <div class="intro-heading text-uppercase">It's Nice To Meet You</div> -->

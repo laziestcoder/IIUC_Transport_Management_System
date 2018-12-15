@@ -25,6 +25,8 @@ class CreateHelperinfoTable extends Migration
             $table->mediumText('address');
             $table->boolean('gender')->default(false);
             $table->string('image')->nullable()->default('defaultAdmin.png');
+            $table->date('join_date');
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }

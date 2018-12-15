@@ -87,6 +87,8 @@ class PointsController extends Controller
         $grid->model()->orderBy('routeid', 'asc')->orderBy('weight', 'asc');
 
         $grid->id('ID')->sortable();
+        $grid->pointname('Point Name')->badge('purple')->sortable();
+        $grid->weight('Sequence')->editable();
         $grid->routeid('Route Name')->display(function ($s) {
             $sd = BusRoute::all()->find($s);
             if ($sd) {
@@ -95,8 +97,12 @@ class PointsController extends Controller
                 return 'n/a';
             }
         })->badge('green')->sortable();
-        $grid->pointname('Point Name')->badge('purple')->sortable();
-        $grid->weight('Sequence')->editable();
+        
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
+        ];
+        $grid->active('Published')->switch($states)->sortable();
         $grid->user_id('Inputed By')->display(function ($s) {
             $s = Administrator::all()->find($s);
             if ($s) {
@@ -155,6 +161,11 @@ class PointsController extends Controller
             ->options(BusRoute::all()->pluck('routename', 'id'))
             ->rules('required');
         $form->number('weight', 'Sequence')->rules('required');
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('active','Published')->states($states);
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;
         });

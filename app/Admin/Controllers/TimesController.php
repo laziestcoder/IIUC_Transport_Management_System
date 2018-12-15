@@ -83,7 +83,7 @@ class TimesController extends Controller
     protected function grid()
     {
         $grid = new Grid(new Time);
-
+        $grid->model()->orderBy('time', 'asc');
         $grid->id('ID');
         $grid->time('Time')->display(function ($s) {
             return Carbon::parse($s)->format("g:i A")?: 'n/a';
@@ -94,6 +94,7 @@ class TimesController extends Controller
         ];
         $grid->toiiuc('To IIUC Campus')->switch($states)->sortable();
         $grid->fromiiuc('From IIUC Campus')->switch($states)->sortable();
+        $grid->active('Published')->switch($states)->sortable();
         $grid->user_id('Created By')->display(function ($s) {
             return Administrator::all()->find($s)->name?: 'n/a';
         })->label('primary');
@@ -159,6 +160,11 @@ class TimesController extends Controller
         $form->time('time', 'Time')->default(date('H:i:s'));
         $form->switch('toiiuc', 'To IIUC Campus');
         $form->switch('fromiiuc', 'From IIUC Campus');
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('active','Published')->states($states);
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;
         });

@@ -97,6 +97,7 @@ class HelperInfoController extends Controller
         $grid->license('License No')->sortable()->badge("purple");
         $grid->contactno('Contact No');
         $grid->busno('Bus No');
+        $grid->join_date('Join Date')->sortable();
         //$grid->address('Address');
 
         //$grid->created_at('Created At');
@@ -175,7 +176,7 @@ class HelperInfoController extends Controller
         $form->text('busno', 'Bus No')->rules('required');
         $form->textarea('address', 'Address')->rules('required');
         $form->radio('gender', 'Gender')->options([0 => 'Male', 1 => 'Female'])->stacked()->rules('required');
-
+        $form->date('join_date','Join Date');
         return $form;
     }
 }

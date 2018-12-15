@@ -17,17 +17,13 @@
 
                                         </div>
                                     <?php endif; ?>
-                                    <a href="/dashboard" class="btn btn-primary">Profile</a>
-                                    <a href="/management" class="btn btn-primary">Edit Schedule</a>
-                                    <a href="/bus-schedules" class="btn btn-primary">Bus Schedules</a>
-                                    <a href="/bus-routes" class="btn btn-primary">Bus Routes</a>
-                                    <!-- <a href="/notices/create" class="btn btn-primary">Create Notice</a>
-                                    <a href="/settings" disabled='True' class="btn btn-primary">Settings</a>
-                                    <a href="/statistics" disabled='True' class="btn btn-primary">Statistics</a>
-                                    <a href="/dashboard" class="btn btn-primary">AdminDashboard</a>    -->
+                                    <a href="/dashboard" class="btn btn-info">Profile</a>
+                                    <a href="/management" class="btn btn-success">Edit Schedule</a>
+                                    <a href="/bus-schedules" class="btn btn-warning">Bus Schedules</a>
+                                    <a href="/bus-routes" class="btn btn-default">Bus Routes</a>
                                     <a href="<?php echo e(route('logout'), false); ?>"
                                        onclick="event.preventDefault();
-                                    document.getElementById('logout-form').submit();" class="btn btn-primary">
+                                    document.getElementById('logout-form').submit();" class="btn btn-danger">
                                         Logout
                                     </a>
 

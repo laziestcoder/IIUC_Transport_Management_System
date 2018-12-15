@@ -270,6 +270,7 @@
                             </td>
                             <td>
                                 <?php
+                                $stdDepTot = $stdDepTot + count($studentSum);
                                 $studentSum = count($studentSum);
                                 $student = $studentSum;
                                 if($student){
@@ -295,6 +296,7 @@
                                     <?php echo e($bus, false); ?>
 
                                 <?php endif; ?>
+                                    <?php $busDepTot = $busDepTot + $bus; ?>
                             </td>
                             <td><?php echo e($bus*60, false); ?></td><?php $busSeatDepTot = $busSeatDepTot + ($bus*60) ; ?>
                             <td><?php echo e($bus*60*0.15, false); ?></td><?php $busStandDepTot = $busStandDepTot + $bus*60*0.15 ; ?>
