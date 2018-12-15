@@ -19,33 +19,31 @@
 
             </small>
         </h3>
-        
 
-        <?php echo Form :: open(['action'=>'TimeController@store','method' => 'POST', 'enctype' => 'multipart/form-data' ]); ?>
+
+        <?php echo Form:: open(['action' => 'TimeController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data']); ?>
 
         <div class="form-group">
-            <?php echo Form::time('time', \Carbon\Carbon::now()); ?> 
+            <?php echo Form::time('time', \Carbon\Carbon::now()); ?>
         </div>
         <div class="form-group">
-            <?php echo e(Form :: label('title','Towards IIUC Campus'), false); ?>
+            <?php echo e(Form:: label('title', 'Towards IIUC Campus'), false); ?>
 
-            <?php echo e(Form :: checkbox('toiiuc' , '1', ['class' => 'form-control', ]), false); ?>
-
-
-        </div>
-        <div class="form-group">
-            <?php echo e(Form :: label('title','From IIUC Campus'), false); ?>
-
-            <?php echo e(Form :: checkbox('fromiiuc' , '1', ['class' => 'form-control',]), false); ?>
+            <?php echo e(Form:: checkbox('toiiuc', '1', ['class' => 'form-control',]), false); ?>
 
 
         </div>
-        <?php echo e(Form :: submit('Submit',['class' => 'btn btn-primary']), false); ?>
+        <div class="form-group">
+            <?php echo e(Form:: label('title', 'From IIUC Campus'), false); ?>
+
+            <?php echo e(Form:: checkbox('fromiiuc', '1', ['class' => 'form-control',]), false); ?>
+
+
+        </div>
+        <?php echo e(Form:: submit('Submit', ['class' => 'btn btn-primary']), false); ?>
 
         <?php echo Form::close(); ?>
 
-
-        
 
     </section>
     <section class="content">
@@ -56,7 +54,7 @@
 
             </small>
         </h3>
-        <?php if( count($times) > 0 ): ?>
+        <?php if (count($times) > 0): ?>
             <table class="table table-hover table-responsive-lg">
                 <thead class="table">
                 <tr>
@@ -71,28 +69,33 @@
                 </thead>
                 <tbody class="table">
                 <?php $flag = 0; ?>
-                <?php $__currentLoopData = $times; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $time): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php $__currentLoopData = $times;
+                $__env->addLoop($__currentLoopData);
+                foreach ($__currentLoopData as $time): $__env->incrementLoopIndices();
+                    $loop = $__env->getLastLoop(); ?>
                     <tr>
-                        <td><?php echo e($flag+=1, false); ?></td>
+                        <td><?php echo e($flag += 1, false); ?></td>
                         <td><?php echo e($time->id, false); ?></td>
                         <td><?php echo e(Carbon\Carbon::parse($time->time)->format('g:i A'), false); ?></td>
-                        <td><?php echo e($time->toiiuc? 'YES':'NO', false); ?></td>
-                        <td><?php echo e($time->fromiiuc?'YES':'NO', false); ?></td>
+                        <td><?php echo e($time->toiiuc ? 'YES' : 'NO', false); ?></td>
+                        <td><?php echo e($time->fromiiuc ? 'YES' : 'NO', false); ?></td>
                         <td><?php echo e(DB::table('admin_users')->where('id', $time->user_id)->first()->name, false); ?></td>
                         <td>
-                            
-                            <?php echo Form::open(['action' => ['TimeController@destroy', $time->id], 'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline'  /* ,'onclick' => 'function deleteMe()' */  ]); ?> 
-                            <?php echo e(Form::hidden('_method','DELETE'), false); ?>
+
+                            <?php echo Form::open(['action' => ['TimeController@destroy', $time->id], 'method' => 'POST', 'class' => 'pull', 'id' => 'delete', 'style' => 'display:inline'  /* ,'onclick' => 'function deleteMe()' */]); ?>
+                            <?php echo e(Form::hidden('_method', 'DELETE'), false); ?>
 
                             <?php echo e(csrf_field(), false); ?>
 
-                            <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top']), false); ?>
+                            <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle' => 'confirmation', 'data-placement' => 'top']), false); ?>
 
                             <?php echo Form::close(); ?>
 
                         </td>
                     </tr>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php endforeach;
+                $__env->popLoop();
+                $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
             <?php echo e($times->links(), false); ?>

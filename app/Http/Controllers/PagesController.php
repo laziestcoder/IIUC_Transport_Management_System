@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 
 use App\BusRoute;
-use App\EmergencyContact;
 use App\Day;
+use App\EmergencyContact;
 use App\Notice;
 use App\Schedule;
 use App\Time;
@@ -33,7 +33,7 @@ class PagesController extends Controller
 
         //Next Bus
         $times = Time::where('time', '>=', $now)->orderBy('time')->get();
-        $todayid = Day::where('dayname', $today)->where('active',1)->get()->first();
+        $todayid = Day::where('dayname', $today)->where('active', 1)->get()->first();
         if ($todayid) {
             $todayid = $todayid->id;
         } else {
@@ -46,7 +46,7 @@ class PagesController extends Controller
 //        }
 
         // Get Route Information
-       function getBusRoute($times, $todayid, $direction, $gender)
+        function getBusRoute($times, $todayid, $direction, $gender)
         {
             if (count($times) > 0) {
                 foreach ($times as $time) {
@@ -141,7 +141,7 @@ class PagesController extends Controller
         }
 
         // Todays Schedule
-        $day = Day::where('dayname', $today)->where('active',1)->get()->first();
+        $day = Day::where('dayname', $today)->where('active', 1)->get()->first();
         $timeAll = Time::orderBy('time')->get();
         if ($day) {
             $schedules = Schedule::where('day', $day->id)->get();
@@ -150,7 +150,7 @@ class PagesController extends Controller
         }
         //$males = Schedule::where('male','1');
         //$females = Schedule::where('female','1');
-        $emergency = EmergencyContact::where('active',1)->get();
+        $emergency = EmergencyContact::where('active', 1)->get();
 
 
         $data = array(
@@ -201,7 +201,6 @@ class PagesController extends Controller
 //        );
 //        return  view('pages.services')->with($data);
 //    }
-
 
 
     // Report

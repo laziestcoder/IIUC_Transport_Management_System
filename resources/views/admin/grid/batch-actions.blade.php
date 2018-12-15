@@ -1,4 +1,4 @@
-<input type="checkbox" class="{{ $selectAllName }}" />&nbsp;
+<input type="checkbox" class="{{ $selectAllName }}"/>&nbsp;
 
 <div class="btn-group">
     <a class="btn btn-sm btn-default">&nbsp;<span class="hidden-xs">{{ trans('admin.action') }}</span></a>

@@ -8,7 +8,7 @@
         position: relative;
     }
 
-    .files>li>.file-select {
+    .files > li > .file-select {
         position: absolute;
         top: -4px;
         left: -1px;
@@ -53,210 +53,210 @@
         padding: 0;
     }
 
-    .file-icon.has-img>img {
-         max-width: 100%;
-         height: auto;
-         max-height: 92px;
-     }
+    .file-icon.has-img > img {
+        max-width: 100%;
+        height: auto;
+        max-height: 92px;
+    }
 
 </style>
 
 <script data-exec-on-popstate>
 
-$(function () {
-    $('.file-delete').click(function () {
+    $(function () {
+        $('.file-delete').click(function () {
 
-        var path = $(this).data('path');
+            var path = $(this).data('path');
 
-        swal({
-            title: "<?php echo e(trans('admin.delete_confirm'), false); ?>",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "<?php echo e(trans('admin.confirm'), false); ?>",
-            showLoaderOnConfirm: true,
-            closeOnConfirm: false,
-            cancelButtonText: "<?php echo e(trans('admin.cancel'), false); ?>",
-            preConfirm: function() {
-                return new Promise(function(resolve) {
+            swal({
+                title: "<?php echo e(trans('admin.delete_confirm'), false); ?>",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "<?php echo e(trans('admin.confirm'), false); ?>",
+                showLoaderOnConfirm: true,
+                closeOnConfirm: false,
+                cancelButtonText: "<?php echo e(trans('admin.cancel'), false); ?>",
+                preConfirm: function () {
+                    return new Promise(function (resolve) {
 
-                    $.ajax({
-                        method: 'delete',
-                        url: '<?php echo e($url['delete'], false); ?>',
-                        data: {
-                            'files[]':[path],
-                            _token:LA.token
-                        },
-                        success: function (data) {
-                            $.pjax.reload('#pjax-container');
+                        $.ajax({
+                            method: 'delete',
+                            url: '<?php echo e($url['delete'], false); ?>',
+                            data: {
+                                'files[]': [path],
+                                _token: LA.token
+                            },
+                            success: function (data) {
+                                $.pjax.reload('#pjax-container');
 
-                            resolve(data);
-                        }
+                                resolve(data);
+                            }
+                        });
+
                     });
-
-                });
-            }
-        }).then(function(result){
-            var data = result.value;
-            if (typeof data === 'object') {
-                if (data.status) {
-                    swal(data.message, '', 'success');
-                } else {
-                    swal(data.message, '', 'error');
                 }
-            }
-        });
-    });
-
-    $('#moveModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var name = button.data('name');
-
-        var modal = $(this);
-        modal.find('[name=path]').val(name)
-        modal.find('[name=new]').val(name)
-    });
-
-    $('#urlModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var url = button.data('url');
-
-        $(this).find('input').val(url)
-    });
-
-    $('#file-move').on('submit', function (event) {
-
-        event.preventDefault();
-
-        var form = $(this);
-
-        var path = form.find('[name=path]').val();
-        var name = form.find('[name=new]').val();
-
-        $.ajax({
-            method: 'put',
-            url: '<?php echo e($url['move'], false); ?>',
-            data: {
-                path: path,
-                'new': name,
-                _token:LA.token,
-            },
-            success: function (data) {
-                $.pjax.reload('#pjax-container');
-
+            }).then(function (result) {
+                var data = result.value;
                 if (typeof data === 'object') {
                     if (data.status) {
-                        toastr.success(data.message);
+                        swal(data.message, '', 'success');
                     } else {
-                        toastr.error(data.message);
+                        swal(data.message, '', 'error');
                     }
                 }
-            }
+            });
         });
 
-        closeModal();
-    });
+        $('#moveModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var name = button.data('name');
 
-    $('.file-upload').on('change', function () {
-        $('.file-upload-form').submit();
-    });
+            var modal = $(this);
+            modal.find('[name=path]').val(name);
+            modal.find('[name=new]').val(name)
+        });
 
-    $('#new-folder').on('submit', function (event) {
+        $('#urlModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var url = button.data('url');
 
-        event.preventDefault();
+            $(this).find('input').val(url)
+        });
 
-        var formData = new FormData(this);
+        $('#file-move').on('submit', function (event) {
 
-        $.ajax({
-            method: 'POST',
-            url: '<?php echo e($url['new-folder'], false); ?>',
-            data: formData,
-            async: false,
-            success: function (data) {
-                $.pjax.reload('#pjax-container');
+            event.preventDefault();
 
-                if (typeof data === 'object') {
-                    if (data.status) {
-                        toastr.success(data.message);
-                    } else {
-                        toastr.error(data.message);
+            var form = $(this);
+
+            var path = form.find('[name=path]').val();
+            var name = form.find('[name=new]').val();
+
+            $.ajax({
+                method: 'put',
+                url: '<?php echo e($url['move'], false); ?>',
+                data: {
+                    path: path,
+                    'new': name,
+                    _token: LA.token,
+                },
+                success: function (data) {
+                    $.pjax.reload('#pjax-container');
+
+                    if (typeof data === 'object') {
+                        if (data.status) {
+                            toastr.success(data.message);
+                        } else {
+                            toastr.error(data.message);
+                        }
                     }
                 }
-            },
-            cache: false,
-            contentType: false,
-            processData: false
+            });
+
+            closeModal();
         });
 
-        closeModal();
-    });
+        $('.file-upload').on('change', function () {
+            $('.file-upload-form').submit();
+        });
 
-    function closeModal() {
-        $("#moveModal").modal('toggle');
-        $('body').removeClass('modal-open');
-        $('.modal-backdrop').remove();
-    }
+        $('#new-folder').on('submit', function (event) {
 
-    $('.media-reload').click(function () {
-        $.pjax.reload('#pjax-container');
-    });
+            event.preventDefault();
 
-    $('.goto-url button').click(function () {
-        var path = $('.goto-url input').val();
-        $.pjax({container:'#pjax-container', url: '<?php echo e($url['index'], false); ?>?path=' + path });
-    });
+            var formData = new FormData(this);
 
-    $('.file-select>input').iCheck({checkboxClass:'icheckbox_minimal-blue'});
+            $.ajax({
+                method: 'POST',
+                url: '<?php echo e($url['new-folder'], false); ?>',
+                data: formData,
+                async: false,
+                success: function (data) {
+                    $.pjax.reload('#pjax-container');
 
-    $('.file-delete-multiple').click(function () {
-        var files = $(".file-select input:checked").map(function(){
-            return $(this).val();
-        }).toArray();
+                    if (typeof data === 'object') {
+                        if (data.status) {
+                            toastr.success(data.message);
+                        } else {
+                            toastr.error(data.message);
+                        }
+                    }
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
 
-        if (!files.length) {
-            return;
+            closeModal();
+        });
+
+        function closeModal() {
+            $("#moveModal").modal('toggle');
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
         }
 
-        swal({
-            title: "<?php echo e(trans('admin.delete_confirm'), false); ?>",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "<?php echo e(trans('admin.confirm'), false); ?>",
-            showLoaderOnConfirm: true,
-            closeOnConfirm: false,
-            cancelButtonText: "<?php echo e(trans('admin.cancel'), false); ?>",
-            preConfirm: function() {
-                return new Promise(function(resolve) {
+        $('.media-reload').click(function () {
+            $.pjax.reload('#pjax-container');
+        });
 
-                    $.ajax({
-                        method: 'delete',
-                        url: '<?php echo e($url['delete'], false); ?>',
-                        data: {
-                            'files[]': files,
-                            _token:LA.token
-                        },
-                        success: function (data) {
-                            $.pjax.reload('#pjax-container');
+        $('.goto-url button').click(function () {
+            var path = $('.goto-url input').val();
+            $.pjax({container: '#pjax-container', url: '<?php echo e($url['index'], false); ?>?path=' + path});
+        });
 
-                            resolve(data);
-                        }
+        $('.file-select>input').iCheck({checkboxClass: 'icheckbox_minimal-blue'});
+
+        $('.file-delete-multiple').click(function () {
+            var files = $(".file-select input:checked").map(function () {
+                return $(this).val();
+            }).toArray();
+
+            if (!files.length) {
+                return;
+            }
+
+            swal({
+                title: "<?php echo e(trans('admin.delete_confirm'), false); ?>",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "<?php echo e(trans('admin.confirm'), false); ?>",
+                showLoaderOnConfirm: true,
+                closeOnConfirm: false,
+                cancelButtonText: "<?php echo e(trans('admin.cancel'), false); ?>",
+                preConfirm: function () {
+                    return new Promise(function (resolve) {
+
+                        $.ajax({
+                            method: 'delete',
+                            url: '<?php echo e($url['delete'], false); ?>',
+                            data: {
+                                'files[]': files,
+                                _token: LA.token
+                            },
+                            success: function (data) {
+                                $.pjax.reload('#pjax-container');
+
+                                resolve(data);
+                            }
+                        });
+
                     });
-
-                });
-            }
-        }).then(function (result) {
-            var data = result.value;
-            if (typeof data === 'object') {
-                if (data.status) {
-                    swal(data.message, '', 'success');
-                } else {
-                    swal(data.message, '', 'error');
                 }
-            }
+            }).then(function (result) {
+                var data = result.value;
+                if (typeof data === 'object') {
+                    if (data.status) {
+                        swal(data.message, '', 'success');
+                    } else {
+                        swal(data.message, '', 'error');
+                    }
+                }
+            });
         });
     });
-});
 
 </script>
 
@@ -280,9 +280,10 @@ $(function () {
                     <label class="btn btn-default btn">
                         <i class="fa fa-upload"></i>&nbsp;&nbsp;<?php echo e(trans('admin.upload'), false); ?>
 
-                        <form action="<?php echo e($url['upload'], false); ?>" method="post" class="file-upload-form" enctype="multipart/form-data" pjax-container>
+                        <form action="<?php echo e($url['upload'], false); ?>" method="post" class="file-upload-form"
+                              enctype="multipart/form-data" pjax-container>
                             <input type="file" name="files[]" class="hidden file-upload" multiple>
-                            <input type="hidden" name="dir" value="<?php echo e($url['path'], false); ?>" />
+                            <input type="hidden" name="dir" value="<?php echo e($url['path'], false); ?>"/>
                             <?php echo e(csrf_field(), false); ?>
 
                         </form>
@@ -295,19 +296,24 @@ $(function () {
                     </a>
 
                     <div class="btn-group">
-                        <a href="<?php echo e(route('media-index', ['path' => $url['path'], 'view' => 'table']), false); ?>" class="btn btn-default <?php echo e(request('view') == 'table' ? 'active' : '', false); ?>"><i class="fa fa-list"></i></a>
-                        <a href="<?php echo e(route('media-index', ['path' => $url['path'], 'view' => 'list']), false); ?>" class="btn btn-default <?php echo e(request('view') == 'list' ? 'active' : '', false); ?>"><i class="fa fa-th"></i></a>
+                        <a href="<?php echo e(route('media-index', ['path' => $url['path'], 'view' => 'table']), false); ?>"
+                           class="btn btn-default <?php echo e(request('view') == 'table' ? 'active' : '', false); ?>"><i
+                                    class="fa fa-list"></i></a>
+                        <a href="<?php echo e(route('media-index', ['path' => $url['path'], 'view' => 'list']), false); ?>"
+                           class="btn btn-default <?php echo e(request('view') == 'list' ? 'active' : '', false); ?>"><i
+                                    class="fa fa-th"></i></a>
                     </div>
 
-                    
+
                     <div class="input-group input-group-sm pull-right goto-url" style="width: 250px;">
-                        <input type="text" name="path" class="form-control pull-right" value="<?php echo e('/'.trim($url['path'], '/'), false); ?>">
+                        <input type="text" name="path" class="form-control pull-right"
+                               value="<?php echo e('/' . trim($url['path'], '/'), false); ?>">
 
                         <div class="input-group-btn">
                             <button type="submit" class="btn btn-default"><i class="fa fa-arrow-right"></i></button>
                         </div>
                     </div>
-                    
+
 
                 </div>
 
@@ -319,51 +325,68 @@ $(function () {
 
                     <li><a href="<?php echo e(route('media-index'), false); ?>"><i class="fa fa-th-large"></i> </a></li>
 
-                    <?php $__currentLoopData = $nav; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <li><a href="<?php echo e($item['url'], false); ?>"> <?php echo e($item['name'], false); ?></a></li>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php $__currentLoopData = $nav;
+                    $__env->addLoop($__currentLoopData);
+                    foreach ($__currentLoopData as $item): $__env->incrementLoopIndices();
+                        $loop = $__env->getLastLoop(); ?>
+                        <li><a href="<?php echo e($item['url'], false); ?>"> <?php echo e($item['name'], false); ?></a>
+                        </li>
+                    <?php endforeach;
+                    $__env->popLoop();
+                    $loop = $__env->getLastLoop(); ?>
                 </ol>
                 <ul class="files clearfix">
 
-                    <?php if(empty($list)): ?>
+                    <?php if (empty($list)): ?>
                         <li style="height: 200px;border: none;"></li>
                     <?php else: ?>
-                        <?php $__currentLoopData = $list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <li>
+                        <?php $__currentLoopData = $list;
+                        $__env->addLoop($__currentLoopData);
+                        foreach ($__currentLoopData as $item): $__env->incrementLoopIndices();
+                            $loop = $__env->getLastLoop(); ?>
+                            <li>
                             <span class="file-select">
                                 <input type="checkbox" value="<?php echo e($item['name'], false); ?>"/>
                             </span>
 
-                            <?php echo $item['preview']; ?>
+                                <?php echo $item['preview']; ?>
 
 
-                            <div class="file-info">
-                                <a <?php if(!$item['isDir']): ?>target="_blank"<?php endif; ?> href="<?php echo e($item['link'], false); ?>" class="file-name" title="<?php echo e($item['name'], false); ?>">
-                                    <?php echo e($item['icon'], false); ?> <?php echo e(basename($item['name']), false); ?>
+                                <div class="file-info">
+                                    <a <?php if (!$item['isDir']): ?>target="_blank"<?php endif; ?>
+                                       href="<?php echo e($item['link'], false); ?>" class="file-name"
+                                       title="<?php echo e($item['name'], false); ?>">
+                                        <?php echo e($item['icon'], false); ?><?php echo e(basename($item['name']), false); ?>
 
-                                </a>
-                            <span class="file-size">
+                                    </a>
+                                    <span class="file-size">
                               <?php echo e($item['size'], false); ?>&nbsp;
 
                                 <div class="btn-group btn-group-xs pull-right">
-                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle"
+                                            data-toggle="dropdown">
                                         <span class="caret"></span>
                                         <span class="sr-only">Toggle Dropdown</span>
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#" class="file-rename" data-toggle="modal" data-target="#moveModal" data-name="<?php echo e($item['name'], false); ?>">Rename & Move</a></li>
-                                        <li><a href="#" class="file-delete" data-path="<?php echo e($item['name'], false); ?>">Delete</a></li>
-                                        <?php if (! ($item['isDir'])): ?>
-                                        <li><a target="_blank" href="<?php echo e($item['download'], false); ?>">Download</a></li>
+                                        <li><a href="#" class="file-rename" data-toggle="modal" data-target="#moveModal"
+                                               data-name="<?php echo e($item['name'], false); ?>">Rename & Move</a></li>
+                                        <li><a href="#" class="file-delete"
+                                               data-path="<?php echo e($item['name'], false); ?>">Delete</a></li>
+                                        <?php if (!($item['isDir'])): ?>
+                                            <li><a target="_blank" href="<?php echo e($item['download'], false); ?>">Download</a></li>
                                         <?php endif; ?>
                                         <li class="divider"></li>
-                                        <li><a href="#" data-toggle="modal" data-target="#urlModal" data-url="<?php echo e($item['url'], false); ?>">Url</a></li>
+                                        <li><a href="#" data-toggle="modal" data-target="#urlModal"
+                                               data-url="<?php echo e($item['url'], false); ?>">Url</a></li>
                                     </ul>
                                 </div>
                             </span>
-                            </div>
-                        </li>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                            </li>
+                        <?php endforeach;
+                        $__env->popLoop();
+                        $loop = $__env->getLastLoop(); ?>
                     <?php endif; ?>
                 </ul>
             </div>
@@ -379,21 +402,22 @@ $(function () {
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
                 <h4 class="modal-title" id="moveModalLabel">Rename & Move</h4>
             </div>
             <form id="file-move">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="recipient-name" class="control-label">Path:</label>
-                    <input type="text" class="form-control" name="new" />
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Path:</label>
+                        <input type="text" class="form-control" name="new"/>
+                    </div>
+                    <input type="hidden" name="path"/>
                 </div>
-                <input type="hidden" name="path"/>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary btn-sm">Submit</button>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                </div>
             </form>
         </div>
     </div>
@@ -403,12 +427,13 @@ $(function () {
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
                 <h4 class="modal-title" id="urlModalLabel">Url</h4>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <input type="text" class="form-control" />
+                    <input type="text" class="form-control"/>
                 </div>
             </div>
             <div class="modal-footer">
@@ -422,13 +447,14 @@ $(function () {
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
                 <h4 class="modal-title" id="newFolderModalLabel">New folder</h4>
             </div>
             <form id="new-folder">
                 <div class="modal-body">
                     <div class="form-group">
-                        <input type="text" class="form-control" name="name" />
+                        <input type="text" class="form-control" name="name"/>
                     </div>
                     <input type="hidden" name="dir" value="<?php echo e($url['path'], false); ?>"/>
                     <?php echo e(csrf_field(), false); ?>

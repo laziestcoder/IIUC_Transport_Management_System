@@ -3,15 +3,15 @@
 namespace App\Admin\Controllers;
 
 use App\BusRoute;
-use App\Schedule;
 use App\Day;
+use App\Http\Controllers\Controller;
+use App\Schedule;
 use App\Time;
 use App\UserRole;
 use Carbon\Carbon;
-use Encore\Admin\Facades\Admin;
 use Encore\Admin\Auth\Database\Administrator;
-use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
@@ -37,50 +37,6 @@ class BusScheduleController extends Controller
     }
 
     /**
-     * Show interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function show($id, Content $content)
-    {
-        return $content
-            ->header('Detail')
-            ->description('')
-            ->body($this->detail($id));
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header('Edit')
-            ->description('')
-            ->body($this->form()->edit($id));
-    }
-
-    /**
-     * Create interface.
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->header('Create')
-            ->description('Create New Bus Schedule')
-            ->body($this->form());
-    }
-
-    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -91,19 +47,19 @@ class BusScheduleController extends Controller
 
         $grid->id('ID')->sortable();
         $grid->day('Day')->display(function ($s) {
-           if($s) {
+            if ($s) {
                 $s = Day::all()->find($s);
                 if ($s) {
                     return $s->dayname;
                 } else {
                     return 'n/a';
                 }
-            }else{
+            } else {
                 return 'Not Selected';
             }
         })->badge('green')->sortable();
         $states = [
-            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
 //        $grid->confirmed(trans('Activated'))->switch($states)->sortable();
@@ -113,7 +69,7 @@ class BusScheduleController extends Controller
         $grid->female('Female')->switch($states)->sortable();
         $grid->time('Time')
             ->options()
-            ->select(Time::all()->sortBy('time')->pluck('time','id'))
+            ->select(Time::all()->sortBy('time')->pluck('time', 'id'))
 //            ->display(function ($s) {
 //             if($s) {
 //                $s = Time::all()->find($s);
@@ -127,41 +83,42 @@ class BusScheduleController extends Controller
 //            }})
             ->sortable();
         $grid->bususer('Bus For')->display(function ($s) {
-            if($s) {
+            if ($s) {
                 $s = UserRole::all()->find($s);
                 if ($s) {
                     return $s->name;
                 } else {
                     return 'n/a';
                 }
-            }else{
+            } else {
                 return 'Not Selected';
             }
         })->badge('orange')->sortable();
         $grid->route('Route')
             ->display(function ($s) {
-            if($s) {
-                $s = BusRoute::all()->find($s);
                 if ($s) {
-                    return $s->routename;
+                    $s = BusRoute::all()->find($s);
+                    if ($s) {
+                        return $s->routename;
+                    } else {
+                        return 'n/a';
+                    }
                 } else {
-                    return 'n/a';
+                    return 'Not Selected';
                 }
-            }else{
-                return 'Not Selected';
-            }})
+            })
             ->badge('purple')->sortable();
-           
+
         //$grid->active('Published')->switch($states)->sortable();
         $grid->user_id('Inputed By')->display(function ($s) {
-            if($s) {
+            if ($s) {
                 $s = Administrator::all()->find($s);
                 if ($s) {
                     return $s->name;
                 } else {
                     return 'n/a';
                 }
-            }else{
+            } else {
                 return 'Not Selected';
             }
         })->badge('blue')->sortable();
@@ -172,6 +129,21 @@ class BusScheduleController extends Controller
         $grid->perPages([25, 50, 100, 200, 300]);
 
         return $grid;
+    }
+
+    /**
+     * Show interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        return $content
+            ->header('Detail')
+            ->description('')
+            ->body($this->detail($id));
     }
 
     /**
@@ -220,6 +192,21 @@ class BusScheduleController extends Controller
     }
 
     /**
+     * Edit interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function edit($id, Content $content)
+    {
+        return $content
+            ->header('Edit')
+            ->description('')
+            ->body($this->form()->edit($id));
+    }
+
+    /**
      * Make a form builder.
      *
      * @return Form
@@ -229,10 +216,10 @@ class BusScheduleController extends Controller
         $form = new Form(new Schedule);
 
         $form->select('day', 'Day')
-            ->options(Day::all()->pluck('dayname','id'))
+            ->options(Day::all()->pluck('dayname', 'id'))
             ->rules('required');
         $states = [
-            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
 
@@ -241,13 +228,13 @@ class BusScheduleController extends Controller
         $form->switch('male', 'Male')->states($states);
         $form->switch('female', 'Female')->states($states);
         $form->select('time', 'Time')
-            ->options(Time::all()->sortBy('time')->pluck('time','id'))
+            ->options(Time::all()->sortBy('time')->pluck('time', 'id'))
             ->rules('required');
         $form->select('bususer', 'Bus For')
-            ->options(UserRole::all()->sortBy('name')->pluck('name','id'))
+            ->options(UserRole::all()->sortBy('name')->pluck('name', 'id'))
             ->rules('required');
         $form->select('route', 'Route')
-            ->options(BusRoute::all()->sortBy('routename')->pluck('routename','id'))
+            ->options(BusRoute::all()->sortBy('routename')->pluck('routename', 'id'))
             ->rules('required');
         //$form->switch('active','Published')->states($states);
         $form->hidden('user_id', 'Created By')->default(function () {
@@ -255,5 +242,19 @@ class BusScheduleController extends Controller
         });
 
         return $form;
+    }
+
+    /**
+     * Create interface.
+     *
+     * @param Content $content
+     * @return Content
+     */
+    public function create(Content $content)
+    {
+        return $content
+            ->header('Create')
+            ->description('Create New Bus Schedule')
+            ->body($this->form());
     }
 }

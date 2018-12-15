@@ -4,14 +4,13 @@ namespace App\Admin\Controllers;
 
 use App\Day;
 use App\Http\Controllers\Controller;
+use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
-use Encore\Admin\Facades\Admin;
-use Encore\Admin\Auth\Database\Administrator;
-
 
 
 class DaysController extends Controller
@@ -33,50 +32,6 @@ class DaysController extends Controller
     }
 
     /**
-     * Show interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function show($id, Content $content)
-    {
-        return $content
-            ->header('Detail')
-            ->description('')
-            ->body($this->detail($id));
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header('Edit')
-            ->description('')
-            ->body($this->form()->edit($id));
-    }
-
-    /**
-     * Create interface.
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->header('Create')
-            ->description('')
-            ->body($this->form());
-    }
-
-    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -88,15 +43,15 @@ class DaysController extends Controller
         $grid->id('ID')->sortable();
         $grid->dayname('Day')->badge('green')->sortable();
         $states = [
-            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
         $grid->active(trans('Active'))->switch($states)->sortable();
         $grid->user_id('Created By')->display(function ($s) {
-            if($s) {
-                return Administrator::all()->find($s)->name?: 'n/a';
-            }else{
-            return 'Default';
+            if ($s) {
+                return Administrator::all()->find($s)->name ?: 'n/a';
+            } else {
+                return 'Default';
             }
         })->badge('blue')->sortable();
         $grid->created_at('Created At');
@@ -113,6 +68,21 @@ class DaysController extends Controller
         $grid->disableFilter();
 
         return $grid;
+    }
+
+    /**
+     * Show interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        return $content
+            ->header('Detail')
+            ->description('')
+            ->body($this->detail($id));
     }
 
     /**
@@ -139,7 +109,7 @@ class DaysController extends Controller
 
         $show->panel()
             ->tools(function ($tools) use ($id) {
-                if( $id <= 8) {
+                if ($id <= 8) {
                     $tools->disableEdit();
                     //$tools->disableList();
                     $tools->disableDelete();
@@ -148,6 +118,21 @@ class DaysController extends Controller
 
 
         return $show;
+    }
+
+    /**
+     * Edit interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function edit($id, Content $content)
+    {
+        return $content
+            ->header('Edit')
+            ->description('')
+            ->body($this->form()->edit($id));
     }
 
     /**
@@ -161,14 +146,28 @@ class DaysController extends Controller
 
         $form->text('dayname', 'Day');
         $states = [
-            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
         ];
-        $form->switch('active','Active')->states($states);
+        $form->switch('active', 'Active')->states($states);
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;
         });
 
         return $form;
+    }
+
+    /**
+     * Create interface.
+     *
+     * @param Content $content
+     * @return Content
+     */
+    public function create(Content $content)
+    {
+        return $content
+            ->header('Create')
+            ->description('')
+            ->body($this->form());
     }
 }

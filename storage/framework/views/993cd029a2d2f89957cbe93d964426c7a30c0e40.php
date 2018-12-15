@@ -38,7 +38,8 @@
                         <small></small>
                     </h1>
                     <div class="col-md-10 col-md">
-                        <img style="width:60%; height:60%" src="/storage/cover_images/<?php echo $notice->cover_image; ?>"
+                        <img style="width:60%; height:60%"
+                             src="/storage/cover_images/<?php echo $notice->cover_image; ?>"
                              alt="<?php echo $notice->title; ?>">
                     </div>
                     <div class="col-md-10 col-md">
@@ -55,7 +56,7 @@
 
                         <small>
                             (
-                            <?php if(Admin::user()->id == $notice->user_id): ?>
+                            <?php if (Admin::user()->id == $notice->user_id): ?>
                                 <?php echo ' Yourself '; ?>
 
                             <?php else: ?>
@@ -67,17 +68,18 @@
                     </div>
                 </div>
             </div>
-            <?php if(Admin::user()): ?>
-                <?php if((Admin::user()->id == $notice->user_id)||(DB::table('admin_role_users')->where('user_id',(Admin::user()->id))->first()->role_id <= 4)): ?>
-                    <a href="/admin/auth/notices/<?php echo e($notice->id, false); ?>/edit" class="btn btn-default">Edit</a>
-                    
-                    <?php echo Form::open(['action' => ['NoticesController@destroy', $notice->id], 'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline'  ]); ?>
+            <?php if (Admin::user()): ?>
+                <?php if ((Admin::user()->id == $notice->user_id) || (DB::table('admin_role_users')->where('user_id', (Admin::user()->id))->first()->role_id <= 4)): ?>
+                    <a href="/admin/auth/notices/<?php echo e($notice->id, false); ?>/edit"
+                       class="btn btn-default">Edit</a>
 
-                    <?php echo e(Form::hidden('_method','DELETE'), false); ?>
+                    <?php echo Form::open(['action' => ['NoticesController@destroy', $notice->id], 'method' => 'POST', 'class' => 'pull', 'id' => 'delete', 'style' => 'display:inline']); ?>
+
+                    <?php echo e(Form::hidden('_method', 'DELETE'), false); ?>
 
                     <?php echo e(csrf_field(), false); ?>
 
-                    <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top']), false); ?>
+                    <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle' => 'confirmation', 'data-placement' => 'top']), false); ?>
 
                     <?php echo Form::close(); ?>
 
@@ -87,8 +89,7 @@
         </div>
     </section>
     <section class="content">
-        
-        
+
 
     </section>
 <?php $__env->stopSection(); ?>

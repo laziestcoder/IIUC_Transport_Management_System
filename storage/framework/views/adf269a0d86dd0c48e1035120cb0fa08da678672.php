@@ -2,7 +2,8 @@
     <header id="home" class="masthead">
         <div class="container home-main">
             <div class="intro-text" style="padding-top: 140px; padding-bottom: 200px;">
-                <div class="intro-lead-in" style="font-style: initial">Welcome <i><?php echo e(Auth::user()->name, false); ?> </i></div>
+                <div class="intro-lead-in" style="font-style: initial">Welcome
+                    <i><?php echo e(Auth::user()->name, false); ?> </i></div>
                 <!-- <div class="intro-heading text-uppercase">It's Nice To Meet You</div> -->
                 <div class="container">
                     <div class="row">
@@ -11,7 +12,7 @@
                                 <!-- <div class="panel-heading">AdminDashboard</div> -->
 
                                 <div class="panel-body" style="background:#212529">
-                                    <?php if(session('status')): ?>
+                                    <?php if (session('status')): ?>
                                         <div class="alert alert-success">
                                             <?php echo e(session('status'), false); ?>
 
@@ -27,7 +28,8 @@
                                         Logout
                                     </a>
 
-                                    <form id="logout-form" action="<?php echo e(route('logout'), false); ?>" method="POST"
+                                    <form id="logout-form" action="<?php echo e(route('logout'), false); ?>"
+                                          method="POST"
                                           style="display: none;">
                                         <?php echo e(csrf_field(), false); ?>
 

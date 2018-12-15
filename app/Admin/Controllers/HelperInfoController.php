@@ -29,50 +29,6 @@ class HelperInfoController extends Controller
     }
 
     /**
-     * Show interface.
-     *
-     * @param mixed   $id
-     * @param Content $content
-     * @return Content
-     */
-    public function show($id, Content $content)
-    {
-        return $content
-            ->header('Detail')
-            ->description(' ')
-            ->body($this->detail($id));
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param mixed   $id
-     * @param Content $content
-     * @return Content
-     */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header('Edit')
-            ->description(' ')
-            ->body($this->form()->edit($id));
-    }
-
-    /**
-     * Create interface.
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->header('Add New Helper')
-            ->description(' ')
-            ->body($this->form());
-    }
-
-    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -107,8 +63,8 @@ class HelperInfoController extends Controller
             // Sets the range query for the created_at field
             //$filter->expand();
             $filter->disableIdFilter();
-            $filter->like('nid','NID');
-            $filter->like('helperid','Helper ID');
+            $filter->like('nid', 'NID');
+            $filter->like('helperid', 'Helper ID');
             $filter->like('license', 'License No');
         });
 
@@ -116,9 +72,24 @@ class HelperInfoController extends Controller
     }
 
     /**
+     * Show interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        return $content
+            ->header('Detail')
+            ->description(' ')
+            ->body($this->detail($id));
+    }
+
+    /**
      * Make a show builder.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @return Show
      */
     protected function detail($id)
@@ -154,6 +125,21 @@ class HelperInfoController extends Controller
     }
 
     /**
+     * Edit interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function edit($id, Content $content)
+    {
+        return $content
+            ->header('Edit')
+            ->description(' ')
+            ->body($this->form()->edit($id));
+    }
+
+    /**
      * Make a form builder.
      *
      * @return Form
@@ -176,7 +162,21 @@ class HelperInfoController extends Controller
         $form->text('busno', 'Bus No')->rules('required');
         $form->textarea('address', 'Address')->rules('required');
         $form->radio('gender', 'Gender')->options([0 => 'Male', 1 => 'Female'])->stacked()->rules('required');
-        $form->date('join_date','Join Date');
+        $form->date('join_date', 'Join Date');
         return $form;
+    }
+
+    /**
+     * Create interface.
+     *
+     * @param Content $content
+     * @return Content
+     */
+    public function create(Content $content)
+    {
+        return $content
+            ->header('Add New Helper')
+            ->description(' ')
+            ->body($this->form());
     }
 }

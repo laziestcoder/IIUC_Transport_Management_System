@@ -521,7 +521,7 @@ class AdminTablesSeed extends Seeder
                 'parent_id' => 0,
                 'order' => 47,
                 'title' => 'Import Data Table',
-                'icon' => 'fa-user-plus',
+                'icon' => 'fa-database',
                 'uri' => '/import',
             ],
             // [

@@ -38,7 +38,8 @@
                     <ul class="dropdown-menu">
                         <!-- The user image in the menu -->
                         <li class="user-header">
-                            <img src="<?php echo e(Admin::user()->avatar, false); ?>" class="img-circle" alt="User Image">
+                            <img src="<?php echo e(Admin::user()->avatar, false); ?>" class="img-circle"
+                                 alt="User Image">
 
                             <p>
                                 <?php echo e(Admin::user()->name, false); ?>
@@ -48,18 +49,19 @@
                         </li>
                         <li class="user-footer">
                             <div class="pull-left">
-                                <a href="<?php echo e(admin_base_path('auth/setting'), false); ?>" class="btn btn-default btn-flat"><?php echo e(trans('admin.setting'), false); ?></a>
+                                <a href="<?php echo e(admin_base_path('auth/setting'), false); ?>"
+                                   class="btn btn-default btn-flat"><?php echo e(trans('admin.setting'), false); ?></a>
                             </div>
                             <div class="pull-right">
-                                <a href="<?php echo e(admin_base_path('auth/logout'), false); ?>" class="btn btn-default btn-flat"><?php echo e(trans('admin.logout'), false); ?></a>
+                                <a href="<?php echo e(admin_base_path('auth/logout'), false); ?>"
+                                   class="btn btn-default btn-flat"><?php echo e(trans('admin.logout'), false); ?></a>
                             </div>
                         </li>
                     </ul>
                 </li>
                 <!-- Control Sidebar Toggle Button -->
-                
-                    
-                
+
+
             </ul>
         </div>
     </nav>

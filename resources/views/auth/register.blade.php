@@ -126,15 +126,16 @@
                                                     Register As
                                                 </label>
                                                 <div class="col-md-6">
-                                                        <?php $userroles = DB::table('user_role')->where('active',true)->get();?>
-                                                        {{--{!! Form::select('userrole', $userroles, null,--}}
-                                                        {{--['class' => 'form form-control']) !!}--}}
-                                                    <select name="userrole" class="form-control" style="height: 36px" required>
+                                                    <?php $userroles = DB::table('user_role')->where('active', true)->get();?>
+                                                    {{--{!! Form::select('userrole', $userroles, null,--}}
+                                                    {{--['class' => 'form form-control']) !!}--}}
+                                                    <select name="userrole" class="form-control" style="height: 36px"
+                                                            required>
                                                         <option disabled selected>Select Your Role At IIUC</option>
                                                         @foreach($userroles as $userrole)
-                                                        <option value="{!! $userrole->id !!}">
-                                                            {!! $userrole->name !!}
-                                                        </option>
+                                                            <option value="{!! $userrole->id !!}">
+                                                                {!! $userrole->name !!}
+                                                            </option>
                                                         @endforeach
                                                     </select>
                                                 </div>

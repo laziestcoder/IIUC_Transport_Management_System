@@ -29,50 +29,6 @@ class EmergencyContactsController extends Controller
     }
 
     /**
-     * Show interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function show($id, Content $content)
-    {
-        return $content
-            ->header('Detail')
-            ->description('Description')
-            ->body($this->detail($id));
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header('Edit')
-            ->description('Description')
-            ->body($this->form()->edit($id));
-    }
-
-    /**
-     * Create interface.
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->header('Create')
-            ->description('Add New Emergency Contact')
-            ->body($this->form());
-    }
-
-    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -87,9 +43,9 @@ class EmergencyContactsController extends Controller
         $grid->contact('Contact No')->editable();
         $grid->photo('Photo')->image();
         $states = [
-                'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
-                'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
-            ];
+            'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
         $grid->active('Active')->switch($states);
         //$grid->created_at('Created At');
         $grid->updated_at('Last Updated');
@@ -103,6 +59,21 @@ class EmergencyContactsController extends Controller
         //$grid->disableCreateButton();
 
         return $grid;
+    }
+
+    /**
+     * Show interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        return $content
+            ->header('Detail')
+            ->description('Description')
+            ->body($this->detail($id));
     }
 
     /**
@@ -133,6 +104,21 @@ class EmergencyContactsController extends Controller
     }
 
     /**
+     * Edit interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function edit($id, Content $content)
+    {
+        return $content
+            ->header('Edit')
+            ->description('Description')
+            ->body($this->form()->edit($id));
+    }
+
+    /**
      * Make a form builder.
      *
      * @return Form
@@ -159,9 +145,23 @@ class EmergencyContactsController extends Controller
         //         'title'   => 'New Emergency Contact',
         //         'message' => 'Congrats! Emergency contact info added successfully.',
         //     ]);
-        
+
         //     return back()->with(compact('success'));
         // });
         return $form;
+    }
+
+    /**
+     * Create interface.
+     *
+     * @param Content $content
+     * @return Content
+     */
+    public function create(Content $content)
+    {
+        return $content
+            ->header('Create')
+            ->description('Add New Emergency Contact')
+            ->body($this->form());
     }
 }

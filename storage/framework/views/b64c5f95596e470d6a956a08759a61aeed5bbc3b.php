@@ -83,7 +83,7 @@
             var name = button.data('name');
 
             var modal = $(this);
-            modal.find('[name=path]').val(name)
+            modal.find('[name=path]').val(name);
             modal.find('[name=new]').val(name)
         });
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title><?php echo e(Admin::title(), false); ?> <?php if($header): ?> | <?php echo e($header, false); ?><?php endif; ?></title>
+    <title><?php echo e(Admin::title(), false); ?> <?php if ($header): ?> | <?php echo e($header, false); ?><?php endif; ?></title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
@@ -28,7 +28,7 @@
 
     <div class="content-wrapper" id="pjax-container">
         <div id="app">
-        <?php echo $__env->yieldContent('content'); ?>
+            <?php echo $__env->yieldContent('content'); ?>
         </div>
         <?php echo Admin::script(); ?>
 
@@ -39,7 +39,9 @@
 </div>
 
 <script>
-    function LA() {}
+    function LA() {
+    }
+
     LA.token = "<?php echo e(csrf_token(), false); ?>";
 </script>
 

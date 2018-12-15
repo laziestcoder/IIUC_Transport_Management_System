@@ -29,50 +29,6 @@ class DriverInfoController extends Controller
     }
 
     /**
-     * Show interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function show($id, Content $content)
-    {
-        return $content
-            ->header('Detail')
-            ->description(' ')
-            ->body($this->detail($id));
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header('Edit')
-            ->description(' ')
-            ->body($this->form()->edit($id));
-    }
-
-    /**
-     * Create interface.
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->header('Add New Driver')
-            ->description(' ')
-            ->body($this->form());
-    }
-
-    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -101,19 +57,34 @@ class DriverInfoController extends Controller
         $grid->join_date('Join Date')->sortable();
 //        $grid->address('Address');
 
-       // $grid->created_at('Created At')->sortable();
+        // $grid->created_at('Created At')->sortable();
         $grid->updated_at('Updated At')->sortable();
 
         $grid->filter(function ($filter) {
             // Sets the range query for the created_at field
             //$filter->expand();
             $filter->disableIdFilter();
-            $filter->like('nid','NID');
-            $filter->like('driverid','Driver ID');
+            $filter->like('nid', 'NID');
+            $filter->like('driverid', 'Driver ID');
             $filter->like('license', 'License No');
         });
 
         return $grid;
+    }
+
+    /**
+     * Show interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        return $content
+            ->header('Detail')
+            ->description(' ')
+            ->body($this->detail($id));
     }
 
     /**
@@ -155,6 +126,21 @@ class DriverInfoController extends Controller
     }
 
     /**
+     * Edit interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function edit($id, Content $content)
+    {
+        return $content
+            ->header('Edit')
+            ->description(' ')
+            ->body($this->form()->edit($id));
+    }
+
+    /**
      * Make a form builder.
      *
      * @return Form
@@ -178,7 +164,21 @@ class DriverInfoController extends Controller
         $form->text('busno', 'Bus No')->rules('required');
         $form->textarea('address', 'Address')->rules('required');
         $form->radio('gender', 'Gender')->options([0 => 'Male', 1 => 'Female'])->stacked()->rules('required');
-        $form->date('join_date','Join Date');
+        $form->date('join_date', 'Join Date');
         return $form;
+    }
+
+    /**
+     * Create interface.
+     *
+     * @param Content $content
+     * @return Content
+     */
+    public function create(Content $content)
+    {
+        return $content
+            ->header('Add New Driver')
+            ->description(' ')
+            ->body($this->form());
     }
 }

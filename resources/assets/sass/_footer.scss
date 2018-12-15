@@ -2,12 +2,14 @@
 footer {
   padding: 25px 0;
   text-align: center;
+
   span.copyright {
     font-size: 90%;
     line-height: 40px;
     text-transform: none;
     @include heading-font;
   }
+
   ul.quicklinks {
     font-size: 90%;
     line-height: 40px;
@@ -19,6 +21,7 @@ footer {
 
 ul.social-buttons {
   margin-bottom: 0;
+
   li {
     a {
       font-size: 20px;
@@ -33,6 +36,7 @@ ul.social-buttons {
       border-radius: 100%;
       outline: none;
       background-color: $gray-900;
+
       &:active,
       &:focus,
       &:hover {

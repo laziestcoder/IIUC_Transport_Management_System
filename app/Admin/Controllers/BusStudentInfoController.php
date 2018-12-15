@@ -29,24 +29,32 @@ class BusStudentInfoController extends Controller
     }
 
     /**
-     * Show interface.
+     * Make a grid builder.
      *
-     * @param mixed   $id
-     * @param Content $content
-     * @return Content
+     * @return Grid
      */
-    public function show($id, Content $content)
+    protected function grid()
     {
-        return $content
-            ->header('Detail')
-            ->description('description')
-            ->body($this->detail($id));
+        $grid = new Grid(new BusStudentInfo);
+
+        $grid->id('ID')->sortable();
+        $grid->routeid('Route ID')->sortable();
+        $grid->pointid('Point ID')->sortable();
+        $grid->studentno('Student No')->sortable();
+        $grid->dayid('Day ID')->sortable();
+        $grid->timeid('Time ID')->sortable();
+        $grid->gender('Gender')->sortable();
+        $grid->paginate('25');
+        $grid->perPages([25, 50, 100]);
+
+
+        return $grid;
     }
 
     /**
      * Edit interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      * @return Content
      */
@@ -73,32 +81,24 @@ class BusStudentInfoController extends Controller
 //    }
 
     /**
-     * Make a grid builder.
+     * Show interface.
      *
-     * @return Grid
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
      */
-    protected function grid()
+    public function show($id, Content $content)
     {
-        $grid = new Grid(new BusStudentInfo);
-
-        $grid->id('ID')->sortable();
-        $grid->routeid('Route ID')->sortable();
-        $grid->pointid('Point ID')->sortable();
-        $grid->studentno('Student No')->sortable();
-        $grid->dayid('Day ID')->sortable();
-        $grid->timeid('Time ID')->sortable();
-        $grid->gender('Gender')->sortable();
-        $grid->paginate('25');
-        $grid->perPages([25,50,100]);
-
-
-        return $grid;
+        return $content
+            ->header('Detail')
+            ->description('description')
+            ->body($this->detail($id));
     }
 
     /**
      * Make a show builder.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @return Show
      */
     protected function detail($id)

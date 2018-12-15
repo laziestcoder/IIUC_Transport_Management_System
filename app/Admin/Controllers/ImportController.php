@@ -39,6 +39,24 @@ class ImportController extends Controller
         return view('import.import')->with($data);
     }
 
+    public function getModels($path)
+    {
+        $out = [];
+        $results = scandir($path);
+        foreach ($results as $result) {
+            if ($result === '.' or $result === '..') continue;
+            //$filename = '\\App' . '\\' . $result;
+            $filename = $result;
+
+            if (is_dir($filename)) {
+                $out = array_merge($out, $this->getModels($filename));
+            } else {
+                $out[] = substr($filename, 0, -4);
+            }
+        }
+        return $out;
+    }
+
     public function parseImport(CsvImportRequest $request)
     {
 
@@ -185,25 +203,6 @@ class ImportController extends Controller
         );
 
         return view('import.import_success')->with($dataArray);
-    }
-
-
-    public function getModels($path)
-    {
-        $out = [];
-        $results = scandir($path);
-        foreach ($results as $result) {
-            if ($result === '.' or $result === '..') continue;
-            //$filename = '\\App' . '\\' . $result;
-            $filename = $result;
-
-            if (is_dir($filename)) {
-                $out = array_merge($out, $this->getModels($filename));
-            } else {
-                $out[] = substr($filename, 0, -4);
-            }
-        }
-        return $out;
     }
 
 }

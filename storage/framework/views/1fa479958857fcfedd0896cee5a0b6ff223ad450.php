@@ -12,13 +12,13 @@
                                     <!-- <div class="panel-heading">Login</div> -->
                                     <div class="panel-body" style="background:#212529">
                                         <br>
-                                        <?php if(session('confirmation-success')): ?>
+                                        <?php if (session('confirmation-success')): ?>
                                             <div class="alert alert-success">
                                                 <?php echo e(session('confirmation-success'), false); ?>
 
                                             </div>
                                         <?php endif; ?>
-                                        <?php if(session('confirmation-danger')): ?>
+                                        <?php if (session('confirmation-danger')): ?>
                                             <div class="alert alert-danger">
                                                 <?php echo session('confirmation-danger'); ?>
 
@@ -36,7 +36,7 @@
                                                     <input id="email" type="email" class="form-control" name="email"
                                                            value="<?php echo e(old('email'), false); ?>" autofocus>
 
-                                                    <?php if($errors->has('email')): ?>
+                                                    <?php if ($errors->has('email')): ?>
                                                         <span class="help-block">
                                                 <strong><?php echo e($errors->first('email'), false); ?></strong>
                                             </span>
@@ -51,7 +51,7 @@
                                                     <input id="password" type="password" class="form-control"
                                                            name="password">
 
-                                                    <?php if($errors->has('password')): ?>
+                                                    <?php if ($errors->has('password')): ?>
                                                         <span class="help-block">
                                                 <strong><?php echo e($errors->first('password'), false); ?></strong>
                                             </span>
@@ -70,12 +70,12 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="form-group">
                                                 <div class="col-md-6 col-md-offset-4">
                                                     <div id="recaptcha" class="g-recaptcha"
                                                          data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
-                                                    <?php if($errors->has('recaptcha')): ?>
+                                                    <?php if ($errors->has('recaptcha')): ?>
                                                         <span class="help-block">
                                                         <strong><?php echo e($errors->first('recaptcha'), false); ?></strong>
                                                         </span>
@@ -91,7 +91,8 @@
                                                         Login
                                                     </button>
 
-                                                    <a class="btn btn-link" href="<?php echo e(url('/password/reset'), false); ?>">
+                                                    <a class="btn btn-link"
+                                                       href="<?php echo e(url('/password/reset'), false); ?>">
                                                         Forgot Your Password?
                                                     </a>
                                                 </div>
@@ -119,13 +120,13 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Login</div>
                 <div class="panel-body">
-                    <?php if(session('confirmation-success')): ?>
+                    <?php if (session('confirmation-success')): ?>
         <div class="alert alert-success">
 <?php echo e(session('confirmation-success'), false); ?>
 
                 </div>
 <?php endif; ?>
-    <?php if(session('confirmation-danger')): ?>
+    <?php if (session('confirmation-danger')): ?>
         <div class="alert alert-danger">
 <?php echo session('confirmation-danger'); ?>
 
@@ -141,7 +142,7 @@
                             <div class="col-md-6">
                                 <input id="email" type="email" class="form-control" name="email" value="<?php echo e(old('email'), false); ?>" required autofocus>
 
-                                <?php if($errors->has('email')): ?>
+                                <?php if ($errors->has('email')): ?>
         <span class="help-block">
             <strong><?php echo e($errors->first('email'), false); ?></strong>
                                     </span>
@@ -155,7 +156,7 @@
                             <div class="col-md-6">
                                 <input id="password" type="password" class="form-control" name="password" required>
 
-                                <?php if($errors->has('password')): ?>
+                                <?php if ($errors->has('password')): ?>
         <span class="help-block">
             <strong><?php echo e($errors->first('password'), false); ?></strong>
                                     </span>
@@ -190,7 +191,7 @@
         </div>
     </div>
 </div> -->
-    <?php echo $__env->make('inc.recaptchaSubmitValidate', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php echo $__env->make('inc.recaptchaSubmitValidate', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>

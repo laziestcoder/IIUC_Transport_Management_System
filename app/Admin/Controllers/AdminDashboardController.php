@@ -4,7 +4,6 @@ namespace App\Admin\Controllers;
 
 use App\AdminDashboard;
 use App\EmergencyContact;
-use App\Admin\Controllers\EmergencyContactsController;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -22,7 +21,7 @@ class AdminDashboardController extends Controller
             ->header('Admin Dashboard')
             ->description('This is admin Dashboard')
             ->body($this->grid());
-            //->body($this->grid2());
+        //->body($this->grid2());
     }
 
     protected function grid()
@@ -31,7 +30,7 @@ class AdminDashboardController extends Controller
         $grid->setTitle('Schedule Dashborad');
 
         $states = [
-            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
         $grid->special_schedule('Special Schedule')->switch($states);
@@ -46,7 +45,6 @@ class AdminDashboardController extends Controller
         $grid->disableFilter();
         $grid->disablePagination();
         $grid->disableCreateButton();
-        
 
 
         return $grid;
@@ -76,12 +74,12 @@ class AdminDashboardController extends Controller
         $grid->contact('Contact No');
         $grid->photo('Photo')->image();
         $states = [
-                'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
-                'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
-            ];
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
+        ];
         //$grid->active('Active')->using($states);
-        $grid->active('Active')->display(function($s){
-            return $s?"YES": "NO";
+        $grid->active('Active')->display(function ($s) {
+            return $s ? "YES" : "NO";
         });
         //$grid->created_at('Created At');
         $grid->updated_at('Last Updated');
@@ -96,6 +94,6 @@ class AdminDashboardController extends Controller
 
         return $grid;
     }
-    
+
 }
 

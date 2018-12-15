@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Day;
-use App\User;
-use App\StudentSchedule;
-use Carbon\Carbon;
 use App\AdminDashboard;
+use App\Day;
+use App\StudentSchedule;
+use App\User;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -76,8 +76,8 @@ class DashboardController extends Controller
             'image' => $image,
             'verified' => $verified,
             'adminVerification' => $adminVerification,
-            'lastupdated' => $entrydate?$entrydate:'N/A',
-            'nextDate' => $expiredate?$expiredate:'N/A',
+            'lastupdated' => $entrydate ? $entrydate : 'N/A',
+            'nextDate' => $expiredate ? $expiredate : 'N/A',
 
         );
         return view('user.dashboard')->with($data);

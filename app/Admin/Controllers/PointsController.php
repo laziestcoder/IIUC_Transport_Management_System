@@ -33,50 +33,6 @@ class PointsController extends Controller
     }
 
     /**
-     * Show interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function show($id, Content $content)
-    {
-        return $content
-            ->header('Detail')
-            ->description('See detail')
-            ->body($this->detail($id));
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header('Edit')
-            ->description('Edit information')
-            ->body($this->form()->edit($id));
-    }
-
-    /**
-     * Create interface.
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->header('Create')
-            ->description('Create new bus stop point')
-            ->body($this->form());
-    }
-
-    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -97,9 +53,9 @@ class PointsController extends Controller
                 return 'n/a';
             }
         })->badge('green')->sortable();
-        
+
         $states = [
-            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
         $grid->active('Published')->switch($states)->sortable();
@@ -120,6 +76,21 @@ class PointsController extends Controller
 
 
         return $grid;
+    }
+
+    /**
+     * Show interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        return $content
+            ->header('Detail')
+            ->description('See detail')
+            ->body($this->detail($id));
     }
 
     /**
@@ -148,6 +119,21 @@ class PointsController extends Controller
     }
 
     /**
+     * Edit interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function edit($id, Content $content)
+    {
+        return $content
+            ->header('Edit')
+            ->description('Edit information')
+            ->body($this->form()->edit($id));
+    }
+
+    /**
      * Make a form builder.
      *
      * @return Form
@@ -162,15 +148,29 @@ class PointsController extends Controller
             ->rules('required');
         $form->number('weight', 'Sequence')->rules('required');
         $states = [
-            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
         ];
-        $form->switch('active','Published')->states($states);
+        $form->switch('active', 'Published')->states($states);
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;
         });
 
 
         return $form;
+    }
+
+    /**
+     * Create interface.
+     *
+     * @param Content $content
+     * @return Content
+     */
+    public function create(Content $content)
+    {
+        return $content
+            ->header('Create')
+            ->description('Create new bus stop point')
+            ->body($this->form());
     }
 }

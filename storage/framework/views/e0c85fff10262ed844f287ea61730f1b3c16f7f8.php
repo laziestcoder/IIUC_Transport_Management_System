@@ -18,9 +18,9 @@
 
             </small>
         </h2>
-        
+
         <h3><b><?php echo e("All Schedule", false); ?></b><br><br></h3>
-        <?php if(count($schedules) > 0): ?>
+        <?php if (count($schedules) > 0): ?>
             <table class="table table-hover table-responsive-lg">
                 <thead class="table">
                 <tr>
@@ -37,29 +37,32 @@
                 </tr>
                 </thead>
                 <tbody class="table">
-                <?php $sl = 0;?>
-                <?php $__currentLoopData = $schedules; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $schedule): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php $sl = 0; ?>
+                <?php $__currentLoopData = $schedules;
+                $__env->addLoop($__currentLoopData);
+                foreach ($__currentLoopData as $schedule): $__env->incrementLoopIndices();
+                    $loop = $__env->getLastLoop(); ?>
                     <tr>
-                        <td><?php echo e($sl+=1, false); ?></td>
+                        <td><?php echo e($sl += 1, false); ?></td>
                         <td><?php echo e($schedule->id, false); ?></td>
-                        <td><?php echo e(App\Day::where('id',$schedule->day)->first()->dayname, false); ?></td>
-                        <td><?php echo e(\Carbon\Carbon::parse(App\Time::where('id',$schedule->time)->first()->time)->format('g:i A'), false); ?></td>
-                        <td><?php echo e(App\BusRoute::where('id',$schedule->route)->first()->routename, false); ?></td>
-                        <td><?php echo e($schedule->male? 'YES' : 'NO', false); ?></td>
-                        <td><?php echo e($schedule->female? 'YES' : 'NO', false); ?></td>
-                        <td><?php echo e($schedule->toiiuc? 'YES' : 'NO', false); ?></td>
-                        <td><?php echo e($schedule->fromiiuc? 'YES' : 'NO', false); ?></td>
+                        <td><?php echo e(App\Day::where('id', $schedule->day)->first()->dayname, false); ?></td>
+                        <td><?php echo e(\Carbon\Carbon::parse(App\Time::where('id', $schedule->time)->first()->time)->format('g:i A'), false); ?></td>
+                        <td><?php echo e(App\BusRoute::where('id', $schedule->route)->first()->routename, false); ?></td>
+                        <td><?php echo e($schedule->male ? 'YES' : 'NO', false); ?></td>
+                        <td><?php echo e($schedule->female ? 'YES' : 'NO', false); ?></td>
+                        <td><?php echo e($schedule->toiiuc ? 'YES' : 'NO', false); ?></td>
+                        <td><?php echo e($schedule->fromiiuc ? 'YES' : 'NO', false); ?></td>
                         <td>
-                            <?php if((Admin::user()->id == $schedule->user_id)||(DB::table('admin_role_users')->where('user_id',(Admin::user()->id))->first()->role_id <= 4)): ?>
+                            <?php if ((Admin::user()->id == $schedule->user_id) || (DB::table('admin_role_users')->where('user_id', (Admin::user()->id))->first()->role_id <= 4)): ?>
                                 <a href="" class="btn btn-primary">Edit</a>
-                                <?php echo Form::open(['action'=>['ScheduleController@destroy', $schedule->id],'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline' /* ,'onclick' => 'function deleteMe()' */]); ?>
+                                <?php echo Form::open(['action' => ['ScheduleController@destroy', $schedule->id], 'method' => 'POST', 'class' => 'pull', 'id' => 'delete', 'style' => 'display:inline' /* ,'onclick' => 'function deleteMe()' */]); ?>
 
-                                
-                                <?php echo e(Form::hidden('_method','DELETE'), false); ?>
+
+                                <?php echo e(Form::hidden('_method', 'DELETE'), false); ?>
 
                                 <?php echo e(csrf_field(), false); ?>
 
-                                <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top']), false); ?>
+                                <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle' => 'confirmation', 'data-placement' => 'top']), false); ?>
 
                                 <?php echo Form::close(); ?>
 
@@ -69,7 +72,9 @@
                             <?php endif; ?>
                         </td>
                     </tr>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php endforeach;
+                $__env->popLoop();
+                $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
 

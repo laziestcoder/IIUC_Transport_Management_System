@@ -28,7 +28,7 @@
                     <li class="nav-item dropdown">
                         <a href="/dashboard" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                            aria-expanded="false" aria-haspopup="true" v-pre>
-                        {{ Auth::user()->name }}
+                            {{ Auth::user()->name }}
                         </a>
 
                         <ul class="dropdown-menu">

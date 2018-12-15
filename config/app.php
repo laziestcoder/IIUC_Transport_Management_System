@@ -169,7 +169,7 @@ return [
 
         /*
         *   google captcha
-        */ 
+        */
         Greggilbert\Recaptcha\RecaptchaServiceProvider::class,
         /*
          * Package Service Providers...
@@ -240,7 +240,7 @@ return [
 
         /*
         *   google captcha
-        */ 
+        */
         'Recaptcha' => Greggilbert\Recaptcha\Facades\Recaptcha::class,
         //PDF Facades
 

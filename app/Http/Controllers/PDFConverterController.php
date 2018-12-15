@@ -3,20 +3,17 @@
 namespace App\Http\Controllers;
 //namespace App\Admin\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-use Illuminate\Http\Request;
-use DB;
-use PDF;
-
 use App\BusPoint;
+use App\BusRoute;
+use App\BusStudentInfo;
 use App\Day;
 use App\Schedule;
 use App\Time;
 use Carbon\Carbon;
-use App\BusRoute;
-use App\BusStudentInfo;
+use DB;
 use Encore\Admin\Controllers\HasResourceActions;
+use Illuminate\Http\Request;
+use PDF;
 
 
 class PDFConverterController extends Controller
@@ -33,13 +30,13 @@ class PDFConverterController extends Controller
             'titlenew' => 'Create New Schedule',
             'titleinfo' => 'Available Schedule',
             'times' => Time::all('id', 'time'),
-            'days' => Day::all('id','dayname'),
+            'days' => Day::all('id', 'dayname'),
             'points' => BusPoint::all('id', 'pointname'),
         );
         //view()->share('users',$users);
         view()->share($data);
 
-        if($request->has('download')){
+        if ($request->has('download')) {
             // Set extra option
             //PDF::setOptions(['dpi' => 45, 'defaultFont' => 'sans-serif']);
             //set paper orientation
@@ -51,6 +48,7 @@ class PDFConverterController extends Controller
         }
         return view('printPDF.busSchedule')->with($data);
     }
+
     public function busScheduleFriday(Request $request)
     {
         $data = array(
@@ -60,15 +58,15 @@ class PDFConverterController extends Controller
             'titlenew' => 'Create New Schedule',
             'titleinfo' => 'Available Schedule',
             'times' => Time::all('id', 'time'),
-            'days' => Day::all('id','dayname'),
+            'days' => Day::all('id', 'dayname'),
             'points' => BusPoint::all('id', 'pointname'),
         );
         //view()->share('users',$users);
         view()->share($data);
 
-        if($request->has('download')){
+        if ($request->has('download')) {
             // Set extra option
-            PDF::setOptions(['dpi' => 600, 'defaultFont' => 'sans-serif','font-size' => 12]);
+            PDF::setOptions(['dpi' => 600, 'defaultFont' => 'sans-serif', 'font-size' => 12]);
             //set paper orientation
             //PDF::setPaper('a4', 'landscape');
             // pass view file
@@ -91,19 +89,19 @@ class PDFConverterController extends Controller
             'todayid' => Day::all()->where('dayname', $today)->first(),
             'datas' => BusStudentInfo::all(),
         );
-    
+
         //view()->share('users',$users);
         view()->share($data);
 
-        if($request->has('download')){
+        if ($request->has('download')) {
             // Set extra option
-            PDF::setOptions(['dpi' => 600, 'defaultFont' => 'sans-serif','font-size' => 12]);
+            PDF::setOptions(['dpi' => 600, 'defaultFont' => 'sans-serif', 'font-size' => 12]);
             //set paper orientation
             //PDF::setPaper('a4', 'landscape');
             // pass view file
             $pdf = PDF::loadView('printPDF.tomorrowsBusRequirement');
             // download pdf
-            return $pdf->download($today.'BusRequirementInformation.pdf');
+            return $pdf->download($today . 'BusRequirementInformation.pdf');
         }
         return view('printPDF.tomorrowsBusRequirement')->with($data);
     }

@@ -1,12 +1,15 @@
 <?php
 
-namespace Encore\Admin\Controllers;
+namespace App\Admin\Controllers;
+//namespace Encore\Admin\Controllers;
 
+use App\Http\Controllers\Controller;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
-use Illuminate\Routing\Controller;
+
+//use Illuminate\Routing\Controller;
 
 class UserController extends Controller
 {
@@ -23,50 +26,6 @@ class UserController extends Controller
             ->header(trans('admin.administrator'))
             ->description(trans('admin.list'))
             ->body($this->grid()->render());
-    }
-
-    /**
-     * Show interface.
-     *
-     * @param mixed   $id
-     * @param Content $content
-     *
-     * @return Content
-     */
-    public function show($id, Content $content)
-    {
-        return $content
-            ->header(trans('admin.administrator'))
-            ->description(trans('admin.detail'))
-            ->body($this->detail($id));
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param $id
-     *
-     * @return Content
-     */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header(trans('admin.administrator'))
-            ->description(trans('admin.edit'))
-            ->body($this->form()->edit($id));
-    }
-
-    /**
-     * Create interface.
-     *
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->header(trans('admin.administrator'))
-            ->description(trans('admin.create'))
-            ->body($this->form());
     }
 
     /**
@@ -88,7 +47,7 @@ class UserController extends Controller
         $grid->updated_at(trans('admin.updated_at'));
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
-            if ($actions->getKey() <= 3) {
+            if ($actions->getKey() <= 3 ) {
                 $actions->disableDelete();
                 $actions->disableEdit();
             }
@@ -101,6 +60,22 @@ class UserController extends Controller
         });
 
         return $grid;
+    }
+
+    /**
+     * Show interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     *
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        return $content
+            ->header(trans('admin.administrator'))
+            ->description(trans('admin.detail'))
+            ->body($this->detail($id));
     }
 
     /**
@@ -129,6 +104,21 @@ class UserController extends Controller
         $show->updated_at(trans('admin.updated_at'));
 
         return $show;
+    }
+
+    /**
+     * Edit interface.
+     *
+     * @param $id
+     *
+     * @return Content
+     */
+    public function edit($id, Content $content)
+    {
+        return $content
+            ->header(trans('admin.administrator'))
+            ->description(trans('admin.edit'))
+            ->body($this->form()->edit($id));
     }
 
     /**
@@ -170,5 +160,18 @@ class UserController extends Controller
         });
 
         return $form;
+    }
+
+    /**
+     * Create interface.
+     *
+     * @return Content
+     */
+    public function create(Content $content)
+    {
+        return $content
+            ->header(trans('admin.administrator'))
+            ->description(trans('admin.create'))
+            ->body($this->form());
     }
 }

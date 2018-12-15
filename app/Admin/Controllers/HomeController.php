@@ -5,7 +5,6 @@ namespace App\Admin\Controllers;
 use App\AdminDashboard;
 use App\Http\Controllers\Controller;
 use DB;
-use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\Dashboard;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
@@ -33,7 +32,7 @@ class HomeController extends Controller
 
 
             $admin = Admin::user();
-            if (($admin->id) === 2 && ($admin->name)==='Towfiqul Islam' && ($admin->username)==='towfiq'  ) {
+            if (($admin->id) === 2 && ($admin->name) === 'Towfiqul Islam' && ($admin->username) === 'towfiq') {
                 $content->row('<br><br><br>');
                 $content->row(function (Row $row) {
 

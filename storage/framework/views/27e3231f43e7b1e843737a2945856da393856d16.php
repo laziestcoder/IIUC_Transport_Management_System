@@ -1,9 +1,9 @@
 <?php $__env->startSection('usercontent'); ?>
-    <div class="panel-body backGround" >
+    <div class="panel-body backGround">
         <h1>Profile</h1>
     </div>
     <hr>
-    <div class="panel-body" >
+    <div class="panel-body">
         <div class="container">
             <div class="userinfo">
                 <?php echo $__env->make('inc.messages', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
@@ -13,10 +13,10 @@
                     <thead class="">
                     <tr>
                         <td>
-                        <?php if("http://upanel.iiuc.ac.bd:81/Picture/<?php echo $user->jobid; ?>"==True): ?>
-                            <img src="http://upanel.iiuc.ac.bd:81/Picture/<?php echo e($user->jobid, false); ?>"/>
-                        <?php else: ?>
-                            <img src="storage/image/user/<?php echo e($user->image, false); ?>"/>
+                            <?php if ("http://upanel.iiuc.ac.bd:81/Picture/<?php echo $user->jobid; ?>" == True): ?>
+                                <img src="http://upanel.iiuc.ac.bd:81/Picture/<?php echo e($user->jobid, false); ?>"/>
+                            <?php else: ?>
+                                <img src="storage/image/user/<?php echo e($user->image, false); ?>"/>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -42,7 +42,7 @@
                     <tr>
                         <td>
                             Registered
-                            As: <?php echo e($user->userrole == 1 ? 'Student' : ( $user->userrole == 2 ? 'Faculty Member' :($user->userrole == 3 ? 'Officer/Staff' : 'undefined')), false); ?>
+                            As: <?php echo e($user->userrole == 1 ? 'Student' : ($user->userrole == 2 ? 'Faculty Member' : ($user->userrole == 3 ? 'Officer/Staff' : 'undefined')), false); ?>
 
                         </td>
                     </tr>
@@ -68,7 +68,7 @@
                 <b><h3>Transport Schedule:</h3></b>
                 <hr>
 
-                <?php if(Session::has('transport_message')): ?>
+                <?php if (Session::has('transport_message')): ?>
                     <div id="success">
                         <div class="alert alert-success">
                             <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
@@ -101,9 +101,12 @@
                     </tr>
                     </thead>
                     <tbody class="">
-                    <?php if(count($days) > 0 ): ?>
-                        <?php $__currentLoopData = $days; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <?php if( $day->id < 8): ?>
+                    <?php if (count($days) > 0): ?>
+                        <?php $__currentLoopData = $days;
+                        $__env->addLoop($__currentLoopData);
+                        foreach ($__currentLoopData as $day): $__env->incrementLoopIndices();
+                            $loop = $__env->getLastLoop(); ?>
+                            <?php if ($day->id < 8): ?>
                                 <tr>
                                     <td>
                                         <?php echo $day->dayname; ?>
@@ -176,7 +179,9 @@
                                     </td>
                                 </tr>
                             <?php endif; ?>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        <?php endforeach;
+                        $__env->popLoop();
+                        $loop = $__env->getLastLoop(); ?>
                     <?php endif; ?>
 
 

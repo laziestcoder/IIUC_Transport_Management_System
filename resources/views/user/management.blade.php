@@ -3,7 +3,7 @@
 @section('usercontent')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
 
-    <div class="panel-body backGround" >
+    <div class="panel-body backGround">
         <h1>Edit Schedule</h1>
     </div>
     <hr>
@@ -12,7 +12,7 @@
             <div class="alert alert-success">
                 {{ session('status') }}
             </div>
-        @endif            
+        @endif
         <div class="container">
             <div class="userrouteinfo">
                 <b><h3>Transport Schedule</h3></b>

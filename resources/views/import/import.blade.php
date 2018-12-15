@@ -64,14 +64,14 @@
                     </div>
                 </div>
                 {{--@foreach($allModels as $models)--}}
-                    {{--<br>--}}
+                {{--<br>--}}
 
-                    {{--case '{{$models}}':--}}
-                    {{--$entry_data = new {{$models}}();--}}
-                    {{--break;--}}
+                {{--case '{{$models}}':--}}
+                {{--$entry_data = new {{$models}}();--}}
+                {{--break;--}}
                 {{--@endforeach--}}
-                </div>
             </div>
+        </div>
 
     </div>
 

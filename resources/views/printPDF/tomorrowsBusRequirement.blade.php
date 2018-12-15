@@ -1,14 +1,15 @@
 @extends('printPDF.layout')
 @section('headline')
-<h4 align="center"><b>{!! $today !!}</b>'s Bus Requirement Information</h4>
+    <h4 align="center"><b>{!! $today !!}</b>'s Bus Requirement Information</h4>
 @endsection
 @section('content')
-<div  style="text-align:center; margin: auto; font-size: 12px; ">
+    <div style="text-align:center; margin: auto; font-size: 12px; ">
         @if($today)
-            <a class="btn btn-default" href="{{ route('tomorrow-bus-requirement',['download' => 'pdf'],['title' => 'Print Bus Requirement Information']) }}">
+            <a class="btn btn-default"
+               href="{{ route('tomorrow-bus-requirement',['download' => 'pdf'],['title' => 'Print Bus Requirement Information']) }}">
                 <i class="fa fa-print"></i> PDF/Print </a>
             @if(count($routes) > 0)
-            <h4><b><big>{{"Female Students"}}</big></b></h4>{{"Arrival"}}
+                <h4><b><big>{{"Female Students"}}</big></b></h4>{{"Arrival"}}
                 <table class="table table-hover table-bordered table-condensed">
                     <thead class="table">
                     <tr>
@@ -23,18 +24,18 @@
                     </thead>
                     <tbody class="table" align="center">
                     <?php $flag = 0;
-                        $stdArvTot = 0;
-                        $busArvTot = 0;
-                        $busSeatArvTot = 0;
-                        $busStandArvTot = 0;
-                        $busStandSeatArvTot = 0;
+                    $stdArvTot = 0;
+                    $busArvTot = 0;
+                    $busSeatArvTot = 0;
+                    $busStandArvTot = 0;
+                    $busStandSeatArvTot = 0;
                     ?>
                     @foreach($routes as $route)
                         <tr> <?php $bus = 0; $studentSum = 0; $seat = 0;?>
                             <td>{{$flag+=1}}</td>
                             <td>
                                 {{--<a href="/admin/auth/routes/{{$route->id}}">--}}
-                                    {{$route->routename}}
+                                {{$route->routename}}
                                 {{--</a>--}}
                             </td>
 
@@ -42,11 +43,11 @@
                             {{--arrival time--}}
 
                             <td><?php
-                                    //$routeID = ;
+                                //$routeID = ;
                                 $studentSum = DB::table('schedulestudent')
                                     ->where('pick_point_route', $route->id)
                                     ->where('day', $todayid->id)
-                                    ->where('user_gender',true)
+                                    ->where('user_gender', true)
                                     ->get(); ?>
                                 {!! count($studentSum) !!}
                             </td>
@@ -55,9 +56,9 @@
                                 $stdArvTot = $stdArvTot + count($studentSum);
                                 $studentSum = count($studentSum);
                                 $student = $studentSum;
-                                if($student){
+                                if ($student) {
                                     $bus = 1;
-                                }else{
+                                } else {
                                     $bus = 0;
                                 }?>
                                 @if((($studentSum/60) > 1) && ($studentSum > 0) )
@@ -78,12 +79,12 @@
                                 @else
                                     {{$bus}}
                                 @endif
-                                    <?php $busArvTot = $busArvTot + $bus; ?>
+                                <?php $busArvTot = $busArvTot + $bus; ?>
                             </td>
-                            <td>{{$bus*60}}</td> <?php $busSeatArvTot = $busSeatArvTot + ($bus*60) ; ?>
-                            <td>{{$bus*60*0.15}}</td> <?php $busStandArvTot = $busStandArvTot + $bus*60*0.15 ; ?>
+                            <td>{{$bus*60}}</td> <?php $busSeatArvTot = $busSeatArvTot + ($bus * 60); ?>
+                            <td>{{$bus*60*0.15}}</td> <?php $busStandArvTot = $busStandArvTot + $bus * 60 * 0.15; ?>
                             <td>{{ ($bus*60) .' ('.$student.')'}}</td>
-               </tr>
+                        </tr>
                     @endforeach
                     <tr>
                         <td>{{$flag+1}}</td>
@@ -122,7 +123,7 @@
                             <td>{{$flag+=1}}</td>
                             <td>
                                 {{--<a href="/admin/auth/routes/{{$route->id}}">--}}
-                                    {{$route->routename}}
+                                {{$route->routename}}
                                 {{--</a>--}}
                             </td>
                             {{--departure time--}}
@@ -130,7 +131,7 @@
                                 $studentSum = DB::table('schedulestudent')
                                     ->where('drop_point_route', $route->id)
                                     ->where('day', $todayid->id)
-                                    ->where('user_gender',true)
+                                    ->where('user_gender', true)
                                     ->get(); ?>
                                 {!! count($studentSum) !!}
                             </td>
@@ -139,9 +140,9 @@
                                 $stdDepTot = $stdDepTot + count($studentSum);
                                 $studentSum = count($studentSum);
                                 $student = $studentSum;
-                                if($student){
+                                if ($student) {
                                     $bus = 1;
-                                }else{
+                                } else {
                                     $bus = 0;
                                 }
                                 ?>
@@ -165,8 +166,8 @@
                                 @endif
                                 <?php $busDepTot = $busDepTot + $bus; ?>
                             </td>
-                            <td>{{$bus*60}}</td> <?php $busSeatDepTot = $busSeatDepTot + ($bus*60) ; ?>
-                            <td>{{$bus*60*0.15}}</td><?php $busStandDepTot = $busStandDepTot + $bus*60*0.15 ; ?>
+                            <td>{{$bus*60}}</td> <?php $busSeatDepTot = $busSeatDepTot + ($bus * 60); ?>
+                            <td>{{$bus*60*0.15}}</td><?php $busStandDepTot = $busStandDepTot + $bus * 60 * 0.15; ?>
                             <td>{{ ($bus*60) .' ('.$student.')'}}</td>
                         </tr>
                     @endforeach
@@ -198,18 +199,18 @@
                     </thead>
                     <tbody class="table" align="center">
                     <?php $flag = 0;
-                        $stdArvTot = 0;
-                        $busArvTot = 0;
-                        $busSeatArvTot = 0;
-                        $busStandArvTot = 0;
-                        $busStandSeatArvTot = 0;
+                    $stdArvTot = 0;
+                    $busArvTot = 0;
+                    $busSeatArvTot = 0;
+                    $busStandArvTot = 0;
+                    $busStandSeatArvTot = 0;
                     ?>
                     @foreach($routes as $route)
                         <tr> <?php $bus = 0; $studentSum = 0; $seat = 0;?>
                             <td>{{$flag+=1}}</td>
                             <td>
                                 {{--<a href="/admin/auth/routes/{{$route->id}}">--}}
-                                    {{$route->routename}}
+                                {{$route->routename}}
                                 {{--</a>--}}
                             </td>
 
@@ -217,11 +218,11 @@
                             {{--arrival time--}}
 
                             <td><?php
-                                    //$routeID = ;
+                                //$routeID = ;
                                 $studentSum = DB::table('schedulestudent')
                                     ->where('pick_point_route', $route->id)
                                     ->where('day', $todayid->id)
-                                    ->where('user_gender',false)
+                                    ->where('user_gender', false)
                                     ->get(); ?>
                                 {!! count($studentSum) !!}
                             </td>
@@ -230,9 +231,9 @@
                                 $stdArvTot = $stdArvTot + count($studentSum);
                                 $studentSum = count($studentSum);
                                 $student = $studentSum;
-                                if($student){
+                                if ($student) {
                                     $bus = 1;
-                                }else{
+                                } else {
                                     $bus = 0;
                                 }?>
                                 @if((($studentSum/60) > 1) && ($studentSum > 0) )
@@ -253,11 +254,11 @@
                                 @else
                                     {{$bus}}
                                 @endif
-                                    <?php $busArvTot = $busArvTot + $bus; ?>
+                                <?php $busArvTot = $busArvTot + $bus; ?>
                             </td>
-                            <td>{{$bus*60}}</td> <?php $busSeatArvTot = $busSeatArvTot + ($bus*60) ; ?>
-                            <td>{{$bus*60*0.15}}</td> <?php $busStandArvTot = $busStandArvTot + $bus*60*0.15 ; ?>
-                            <td>{{ ($bus*60) .' ('.$student.')'}}</td>                            
+                            <td>{{$bus*60}}</td> <?php $busSeatArvTot = $busSeatArvTot + ($bus * 60); ?>
+                            <td>{{$bus*60*0.15}}</td> <?php $busStandArvTot = $busStandArvTot + $bus * 60 * 0.15; ?>
+                            <td>{{ ($bus*60) .' ('.$student.')'}}</td>
                         </tr>
                     @endforeach
                     <tr>
@@ -297,7 +298,7 @@
                             <td>{{$flag+=1}}</td>
                             <td>
                                 {{--<a href="/admin/auth/routes/{{$route->id}}">--}}
-                                    {{$route->routename}}
+                                {{$route->routename}}
                                 {{--</a>--}}
                             </td>
                             {{--departure time--}}
@@ -305,7 +306,7 @@
                                 $studentSum = DB::table('schedulestudent')
                                     ->where('drop_point_route', $route->id)
                                     ->where('day', $todayid->id)
-                                    ->where('user_gender',false)
+                                    ->where('user_gender', false)
                                     ->get(); ?>
                                 {!! count($studentSum) !!}
                             </td>
@@ -314,9 +315,9 @@
                                 $stdDepTot = $stdDepTot + count($studentSum);
                                 $studentSum = count($studentSum);
                                 $student = $studentSum;
-                                if($student){
+                                if ($student) {
                                     $bus = 1;
-                                }else{
+                                } else {
                                     $bus = 0;
                                 }
                                 ?>
@@ -340,8 +341,8 @@
                                 @endif
                                 <?php $busDepTot = $busDepTot + $bus; ?>
                             </td>
-                            <td>{{$bus*60}}</td> <?php $busSeatDepTot = $busSeatDepTot + ($bus*60) ; ?>
-                            <td>{{$bus*60*0.15}}</td><?php $busStandDepTot = $busStandDepTot + $bus*60*0.15 ; ?>
+                            <td>{{$bus*60}}</td> <?php $busSeatDepTot = $busSeatDepTot + ($bus * 60); ?>
+                            <td>{{$bus*60*0.15}}</td><?php $busStandDepTot = $busStandDepTot + $bus * 60 * 0.15; ?>
                             <td>{{ ($bus*60) .' ('.$student.')'}}</td>
                         </tr>
                     @endforeach

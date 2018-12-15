@@ -83,8 +83,7 @@
                 var n = parseInt(clone.val() + c);
                 if ((min && n < min)) {
                     setText(min);
-                }
-                else if (max && n > max) {
+                } else if (max && n > max) {
                     setText(max);
                 }
             });

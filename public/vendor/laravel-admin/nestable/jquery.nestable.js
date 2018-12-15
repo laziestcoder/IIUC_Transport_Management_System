@@ -386,8 +386,7 @@
             }
             if (this.pointEl.hasClass(opt.emptyClass)) {
                 isEmpty = true;
-            }
-            else if (!this.pointEl.length || !this.pointEl.hasClass(opt.itemClass)) {
+            } else if (!this.pointEl.length || !this.pointEl.hasClass(opt.itemClass)) {
                 return;
             }
 
@@ -415,11 +414,9 @@
                     list = $(document.createElement(opt.listNodeName)).addClass(opt.listClass);
                     list.append(this.placeEl);
                     this.pointEl.replaceWith(list);
-                }
-                else if (before) {
+                } else if (before) {
                     this.pointEl.before(this.placeEl);
-                }
-                else {
+                } else {
                     this.pointEl.after(this.placeEl);
                 }
                 if (!parent.children().length) {

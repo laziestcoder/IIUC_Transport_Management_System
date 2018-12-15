@@ -29,50 +29,6 @@ class ExampleController2 extends Controller
     }
 
     /**
-     * Show interface.
-     *
-     * @param mixed   $id
-     * @param Content $content
-     *
-     * @return Content
-     */
-    public function show($id, Content $content)
-    {
-        return $content
-            ->header(trans('admin.administrator'))
-            ->description(trans('admin.detail'))
-            ->body($this->detail($id));
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param $id
-     *
-     * @return Content
-     */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header(trans('admin.administrator'))
-            ->description(trans('admin.edit'))
-            ->body($this->form()->edit($id));
-    }
-
-    /**
-     * Create interface.
-     *
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->header(trans('admin.administrator'))
-            ->description(trans('admin.create'))
-            ->body($this->form());
-    }
-
-    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -104,6 +60,22 @@ class ExampleController2 extends Controller
     }
 
     /**
+     * Show interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     *
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        return $content
+            ->header(trans('admin.administrator'))
+            ->description(trans('admin.detail'))
+            ->body($this->detail($id));
+    }
+
+    /**
      * Make a show builder.
      *
      * @param mixed $id
@@ -127,6 +99,21 @@ class ExampleController2 extends Controller
         $show->updated_at(trans('admin.updated_at'));
 
         return $show;
+    }
+
+    /**
+     * Edit interface.
+     *
+     * @param $id
+     *
+     * @return Content
+     */
+    public function edit($id, Content $content)
+    {
+        return $content
+            ->header(trans('admin.administrator'))
+            ->description(trans('admin.edit'))
+            ->body($this->form()->edit($id));
     }
 
     /**
@@ -164,5 +151,18 @@ class ExampleController2 extends Controller
         });
 
         return $form;
+    }
+
+    /**
+     * Create interface.
+     *
+     * @return Content
+     */
+    public function create(Content $content)
+    {
+        return $content
+            ->header(trans('admin.administrator'))
+            ->description(trans('admin.create'))
+            ->body($this->form());
     }
 }

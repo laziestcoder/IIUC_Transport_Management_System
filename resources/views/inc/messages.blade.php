@@ -11,7 +11,7 @@
         <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
         <strong>
             {!! session('success') !!}
-        </strong>        
+        </strong>
     </div>
 @endif
 
@@ -21,7 +21,7 @@
             <div class="alert alert-danger">
                 <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
                 <strong>
-                {!! $error !!}
+                    {!! $error !!}
                 </strong>
             </div>
         @endforeach
@@ -29,7 +29,7 @@
         <div class='alert alert-danger'>
             <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
             <strong>
-            {!! session('error') !!}
+                {!! session('error') !!}
             </strong>
         </div>
     @endif

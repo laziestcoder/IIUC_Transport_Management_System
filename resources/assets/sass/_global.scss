@@ -10,6 +10,7 @@ p {
 
 a {
   color: $primary;
+
   &:hover {
     color: darken($primary, 10%);
   }
@@ -31,11 +32,13 @@ h6 {
 
 section {
   padding: 100px 0;
+
   h2.section-heading {
     font-size: 40px;
     margin-top: 0;
     margin-bottom: 15px;
   }
+
   h3.section-subheading {
     font-size: 16px;
     font-weight: 400;
@@ -66,6 +69,7 @@ section {
 .btn-primary {
   background-color: $primary;
   border-color: $primary;
+
   &:active,
   &:focus,
   &:hover {
@@ -73,6 +77,7 @@ section {
     border-color: darken($primary, 7.5%) !important;
     color: white;
   }
+
   &:active,
   &:focus {
     box-shadow: 0 0 0 0.2rem rgba(254, 209, 55, .5) !important;

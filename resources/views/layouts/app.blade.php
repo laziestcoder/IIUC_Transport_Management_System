@@ -44,8 +44,8 @@
 <body>
 <div id="app">
 
-@include('common.nav')
-@yield('content')
+    @include('common.nav')
+    @yield('content')
     <footer class="row">
         @include('common.footer')
     </footer>

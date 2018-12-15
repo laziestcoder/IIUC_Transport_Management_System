@@ -10,37 +10,37 @@
     <!-- form start -->
     {!! $form->open(['class' => "form-horizontal"]) !!}
 
-        <div class="box-body">
+    <div class="box-body">
 
-            @if(!$tabObj->isEmpty())
-                @include('admin::form.tab', compact('tabObj'))
-            @else
-                <div class="fields-group">
+        @if(!$tabObj->isEmpty())
+            @include('admin::form.tab', compact('tabObj'))
+        @else
+            <div class="fields-group">
 
-                    @if($form->hasRows())
-                        @foreach($form->getRows() as $row)
-                            {!! $row->render() !!}
-                        @endforeach
-                    @else
-                        @foreach($form->fields() as $field)
-                            {!! $field->render() !!}
-                        @endforeach
-                    @endif
+                @if($form->hasRows())
+                    @foreach($form->getRows() as $row)
+                        {!! $row->render() !!}
+                    @endforeach
+                @else
+                    @foreach($form->fields() as $field)
+                        {!! $field->render() !!}
+                    @endforeach
+                @endif
 
 
-                </div>
-            @endif
+            </div>
+        @endif
 
-        </div>
-        <!-- /.box-body -->
+    </div>
+    <!-- /.box-body -->
 
-        {!! $form->renderFooter() !!}
+    {!! $form->renderFooter() !!}
 
-        @foreach($form->getHiddenFields() as $field)
-            {!! $field->render() !!}
-        @endforeach
+    @foreach($form->getHiddenFields() as $field)
+        {!! $field->render() !!}
+    @endforeach
 
-        <!-- /.box-footer -->
+<!-- /.box-footer -->
     {!! $form->close() !!}
 </div>
 

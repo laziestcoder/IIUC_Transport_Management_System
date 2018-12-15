@@ -27,4 +27,5 @@ class CKEditor extends Field
         return parent::render();
     }
 }
+
 ?>

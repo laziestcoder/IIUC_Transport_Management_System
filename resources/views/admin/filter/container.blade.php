@@ -3,15 +3,15 @@
 
         <div class="row">
             @foreach($layout->columns() as $column)
-            <div class="col-md-{{ $column->width() }}">
-                <div class="box-body">
-                    <div class="fields-group">
-                        @foreach($column->filters() as $filter)
-                            {!! $filter->render() !!}
-                        @endforeach
+                <div class="col-md-{{ $column->width() }}">
+                    <div class="box-body">
+                        <div class="fields-group">
+                            @foreach($column->filters() as $filter)
+                                {!! $filter->render() !!}
+                            @endforeach
+                        </div>
                     </div>
                 </div>
-            </div>
             @endforeach
         </div>
         <!-- /.box-body -->

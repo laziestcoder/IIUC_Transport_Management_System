@@ -17,7 +17,8 @@
     <link href="<?php echo e(asset('/vendor/bootstrap/css/bootstrap-reboot.css'), false); ?>" rel="stylesheet">
     <link href="<?php echo e(asset('/vendor/bootstrap/css/bootstrap-reboot.min.css'), false); ?>" rel="stylesheet">
 
-    <link href="<?php echo e(asset ('vendor/font-awesome/css/font-awesome.min.css'), false); ?>" rel="stylesheet" type="text/css">
+    <link href="<?php echo e(asset('vendor/font-awesome/css/font-awesome.min.css'), false); ?>" rel="stylesheet"
+          type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
     <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet'
@@ -32,7 +33,7 @@
 
     <!-- Styles -->
     <link href="<?php echo e(asset('css/app.css'), false); ?>" rel="stylesheet">
-    
+
     <link href="<?php echo e(asset('css/agency.css'), false); ?>" rel="stylesheet">
     <link href="<?php echo e(asset('css/agency.min.css'), false); ?>" rel="stylesheet">
     <link href="<?php echo e(asset('css/style.css'), false); ?>" rel="stylesheet">
@@ -44,8 +45,8 @@
 <body>
 <div id="app">
 
-<?php echo $__env->make('common.nav', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-<?php echo $__env->yieldContent('content'); ?>
+    <?php echo $__env->make('common.nav', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+    <?php echo $__env->yieldContent('content'); ?>
     <footer class="row">
         <?php echo $__env->make('common.footer', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
     </footer>

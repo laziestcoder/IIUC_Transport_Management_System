@@ -36,50 +36,6 @@ class BusInfoController extends Controller
     }
 
     /**
-     * Show interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function show($id, Content $content)
-    {
-        return $content
-            ->header('Detail')
-            ->description('')
-            ->body($this->detail($id));
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header('Edit')
-            ->description('')
-            ->body($this->form()->edit($id));
-    }
-
-    /**
-     * Create interface.
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->header('Add New Bus')
-            ->description(' ')
-            ->body($this->form());
-    }
-
-    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -98,7 +54,7 @@ class BusInfoController extends Controller
         $grid->route_permit_validity('Route Permit Validity')->sortable();
         $grid->seat('Seat Capacity')->sortable();
         $states = [
-            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
         $grid->availability('Availability')->switch($states)->sortable();
@@ -122,12 +78,27 @@ class BusInfoController extends Controller
             // Sets the range query for the created_at field
             //$filter->expand();
             $filter->disableIdFilter();
-            $filter->like('busid','Bus ID');
-            $filter->like('registration','Registration No');
+            $filter->like('busid', 'Bus ID');
+            $filter->like('registration', 'Registration No');
             $filter->like('license', 'License No');
-            });
+        });
         //$grid->expandFilter();
         return $grid;
+    }
+
+    /**
+     * Show interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        return $content
+            ->header('Detail')
+            ->description('')
+            ->body($this->detail($id));
     }
 
     /**
@@ -171,6 +142,21 @@ class BusInfoController extends Controller
     }
 
     /**
+     * Edit interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function edit($id, Content $content)
+    {
+        return $content
+            ->header('Edit')
+            ->description('')
+            ->body($this->form()->edit($id));
+    }
+
+    /**
      * Make a form builder.
      *
      * @return Form
@@ -184,26 +170,40 @@ class BusInfoController extends Controller
         $form->text('registration', 'Registration No')->rules('required');
         //$form->text('license', 'License No')->rules('required');
         $form->hidden('license', 'License No')->default(function () use ($form) {
-            return crypt($form->text('registration'),'none');
+            return crypt($form->text('registration'), 'none');
         });
-        $form->text('insurance_no','Insurance No')->rules('required');
-        $form->date('insurance_validity','Insurance Validity')->rules('required');
-        $form->text('route_permit','Route Permit')->rules('required');
-        $form->date('route_permit_validity','Route Permit Validity')->rules('required');
+        $form->text('insurance_no', 'Insurance No')->rules('required');
+        $form->date('insurance_validity', 'Insurance Validity')->rules('required');
+        $form->text('route_permit', 'Route Permit')->rules('required');
+        $form->date('route_permit_validity', 'Route Permit Validity')->rules('required');
         $form->number('seat', 'Seat Capacity')->rules('required');
         $states = [
             'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
         ];
         $form->switch('availability', 'Availability')->states($states);
-        $form->select('bustype','Bus Type')->options(BusType::all()->pluck('name', 'id'))->rules('required');
-        $form->text('bus_name','Bus Name')->rules('required');
-        $form->text('busowner','Bus Owner')->rules('required');
-        $form->text('comments','Comments');
+        $form->select('bustype', 'Bus Type')->options(BusType::all()->pluck('name', 'id'))->rules('required');
+        $form->text('bus_name', 'Bus Name')->rules('required');
+        $form->text('busowner', 'Bus Owner')->rules('required');
+        $form->text('comments', 'Comments');
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;
         });
 
         return $form;
+    }
+
+    /**
+     * Create interface.
+     *
+     * @param Content $content
+     * @return Content
+     */
+    public function create(Content $content)
+    {
+        return $content
+            ->header('Add New Bus')
+            ->description(' ')
+            ->body($this->form());
     }
 }

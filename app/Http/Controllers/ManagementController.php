@@ -119,7 +119,7 @@ class ManagementController extends Controller
         //$datas = $request->all();
         $available = StudentSchedule::where('user_id', auth()->user()->id)->get();
         if (count($available)) {
-           $id = auth()->user()->id;
+            $id = auth()->user()->id;
             return $this->update($request, $id);
         }
         $days = Day::orderBy('id')->get();
@@ -143,22 +143,22 @@ class ManagementController extends Controller
             $gender = $schedule->user_gender = auth()->user()->gender;
             $schedule->entrydate = Carbon::now()->toDateString();
             $schedule->save();
-            if($pickid && $dropid) {
+            if ($pickid && $dropid) {
                 $routeid = BusPoint::where('id', $pickid)->first()->routeid;
                 $studentNo = BusStudentInfo::where('dayid', $dayid)
-                    ->where('routeid',$routeid)
-                    ->where('pointid',$pickid)
-                    ->where('timeid',$picktime)
-                    ->where('gender',$gender)
+                    ->where('routeid', $routeid)
+                    ->where('pointid', $pickid)
+                    ->where('timeid', $picktime)
+                    ->where('gender', $gender)
                     ->get();
                 $studentNo = count($studentNo);
                 $this->bus_student_number_per_route($dayid, $routeid, $pickid, $picktime, $gender, $studentNo);
                 $routeid = BusPoint::where('id', $dropid)->first()->routeid;
                 $studentNo = BusStudentInfo::where('dayid', $dayid)
-                    ->where('routeid',$routeid)
-                    ->where('pointid',$pickid)
-                    ->where('timeid',$picktime)
-                    ->where('gender',$gender)
+                    ->where('routeid', $routeid)
+                    ->where('pointid', $pickid)
+                    ->where('timeid', $picktime)
+                    ->where('gender', $gender)
                     ->get();
                 $studentNo = count($studentNo);
                 $this->bus_student_number_per_route($dayid, $routeid, $dropid, $droptime, $gender, $studentNo);
@@ -188,10 +188,9 @@ class ManagementController extends Controller
                 break;
             }
             $dataid = StudentSchedule::where('user_id', $id)->where('day', $day->id)->first();
-            if($dataid){
+            if ($dataid) {
                 $dataid = $dataid->id;
-            }
-            else{
+            } else {
                 continue;
             }
             $schedule = StudentSchedule::find($dataid);
@@ -207,22 +206,22 @@ class ManagementController extends Controller
             $gender = $schedule->user_gender = auth()->user()->gender;
             $schedule->entrydate = Carbon::now()->toDateString();
             $schedule->save();
-            if($pickid && $dropid) {
+            if ($pickid && $dropid) {
                 $routeid = BusPoint::where('id', $pickid)->first()->routeid;
                 $studentNo = BusStudentInfo::where('dayid', $dayid)
-                    ->where('routeid',$routeid)
-                    ->where('pointid',$pickid)
-                    ->where('timeid',$picktime)
-                    ->where('gender',$gender)
+                    ->where('routeid', $routeid)
+                    ->where('pointid', $pickid)
+                    ->where('timeid', $picktime)
+                    ->where('gender', $gender)
                     ->get();
                 $studentNo = count($studentNo);
                 $this->bus_student_number_per_route($dayid, $routeid, $pickid, $picktime, $gender, $studentNo);
                 $routeid = BusPoint::where('id', $dropid)->first()->routeid;
                 $studentNo = BusStudentInfo::where('dayid', $dayid)
-                    ->where('routeid',$routeid)
-                    ->where('pointid',$pickid)
-                    ->where('timeid',$picktime)
-                    ->where('gender',$gender)
+                    ->where('routeid', $routeid)
+                    ->where('pointid', $pickid)
+                    ->where('timeid', $picktime)
+                    ->where('gender', $gender)
                     ->get();
                 $studentNo = count($studentNo);
                 $this->bus_student_number_per_route($dayid, $routeid, $dropid, $droptime, $gender, $studentNo);
@@ -267,6 +266,42 @@ class ManagementController extends Controller
     //    {
     //        //
     //    }
+
+    protected function bus_student_number_per_route($dayid, $routeid, $pointid, $timeid, $gender, $studentNumber)
+    {
+        $exist = BusStudentInfo::where('dayid', $dayid)
+            ->where('routeid', $routeid)
+            ->where('pointid', $pointid)
+            ->where('timeid', $timeid)
+            ->where('gender', $gender)
+            ->get();
+        if (count($exist) > 0) {
+            $dataid = $exist->first()->id;
+            $form = BusStudentInfo::find($dataid);
+
+            $form->routeid = $routeid;
+            $form->pointid = $pointid;
+            $form->studentno = $studentNumber;
+            $form->dayid = $dayid;
+            $form->timeid = $timeid;
+            $form->gender = $gender;
+
+            $form->save();
+
+        } else {
+            $form = new BusStudentInfo;
+
+            $form->routeid = $routeid;
+            $form->pointid = $pointid;
+            $form->studentno = $studentNumber;
+            $form->dayid = $dayid;
+            $form->timeid = $timeid;
+            $form->gender = $gender;
+
+            $form->save();
+        }
+
+    }
 
     /**
      * Display a listing of the resource.
@@ -318,7 +353,7 @@ class ManagementController extends Controller
             'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
             'titlenew' => 'Create New Schedule',
             'titleinfo' => 'Available Schedule',
-            'times' => Time::orderBy('time','asc')->get(),
+            'times' => Time::orderBy('time', 'asc')->get(),
             'days' => Day::where('active', 1)->get(),
             'points' => BusPoint::all('id', 'pointname'),
             'gender' => $user_gender,
@@ -337,42 +372,6 @@ class ManagementController extends Controller
             'title' => 'Route Information',
         );
         return view("user.busRouteDetails")->with($data);
-
-    }
-
-    protected function bus_student_number_per_route($dayid, $routeid, $pointid, $timeid, $gender, $studentNumber)
-    {
-        $exist = BusStudentInfo::where('dayid', $dayid)
-            ->where('routeid', $routeid)
-            ->where('pointid', $pointid)
-            ->where('timeid', $timeid)
-            ->where('gender', $gender)
-            ->get();
-        if (count($exist) > 0) {
-            $dataid = $exist->first()->id;
-            $form = BusStudentInfo::find($dataid);
-
-            $form->routeid = $routeid;
-            $form->pointid = $pointid;
-            $form->studentno = $studentNumber;
-            $form->dayid = $dayid;
-            $form->timeid = $timeid;
-            $form->gender = $gender;
-
-            $form->save();
-
-        } else {
-            $form = new BusStudentInfo;
-
-            $form->routeid = $routeid;
-            $form->pointid = $pointid;
-            $form->studentno = $studentNumber;
-            $form->dayid = $dayid;
-            $form->timeid = $timeid;
-            $form->gender = $gender;
-
-            $form->save();
-        }
 
     }
 }

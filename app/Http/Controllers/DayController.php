@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Day;
 use Admin;
+use App\Day;
 use DB;
 use Illuminate\Http\Request;
 

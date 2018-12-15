@@ -3,17 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\BusPoint;
-use App\BusRoute;
 use App\Day;
 use App\Schedule;
 use App\Time;
-use Carbon\Carbon;
 use DB;
-use Encore\Admin\Facades\Admin;
-use Illuminate\Http\Request;
 use Response;
-use Encore\Admin\Form;
-use Encore\Admin\Grid;
 
 
 class ScheduleController extends Controller
@@ -46,8 +40,8 @@ class ScheduleController extends Controller
             'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
             'titlenew' => '',
             'titleinfo' => '',
-            'times' => Time::orderBy('time','asc')->get(),
-            'days' => Day::all('id','dayname'),
+            'times' => Time::orderBy('time', 'asc')->get(),
+            'days' => Day::all('id', 'dayname'),
             'points' => BusPoint::all('id', 'pointname'),
             //'days' => $days,
             //'times' => $times,

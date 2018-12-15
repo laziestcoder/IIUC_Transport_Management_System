@@ -3,12 +3,11 @@
 namespace App;
 //namespace Encore\Admin\Auth\Database;
 
-use Illuminate\Database\Eloquent\Model;
-
+use Encore\Admin\Auth\Database\HasPermissions;
 use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Encore\Admin\Auth\Database\HasPermissions;
+use Illuminate\Database\Eloquent\Model;
 
 
 class AdminDashboard extends Model implements AuthenticatableContract
@@ -22,7 +21,6 @@ class AdminDashboard extends Model implements AuthenticatableContract
     use Authenticatable, AdminBuilder, HasPermissions;
 
     protected $fillable = ['special_schedule', 'regular_schedule', 'holiday', 'schedule_suspend', 'schedule_edit', 'editdate'];
-
 
 
     public function user()

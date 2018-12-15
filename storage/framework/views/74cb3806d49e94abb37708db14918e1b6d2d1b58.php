@@ -11,7 +11,7 @@
                             <div class="panel panel-default">
                                 <!-- <div class="panel-heading">Register</div> -->
                                 <div class="panel-body" style="padding-top: 50px; background:#212529">
-                                    <?php if(session('confirmation-success')): ?>
+                                    <?php if (session('confirmation-success')): ?>
                                         <div class="alert alert-success">
                                             <?php echo e(session('confirmation-success'), false); ?>
 
@@ -28,9 +28,10 @@
                                                 <div class="col-md-6">
                                                     <input id="name" type="text" class="form-control" name="name"
                                                            placeholder=" Enter Your Full Name "
-                                                           value="<?php echo e(old('name'), false); ?>" required autofocus>
+                                                           value="<?php echo e(old('name'), false); ?>" required
+                                                           autofocus>
 
-                                                    <?php if($errors->has('name')): ?>
+                                                    <?php if ($errors->has('name')): ?>
                                                         <span class="help-block">
                                                             <strong><?php echo e($errors->first('name'), false); ?></strong>
                                                         </span>
@@ -46,7 +47,7 @@
                                                            placeholder=" Enter Your Varsity ID "
                                                            value="<?php echo e(old('jobid'), false); ?>" required>
 
-                                                    <?php if($errors->has('jobid')): ?>
+                                                    <?php if ($errors->has('jobid')): ?>
                                                         <span class="help-block">
 
                                                             <strong><?php echo e($errors->first('jobid'), false); ?></strong>
@@ -64,7 +65,7 @@
                                                            placeholder=" Enter Your Valid Email ID "
                                                            value="<?php echo e(old('email'), false); ?>" required>
 
-                                                    <?php if($errors->has('email')): ?>
+                                                    <?php if ($errors->has('email')): ?>
                                                         <span class="help-block">
 
                                                             <strong><?php echo e($errors->first('email'), false); ?></strong>
@@ -82,7 +83,7 @@
                                                            placeholder=" Enter Password Atleast Six Characters "
                                                            name="password" required>
 
-                                                    <?php if($errors->has('password')): ?>
+                                                    <?php if ($errors->has('password')): ?>
                                                         <span class="help-block">
 
                                                             <strong><?php echo e($errors->first('password'), false); ?></strong>
@@ -126,58 +127,33 @@
                                                     Register As
                                                 </label>
                                                 <div class="col-md-6">
-                                                        <?php $userroles = DB::table('user_role')->where('active',true)->get();?>
-                                                        
-                                                        
-                                                    <select name="userrole" class="form-control" style="height: 36px" required>
-                                                        <option disabled selected>Select Your Role At IIUC</option>
-                                                        <?php $__currentLoopData = $userroles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $userrole): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                        <option value="<?php echo $userrole->id; ?>">
-                                                            <?php echo $userrole->name; ?>
+                                                    <?php $userroles = DB::table('user_role')->where('active', true)->get(); ?>
 
-                                                        </option>
-                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+                                                    <select name="userrole" class="form-control" style="height: 36px"
+                                                            required>
+                                                        <option disabled selected>Select Your Role At IIUC</option>
+                                                        <?php $__currentLoopData = $userroles;
+                                                        $__env->addLoop($__currentLoopData);
+                                                        foreach ($__currentLoopData as $userrole): $__env->incrementLoopIndices();
+                                                            $loop = $__env->getLastLoop(); ?>
+                                                            <option value="<?php echo $userrole->id; ?>">
+                                                                <?php echo $userrole->name; ?>
+
+                                                            </option>
+                                                        <?php endforeach;
+                                                        $__env->popLoop();
+                                                        $loop = $__env->getLastLoop(); ?>
                                                     </select>
                                                 </div>
                                             </div>
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
+
+
                                             <div class="form-group">
                                                 <div class="col-md-6 col-md-offset-4">
                                                     <div class="g-recaptcha"
                                                          data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
-                                                    <?php if($errors->has('recaptcha')): ?>
+                                                    <?php if ($errors->has('recaptcha')): ?>
                                                         <span class="help-block">
 
                                                             <strong><?php echo e($errors->first('recaptcha'), false); ?></strong>
@@ -211,7 +187,7 @@
 <div class="panel panel-default">
 <div class="panel-heading">Register</div>
 <div class="panel-body">
-<?php if(session('confirmation-success')): ?>
+<?php if (session('confirmation-success')): ?>
         <div class="alert alert-success">
 <?php echo e(session('confirmation-success'), false); ?>
 
@@ -227,7 +203,7 @@
 <div class="col-md-6">
 <input id="name" type="text" class="form-control" name="name" value="<?php echo e(old('name'), false); ?>" required autofocus>
 
-<?php if($errors->has('name')): ?>
+<?php if ($errors->has('name')): ?>
             <span class="help-block">
             <strong><?php echo e($errors->first('name'), false); ?></strong>
 </span>
@@ -241,7 +217,7 @@
 <div class="col-md-6">
 <input id="email" type="email" class="form-control" name="email" value="<?php echo e(old('email'), false); ?>" required>
 
-<?php if($errors->has('email')): ?>
+<?php if ($errors->has('email')): ?>
             <span class="help-block">
             <strong><?php echo e($errors->first('email'), false); ?></strong>
 </span>
@@ -255,7 +231,7 @@
 <div class="col-md-6">
 <input id="password" type="password" class="form-control" name="password" required>
 
-<?php if($errors->has('password')): ?>
+<?php if ($errors->has('password')): ?>
             <span class="help-block">
             <strong><?php echo e($errors->first('password'), false); ?></strong>
 </span>
@@ -323,7 +299,6 @@
             </div>
             </div> -->
 <?php $__env->stopSection(); ?>
-
 
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -59,7 +59,7 @@ class RegisterController extends Controller
             'image' => 'image|nullable|max:1999',
             'jobid' => 'required|string|max:50|unique:users',
             'g-recaptcha-response' => 'required|recaptcha',
-            
+
         ]);
     }
 
@@ -101,7 +101,7 @@ class RegisterController extends Controller
             'password' => bcrypt($data['password']),
             'userrole' => $data['userrole'],
             'gender' => $data['gender'],
-            'image' => $data['jobid'].".jpg",
+            'image' => $data['jobid'] . ".jpg",
             'token' => base64_encode($data['email']) . str_random(5),
         ]);
     }

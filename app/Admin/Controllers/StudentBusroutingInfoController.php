@@ -2,20 +2,19 @@
 
 namespace App\Admin\Controllers;
 
-use App\StudentSchedule;
+use App\BusPoint;
+use App\Day;
 use App\Http\Controllers\Controller;
+use App\StudentSchedule;
+use App\Time;
+use App\User;
+use App\UserRole;
 use Carbon\Carbon;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
-
-use App\User;
-use App\Day;
-use App\Time;
-use App\BusPoint;
-use App\UserRole;
 
 class StudentBusroutingInfoController extends Controller
 {
@@ -46,19 +45,19 @@ class StudentBusroutingInfoController extends Controller
         $grid->model()->where('pickpoint', '!=', false);
 
         $grid->id('ID')->sortable();
-        $grid->userrole('User')->display(function($id) {
-            if($id) {
+        $grid->userrole('User')->display(function ($id) {
+            if ($id) {
                 $id = UserRole::find($id);
                 if ($id) {
                     return $id->name;
                 } else {
                     return 'n/a';
                 }
-            }else{
+            } else {
                 return 'Not Selected';
             }
         })->sortable();
-        $grid->user_id('Varsity ID')->display(function($id) {
+        $grid->user_id('Varsity ID')->display(function ($id) {
             $id = User::find($id);
             if ($id) {
                 return $id->jobid;
@@ -66,7 +65,7 @@ class StudentBusroutingInfoController extends Controller
                 return 'n/a';
             }
         })->sortable();
-        $grid->day('Day')->display(function($id) {
+        $grid->day('Day')->display(function ($id) {
 
             $id = Day::find($id);
             if ($id) {
@@ -75,8 +74,8 @@ class StudentBusroutingInfoController extends Controller
                 return 'n/a';
             }
         })->sortable();
-        $grid->pickpoint('Pick Point')->display(function($id) {
-            if($id) {
+        $grid->pickpoint('Pick Point')->display(function ($id) {
+            if ($id) {
 
                 $id = BusPoint::find($id);
                 if ($id) {
@@ -84,55 +83,55 @@ class StudentBusroutingInfoController extends Controller
                 } else {
                     return 'n/a';
                 }
-            }else{
+            } else {
                 return 'Not Selected';
             }
         })->sortable();
-        $grid->picktime('Pick Time')->display(function($id) {
-            if($id) {
+        $grid->picktime('Pick Time')->display(function ($id) {
+            if ($id) {
                 $id = Time::find($id);
                 if ($id) {
                     return Carbon::parse($id->time)->format('g:i A');
                 } else {
                     return 'n/a';
                 }
-            }else{
+            } else {
                 return 'Not Selected';
             }
         })->sortable();
-        $grid->droppoint('Drop Point')->display(function($id) {
-            if($id) {
+        $grid->droppoint('Drop Point')->display(function ($id) {
+            if ($id) {
                 $id = BusPoint::find($id);
                 if ($id) {
                     return $id->pointname;
                 } else {
                     return 'n/a';
                 }
-            }else{
+            } else {
                 return 'Not Selected';
             }
         })->sortable();
-        $grid->droptime('Drop Time')->display(function($id) {
-            if($id) {
+        $grid->droptime('Drop Time')->display(function ($id) {
+            if ($id) {
                 $id = Time::find($id);
                 if ($id) {
                     return Carbon::parse($id->time)->format('g:i A');
                 } else {
                     return 'n/a';
                 }
-            }else{
+            } else {
                 return 'Not Selected';
             }
         })->sortable();
         $grid->entrydate('Entry Date');
-        $grid->created_at('Created At')->display(function($s) {
+        $grid->created_at('Created At')->display(function ($s) {
             if ($s) {
                 return Carbon::parse($s)->format('Y-m-d g:i:s A');
             } else {
                 return 'n/a';
             }
         });
-        $grid->updated_at('Updated At')->display(function($s) {
+        $grid->updated_at('Updated At')->display(function ($s) {
             if ($s) {
                 return Carbon::parse($s)->format('Y-m-d g:i:s A');
             } else {
@@ -162,14 +161,13 @@ class StudentBusroutingInfoController extends Controller
 //        });
 
 
-
         return $grid;
     }
 
     /**
      * Show interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      * @return Content
      */
@@ -184,7 +182,7 @@ class StudentBusroutingInfoController extends Controller
     /**
      * Edit interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      * @return Content
      */
@@ -211,11 +209,10 @@ class StudentBusroutingInfoController extends Controller
 //    }
 
 
-
     /**
      * Make a show builder.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @return Show
      */
 //    protected function detail($id)

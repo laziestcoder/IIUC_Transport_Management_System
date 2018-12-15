@@ -11,14 +11,15 @@
 
     <label for="{{$id}}" class="col-sm-2 control-label">{{$label}}</label>
 
-<div class="col-sm-6">
+    <div class="col-sm-6">
 
-    @include('admin::form.error')
+        @include('admin::form.error')
 
-    <textarea class="form-control {{$class}}" id="{{$id}}" name="{{$name}}" placeholder="{{ $placeholder }}" {!! $attributes !!} >{{ old($column, $value) }}</textarea>
+        <textarea class="form-control {{$class}}" id="{{$id}}" name="{{$name}}"
+                  placeholder="{{ $placeholder }}" {!! $attributes !!} >{{ old($column, $value) }}</textarea>
 
-    @include('admin::form.help-block')
+        @include('admin::form.help-block')
 
-</div>
+    </div>
 </div>
 

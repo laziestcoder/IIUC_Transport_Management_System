@@ -3,7 +3,7 @@
     <div class="pull-right hidden-xs">
 
         <p>
-            <strong> {{ date("Y") }} &copy  |
+            <strong> {{ date("Y") }} &copy |
                 ITMS & </strong>
             <a href="https://github.com/laziestcoder"> Developers </a>
             <strong> | All Rights Reserved </strong>

@@ -2,12 +2,12 @@
     <!-- To the right -->
     <div class="pull-right hidden-xs">
 
-            <p>
-                <strong> {{ date("Y") }} &copy ITMS & </strong> <a href="https://github.com/laziestcoder"> Developers </a>
-                <strong> | All Rights Reserved </strong>
-                {{--<strong> | IIUC Transport Management Division </strong>--}}
+        <p>
+            <strong> {{ date("Y") }} &copy ITMS & </strong> <a href="https://github.com/laziestcoder"> Developers </a>
+            <strong> | All Rights Reserved </strong>
+            {{--<strong> | IIUC Transport Management Division </strong>--}}
 
-            </p>
+        </p>
 
     </div>
     <!-- Default to the left -->

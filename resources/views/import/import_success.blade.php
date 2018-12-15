@@ -12,8 +12,8 @@
                         Model: {{$model}} <br>
                         Table: {{$table}} <br>
                         {{--@foreach($allModels as $models)--}}
-                            {{--<br>--}}
-                            {{--{{$models}}--}}
+                        {{--<br>--}}
+                        {{--{{$models}}--}}
                         {{--@endforeach--}}
                     </div>
                 </div>

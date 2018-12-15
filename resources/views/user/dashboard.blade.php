@@ -1,11 +1,11 @@
 @extends('layouts.userlayout')
 
 @section('usercontent')
-    <div class="panel-body backGround" >
+    <div class="panel-body backGround">
         <h1>Profile</h1>
     </div>
     <hr>
-    <div class="panel-body" >
+    <div class="panel-body">
         <div class="container ">
             <div class="userinfo">
                 @include('inc.messages')
@@ -57,7 +57,7 @@
                     </tr>
                     <tr>
                         <td>
-                           Last Updated: {!! $lastupdated !!}
+                            Last Updated: {!! $lastupdated !!}
                         </td>
                     </tr>
                     <tr>

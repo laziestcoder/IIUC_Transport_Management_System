@@ -13,7 +13,8 @@ Route::group([
     $router->get('/import', 'ImportController@getImport')->name('import');
     $router->post('/import_parse', 'ImportController@parseImport')->name('import_parse');
     $router->post('/import_process', 'ImportController@processImport')->name('import_process');
-
+    
+    $router->resource('users', 'UserController');
     $router->resource('/admin-dashboard', 'AdminDashboardController');
     $router->resource('/emergency-contact', 'EmergencyContactsController');
     $router->resource('/auth/students', 'StudentController');
@@ -44,5 +45,10 @@ Route::middleware('optimizeImages')->group(function () {
     //Route::resource('/auth/transport-notice', 'NoticeController');
     //Route::resource('/auth/driver', 'DriverInfoController');
     //Route::resource('/auth/helper', 'HelperInfoController');
+
+    Route::resource('images', ImageController::class);
+    Route::resource('multiple-images', MultipleImageController::class);
+    Route::resource('files', FileController::class);
+ //   $router->resource('users', UserController::class);
 
 });

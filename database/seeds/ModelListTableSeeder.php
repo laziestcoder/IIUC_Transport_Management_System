@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\ModelList;
+use Illuminate\Database\Seeder;
 
 class ModelListTableSeeder extends Seeder
 {

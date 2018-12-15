@@ -19,22 +19,20 @@
 
             </small>
         </h3>
-        
 
-        <?php echo Form :: open(['action'=>'DayController@store','method' => 'POST', 'enctype' => 'multipart/form-data' ]); ?>
+
+        <?php echo Form:: open(['action' => 'DayController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data']); ?>
 
         <div class="form-group">
-            <?php echo e(Form :: label('title','Write Day Name :'), false); ?>
+            <?php echo e(Form:: label('title', 'Write Day Name :'), false); ?>
 
             <?php echo Form::text('day', \Carbon\Carbon::now()->format('l')); ?>
 
         </div>
-        <?php echo e(Form :: submit('Submit',['class' => 'btn btn-primary']), false); ?>
+        <?php echo e(Form:: submit('Submit', ['class' => 'btn btn-primary']), false); ?>
 
         <?php echo Form::close(); ?>
 
-
-        
 
     </section>
     <section class="content">
@@ -45,7 +43,7 @@
 
             </small>
         </h3>
-        <?php if( count($days) > 0 ): ?>
+        <?php if (count($days) > 0): ?>
             <table class="table table-hover table-responsive-lg">
                 <thead class="table">
                 <tr>
@@ -57,25 +55,30 @@
                 </thead>
                 <tbody class="table">
                 <?php $flag = 0; ?>
-                <?php $__currentLoopData = $days; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php $__currentLoopData = $days;
+                $__env->addLoop($__currentLoopData);
+                foreach ($__currentLoopData as $day): $__env->incrementLoopIndices();
+                    $loop = $__env->getLastLoop(); ?>
                     <tr>
-                        <td><?php echo e($flag+=1, false); ?></td>
+                        <td><?php echo e($flag += 1, false); ?></td>
                         <td><?php echo e($day->dayname, false); ?></td>
                         <td><?php echo e($day->id, false); ?></td>
                         <td>
-                            
-                            <?php echo Form::open(['action' => ['DayController@destroy', $day->id], 'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline'  /* ,'onclick' => 'function deleteMe()' */  ]); ?> 
-                            <?php echo e(Form::hidden('_method','DELETE'), false); ?>
+
+                            <?php echo Form::open(['action' => ['DayController@destroy', $day->id], 'method' => 'POST', 'class' => 'pull', 'id' => 'delete', 'style' => 'display:inline'  /* ,'onclick' => 'function deleteMe()' */]); ?>
+                            <?php echo e(Form::hidden('_method', 'DELETE'), false); ?>
 
                             <?php echo e(csrf_field(), false); ?>
 
-                            <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top']), false); ?>
+                            <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle' => 'confirmation', 'data-placement' => 'top']), false); ?>
 
                             <?php echo Form::close(); ?>
 
                         </td>
                     </tr>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php endforeach;
+                $__env->popLoop();
+                $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
             <?php echo e($days->links(), false); ?>

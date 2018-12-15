@@ -311,8 +311,7 @@
 
                 try {
                     return JSON.parse(dataValString);
-                }
-                catch (err) {
+                } catch (err) {
                     return dataValString;
                 }
             }
@@ -1012,8 +1011,7 @@
                     val = (this.options.min + Math.round((this.diff * this.percentage[0] / 100) / this.options.step) * this.options.step);
                     if (val < this.options.min) {
                         val = this.options.min;
-                    }
-                    else if (val > this.options.max) {
+                    } else if (val > this.options.max) {
                         val = this.options.max;
                     }
                     val = parseFloat(val);

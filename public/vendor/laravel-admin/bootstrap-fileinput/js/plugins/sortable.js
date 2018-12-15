@@ -11,14 +11,11 @@
 
     if (typeof define === "function" && define.amd) {
         define(factory);
-    }
-    else if (typeof module != "undefined" && typeof module.exports != "undefined") {
+    } else if (typeof module != "undefined" && typeof module.exports != "undefined") {
         module.exports = factory();
-    }
-    else if (typeof Package !== "undefined") {
+    } else if (typeof Package !== "undefined") {
         KvSortable = factory();  // export for Meteor.js
-    }
-    else {
+    } else {
         /* jshint sub:true */
         window["KvSortable"] = factory();
     }
@@ -286,8 +283,7 @@
                     evt.preventDefault();
                     return; // cancel dnd
                 }
-            }
-            else if (filter) {
+            } else if (filter) {
                 filter = filter.split(',').some(function (criteria) {
                     criteria = _closest(originalTarget, criteria.trim(), el);
 
@@ -391,11 +387,9 @@
                 };
 
                 this._onDragStart(tapEvt, 'touch');
-            }
-            else if (!this.nativeDraggable) {
+            } else if (!this.nativeDraggable) {
                 this._onDragStart(tapEvt, true);
-            }
-            else {
+            } else {
                 _on(dragEl, 'dragend', this);
                 _on(rootEl, 'dragstart', this._onDragStart);
             }
@@ -551,8 +545,7 @@
                 }
 
                 this._loopId = setInterval(this._emulateDragOver, 50);
-            }
-            else {
+            } else {
                 if (dataTransfer) {
                     dataTransfer.effectAllowed = 'move';
                     options.setData && options.setData.call(this, dataTransfer, dragEl);
@@ -606,8 +599,7 @@
 
                     if (cloneEl || nextEl) {
                         rootEl.insertBefore(dragEl, cloneEl || nextEl);
-                    }
-                    else if (!canSort) {
+                    } else if (!canSort) {
                         rootEl.appendChild(dragEl);
                     }
 
@@ -638,8 +630,7 @@
                         this._animate(dragRect, dragEl);
                         target && this._animate(targetRect, target);
                     }
-                }
-                else if (target && !target.animated && target !== dragEl && (target.parentNode[expando] !== void 0)) {
+                } else if (target && !target.animated && target !== dragEl && (target.parentNode[expando] !== void 0)) {
                     if (lastEl !== target) {
                         lastEl = target;
                         lastCSS = _css(target);
@@ -668,8 +659,7 @@
 
                         if (moveVector === 1 || moveVector === -1) {
                             after = (moveVector === 1);
-                        }
-                        else if (floating) {
+                        } else if (floating) {
                             var elTop = dragEl.offsetTop,
                                 tgTop = target.offsetTop;
 
@@ -785,8 +775,7 @@
                             // Remove event
                             _dispatchEvent(this, rootEl, 'remove', dragEl, rootEl, oldIndex, newIndex);
                         }
-                    }
-                    else {
+                    } else {
                         // Remove clone
                         cloneEl && cloneEl.parentNode.removeChild(cloneEl);
 
@@ -851,8 +840,7 @@
                     this._onDragOver(evt);
                     _globalDragOver(evt);
                 }
-            }
-            else if (type === 'drop' || type === 'dragend') {
+            } else if (type === 'drop' || type === 'dragend') {
                 this._onDrop(evt);
             }
         },
@@ -1026,8 +1014,7 @@
         if (el) {
             if (el.classList) {
                 el.classList[state ? 'add' : 'remove'](name);
-            }
-            else {
+            } else {
                 var className = (' ' + el.className + ' ').replace(RSPACE, ' ').replace(' ' + name + ' ', ' ');
                 el.className = (className + (state ? ' ' + name : '')).replace(RSPACE, ' ');
             }
@@ -1042,14 +1029,12 @@
             if (val === void 0) {
                 if (document.defaultView && document.defaultView.getComputedStyle) {
                     val = document.defaultView.getComputedStyle(el, '');
-                }
-                else if (el.currentStyle) {
+                } else if (el.currentStyle) {
                     val = el.currentStyle;
                 }
 
                 return prop === void 0 ? val : val[prop];
-            }
-            else {
+            } else {
                 if (!(prop in style)) {
                     prop = '-webkit-' + prop;
                 }
@@ -1278,8 +1263,7 @@
 
     if (typeof define === "function" && define.amd) {
         define(["jquery"], factory);
-    }
-    else {
+    } else {
         /* jshint sub:true */
         factory(jQuery);
     }
@@ -1312,15 +1296,12 @@
             if (kvsortable) {
                 if (options === 'widget') {
                     return kvsortable;
-                }
-                else if (options === 'destroy') {
+                } else if (options === 'destroy') {
                     kvsortable.destroy();
                     $el.removeData('kvsortable');
-                }
-                else if (typeof kvsortable[options] === 'function') {
+                } else if (typeof kvsortable[options] === 'function') {
                     retVal = kvsortable[options].apply(kvsortable, [].slice.call(args, 1));
-                }
-                else if (options in kvsortable.options) {
+                } else if (options in kvsortable.options) {
                     retVal = kvsortable.option.apply(kvsortable, args);
                 }
             }

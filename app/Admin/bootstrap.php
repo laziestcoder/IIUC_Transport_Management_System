@@ -23,8 +23,9 @@
 //Encore\Admin\Form::forget(['editor']);
 Admin::css('/packages/prettydocs/css/styles.css');
 Admin::js('/packages/prettydocs/js/main.js');
-use Encore\Admin\Form;
+
 use App\Admin\Extensions\Form\CKEditor;
+use Encore\Admin\Form;
 
 Form::forget(['map', 'editor']);
 Form::extend('ckeditor', CKEditor::class);

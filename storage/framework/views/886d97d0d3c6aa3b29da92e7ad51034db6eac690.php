@@ -8,10 +8,10 @@
                         <div class="row">
                             <div class="col-md-8 col-md-offset-2">
                                 <div class="panel panel-default">
-                                    
+
 
                                     <div class="panel-body" style="background:#212529">
-                                        <?php if(session('status')): ?>
+                                        <?php if (session('status')): ?>
                                             <div class="alert alert-success">
                                                 <?php echo e(session('status'), false); ?>
 
@@ -30,7 +30,7 @@
                                                     <input id="email" type="email" class="form-control" name="email"
                                                            value="<?php echo e(old('email'), false); ?>" required>
 
-                                                    <?php if($errors->has('email')): ?>
+                                                    <?php if ($errors->has('email')): ?>
                                                         <span class="help-block">
                                         <strong><?php echo e($errors->first('email'), false); ?></strong>
                                     </span>

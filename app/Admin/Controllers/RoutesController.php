@@ -57,50 +57,6 @@ class RoutesController extends Controller
     }
 
     /**
-     * Show interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function show($id, Content $content)
-    {
-        return $content
-            ->header('Detail')
-            ->description('')
-            ->body($this->detail($id));
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header('Edit')
-            ->description('')
-            ->body($this->form()->edit($id));
-    }
-
-    /**
-     * Create interface.
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->header('Create')
-            ->description('')
-            ->body($this->form());
-    }
-
-    /**
      * Make a grid builder.
      *
      * @return Grid
@@ -112,61 +68,18 @@ class RoutesController extends Controller
         $grid->id('ID')->sortable();
         $grid->routename('Route Name')->badge('green')->sortable();
         $states = [
-            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
         $grid->active('Published')->switch($states)->sortable();
         $grid->user_id('Inputed By')->display(function ($s) {
-            return Administrator::all()->find($s)->name?: 'n/a';
+            return Administrator::all()->find($s)->name ?: 'n/a';
         })->badge('blue')->sortable();
         $grid->created_at('Created At')->sortable();
         $grid->updated_at('Updated At')->sortable();
         $grid->disableFilter();
 
         return $grid;
-    }
-
-    /**
-     * Make a show builder.
-     *
-     * @param mixed $id
-     * @return Show
-     */
-    protected function detail($id)
-    {
-        $show = new Show(BusRoute::findOrFail($id));
-
-        $show->id('ID');
-        $show->routename('Route Name');
-        $show->user_id('Created By')->as(function ($s) {
-            return Administrator::all()->find($s)->name;
-        })->label('primary');
-        $show->created_at('Created At');
-        $show->updated_at('Updated At');
-
-        return $show;
-    }
-
-    /**
-     * Make a form builder.
-     *
-     * @return Form
-     */
-    protected function form()
-    {
-        $form = new Form(new BusRoute);
-
-        $form->text('routename', 'Route Name')->label('green');
-        $states = [
-            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
-            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
-        ];
-        $form->switch('active','Published')->states($states);
-        $form->hidden('user_id', 'Created By')->default(function () {
-            return Admin::user()->id;
-        });
-
-        return $form;
     }
 
     protected function grid2()
@@ -208,5 +121,92 @@ class RoutesController extends Controller
             $tools->disableRefreshButton();
         });
         return $grid;
+    }
+
+    /**
+     * Show interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        return $content
+            ->header('Detail')
+            ->description('')
+            ->body($this->detail($id));
+    }
+
+    /**
+     * Make a show builder.
+     *
+     * @param mixed $id
+     * @return Show
+     */
+    protected function detail($id)
+    {
+        $show = new Show(BusRoute::findOrFail($id));
+
+        $show->id('ID');
+        $show->routename('Route Name');
+        $show->user_id('Created By')->as(function ($s) {
+            return Administrator::all()->find($s)->name;
+        })->label('primary');
+        $show->created_at('Created At');
+        $show->updated_at('Updated At');
+
+        return $show;
+    }
+
+    /**
+     * Edit interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content
+     */
+    public function edit($id, Content $content)
+    {
+        return $content
+            ->header('Edit')
+            ->description('')
+            ->body($this->form()->edit($id));
+    }
+
+    /**
+     * Make a form builder.
+     *
+     * @return Form
+     */
+    protected function form()
+    {
+        $form = new Form(new BusRoute);
+
+        $form->text('routename', 'Route Name')->label('green');
+        $states = [
+            'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('active', 'Published')->states($states);
+        $form->hidden('user_id', 'Created By')->default(function () {
+            return Admin::user()->id;
+        });
+
+        return $form;
+    }
+
+    /**
+     * Create interface.
+     *
+     * @param Content $content
+     * @return Content
+     */
+    public function create(Content $content)
+    {
+        return $content
+            ->header('Create')
+            ->description('')
+            ->body($this->form());
     }
 }

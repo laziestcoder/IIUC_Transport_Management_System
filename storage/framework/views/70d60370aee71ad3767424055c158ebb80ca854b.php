@@ -2,7 +2,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
 
     <section class="content-header">
-        
+
         <script>
             $(document).ready(function () {
                 $('[data-toggle=confirmation]').confirmation({
@@ -27,12 +27,15 @@
         <br>
         <a href="/admin/auth/notices/create" class="btn btn-facebook">New Notice</a>
 
-        
+
         <br><br>
-        
-        <?php if(count($notices) > 0): ?>
+
+        <?php if (count($notices) > 0): ?>
             <?php $count = 0; ?>
-            <?php $__currentLoopData = $notices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php $__currentLoopData = $notices;
+            $__env->addLoop($__currentLoopData);
+            foreach ($__currentLoopData as $notice): $__env->incrementLoopIndices();
+                $loop = $__env->getLastLoop(); ?>
                 <?php $count = $count + 1; ?>
                 <div class="well">
                     <div class="row">
@@ -57,17 +60,18 @@
 
                                 </small>
                             </h3>
-                            <?php if(Admin::user()): ?>
-                                <?php if((Admin::user()->id == $notice->user_id)||(DB::table('admin_role_users')->where('user_id',(Admin::user()->id))->first()->role_id <= 4)): ?>
-                                    <a href="/admin/auth/notices/<?php echo e($notice->id, false); ?>/edit" class="btn btn-default">Edit</a>
-                                    
-                                    <?php echo Form::open(['action' => ['NoticesController@destroy', $notice->id], 'method' => 'POST', 'class' => 'pull','id' =>'delete','style'=>'display:inline'  ]); ?>
+                            <?php if (Admin::user()): ?>
+                                <?php if ((Admin::user()->id == $notice->user_id) || (DB::table('admin_role_users')->where('user_id', (Admin::user()->id))->first()->role_id <= 4)): ?>
+                                    <a href="/admin/auth/notices/<?php echo e($notice->id, false); ?>/edit"
+                                       class="btn btn-default">Edit</a>
 
-                                    <?php echo e(Form::hidden('_method','DELETE'), false); ?>
+                                    <?php echo Form::open(['action' => ['NoticesController@destroy', $notice->id], 'method' => 'POST', 'class' => 'pull', 'id' => 'delete', 'style' => 'display:inline']); ?>
+
+                                    <?php echo e(Form::hidden('_method', 'DELETE'), false); ?>
 
                                     <?php echo e(csrf_field(), false); ?>
 
-                                    <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle'=>'confirmation','data-placement'=>'top']), false); ?>
+                                    <?php echo e(Form::submit('Delete', ['class' => 'btn btn-danger', 'data-toggle' => 'confirmation', 'data-placement' => 'top']), false); ?>
 
                                     <?php echo Form::close(); ?>
 
@@ -76,7 +80,9 @@
                         </div>
                     </div>
                 </div>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            <?php endforeach;
+            $__env->popLoop();
+            $loop = $__env->getLastLoop(); ?>
             <?php echo $notices->links(); ?>
 
         <?php else: ?>
@@ -86,11 +92,10 @@
                 </div>
             </div>
         <?php endif; ?>
-        
+
     </section>
     <section class="content">
-        
-        
+
 
     </section>
 <?php $__env->stopSection(); ?>

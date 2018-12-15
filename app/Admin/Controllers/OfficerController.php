@@ -3,28 +3,19 @@
 namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
-use Encore\Admin\Facades\Admin;
+use App\User;
+use App\UserRole;
+use DB;
+use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
-
-use App\User;
-use DB;
-use App\UserRole;
-
-use Encore\Admin\Controllers\Dashboard;
-use Encore\Admin\Controllers\HasResourceActions;
-use Encore\Admin\Layout\Column;
-use Encore\Admin\Layout\Row;
-
-use Encore\Admin\Auth\Database\Administrator;
-use Encore\Admin\Auth\Database\Permission;
-use Encore\Admin\Auth\Database\Role;
 use Encore\Admin\Show;
 
 class OfficerController extends Controller
 {
     use HasResourceActions;
+
     /**
      * Index interface.
      *
@@ -46,7 +37,7 @@ class OfficerController extends Controller
     protected function grid($value)
     {
         $self = $this;
-        return User::grid(function (Grid $grid) use ($value,$self) {
+        return User::grid(function (Grid $grid) use ($value, $self) {
 
 
             $grid->model()->where('userrole', '=', $value);
@@ -70,7 +61,7 @@ class OfficerController extends Controller
 //                return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
 //            });
             $states = [
-                'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+                'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
                 'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
             ];
             $grid->confirmed(trans('Activated'))->switch($states);
@@ -85,12 +76,12 @@ class OfficerController extends Controller
                 $actions->disableEdit();
                 //$actions->disableview();
             });
-/*
-            $grid->tools(function (Grid\Tools $tools) {
-                $tools->batch(function (Grid\Tools\BatchActions $actions) {
-                    $actions->disableDelete();
-                });
-            });*/
+            /*
+                        $grid->tools(function (Grid\Tools $tools) {
+                            $tools->batch(function (Grid\Tools\BatchActions $actions) {
+                                $actions->disableDelete();
+                            });
+                        });*/
             $grid->filter(function ($filter) {
                 // Sets the range query for the created_at field
                 $filter->disableIdFilter();
@@ -125,11 +116,11 @@ class OfficerController extends Controller
         $show->divider();
         $show->image(trans('admin.avatar'))
             ->as(function () use ($self) {
-                $file= $self->imageValidate($this->jobid);  //I want to use this $file value
-                if($file){ // here I want to access $file
-                    return "http://upanel.iiuc.ac.bd:81/Picture/".$this->jobid.".jpg";
+                $file = $self->imageValidate($this->jobid);  //I want to use this $file value
+                if ($file) { // here I want to access $file
+                    return "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
                 } else {
-                    return "/image/user/".$this->image;
+                    return "/image/user/" . $this->image;
                 }
             })->image();
 
@@ -197,11 +188,11 @@ class OfficerController extends Controller
     // }
     //  */
 
-    
+
     /**
      * Show interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      *
      * @return Content
@@ -214,6 +205,26 @@ class OfficerController extends Controller
 //            ->body($this->detail($id));
 //    }
 
+    public function imageValidate($pic)
+    {
+        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $pic . ".jpg";
+        $ch = curl_init();
+        $timeout = 5;
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+
+        $lines_string = curl_exec($ch);
+        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $file2 = $lines_string;
+        $file = $retcode;
+        if ($file == 200 && $file2[0] != '<') {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Edit interface.
@@ -240,7 +251,7 @@ class OfficerController extends Controller
 
         //$form->display('id', 'ID');
         $form->text('jobid', 'Varsity ID');
-        $form->display('avatar', trans('admin.avatar'))->with(function ($s){
+        $form->display('avatar', trans('admin.avatar'))->with(function ($s) {
             $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
             $ch = curl_init();
             $timeout = 5;
@@ -262,22 +273,22 @@ class OfficerController extends Controller
         $form->text('name', trans('admin.name'))->rules('required');
 //        $form->display('name', trans('admin.name'))->rules('required');
         $form->display('email', trans('Email'))->rules('required');
-        $form->display('gender',trans('Gender'))->with(function ($s){
-            return $s? 'Female':'Male';
+        $form->display('gender', trans('Gender'))->with(function ($s) {
+            return $s ? 'Female' : 'Male';
         });
         $form->select('userrole', 'Registered As')
-            ->options(UserRole::all()->sortBy('name')->pluck('name','id'))
+            ->options(UserRole::all()->sortBy('name')->pluck('name', 'id'))
             ->rules('required');
 //        $form->display('confirmed', trans('Activated'))->with(function ($s){
 //            return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";
 //        });
 
         $states = [
-            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
         ];
-        $form->switch('confirmed','Activated')->states($states);
-        $form->switch('confirmation','Verified')->states($states);
+        $form->switch('confirmed', 'Activated')->states($states);
+        $form->switch('confirmation', 'Verified')->states($states);
 
         //$form->radio('confirmation', 'Verified')->options([0 => 'No', 1 => 'Yes'])->stacked();
         $form->display('created_at', trans('Member Since'));
@@ -294,26 +305,5 @@ class OfficerController extends Controller
         //$form->save();
 
         return $form;
-    }
-
-
-    public function imageValidate($pic){
-        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $pic . ".jpg";
-        $ch = curl_init();
-        $timeout = 5;
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-
-        $lines_string = curl_exec($ch);
-        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        $file2 = $lines_string;
-        $file = $retcode;
-        if ($file == 200 && $file2[0] != '<') {
-            return true;
-        } else {
-            return false;
-        }
     }
 }

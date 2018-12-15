@@ -167,7 +167,7 @@
                                                 </h4>
                                             </div>
                                             <div class="timeline-body">
-                                    
+
                                             </div>
                                         </div>
                                     </li>
@@ -227,7 +227,7 @@
                     <?php $count = 0; ?>
                     @foreach($notices as $notice)
                         <?php $count = $count + 1; ?>
-                
+
                         <div class="col-md-4 col-sm-6 portfolio-item">
                             <a class="portfolio-link" data-toggle="modal" href="#portfolioModal{!! $count !!}">
                                 <div class="portfolio-hover">
@@ -571,7 +571,7 @@
                     </div>
                 </div>
             </div>
-        
+
         @endforeach
     @endif
 
