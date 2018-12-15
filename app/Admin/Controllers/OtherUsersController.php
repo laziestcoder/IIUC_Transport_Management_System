@@ -2,8 +2,8 @@
 
 namespace App\Admin\Controllers;
 
-use App\User;
 use App\Http\Controllers\Controller;
+use App\User;
 use App\UserRole;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -98,7 +98,7 @@ class OtherUsersController extends Controller
             return $s ? 'Female' : 'Male';
         })->sortable();
         $states = [
-            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
         $grid->confirmed(trans('Activated'))->switch($states)->sortable();
@@ -155,11 +155,11 @@ class OtherUsersController extends Controller
         $show->divider();
         $show->image(trans('admin.avatar'))
             ->as(function () use ($self) {
-                $file= $self->imageValidate($this->jobid);  //I want to use this $file value
-                if($file){ // here I want to access $file
-                    return "http://upanel.iiuc.ac.bd:81/Picture/".$this->jobid.".jpg";
+                $file = $self->imageValidate($this->jobid);  //I want to use this $file value
+                if ($file) { // here I want to access $file
+                    return "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
                 } else {
-                    return "/image/user/".$this->image;
+                    return "/image/user/" . $this->image;
                 }
             })->image();
 
@@ -213,16 +213,16 @@ class OtherUsersController extends Controller
         $form->text('jobid', 'Varsity ID');
         $form->password('password', 'Password');
         $form->select('userrole', 'Registered As')
-            ->options(UserRole::all()->sortBy('name')->pluck('name','id'))
+            ->options(UserRole::all()->sortBy('name')->pluck('name', 'id'))
             ->rules('required');
         $states = [
-            'on'  => ['value' => 1, 'text' => 'Female', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'Female', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'Male', 'color' => 'danger'],
         ];
         $form->switch('gender', 'Gender')->states($states);
         $form->number('adminrole', 'Admin Role')->default(1);
         $states = [
-            'on'  => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
         ];
         $form->switch('confirmation', 'Verified')->states($states);
