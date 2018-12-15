@@ -4,14 +4,15 @@ namespace App\Admin\Controllers;
 //namespace Encore\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
-
+use Encore\Admin\Controllers\HasResourceActions;
 //use Illuminate\Routing\Controller;
 
-class UserController extends Controller
+class UsersController extends Controller
 {
     use HasResourceActions;
 
@@ -47,7 +48,7 @@ class UserController extends Controller
         $grid->updated_at(trans('admin.updated_at'));
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
-            if ($actions->getKey() <= 3 ) {
+            if ($actions->getKey() <= 3 && Admin::user()->id != 1 ) {
                 $actions->disableDelete();
                 $actions->disableEdit();
             }
@@ -102,6 +103,12 @@ class UserController extends Controller
         })->label();
         $show->created_at(trans('admin.created_at'));
         $show->updated_at(trans('admin.updated_at'));
+        $show->panel()
+            ->tools(function ($tools) {
+                $tools->disableEdit();
+                //$tools->disableList();
+                $tools->disableDelete();
+            });
 
         return $show;
     }
@@ -157,6 +164,11 @@ class UserController extends Controller
             if ($form->password && $form->model()->password != $form->password) {
                 $form->password = bcrypt($form->password);
             }
+        });
+        $form->tools(function (Form\Tools $tools) {
+            $tools->disableDelete();
+            $tools->disableView();
+            $tools->disableEdit();
         });
 
         return $form;

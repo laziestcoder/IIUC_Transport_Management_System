@@ -114,7 +114,7 @@ return [
      */
     'operation_log' => [
 
-        'enable' => false,
+        'enable' => true,
 
         /*
          * Routes that will not log to database.

@@ -10,13 +10,13 @@ Route::group([
     'middleware' => config('admin.route.middleware'),
 ], function (Router $router) {
     $router->get('/', 'HomeController@index');
-    $router->get('/import', 'ImportController@getImport')->name('import');
-    $router->post('/import_parse', 'ImportController@parseImport')->name('import_parse');
-    $router->post('/import_process', 'ImportController@processImport')->name('import_process');
+    $router->get('/auth/import', 'ImportController@getImport')->name('import');
+    $router->post('/auth/import_parse', 'ImportController@parseImport')->name('import_parse');
+    $router->post('/auth/import_process', 'ImportController@processImport')->name('import_process');
     
-    $router->resource('users', 'UserController');
-    $router->resource('/admin-dashboard', 'AdminDashboardController');
-    $router->resource('/emergency-contact', 'EmergencyContactsController');
+    $router->resource('/auth/users', 'UsersController');
+    $router->resource('/auth/admin-dashboard', 'AdminDashboardController');
+    $router->resource('/auth/emergency-contact', 'EmergencyContactsController');
     $router->resource('/auth/students', 'StudentController');
     $router->resource('/auth/teachers', 'FacultyController');
     $router->resource('/auth/officer-staff', 'OfficerController');
@@ -46,9 +46,9 @@ Route::middleware('optimizeImages')->group(function () {
     //Route::resource('/auth/driver', 'DriverInfoController');
     //Route::resource('/auth/helper', 'HelperInfoController');
 
-    Route::resource('images', ImageController::class);
-    Route::resource('multiple-images', MultipleImageController::class);
-    Route::resource('files', FileController::class);
- //   $router->resource('users', UserController::class);
+    //Route::resource('images', ImageController::class);
+    //Route::resource('multiple-images', MultipleImageController::class);
+   // Route::resource('files', FileController::class);
+   // Route::resource('users', UserController::class);
 
 });

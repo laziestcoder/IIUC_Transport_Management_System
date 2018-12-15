@@ -32,7 +32,7 @@ class HomeController extends Controller
 
 
             $admin = Admin::user();
-            if (($admin->id) === 2 && ($admin->name) === 'Towfiqul Islam' && ($admin->username) === 'towfiq') {
+            if (($admin->id) === 1 && ($admin->name) === 'Towfiqul Islam' && ($admin->username) === 'towfiq') {
                 $content->row('<br><br><br>');
                 $content->row(function (Row $row) {
 

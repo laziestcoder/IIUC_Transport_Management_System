@@ -19,11 +19,7 @@ class AdminTablesSeed extends Seeder
         // create a user.
         Administrator::truncate();
         Administrator::insert([
-            [
-                'username' => 'admin',
-                'password' => bcrypt('i am master'),
-                'name' => 'Administrator',
-            ],
+
             [
                 'username' => 'towfiq',
                 'password' => bcrypt('i am boss'),
@@ -34,17 +30,50 @@ class AdminTablesSeed extends Seeder
                 'password' => bcrypt('i am another boss'),
                 'name' => 'Sina Ibn Amin',
             ],
+            [
+                'username' => 'admin',
+                'password' => bcrypt('i am master'),
+                'name' => 'Administrator',
+            ],
         ]);
 
         // create a role.
         Role::truncate();
-        Role::create([
-            'name' => 'Administrator',
-            'slug' => 'administrator',
+        Role::insert([
+            [
+                'name' => 'Administrator',
+                'slug' => 'administrator',
+            ],
+            [
+                'name' => 'Media Editor',
+                'slug' => 'media editor',
+            ],
+            [
+                'name' => 'Notice Editor',
+                'slug' => 'editor',
+            ],
+            [
+                'name' => 'Schedule Editor',
+                'slug' => 'bus schedule editor',
+            ],
+            [
+                'name' => 'Bus-Routing Editor',
+                'slug' => 'bus route, point, day, time, bus type editor',
+            ],
+            [
+                'name' => 'Information Editor',
+                'slug' => 'bus, driver, helper editor',
+            ],
+            [
+                'name' => 'Data Import Editor',
+                'slug' => 'data import editor',
+            ],
         ]);
 
         // add role to user.
-        Administrator::all()->roles()->save(Role::first());
+        Administrator::find(1)->roles()->save(Role::find(1));
+        Administrator::find(2)->roles()->save(Role::find(1));
+        Administrator::find(3)->roles()->save(Role::find(1));
 
         //create a permission
         Permission::truncate();
@@ -86,7 +115,8 @@ class AdminTablesSeed extends Seeder
                 'http_method' => '',
                 'http_path' => '/media*',
             ],
-            ['name' => 'Admin Messages',
+            [
+                'name' => 'Admin Messages',
                 'slug' => 'ext.messages',
                 'http_method' => '',
                 'http_path' => '/messages*',
@@ -116,6 +146,12 @@ class AdminTablesSeed extends Seeder
                 'http_path' => '/auth/addtime',
             ],
             [
+                'name' => 'Bus',
+                'slug' => 'bus',
+                'http_method' => '',
+                'http_path' => '/auth/bus*',
+            ],
+            [
                 'name' => 'Driver',
                 'slug' => 'driver',
                 'http_method' => '',
@@ -131,13 +167,13 @@ class AdminTablesSeed extends Seeder
                 'name' => 'Schedule',
                 'slug' => 'schedule',
                 'http_method' => '',
-                'http_path' => '/auth/allschedule/auth/schedule',
+                'http_path' => "/auth/bus-schedule*\r\n/auth/schedule*",
             ],
             [
                 'name' => 'Admin helpers',
                 'slug' => 'ext.helpers',
                 'http_method' => '',
-                'http_path' => '/helpers/*',
+                'http_path' => "/helpers*",
             ],
             [
                 'name' => 'Exceptions reporter',
@@ -161,7 +197,7 @@ class AdminTablesSeed extends Seeder
                 'order' => 1,
                 'title' => 'Admin Dashboard',
                 'icon' => 'fa-yelp',
-                'uri' => '/admin-dashboard',
+                'uri' => '/auth',
 
             ],
 
@@ -179,7 +215,7 @@ class AdminTablesSeed extends Seeder
                 'order' => 3,
                 'title' => 'Schedule Dashboard',
                 'icon' => 'fa-android',
-                'uri' => '/admin-dashboard',
+                'uri' => '/auth/admin-dashboard',
             ],
 
             [
@@ -187,7 +223,7 @@ class AdminTablesSeed extends Seeder
                 'order' => 4,
                 'title' => 'Emergency Contact',
                 'icon' => 'fa-warning',
-                'uri' => '/emergency-contact',
+                'uri' => '/auth/emergency-contact',
             ],
 
             [
@@ -243,25 +279,22 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-history',
                 'uri' => '/auth/logs',
             ],
-
             [
-                'parent_id' => 5,
+                'parent_id' => 0,
                 'order' => 11,
-                'title' => 'Exception Reporter',
-                'icon' => 'fa-bug',
-                'uri' => '/exceptions',
-            ],
-
-            [
-                'parent_id' => 5,
-                'order' => 12,
                 'title' => 'Helpers',
                 'icon' => 'fa-gears',
                 'uri' => '/helpers',
             ],
-
             [
-                'parent_id' => 12,
+                'parent_id' => 11,
+                'order' => 12,
+                'title' => 'Exception Reporter',
+                'icon' => 'fa-bug',
+                'uri' => '/exceptions',
+            ],
+            [
+                'parent_id' => 11,
                 'order' => 13,
                 'title' => 'Scaffold',
                 'icon' => 'fa-keyboard-o',
@@ -269,7 +302,7 @@ class AdminTablesSeed extends Seeder
             ],
 
             [
-                'parent_id' => 12,
+                'parent_id' => 11,
                 'order' => 14,
                 'title' => 'Database terminal',
                 'icon' => 'fa-database',
@@ -277,7 +310,7 @@ class AdminTablesSeed extends Seeder
             ],
 
             [
-                'parent_id' => 12,
+                'parent_id' => 11,
                 'order' => 15,
                 'title' => 'Laravel Artisan',
                 'icon' => 'fa-terminal',
@@ -285,7 +318,7 @@ class AdminTablesSeed extends Seeder
             ],
 
             [
-                'parent_id' => 12,
+                'parent_id' => 11,
                 'order' => 16,
                 'title' => 'Routes',
                 'icon' => 'fa-list-alt',
@@ -522,7 +555,7 @@ class AdminTablesSeed extends Seeder
                 'order' => 47,
                 'title' => 'Import Data Table',
                 'icon' => 'fa-database',
-                'uri' => '/import',
+                'uri' => '/auth/import',
             ],
             // [
             //     'parent_id' => 24,
@@ -536,6 +569,7 @@ class AdminTablesSeed extends Seeder
         ]);
 
         // add role to menu.
+        Menu::find(1)->roles()->save(Role::first());
         Menu::find(5)->roles()->save(Role::first());
 
         // create a Dashboard Table Data.
@@ -599,12 +633,15 @@ class AdminTablesSeed extends Seeder
         UserRole::insert([
             [
                 'name' => 'Student',
+                'active' => 1,
             ],
             [
                 'name' => 'Faculty',
+                'active' => 1,
             ],
             [
                 'name' => 'Officer-Staff',
+                'active' => 1,
             ],
 
         ]);
