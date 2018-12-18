@@ -44,11 +44,12 @@ class BusInfoController extends Controller
     {
         $grid = new Grid(new BusInfo);
 
-        $grid->id('ID')->sortable();
+        //$grid->id('ID')->sortable();
         $grid->busid('Bus ID')->sortable();
         $grid->registration('Registration No')->sortable();
         $grid->insurance_validity('Insurance Validity')->sortable();
         $grid->route_permit_validity('Route Permit Validity')->sortable();
+        $grid->starting_date('Starting Date')->sortable();
         $grid->seat('Seat Capacity')->sortable();
         $states = [
             'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
@@ -65,7 +66,7 @@ class BusInfoController extends Controller
         })->sortable();
         $grid->bus_name('Bus Name')->sortable();
         $grid->busowner('Bus Owner')->sortable();
-        $grid->comments('Comments');
+        $grid->comments('Comments')->editable();
 //        $grid->user_id('Created By')->display(function ($s) {
 //            return Administrator::all()->find($s)->name;
 //        })->sortable()->label();
@@ -116,6 +117,7 @@ class BusInfoController extends Controller
         $show->registration('Registration No');
         $show->insurance_validity('Insurance Validity');
         $show->route_permit_validity('Route Permit Validity');
+        $show->starting_date('Starting Date');
         $show->seat('Seat Capacity');
         $show->availability('Availability')->as(function ($s) {
             return $s ? "Yes" : "No";
@@ -164,6 +166,7 @@ class BusInfoController extends Controller
         $form->text('registration', 'Registration No')->rules('required');
         $form->date('insurance_validity', 'Insurance Validity')->rules('required');
         $form->date('route_permit_validity', 'Route Permit Validity')->rules('required');
+        $form->date('starting_date', 'Starting Date')->rules('required');
         $form->number('seat', 'Seat Capacity')->rules('required');
         $states = [
             'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
