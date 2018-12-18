@@ -12,7 +12,7 @@
             <i class="fa fa-print"></i> PDF/Print </a>
         {{--<a class="btn btn-default" href="#" onclick="window.print()" ><i class="fa fa-print"></i> Print </a>--}}
         <h4><b>Towards IIUC</b></h4>
-        <table class="table table-bordered table-condensed" style="text-align:center; margin: auto; font-size: 12px; ">
+        <table class="table table-responsive table-bordered table-condensed" style="text-align:center; margin: auto; font-size: 12px; ">
             <thead>
             <tr>
                 <th>{{"No."}}</th>
@@ -106,7 +106,7 @@
             </tbody>
         </table>
         <h4><b>From IIUC</b></h4>
-        <table class="table table-bordered table-condensed" style="font-size: 12px; ">
+        <table class="table table-responsive table-bordered table-condensed" style="font-size: 12px; ">
             <thead>
             <tr>
                 <th>{{"No."}}</th>
@@ -158,7 +158,7 @@
                         }?>
 
                         <td>
-                            <table class="table table-bordered">
+                            <table class="table table-responsive table-bordered">
                                 @foreach($routes as $route)
                                     <tr>
                                         <td>{!!  \App\BusRoute::where('id',$route->route)->first()->routename !!}</td>
@@ -167,7 +167,7 @@
                             </table>
                         </td>
                         <td>
-                            <table class="table table-bordered">
+                            <table class="table table-responsive table-bordered">
                                 @foreach($routes as $route)
                                     <?php  $stopPoints = \App\BusPoint::where('routeid', $route->route)->orderBy('weight', 'asc')->get();
                                     if (count($stopPoints) > 1) {

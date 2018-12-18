@@ -47,10 +47,7 @@ class BusInfoController extends Controller
         $grid->id('ID')->sortable();
         $grid->busid('Bus ID')->sortable();
         $grid->registration('Registration No')->sortable();
-        //$grid->license('License No')->sortable();
-        $grid->insurance_no('Insurance No')->sortable();
         $grid->insurance_validity('Insurance Validity')->sortable();
-        $grid->route_permit('Route Permit')->sortable();
         $grid->route_permit_validity('Route Permit Validity')->sortable();
         $grid->seat('Seat Capacity')->sortable();
         $states = [
@@ -97,7 +94,7 @@ class BusInfoController extends Controller
     {
         return $content
             ->header('Detail')
-            ->description('')
+            ->description(' ')
             ->body($this->detail($id));
     }
 
@@ -117,10 +114,7 @@ class BusInfoController extends Controller
         $show->id('ID');
         $show->busid('Bus ID');
         $show->registration('Registration No');
-        $show->license('License No');
-        //$show->insurance_no('Insurance No');
         $show->insurance_validity('Insurance Validity');
-        $show->route_permit('Route Permit');
         $show->route_permit_validity('Route Permit Validity');
         $show->seat('Seat Capacity');
         $show->availability('Availability')->as(function ($s) {
@@ -152,7 +146,7 @@ class BusInfoController extends Controller
     {
         return $content
             ->header('Edit')
-            ->description('')
+            ->description(' ')
             ->body($this->form()->edit($id));
     }
 
@@ -168,13 +162,7 @@ class BusInfoController extends Controller
 
         $form->text('busid', 'Bus ID')->rules('required');
         $form->text('registration', 'Registration No')->rules('required');
-        //$form->text('license', 'License No')->rules('required');
-        $form->hidden('license', 'License No')->default(function () use ($form) {
-            return crypt($form->text('registration'), 'none');
-        });
-        $form->text('insurance_no', 'Insurance No')->rules('required');
         $form->date('insurance_validity', 'Insurance Validity')->rules('required');
-        $form->text('route_permit', 'Route Permit')->rules('required');
         $form->date('route_permit_validity', 'Route Permit Validity')->rules('required');
         $form->number('seat', 'Seat Capacity')->rules('required');
         $states = [

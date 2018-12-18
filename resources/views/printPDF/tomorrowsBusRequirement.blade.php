@@ -10,7 +10,7 @@
                 <i class="fa fa-print"></i> PDF/Print </a>
             @if(count($routes) > 0)
                 <h4><b><big>{{"Female Students"}}</big></b></h4>{{"Arrival"}}
-                <table class="table table-hover table-bordered table-condensed">
+                <table class="table table-hover table-bordered table-responsive table-condensed">
                     <thead class="table">
                     <tr>
                         <th>No</th>
@@ -98,7 +98,7 @@
                     </tbody>
                 </table>
                 {{"Departure"}}
-                <table class="table table-hover table-bordered table-condensed">
+                <table class="table table-hover table-responsive table-bordered table-condensed">
                     <thead class="table">
                     <tr>
                         <th>No</th>
@@ -185,7 +185,7 @@
 
                 <h4><b><big>{{"Male Students"}}</big></b></h4>
                 {{"Arrival"}}
-                <table class="table table-hover table-bordered table-condensed">
+                <table class="table table-responsive table-hover table-bordered table-condensed">
                     <thead class="table">
                     <tr>
                         <th>No</th>
@@ -273,7 +273,7 @@
                     </tbody>
                 </table>
                 {{"Departure"}}
-                <table class="table table-hover table-bordered table-condensed">
+                <table class="table table-responsive table-hover table-bordered table-condensed">
                     <thead class="table">
                     <tr>
                         <th>No</th>

@@ -17,13 +17,10 @@ class CreateBusinfoTable extends Migration
             $table->increments('id');
             $table->string('busid')->unique();
             $table->string('registration')->unique();
-            $table->string('license')->unique();
             $table->integer('seat');
             $table->boolean('availability')->default(true);
             $table->integer('user_id');
-            $table->string('insurance_no');
             $table->date('insurance_validity');
-            $table->string('route_permit');
             $table->date('route_permit_validity');
             $table->integer('bustype');
             $table->string('bus_name');

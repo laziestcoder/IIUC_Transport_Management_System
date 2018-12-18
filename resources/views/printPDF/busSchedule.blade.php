@@ -12,7 +12,7 @@
             <i class="fa fa-print"></i> PDF/Print </a>
         {{--<a class="btn btn-default" href="#" onclick="window.print()"><i class="fa fa-print"></i>  Print</a>--}}
         <h4><b>Towards IIUC</b></h4>
-        <table class="table table-condensed table-bordered" style="text-align:center; margin: auto; font-size: 15px;">
+        <table class="table table-condensed table-responsive table-bordered" style="text-align:center; margin: auto; font-size: 15px;">
             <thead class="">
             <tr>
                 <th>{{"No."}}</th>
@@ -108,7 +108,7 @@
             </tbody>
         </table>
         <h4><b>From IIUC</b></h4>
-        <table class="table table-bordered" style="font-size: 15px;">
+        <table class="table table-condensed table-responsive table-bordered" style="font-size: 15px;">
             <thead>
             <tr>
                 <th>{{"No."}}</th>

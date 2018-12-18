@@ -68,7 +68,7 @@ return [
      */
     'upload' => [
 
-        'disk' => 'public',
+        'disk' => 'admin',
 
         'directory' => [
             'image' => 'images',
@@ -174,7 +174,7 @@ return [
         'media-manager' => [
 
             // Select a local disk that you configured in `config/filesystem.php`
-            'disk' => 'public'
+            'disk' => 'admin'
         ],
 
         'material-ui' => [

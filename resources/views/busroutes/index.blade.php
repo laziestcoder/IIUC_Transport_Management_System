@@ -16,7 +16,7 @@
             </a>
             @if(count($routes) > 0)
                 <h4><b><big>{{"Female Students"}}</big></b></h4>
-                <table class="table table-hover table-bordered table-condensed">
+                <table class="table table-responsive table-hover table-bordered table-condensed">
                     <thead class="table">
                     <tr>
                         <th>No</th>
@@ -165,7 +165,7 @@
                 </table>
 
                 <h4><b><big>{{"Male Students"}}</big></b></h4>
-                <table class="table table-hover table-bordered table-condensed">
+                <table class="table table-responsive table-hover table-bordered table-condensed">
                     <thead class="table">
                     <tr>
                         <th>No</th>
@@ -326,7 +326,7 @@
             @foreach($days as $day)
                 <br>
                 <h3><b>{!!  $day->dayname !!}</b></h3>
-                <table class="table table-hover table-condensed" align="center">
+                <table class="table table-responsive table-hover table-condensed" align="center">
                     <thead class="table">
                     <tr>
                         <th>No</th>
