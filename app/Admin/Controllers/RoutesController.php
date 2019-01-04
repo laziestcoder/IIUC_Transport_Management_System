@@ -85,13 +85,13 @@ class RoutesController extends Controller
     protected function grid2()
     {
         $grid = new Grid(new BusRoute);
-        $grid->model()->orderBy("routename", "asc")->where('routename', '!=', 'All Route');
+        $grid->model()->orderBy("routename", "asc")->where('routename', '!=', 'All Route')->where('active',1);
         $grid->setTitle('Route and Bus Stop Point Direction');
 
 
         $grid->routename('Route Name');
         $grid->id('Bus Stop Point')->display(function ($s) {
-            $points = BusPoint::where('routeid', $s)->orderBy('weight', 'asc')->get();
+            $points = BusPoint::where('routeid', $s)->orderBy('weight', 'asc')->where('active',1)->get();
             $s = "";
             $flag = count($points) - 1;
             if (count($points) > 0) {

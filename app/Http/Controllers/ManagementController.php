@@ -56,8 +56,8 @@ class ManagementController extends Controller
         }
 
         $user = User::find($user_id);
-        $BusRoutes = BusRoute::orderBy('routename')->get();
-        $BusPoints = BusPoint::orderBy('pointname')->get();
+        $BusRoutes = BusRoute::orderBy('routename')->where('active',true)->get();
+        $BusPoints = BusPoint::orderBy('pointname')->where('active',true)->get();
         $days = Day::orderBy('id')->get();
         $pickuptimes = Time::where('toiiuc', 1)->orderBy('time')->get();
         $droptimes = Time::where('fromiiuc', 1)->orderBy('time')->get();
@@ -86,7 +86,7 @@ class ManagementController extends Controller
             return redirect('/dashboard')->with('error', 'Your account is not verified. Please check your \'Varsity ID\' and \'Name\' or contact with an administrative person. Thank you.');
         }
         $data = array(
-            'BusRoutes' => $BusRoutes,
+            //'BusRoutes' => $BusRoutes,
             'BusPoints' => $BusPoints,
             'picktimes' => $pickuptimes,
             'droptimes' => $droptimes,
@@ -353,9 +353,9 @@ class ManagementController extends Controller
             'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
             'titlenew' => 'Create New Schedule',
             'titleinfo' => 'Available Schedule',
-            'times' => Time::orderBy('time', 'asc')->get(),
+            'times' => Time::orderBy('time', 'asc')->where('active',true)->get(),
             'days' => Day::where('active', 1)->get(),
-            'points' => BusPoint::all('id', 'pointname'),
+            'points' => BusPoint::orderBy('pointname','asc')->where('active',true)->get(),
             'gender' => $user_gender,
             'userrole' => $user->userrole,
             //'days' => $days,
@@ -367,7 +367,7 @@ class ManagementController extends Controller
     protected function busroutesdetails()
     {
         $data = array(
-            'busroutes' => BusRoute::orderBy('routename', 'asc')->get(),
+            'busroutes' => BusRoute::orderBy('routename', 'asc')->where('active',true)->get(),
             //'points' => BusPoint::all(),
             'title' => 'Route Information',
         );

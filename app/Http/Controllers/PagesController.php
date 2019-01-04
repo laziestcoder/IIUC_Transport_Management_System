@@ -10,6 +10,7 @@ use App\Notice;
 use App\Schedule;
 use App\Time;
 use Carbon\Carbon;
+use App\AdminDashboard;
 use DB;
 use Illuminate\Http\Request;
 use Mail;
@@ -23,14 +24,24 @@ class PagesController extends Controller
 
         // Latest News
         $noticetitle = 'Latest News';
-        $notices = Notice::orderBy('id', 'desc')->paginate(6);
+        $notices = Notice::orderBy('id', 'desc')->where('active',1)->get();
         $description = "";
 
         //Time and Today
         $now = Carbon::now()->format('H:i:s');
         $today = Carbon::today()->format('l');
 
-
+        //special schedule 
+        $special_schedule = AdminDashboard::where('special_schedule',1)->get()->first();
+        //Regular Schedule
+        $regular_schedule = AdminDashboard::where('regular_schedule',1)->get()->first();
+        //Holiday
+        $holiday_schedule = AdminDashboard::where('holiday',1)->get()->first();
+        //Schedule Suspend
+        $schedule_suspend = AdminDashboard::where('schedule_suspend',1)->get()->first();
+        
+        
+        
         //Next Bus
         $times = Time::where('time', '>=', $now)->orderBy('time')->get();
         $todayid = Day::where('dayname', $today)->where('active', 1)->get()->first();
@@ -183,6 +194,10 @@ class PagesController extends Controller
 
             'emergency' => $emergency,
 
+            'special' =>$special_schedule? True : False,
+            'regular' =>$regular_schedule? True : False,
+            'holiday' =>$holiday_schedule? True : False,
+            'suspend' =>$schedule_suspend? True : False,
         );
         return view('pages.index')->with($data);
         //return  view('pages.index',compact('title','Welcome to IIUC Transport Division Website'));

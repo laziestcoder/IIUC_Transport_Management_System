@@ -67,7 +67,7 @@ class FacultyController extends Controller
             ];
             $grid->confirmed(trans('Activated'))->switch($states)->sortable();
             $grid->confirmation(trans('Verified'))->switch($states)->sortable();
-            $grid->created_at(trans('Member Since'))->sortable();
+            // $grid->created_at(trans('Member Since'))->sortable();
             $grid->updated_at(trans('Last Updated'))->sortable();
 
             $grid->actions(function (Grid\Displayers\Actions $actions) {

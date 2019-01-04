@@ -50,7 +50,7 @@ class TimesController extends Controller
         ];
         $grid->toiiuc('To IIUC Campus')->switch($states)->sortable();
         $grid->fromiiuc('From IIUC Campus')->switch($states)->sortable();
-        $grid->active('Published')->switch($states)->sortable();
+        //$grid->active('Published')->switch($states)->sortable();
         $grid->user_id('Created By')->display(function ($s) {
             return Administrator::all()->find($s)->name ?: 'n/a';
         })->label('primary');
@@ -150,7 +150,7 @@ class TimesController extends Controller
             'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
         ];
-        $form->switch('active', 'Published')->states($states);
+        $form->switch('active', 'Published')->states($states)->default(true);
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;
         });

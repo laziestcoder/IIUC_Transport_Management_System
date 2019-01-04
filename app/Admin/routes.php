@@ -15,6 +15,8 @@ Route::group([
     $router->post('/auth/import_process', 'ImportController@processImport')->name('import_process');
     
     $router->resource('/auth/users', 'UsersController');
+    $router->resource('/auth/messages', 'MessageController');
+
     $router->resource('/auth/admin-dashboard', 'AdminDashboardController');
     $router->resource('/auth/emergency-contact', 'EmergencyContactsController');
     $router->resource('/auth/students', 'StudentController');

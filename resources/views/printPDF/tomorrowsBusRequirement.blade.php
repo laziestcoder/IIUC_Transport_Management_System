@@ -15,7 +15,7 @@
                     <tr>
                         <th>No</th>
                         <th>Route Name</th>
-                        <th>Student No (Arrival)</th>
+                        <th>Student No</th>
                         <th>Bus Needed</th>
                         <th>Seat Capacity</th>
                         <th>Standing</th>
@@ -32,8 +32,12 @@
                     ?>
                     @foreach($routes as $route)
                         <tr> <?php $bus = 0; $studentSum = 0; $seat = 0;?>
-                            <td>{{$flag+=1}}</td>
                             <td>
+                                {{-- serial number --}}
+                                {{$flag+=1}}
+                            </td>
+                            <td>
+                                 {{-- route name --}}
                                 {{--<a href="/admin/auth/routes/{{$route->id}}">--}}
                                 {{$route->routename}}
                                 {{--</a>--}}
@@ -42,7 +46,9 @@
 
                             {{--arrival time--}}
 
-                            <td><?php
+                            <td>
+                                {{-- student number --}}
+                                <?php
                                 //$routeID = ;
                                 $studentSum = DB::table('schedulestudent')
                                     ->where('pick_point_route', $route->id)
@@ -52,6 +58,21 @@
                                 {!! count($studentSum) !!}
                             </td>
                             <td>
+                                {{-- {{$bus_available}} --}}
+                                {{-- bus needed --}}
+                                @while($studentSum)
+                                <?php $bus_available = BusInfo::orderBy('seat')
+                                            ->where('availability', 1)
+                                            ->where('seat','>=',40)
+                                            ->get(); 
+                                ?>
+                                @if(count($bus_available)>0)
+                                    @foreach($bus_available as $buses)
+                                                @if($buses->seat >= 60)
+                                                {{'60'}}
+                                                @endif
+                                    @endforeach
+                                @endif
                                 <?php
                                 $stdArvTot = $stdArvTot + count($studentSum);
                                 $studentSum = count($studentSum);
@@ -76,18 +97,28 @@
                                     {{
                                         $bus
                                     }}
+                                   
                                 @else
                                     {{$bus}}
                                 @endif
                                 <?php $busArvTot = $busArvTot + $bus; ?>
                             </td>
-                            <td>{{$bus*60}}</td> <?php $busSeatArvTot = $busSeatArvTot + ($bus * 60); ?>
-                            <td>{{$bus*60*0.15}}</td> <?php $busStandArvTot = $busStandArvTot + $bus * 60 * 0.15; ?>
-                            <td>{{ ($bus*60) .' ('.$student.')'}}</td>
+                            <td>
+                                {{-- seat capacity --}}
+                                {{$bus*60}}        
+                            </td> <?php $busSeatArvTot = $busSeatArvTot + ($bus * 60); ?>
+                            <td>
+                                {{-- total standing --}}
+                                {{$bus*60*0.15}}
+                            </td> <?php $busStandArvTot = $busStandArvTot + $bus * 60 * 0.15; ?>
+                            <td>
+                                {{-- total capacity --}}
+                                {{ ($bus*60) .' ('.$student.')'}}
+                            </td>
                         </tr>
                     @endforeach
                     <tr>
-                        <td>{{$flag+1}}</td>
+                        <td></td>
                         <td>Total</td>
                         <td>{{$stdArvTot}}</td>
                         <td>{{$busArvTot}}</td>
@@ -103,7 +134,7 @@
                     <tr>
                         <th>No</th>
                         <th>Route Name</th>
-                        <th>Student No (Departure)</th>
+                        <th>Student No</th>
                         <th>Bus Needed</th>
                         <th>Seat Capacity</th>
                         <th>Standing</th>
@@ -164,15 +195,22 @@
                                 @else
                                     {{$bus}}
                                 @endif
+
                                 <?php $busDepTot = $busDepTot + $bus; ?>
                             </td>
-                            <td>{{$bus*60}}</td> <?php $busSeatDepTot = $busSeatDepTot + ($bus * 60); ?>
-                            <td>{{$bus*60*0.15}}</td><?php $busStandDepTot = $busStandDepTot + $bus * 60 * 0.15; ?>
-                            <td>{{ ($bus*60) .' ('.$student.')'}}</td>
+                            <td>
+                                {{$bus*60}}
+                            </td> <?php $busSeatDepTot = $busSeatDepTot + ($bus * 60); ?>
+                            <td>
+                                {{$bus*60*0.15}}
+                            </td><?php $busStandDepTot = $busStandDepTot + $bus * 60 * 0.15; ?>
+                            <td>
+                                {{ ($bus*60) .' ('.$student.')'}}
+                            </td>
                         </tr>
                     @endforeach
                     <tr>
-                        <td>{{$flag+1}}</td>
+                        <td></td>
                         <td>Total</td>
                         <td>{{$stdDepTot}}</td>
                         <td>{{$busDepTot}}</td>
@@ -190,7 +228,7 @@
                     <tr>
                         <th>No</th>
                         <th>Route Name</th>
-                        <th>Student No (Arrival)</th>
+                        <th>Student No</th>
                         <th>Bus Needed</th>
                         <th>Seat Capacity</th>
                         <th>Standing</th>
@@ -256,13 +294,19 @@
                                 @endif
                                 <?php $busArvTot = $busArvTot + $bus; ?>
                             </td>
-                            <td>{{$bus*60}}</td> <?php $busSeatArvTot = $busSeatArvTot + ($bus * 60); ?>
-                            <td>{{$bus*60*0.15}}</td> <?php $busStandArvTot = $busStandArvTot + $bus * 60 * 0.15; ?>
-                            <td>{{ ($bus*60) .' ('.$student.')'}}</td>
+                            <td>
+                                {{$bus*60}}
+                            </td> <?php $busSeatArvTot = $busSeatArvTot + ($bus * 60); ?>
+                            <td>
+                                {{$bus*60*0.15}}
+                            </td> <?php $busStandArvTot = $busStandArvTot + $bus * 60 * 0.15; ?>
+                            <td>
+                                {{ ($bus*60) .' ('.$student.')'}}
+                            </td>
                         </tr>
                     @endforeach
                     <tr>
-                        <td>{{$flag+1}}</td>
+                        <td></td>
                         <td>Total</td>
                         <td>{{$stdArvTot}}</td>
                         <td>{{$busArvTot}}</td>
@@ -278,7 +322,7 @@
                     <tr>
                         <th>No</th>
                         <th>Route Name</th>
-                        <th>Student No (Departure)</th>
+                        <th>Student No</th>
                         <th>Bus Needed</th>
                         <th>Seat Capacity</th>
                         <th>Standing</th>
@@ -347,7 +391,7 @@
                         </tr>
                     @endforeach
                     <tr>
-                        <td>{{$flag+1}}</td>
+                        <td></td>
                         <td>Total</td>
                         <td>{{$stdDepTot}}</td>
                         <td>{{$busDepTot}}</td>

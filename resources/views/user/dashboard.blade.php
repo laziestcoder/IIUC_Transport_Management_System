@@ -121,10 +121,27 @@
                                         if ($place) {
                                             $place = App\BusPoint::where('id', $place->pickpoint)->first();
                                             if ($place) {
-                                                echo $place->pointname;
-                                            } else {
-                                                echo "Not Selected";
-                                            }
+                                                $active = $place->active;
+                                                if($active){
+                                                    echo $place->pointname;
+                                                }else{
+                                                    $place2 = App\BusPoint::where('routeid', $place->routeid)
+                                                            ->where('active',1)
+                                                            ->where('weight','<',$place->weight)
+                                                            ->first();
+                                                            if($place2){
+                                                                echo $place2->pointname;
+                                                            }else{
+                                                                $place2 = App\BusPoint::where('routeid', $place->routeid)
+                                                            ->where('active',1)
+                                                            ->where('weight','>',$place->weight)
+                                                            ->first();
+                                                            echo $place2->pointname;
+                                                            }
+                                                }
+                                            } else{
+                                                echo "Point Not Found";
+                                            } 
                                         } else {
                                             echo "Not Selected";
                                         }
@@ -151,13 +168,30 @@
                                         <?php
                                         $place = App\StudentSchedule::where('user_id', $user->id)
                                             ->where('day', $day->id)->first();
-                                        if ($place) {
-                                            $place = App\BusPoint::where('id', ($place->droppoint))->first();
                                             if ($place) {
-                                                echo $place->pointname;
-                                            } else {
-                                                echo "Not Selected";
-                                            }
+                                            $place = App\BusPoint::where('id', $place->droppoint)->first();
+                                            if ($place) {
+                                                $active = $place->active;
+                                                if($active){
+                                                    echo $place->pointname;
+                                                }else{
+                                                    $place2 = App\BusPoint::where('routeid', $place->routeid)
+                                                            ->where('active',1)
+                                                            ->where('weight','<',$place->weight)
+                                                            ->first();
+                                                    if($place2){
+                                                        echo $place2->pointname;
+                                                    }else{
+                                                        $place2 = App\BusPoint::where('routeid', $place->routeid)
+                                                    ->where('active',1)
+                                                    ->where('weight','>',$place->weight)
+                                                    ->first();
+                                                    echo $place2->pointname;
+                                                    }
+                                                }
+                                            } else{
+                                                echo "Point Not Found";
+                                            } 
                                         } else {
                                             echo "Not Selected";
                                         }

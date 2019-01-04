@@ -64,7 +64,7 @@ class StudentController extends Controller
             ];
             $grid->confirmed(trans('Activated'))->switch($states)->sortable();
             $grid->confirmation(trans('Verified'))->switch($states)->sortable();
-            $grid->created_at(trans('Member Since'))->sortable();
+//            $grid->adminrole(trans('User Role'))->sortable()->editable()->select($states);
             $grid->updated_at(trans('Last Updated'))->sortable();
 
             $grid->actions(function (Grid\Displayers\Actions $actions) {
@@ -142,8 +142,8 @@ class StudentController extends Controller
         });
 
 
-        $show->created_at('Created At');
-        $show->updated_at('Updated At');
+        $show->created_at('Member Since');
+        $show->updated_at('Last Updated');
 //        $show->actions(function (Grid\Displayers\Actions $actions) {
 //            if ($actions->getKey() <= 3) {
 //                $actions->disableDelete();

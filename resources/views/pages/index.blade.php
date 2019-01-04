@@ -6,79 +6,84 @@
             <div class="intro-text">
                 <div class="intro-lead-in">Welcome To IIUC Transport Management Website!</div>
                 <div class="intro-heading text-uppercase">It's Nice To Meet You</div>
-                <div class="nextBus">
-                    <div class="nextBus-info">
-                        <table class="table table-condensed table-responsive-md">
-                            <thead>
-                            <tr>
-                                <td colspan="4">
-                                    <div class="nextBus-title">
-                                        <big>
-                                            <marquee behavior="alternate">NEXT BUS</marquee>
-                                        </big><br>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="4">
-                                    <div class="nextBus-time">
-                                        ( Day : <i> {!! $today !!} </i>, Time: {!! $now !!} )
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>Station From</td>
-                                <td>Station To</td>
-                                <td>Time</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td colspan="4">
-                                    <marquee behavior="alternate">
-                                        <div class="nextBus-gender">
-                                            MALE
+                @if($special)
+                    <h3 style="color: #8bfc1a">Special Bus Available Today</h3>
+                @endif
+                @if( $regular && !$holiday  && !$suspend)
+                    <div class="nextBus">
+                        <div class="nextBus-info">  
+                            <table class="table table-condensed table-responsive-md">
+                                <thead>
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="nextBus-title">
+                                            <big>
+                                                <marquee behavior="alternate">NEXT BUS</marquee>
+                                            </big><br>
                                         </div>
-                                    </marquee>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>{!! $fromRouteM !!}</td>
-                                <td>{!! "IIUC CAMPUS" !!}</td>
-                                <td>{!! $toIIUCMale !!}</td>
-                            </tr>
-
-                            <tr>
-                                <td>{!! "IIUC CAMPUS" !!}</td>
-                                <td>{!! $toRouteM !!}</td>
-                                <td>{!! $toCityMale !!}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="4">
-                                    <marquee behavior="alternate">
-                                        <div class="nextBus-gender">
-                                            FEMALE
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="nextBus-time">
+                                            ( Day : <i> {!! $today !!} </i>, Time: {!! $now !!} )
                                         </div>
-                                    </marquee>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>{!! $fromRouteF !!}</td>
-                                <td>{!! "IIUC CAMPUS" !!}</td>
-                                <td>{!! $toIIUCFemale !!}</td>
-                            </tr>
+                                    </td>
+                                </tr>
 
-                            <tr>
-                                <td>{!! "IIUC CAMPUS" !!}</td>
-                                <td>{!! $toRouteF !!}</td>
-                                <td>{!! $toCityFemale !!}</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                                <tr>
+                                    <td>Station From</td>
+                                    <td>Station To</td>
+                                    <td>Time</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td colspan="4">
+                                        <marquee behavior="alternate">
+                                            <div class="nextBus-gender">
+                                                MALE
+                                            </div>
+                                        </marquee>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>{!! $fromRouteM !!}</td>
+                                    <td>{!! "IIUC CAMPUS" !!}</td>
+                                    <td>{!! $toIIUCMale !!}</td>
+                                </tr>
+
+                                <tr>
+                                    <td>{!! "IIUC CAMPUS" !!}</td>
+                                    <td>{!! $toRouteM !!}</td>
+                                    <td>{!! $toCityMale !!}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        <marquee behavior="alternate">
+                                            <div class="nextBus-gender">
+                                                FEMALE
+                                            </div>
+                                        </marquee>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>{!! $fromRouteF !!}</td>
+                                    <td>{!! "IIUC CAMPUS" !!}</td>
+                                    <td>{!! $toIIUCFemale !!}</td>
+                                </tr>
+
+                                <tr>
+                                    <td>{!! "IIUC CAMPUS" !!}</td>
+                                    <td>{!! $toRouteF !!}</td>
+                                    <td>{!! $toCityFemale !!}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                @endif
             </div>
         </div>
     </header>
@@ -86,7 +91,27 @@
     <!-- Todays Bus Schedule -->
     <section id="about">
         <div id="schedule" class="container">
-            @if($day!= null)
+            @if($holiday == True)
+                <div class="row">
+                        <div class="col-lg-12 text-center">
+                            <h2 class="section-heading text-uppercase">It's Vacation Time! Enjoy the vacation.</h2>
+                        </div>
+                </div>    
+            @elseif($suspend == True)
+                <div class="row">
+                        <div class="col-lg-12 text-center">
+                            <h2 class="section-heading text-uppercase">The Regular Schedule is SUSPENDED!</h2>
+                        </div>
+                </div>
+            
+            @elseif($regular == False)
+                <div class="row">
+                        <div class="col-lg-12 text-center">
+                            <h2 class="section-heading text-uppercase">Regular Bus Schedule is OFF now.</h2>
+                        </div>
+                </div>
+                 
+            @elseif($day!= null && $regular == True && $suspend == False)
                 <div class="row">
                     <div class="col-lg-12 text-center">
                         <h2 class="section-heading text-uppercase">Today's Bus Schedule</h2>
@@ -257,7 +282,7 @@
                 @endif
 
             </div>
-            {!! $notices->links() !!}
+            {{-- {!! $notices->links() !!} --}}
         </div>
     </section>
 

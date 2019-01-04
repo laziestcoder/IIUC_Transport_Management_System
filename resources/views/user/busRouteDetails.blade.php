@@ -26,6 +26,7 @@
                                     <td>{!! $busroute->routename !!}</td>
                                     <td> <?php $points = App\BusPoint::where('routeid', $busroute->id)
                                             ->orderBy('weight', 'asc')
+                                            ->where('active',true)
                                             ->get();
                                         if (count($points) > 0) {
                                             $routeFlag = count($points) - 1;

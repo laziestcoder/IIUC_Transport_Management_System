@@ -339,21 +339,21 @@ class AdminTablesSeed extends Seeder
                 'order' => 18,
                 'title' => 'Messages',
                 'icon' => 'fa-envelope',
-                'uri' => '/messages',
+                'uri' => '/auth/messages',
             ],
             [
                 'parent_id' => 18,
                 'order' => 19,
                 'title' => 'New Message',
                 'icon' => 'fa-newspaper-o',
-                'uri' => '/messages/create',
+                'uri' => '/auth/messages/create',
             ],
             [
                 'parent_id' => 18,
                 'order' => 20,
                 'title' => 'View Messages',
                 'icon' => 'fa-envelope-o',
-                'uri' => '/messages',
+                'uri' => '/auth/messages',
             ],
 
             [

@@ -59,25 +59,38 @@
                                                     <?php
                                                     $place = App\StudentSchedule::where('user_id', $user->id)
                                                         ->where('day', $day->id)->first();
-                                                    if ($place) {
+                                                    $flag = 0;
+                                                    if ($place) {                                                         
                                                         $place = App\BusPoint::where('id', ($place->pickpoint))->first();
                                                         if ($place) {
-                                                            $flag = $place->id;
-                                                        } else {
-                                                            $flag = 0;
+                                                            $pointActive = $place->active;
+                                                            if($pointActive){
+                                                                $flag = $place->id;                                                            
+                                                            }else{
+                                                                $place2 = App\BusPoint::where('routeid',$place->routeid)
+                                                                            ->where('weight','<',$place->weight)->first();
+                                                                if($place2){
+                                                                    $flag = $place2->id;
+                                                                }else{
+                                                                    $place2 = App\BusPoint::where('routeid',$place->routeid)
+                                                                            ->where('weight','>',$place->weight)->first();
+                                                                    if($place2){
+                                                                        $flag = $place2->id;
+                                                                    }
+                                                                }                                                                
+                                                            }
                                                         }
-                                                    } else {
-                                                        $flag = 0;
                                                     }
                                                     ?>
-                                                    @foreach ($BusPoints as $point)
-                                                        @if($flag == $point->id)
-                                                            <option selected="true"
-                                                                    value="{{$point->id}}">{{$point->pointname}}</option>
-                                                        @else
-                                                            <option value="{{$point->id}}">{{$point->pointname}}</option>
-                                                        @endif
-                                                    @endforeach
+                                                    
+                                                        @foreach ($BusPoints as $point)    
+                                                            @if($flag != 0 && $flag == $point->id)
+                                                                <option selected="true"
+                                                                    value="{{$point->id}}">{{$point->pointname}}</option>                                            
+                                                            @else
+                                                                <option value="{{$point->id}}">{{$point->pointname}}</option>
+                                                            @endif
+                                                        @endforeach
                                                 </select>
                                             @else
                                                 <select name="pickpoint{{$day->id}}">
@@ -139,15 +152,27 @@
                                                     <?php
                                                     $place = App\StudentSchedule::where('user_id', $user->id)
                                                         ->where('day', $day->id)->first();
-                                                    if ($place) {
+                                                        $flag = 0;
+                                                    if ($place) {                                                         
                                                         $place = App\BusPoint::where('id', ($place->droppoint))->first();
                                                         if ($place) {
-                                                            $flag = $place->id;
-                                                        } else {
-                                                            $flag = 0;
+                                                            $pointActive = $place->active;
+                                                            if($pointActive){
+                                                                $flag = $place->id;                                                            
+                                                            }else{
+                                                                $place2 = App\BusPoint::where('routeid',$place->routeid)
+                                                                            ->where('weight','<',$place->weight)->first();
+                                                                if($place2){
+                                                                    $flag = $place2->id;
+                                                                }else{
+                                                                    $place2 = App\BusPoint::where('routeid',$place->routeid)
+                                                                            ->where('weight','>',$place->weight)->first();
+                                                                    if($place2){
+                                                                        $flag = $place2->id;
+                                                                    }
+                                                                }                                                                
+                                                            }
                                                         }
-                                                    } else {
-                                                        $flag = 0;
                                                     }
                                                     ?>
                                                     @foreach ($BusPoints as $point)

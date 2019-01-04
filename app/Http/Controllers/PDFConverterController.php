@@ -9,6 +9,7 @@ use App\BusStudentInfo;
 use App\Day;
 use App\Schedule;
 use App\Time;
+use App\BusInfo;
 use Carbon\Carbon;
 use DB;
 use Encore\Admin\Controllers\HasResourceActions;
@@ -82,12 +83,13 @@ class PDFConverterController extends Controller
         $today = Carbon::tomorrow()->format('l');
         $data = array(
             'title' => 'Bus Requiremet Print',
-            'routes' => BusRoute::orderBy('routename')->get(),
+            'routes' => BusRoute::orderBy('routename')->where('active',true)->where('routename','!=', 'All Route')->get(),
             'days' => Day::all(),
             'times' => Time::orderBy('time')->get(),
             'today' => $today,
             'todayid' => Day::all()->where('dayname', $today)->first(),
             'datas' => BusStudentInfo::all(),
+            
         );
 
         //view()->share('users',$users);
