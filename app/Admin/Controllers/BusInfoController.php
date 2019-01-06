@@ -56,6 +56,7 @@ class BusInfoController extends Controller
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
         $grid->availability('Availability')->switch($states)->sortable();
+        $grid->active('Active')->switch($states)->sortable();
         $grid->bustype('Bus Type')->pluck('name')->display(function ($bustype) {
             $s = BusType::all()->find($bustype);
             if ($s) {
@@ -176,6 +177,7 @@ class BusInfoController extends Controller
         $form->select('bustype', 'Bus Type')->options(BusType::all()->where('active',1)->pluck('name', 'id'))->rules('required');
         $form->text('bus_name', 'Bus Name')->rules('required');
         $form->text('busowner', 'Bus Owner')->rules('required');
+        $form->switch('active','Active')->states($states)->default(1);
         $form->text('comments', 'Comments');
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;

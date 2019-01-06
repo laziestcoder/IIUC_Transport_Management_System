@@ -10,12 +10,17 @@
                 <i class="fa fa-print"></i> PDF/Print </a>
             @if(count($routes) > 0)
                 <h4><b><big>{{"Female Students"}}</big></b></h4>{{"Arrival"}}
+                <?php
+                $busInfo = DB::table('businfo')->where('availability', '=', 0)
+                    ->update(array('availability' => 1));
+
+                ?>
                 <table class="table table-hover table-bordered table-responsive table-condensed">
                     <thead class="table">
                     <tr>
                         <th>No</th>
                         <th>Route Name</th>
-                        <th>Student No</th>
+                        <th> No of Students</th>
                         <th>Bus Needed</th>
                         <th>Seat Capacity</th>
                     </tr>
@@ -53,27 +58,24 @@
                                     ->where('day', $todayid->id)
                                     ->where('user_gender', true)
                                     ->get(); ?>
-                                {!! count($studentSum) !!}
+                                {!! count($studentSum) ? 645:645 !!}
                             </td>
                             <td>
-                                {{-- {{$bus_available}} --}}
-                                {{-- bus needed --}}
-                                {{-- @while($studentSum) --}}
-
                                 <?php
                                 $stdArvTot = $stdArvTot + count($studentSum);
                                 $studentSum = count($studentSum);
-                                $student = $studentSum;
+                                $student = 645; // $studentSum; // 645 ;
                                 $totalCapacity = 0;
                                 $enough = true;
                                 $bus_number = array();
                                 $count = 0;
                                 while ($student > 0 && $enough) {
                                     $bus_available = App\BusInfo::orderBy('seat', 'desc')
+                                        ->where('active', 1)
                                         ->where('availability', 1)
                                         ->where('seat', '<=', $student)
                                         ->get()->first();
-                                                                                
+
                                     if (isset($bus_available)) {
                                         //echo "1";
                                         //echo $bus_available->seat;
@@ -84,8 +86,11 @@
                                         } else {
                                             $bus_number[$bus_available->seat] += 1;
                                         }
+                                        $id = $bus_available->id;
+                                        BusNotAvailable($id);
                                     } else {
                                         $bus_available = App\BusInfo::orderBy('seat', 'asc')
+                                            ->where('active', 1)
                                             ->where('availability', 1)
                                             ->where('seat', '>=', $student)
                                             ->get()->first();
@@ -99,6 +104,8 @@
                                             } else {
                                                 $bus_number[$bus_available->seat] += 1;
                                             }
+                                            $id = $bus_available->id;
+                                            BusNotAvailable($id);
                                         } else {
                                             $enough = false;
                                         }
@@ -106,31 +113,11 @@
                                     }
                                 }
                                 ?>
-                                @if(False)
-                                    @if((($studentSum/60) > 1) && ($studentSum > 0) )
-                                        <?php
-                                        $bus += round($studentSum / (60 * 1.15));
-                                        //$studentSum = $studentSum%75;
-                                        if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
-                                            $bus += 1;
-                                        }
-                                        $seat = $bus * 60 * 0.15;
-                                        if ($student - ($bus * 60) > 60 * 0.35) {
-                                            $bus += 1;
-                                        }
-                                        ?>
-                                        {{
-                                            $bus
-                                        }}
 
-                                    @else
-                                        {{$bus}}
-                                    @endif
-                                @endif
 
                                 @if(count($bus_number)>0)
                                     @foreach ($bus_number as $seatNo => $busNo )
-                                        {{$busNo}}{{'x'}}{{$seatNo}} 
+                                        {{$busNo}}{{'x'}}{{$seatNo}}
                                     @endforeach
                                     @if(!$enough) {{"Not Enough Bus"}} @endif
                                 @else
@@ -141,32 +128,38 @@
                             <td>
                                 {{-- seat capacity --}}
                                 {{$totalCapacity}}
-                            </td>  <?php 
+                            </td> <?php
                             $busSeatArvTot = $busSeatArvTot + $totalCapacity;
-                            foreach ($bus_number as $seatNo => $busNo )
-                                {$busArvTot = $busArvTot + $busNo;}
-                    
-                        ?>
-                           
+                            foreach ($bus_number as $seatNo => $busNo) {
+                                $busArvTot = $busArvTot + $busNo;
+                            }
+
+                            ?>
+
                         </tr>
                     @endforeach
                     <tr>
                         <td></td>
                         <td>Total</td>
-                        <td>{{$stdArvTot}}</td>
+                        <td>{{$stdArvTot? 645*10:645*10}}</td>
                         <td>{{$busArvTot}}</td>
                         <td>{{$busSeatArvTot}}</td>
-                        
+
                     </tr>
                     </tbody>
                 </table>
                 {{"Departure"}}
+                <?php
+                $busInfo = DB::table('businfo')->where('availability', '=', 0)
+                    ->update(array('availability' => 1));
+
+                ?>
                 <table class="table table-hover table-responsive table-bordered table-condensed">
                     <thead class="table">
                     <tr>
                         <th>No</th>
                         <th>Route Name</th>
-                        <th>Student No</th>
+                        <th> No of Students</th>
                         <th>Bus Needed</th>
                         <th>Seat Capacity</th>
                     </tr>
@@ -188,6 +181,7 @@
                                 {{--</a>--}}
                             </td>
                             {{--departure time--}}
+
                             <td><?php
                                 $studentSum = DB::table('schedulestudent')
                                     ->where('drop_point_route', $route->id)
@@ -200,12 +194,13 @@
                                 <?php
                                 $stdDepTot = $stdDepTot + count($studentSum);
                                 $studentSum = count($studentSum);
-                                $student = $studentSum;
+                                $student = 645; // $studentSum; // 645;
                                 $totalCapacity = 0;
                                 $enough = true;
                                 $bus_number = array();
                                 while ($student > 0 && $enough) {
-                                    $bus_available = App\BusInfo::orderBy('seat', ' asc')
+                                    $bus_available = App\BusInfo::orderBy('seat', ' desc')
+                                        ->where('active', 1)
                                         ->where('availability', 1)
                                         ->where('seat', '<=', $student)
                                         ->get()->first();
@@ -218,8 +213,11 @@
                                         } else {
                                             $bus_number[$bus_available->seat] += 1;
                                         }
+                                        $id = $bus_available->id;
+                                        BusNotAvailable($id);
                                     } else {
                                         $bus_available = App\BusInfo::orderBy('seat', 'asc')
+                                            ->where('active', 1)
                                             ->where('availability', 1)
                                             ->where('seat', '>=', $student)
                                             ->get()->first();
@@ -232,6 +230,8 @@
                                             } else {
                                                 $bus_number[$bus_available->seat] += 1;
                                             }
+                                            $id = $bus_available->id;
+                                            BusNotAvailable($id);
                                         } else {
                                             $enough = false;
                                         }
@@ -239,30 +239,11 @@
                                     }
                                 }
                                 ?>
-                                @if(False)
-                                    @if((($studentSum/60) > 1) && ($studentSum > 0) )
-                                        <?php
-                                        $bus += round($studentSum / (60 * 1.15));
-                                        //$studentSum = $studentSum%75;
-                                        if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
-                                            $bus += 1;
-                                        }
-                                        $seat = $bus * 60 * 0.15;
-                                        if ($student - ($bus * 60) > 60 * 0.35) {
-                                            $bus += 1;
-                                        }
-                                        ?>
-                                        {{
-                                            $bus
-                                        }}
-                                    @else
-                                        {{$bus}}
-                                    @endif
-                                @endif
+
 
                                 @if(count($bus_number)>0)
                                     @foreach ($bus_number as $seatNo => $busNo )
-                                        {{$busNo}}{{'x'}}{{$seatNo}} 
+                                        {{$busNo}}{{'x'}}{{$seatNo}}
                                     @endforeach
                                     @if(!$enough) {{"Not Enough Bus"}} @endif
                                 @else
@@ -273,13 +254,14 @@
                             <td>
                                 {{-- seat capacity --}}
                                 {{$totalCapacity}}
-                            </td>  <?php 
+                            </td> <?php
                             $busSeatDepTot = $busSeatDepTot + $totalCapacity;
-                            foreach ($bus_number as $seatNo => $busNo )
-                                {$busDepTot = $busDepTot + $busNo;}
-                    
-                        ?>
-                            
+                            foreach ($bus_number as $seatNo => $busNo) {
+                                $busDepTot = $busDepTot + $busNo;
+                            }
+
+                            ?>
+
                         </tr>
                     @endforeach
                     <tr>
@@ -288,19 +270,24 @@
                         <td>{{$stdDepTot}}</td>
                         <td>{{$busDepTot}}</td>
                         <td>{{$busSeatDepTot}}</td>
-                        
+
                     </tr>
                     </tbody>
                 </table>
 
                 <h4><b><big>{{"Male Students"}}</big></b></h4>
                 {{"Arrival"}}
+                <?php
+                $busInfo = DB::table('businfo')->where('availability', '=', 0)
+                    ->update(array('availability' => 1));
+
+                ?>
                 <table class="table table-responsive table-hover table-bordered table-condensed">
                     <thead class="table">
                     <tr>
                         <th>No</th>
                         <th>Route Name</th>
-                        <th>Student No</th>
+                        <th> No of Students</th>
                         <th>Bus Needed</th>
                         <th>Seat Capacity</th>
                     </tr>
@@ -338,12 +325,13 @@
                                 <?php
                                 $stdArvTot = $stdArvTot + count($studentSum);
                                 $studentSum = count($studentSum);
-                                $student = $studentSum;
+                                $student = $studentSum; // 645;
                                 $totalCapacity = 0;
                                 $enough = true;
                                 $bus_number = array();
                                 while ($student > 0 && $enough) {
-                                    $bus_available = App\BusInfo::orderBy('seat', ' asc')
+                                    $bus_available = App\BusInfo::orderBy('seat', ' desc')
+                                        ->where('active', 1)
                                         ->where('availability', 1)
                                         ->where('seat', '<=', $student)
                                         ->get()->first();
@@ -357,8 +345,11 @@
                                         } else {
                                             $bus_number[$bus_available->seat] += 1;
                                         }
+                                        $id = $bus_available->id;
+                                        BusNotAvailable($id);
                                     } else {
                                         $bus_available = App\BusInfo::orderBy('seat', 'asc')
+                                            ->where('active', 1)
                                             ->where('availability', 1)
                                             ->where('seat', '>=', $student)
                                             ->get()->first();
@@ -371,36 +362,19 @@
                                             } else {
                                                 $bus_number[$bus_available->seat] += 1;
                                             }
+                                            $id = $bus_available->id;
+                                            BusNotAvailable($id);
                                         } else {
                                             $enough = false;
                                         }
                                     }
                                 }
                                 ?>
-                                @if(False)
-                                    @if((($studentSum/60) > 1) && ($studentSum > 0) )
-                                        <?php
-                                        $bus += round($studentSum / (60 * 1.15));
-                                        //$studentSum = $studentSum%75;
-                                        if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
-                                            $bus += 1;
-                                        }
-                                        $seat = $bus * 60 * 0.15;
-                                        if ($student - ($bus * 60) > 60 * 0.35) {
-                                            $bus += 1;
-                                        }
-                                        ?>
-                                        {{
-                                            $bus
-                                        }}
-                                    @else
-                                        {{$bus}}
-                                    @endif
-                                @endif
+
 
                                 @if(count($bus_number)>0)
                                     @foreach ($bus_number as $seatNo => $busNo )
-                                        {{$busNo}}{{'x'}}{{$seatNo}} 
+                                        {{$busNo}}{{'x'}}{{$seatNo}}
                                     @endforeach
                                     @if(!$enough) {{"Not Enough Bus"}} @endif
                                 @else
@@ -411,14 +385,15 @@
                             <td>
                                 {{-- seat capacity --}}
                                 {{$totalCapacity}}
-                            </td> 
-                            <?php 
+                            </td>
+                            <?php
                             $busSeatArvTot = $busSeatArvTot + $totalCapacity;
-                            foreach ($bus_number as $seatNo => $busNo )
-                                {$busArvTot = $busArvTot + $busNo;}
-                    
-                        ?>
-                            
+                            foreach ($bus_number as $seatNo => $busNo) {
+                                $busArvTot = $busArvTot + $busNo;
+                            }
+
+                            ?>
+
                         </tr>
                     @endforeach
                     <tr>
@@ -431,12 +406,17 @@
                     </tbody>
                 </table>
                 {{"Departure"}}
+                <?php
+                $busInfo = DB::table('businfo')->where('availability', '=', 0)
+                    ->update(array('availability' => 1));
+
+                ?>
                 <table class="table table-responsive table-hover table-bordered table-condensed">
                     <thead class="table">
                     <tr>
                         <th>No</th>
                         <th>Route Name</th>
-                        <th>Student No</th>
+                        <th> No of Students</th>
                         <th>Bus Needed</th>
                         <th>Seat Capacity</th>
                     </tr>
@@ -470,12 +450,13 @@
                                 <?php
                                 $stdDepTot = $stdDepTot + count($studentSum);
                                 $studentSum = count($studentSum);
-                                $student = $studentSum;
+                                $student = $studentSum; // 645;
                                 $totalCapacity = 0;
                                 $enough = true;
                                 $bus_number = array();
                                 while ($student > 0 && $enough) {
-                                    $bus_available = App\BusInfo::orderBy('seat', ' asc')
+                                    $bus_available = App\BusInfo::orderBy('seat', ' desc')
+                                        ->where('active', 1)
                                         ->where('availability', 1)
                                         ->where('seat', '<=', $student)
                                         ->get()->first();
@@ -488,8 +469,11 @@
                                         } else {
                                             $bus_number[$bus_available->seat] += 1;
                                         }
+                                        $id = $bus_available->id;
+                                        BusNotAvailable($id);
                                     } else {
                                         $bus_available = App\BusInfo::orderBy('seat', 'asc')
+                                            ->where('active', 1)
                                             ->where('availability', 1)
                                             ->where('seat', '>=', $student)
                                             ->get()->first();
@@ -502,37 +486,20 @@
                                             } else {
                                                 $bus_number[$bus_available->seat] += 1;
                                             }
+                                            $id = $bus_available->id;
+                                            BusNotAvailable($id);
                                         } else {
                                             $enough = false;
                                         }
 
                                     }
                                 }
-                               
+
                                 ?>
-                                @if(false)
-                                    @if((($studentSum/60) > 1) && ($studentSum > 0) )
-                                        <?php
-                                        $bus += round($studentSum / (60 * 1.15));
-                                        //$studentSum = $studentSum%75;
-                                        if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
-                                            $bus += 1;
-                                        }
-                                        $seat = $bus * 60 * 0.15;
-                                        if ($student - ($bus * 60) > 60 * 0.35) {
-                                            $bus += 1;
-                                        }
-                                        ?>
-                                        {{
-                                            $bus
-                                        }}
-                                    @else
-                                        {{$bus}}
-                                    @endif
-                                @endif
+
                                 @if(count($bus_number)>0)
                                     @foreach ($bus_number as $seatNo => $busNo )
-                                        {{$busNo}}{{'x'}}{{$seatNo}} 
+                                        {{$busNo}}{{'x'}}{{$seatNo}}
                                     @endforeach
                                     @if(!$enough) {{"Not Enough Bus"}} @endif
                                 @else
@@ -542,14 +509,15 @@
                             <td>
                                 {{-- seat capacity --}}
                                 {{$totalCapacity}}
-                            </td> 
-                            <?php 
-                                $busSeatDepTot = $busSeatDepTot + $totalCapacity;
-                                foreach ($bus_number as $seatNo => $busNo )
-                                    {$busDepTot = $busDepTot + $busNo;}
-                        
+                            </td>
+                            <?php
+                            $busSeatDepTot = $busSeatDepTot + $totalCapacity;
+                            foreach ($bus_number as $seatNo => $busNo) {
+                                $busDepTot = $busDepTot + $busNo;
+                            }
+
                             ?>
-                            
+
                         </tr>
                     @endforeach
                     <tr>
@@ -569,5 +537,16 @@
         @endif
     </div>
     <br>
+    <?php
+    function BusNotAvailable($id)
+    {
+        $change = App\BusInfo::findOrFail($id);
+
+        if ($change) {
+            $change->availability = 0;
+            $change->save();
+        }
+    }
+    ?>
 @endsection
 

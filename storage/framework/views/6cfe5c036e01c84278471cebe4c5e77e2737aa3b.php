@@ -12,7 +12,7 @@
             <h4 align="center">Tomorrow is <b><?php echo $today; ?></b><br> Tomorrow's Bus Requirement Information</h4>
             <br>
             <a class="btn btn-success" target="_blank" href='/tomorrow-bus-requirement'>
-                <i class="fa fa-print"></i> Print
+                <i class="fa fa-info-circle"></i> Details
             </a>
             <?php if(count($routes) > 0): ?>
                 <h4><b><big><?php echo e("Female Students", false); ?></big></b></h4>
@@ -21,16 +21,12 @@
                     <tr>
                         <th>No</th>
                         <th>Route Name</th>
-                        <th>Student No (Arrival)</th>
-                        <th>Bus Needed</th>
-                        <th>Seat Capacity</th>
-                        <th>Standing</th>
-                        <th>Total Capacity</th>
-                        <th>Student No (Departure)</th>
-                        <th>Bus Needed</th>
-                        <th>Seat Capacity</th>
-                        <th>Standing</th>
-                        <th>Total Capacity</th>
+                        <th> No of Students (Arrival)</th>
+                        <th></th>
+                        
+                        <th> No of Students (Departure)</th>
+                        <th></th>
+                        
                     </tr>
                     </thead>
                     <tbody class="table" align="center">
@@ -47,7 +43,8 @@
                     $busStandSeatDepTot = 0;
                     ?>
                     <?php $__currentLoopData = $routes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <tr> <?php $bus = 0; $studentSum = 0; $seat = 0;?>
+                        <tr>
+                            <?php $bus = 0; $studentSum = 0; $seat = 0;?>
                             <td><?php echo e($flag+=1, false); ?></td>
                             <td>
                                 
@@ -59,8 +56,9 @@
 
                             
 
-                            <td><?php
-
+                            <td>
+                                <?php
+                                //$routeID = ;
                                 $studentSum = DB::table('schedulestudent')
                                     ->where('pick_point_route', $route->id)
                                     ->where('day', $todayid->id)
@@ -69,39 +67,43 @@
                                 <?php echo count($studentSum); ?>
 
                             </td>
-                            <td>
-                                <?php
-                                $stdArvTot = $stdArvTot + count($studentSum);
-                                $studentSum = count($studentSum);
-                                $student = $studentSum;
-                                if ($student) {
-                                    $bus = 1;
-                                } else {
-                                    $bus = 0;
-                                }?>
-                                <?php if((($studentSum/60) > 1) && ($studentSum > 0) ): ?>
-                                    <?php
-                                    $bus += round($studentSum / (60 * 1.15));
-                                    //$studentSum = $studentSum%75;
-                                    if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
-                                        $bus += 1;
-                                    }
-                                    $seat = $bus * 60 * 0.15;
-                                    if ($student - ($bus * 60) > 60 * 0.35) {
-                                        $bus += 1;
-                                    }
-                                    ?>
-                                    <?php echo e($bus, false); ?>
-
-                                <?php else: ?>
-                                    <?php echo e($bus, false); ?>
-
-                                <?php endif; ?>
-                                <?php $busArvTot = $busArvTot + $bus; ?>
-                            </td>
-                            <td><?php echo e($bus*60, false); ?></td> <?php $busSeatArvTot = $busSeatArvTot + ($bus * 60); ?>
-                            <td><?php echo e($bus*60*0.15, false); ?></td> <?php $busStandArvTot = $busStandArvTot + $bus * 60 * 0.15; ?>
-                            <td><?php echo e(($bus*60) .' ('.$student.')', false); ?></td>
+                            <td></td>
+                            
+                            <?php
+                            // $stdArvTot = $stdArvTot + count($studentSum);
+                            // $studentSum = count($studentSum);
+                            // $student = $studentSum;
+                            // if ($student) {
+                            //     $bus = 1;
+                            // } else {
+                            //     $bus = 0;
+                            // }
+                            ?>
+                            
+                            <?php
+                            // $bus += round($studentSum / (60 * 1.15));
+                            // //$studentSum = $studentSum%75;
+                            // if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
+                            //     $bus += 1;
+                            // }
+                            // $seat = $bus * 60 * 0.15;
+                            // if ($student - ($bus * 60) > 60 * 0.35) {
+                            //     $bus += 1;
+                            // }
+                            ?>
+                            
+                            <?php
+                            //$busArvTot = $busArvTot + $bus;
+                            ?>
+                            
+                            
+                            <?php
+                            // $busSeatArvTot = $busSeatArvTot + ($bus * 60);
+                            ?>
+                            
+                            <?php
+                            // $busStandArvTot = $busStandArvTot + $bus * 60 * 0.15; ?>
+                            
 
 
                             
@@ -114,56 +116,61 @@
                                 <?php echo count($studentSum); ?>
 
                             </td>
-                            <td>
-                                <?php
-                                $stdDepTot = $stdDepTot + count($studentSum);
-                                $studentSum = count($studentSum);
-                                $student = $studentSum;
-                                if ($student) {
-                                    $bus = 1;
-                                } else {
-                                    $bus = 0;
-                                }
-                                ?>
-                                <?php if((($studentSum/60) > 1) && ($studentSum > 0) ): ?>
-                                    <?php
-                                    $bus += round($studentSum / (60 * 1.15));
-                                    //$studentSum = $studentSum%75;
-                                    if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
-                                        $bus += 1;
-                                    }
-                                    $seat = $bus * 60 * 0.15;
-                                    if ($student - ($bus * 60) > 60 * 0.35) {
-                                        $bus += 1;
-                                    }
-                                    ?>
-                                    <?php echo e($bus, false); ?>
-
-                                <?php else: ?>
-                                    <?php echo e($bus, false); ?>
-
-                                <?php endif; ?>
-                                <?php $busDepTot = $busDepTot + $bus; ?>
-                            </td>
-                            <td><?php echo e($bus*60, false); ?></td> <?php $busSeatDepTot = $busSeatDepTot + ($bus * 60); ?>
-                            <td><?php echo e($bus*60*0.15, false); ?></td><?php $busStandDepTot = $busStandDepTot + $bus * 60 * 0.15; ?>
-                            <td><?php echo e(($bus*60) .' ('.$student.')', false); ?></td>
+                            <td></td>
+                            
+                            <?php
+                            // $stdDepTot = $stdDepTot + count($studentSum);
+                            // $studentSum = count($studentSum);
+                            // $student = $studentSum;
+                            // if ($student) {
+                            // $bus = 1;
+                            // } else {
+                            // $bus = 0;
+                            // }
+                            ?>
+                            
+                            <?php
+                            // $bus += round($studentSum / (60 * 1.15));
+                            // // $studentSum = $studentSum%75;
+                            // if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
+                            // $bus += 1;
+                            // }
+                            // $seat = $bus * 60 * 0.15;
+                            // if ($student - ($bus * 60) > 60 * 0.35) {
+                            // $bus += 1;
+                            // }
+                            ?>
+                            
+                            
+                            <?php
+                            // $busDepTot = $busDepTot + $bus;
+                            ?>
+                            
+                            
+                            <?php
+                            // $busSeatDepTot = $busSeatDepTot + ($bus * 60);
+                            ?>
+                            
+                            <?php
+                            // $busStandDepTot = $busStandDepTot + $bus * 60 * 0.15;
+                            ?>
+                            
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    <tr>
-                        <td></td>
-                        <td>Total</td>
-                        <td><?php echo e($stdArvTot, false); ?></td>
-                        <td><?php echo e($busArvTot, false); ?></td>
-                        <td><?php echo e($busSeatArvTot, false); ?></td>
-                        <td><?php echo e($busStandArvTot, false); ?></td>
-                        <td><?php echo e($busSeatArvTot+$busStandArvTot, false); ?></td>
-                        <td><?php echo e($stdDepTot, false); ?></td>
-                        <td><?php echo e($busDepTot, false); ?></td>
-                        <td><?php echo e($busSeatDepTot, false); ?></td>
-                        <td><?php echo e($busStandDepTot, false); ?></td>
-                        <td><?php echo e($busSeatDepTot+$busStandDepTot, false); ?></td>
-                    </tr>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     </tbody>
                 </table>
 
@@ -173,16 +180,12 @@
                     <tr>
                         <th>No</th>
                         <th>Route Name</th>
-                        <th>Student No (Arrival)</th>
-                        <th>Bus Needed</th>
-                        <th>Seat Capacity</th>
-                        <th>Standing</th>
-                        <th>Total Capacity</th>
-                        <th>Student No (Departure)</th>
-                        <th>Bus Needed</th>
-                        <th>Seat Capacity</th>
-                        <th>Standing</th>
-                        <th>Total Capacity</th>
+                        <th> No of Students (Arrival)</th>
+                        <th></th>
+                        
+                        <th> No of Students (Departure)</th>
+                        <th></th>
+                        
                     </tr>
                     </thead>
                     <tbody class="table" align="center">
@@ -199,7 +202,8 @@
                     $busStandSeatDepTot = 0;
                     ?>
                     <?php $__currentLoopData = $routes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <tr> <?php $bus = 0; $studentSum = 0; $seat = 0;?>
+                        <tr>
+                            <?php $bus = 0; $studentSum = 0; $seat = 0;?>
                             <td><?php echo e($flag+=1, false); ?></td>
                             <td>
                                 
@@ -221,39 +225,41 @@
                                 <?php echo count($studentSum); ?>
 
                             </td>
-                            <td>
-                                <?php
-                                $stdArvTot = $stdArvTot + count($studentSum);
-                                $studentSum = count($studentSum);
-                                $student = $studentSum;
-                                if ($student) {
-                                    $bus = 1;
-                                } else {
-                                    $bus = 0;
-                                }?>
-                                <?php if((($studentSum/60) > 1) && ($studentSum > 0) ): ?>
-                                    <?php
-                                    $bus += round($studentSum / (60 * 1.15));
-                                    //$studentSum = $studentSum%75;
-                                    if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
-                                        $bus += 1;
-                                    }
-                                    $seat = $bus * 60 * 0.15;
-                                    if ($student - ($bus * 60) > 60 * 0.35) {
-                                        $bus += 1;
-                                    }
-                                    ?>
-                                    <?php echo e($bus, false); ?>
-
-                                <?php else: ?>
-                                    <?php echo e($bus, false); ?>
-
-                                <?php endif; ?>
-                                <?php $busArvTot = $busArvTot + $bus; ?>
-                            </td>
-                            <td><?php echo e($bus*60, false); ?></td> <?php $busSeatArvTot = $busSeatArvTot + ($bus * 60); ?>
-                            <td><?php echo e($bus*60*0.15, false); ?></td> <?php $busStandArvTot = $busStandArvTot + $bus * 60 * 0.15; ?>
-                            <td><?php echo e(($bus*60) .' ('.$student.')', false); ?></td>
+                            <td></td>
+                            
+                            <?php
+                            // $stdArvTot = $stdArvTot + count($studentSum);
+                            // $studentSum = count($studentSum);
+                            // $student = $studentSum;
+                            // if ($student) {
+                            //     $bus = 1;
+                            // } else {
+                            //     $bus = 0;
+                            // }
+                            ?>
+                            
+                            <?php
+                            // $bus += round($studentSum / (60 * 1.15));
+                            // //$studentSum = $studentSum%75;
+                            // if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
+                            //     $bus += 1;
+                            // }
+                            // $seat = $bus * 60 * 0.15;
+                            // if ($student - ($bus * 60) > 60 * 0.35) {
+                            //     $bus += 1;
+                            // }
+                            ?>
+                            
+                            <?php
+                            // $busArvTot = $busArvTot + $bus; ?>
+                            
+                            
+                            <?php
+                            // $busSeatArvTot = $busSeatArvTot + ($bus * 60); ?>
+                            
+                            <?php
+                            // $busStandArvTot = $busStandArvTot + $bus * 60 * 0.15; ?>
+                            
 
 
                             
@@ -266,55 +272,56 @@
                                 <?php echo count($studentSum); ?>
 
                             </td>
-                            <td>
-                                <?php
-                                $stdDepTot = $stdDepTot + count($studentSum);
-                                $studentSum = count($studentSum);
-                                $student = $studentSum;
-                                if ($student) {
-                                    $bus = 1;
-                                } else {
-                                    $bus = 0;
-                                }
-                                ?>
-                                <?php if((($studentSum/60) > 1) && ($studentSum > 0) ): ?>
-                                    <?php
-                                    $bus += round($studentSum / (60 * 1.15));
-                                    //$studentSum = $studentSum%75;
-                                    if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
-                                        $bus += 1;
-                                    }
-                                    $seat = $bus * 60 * 0.15;
-                                    if ($student - ($bus * 60) > 60 * 0.35) {
-                                        $bus += 1;
-                                    }
-                                    ?>
-                                    <?php echo e($bus, false); ?>
-
-                                <?php else: ?>
-                                    <?php echo e($bus, false); ?>
-
-                                <?php endif; ?>
-                                <?php $busDepTot = $busDepTot + $bus; ?>
-                            </td>
-                            <td><?php echo e($bus*60, false); ?></td> <?php $busSeatDepTot = $busSeatDepTot + ($bus * 60); ?>
-                            <td><?php echo e($bus*60*0.15, false); ?></td><?php $busStandDepTot = $busStandDepTot + $bus * 60 * 0.15; ?>
-                            <td><?php echo e(($bus*60) .' ('.$student.')', false); ?></td>
+                            <td></td>
+                            
+                            <?php
+                            // $stdDepTot = $stdDepTot + count($studentSum);
+                            // $studentSum = count($studentSum);
+                            // $student = $studentSum;
+                            // if ($student) {
+                            //     $bus = 1;
+                            // } else {
+                            //     $bus = 0;
+                            // }
+                            ?>
+                            
+                            <?php
+                            // $bus += round($studentSum / (60 * 1.15));
+                            // //$studentSum = $studentSum%75;
+                            // if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
+                            //     $bus += 1;
+                            // }
+                            // $seat = $bus * 60 * 0.15;
+                            // if ($student - ($bus * 60) > 60 * 0.35) {
+                            //     $bus += 1;
+                            // }
+                            ?>
+                            
+                            <?php
+                            // $busDepTot = $busDepTot + $bus; ?>
+                            
+                            
+                            <?php
+                            // $busSeatDepTot = $busSeatDepTot + ($bus * 60); ?>
+                            
+                            <?php
+                            // $busStandDepTot = $busStandDepTot + $bus * 60 * 0.15; ?>
+                            
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     <tr>
-                        <td></td>
-                        <td>Total</td>
-                        <td><?php echo e($stdArvTot, false); ?></td>
-                        <td><?php echo e($busArvTot, false); ?></td>
-                        <td><?php echo e($busSeatArvTot, false); ?></td>
-                        <td><?php echo e($busStandArvTot, false); ?></td>
-                        <td><?php echo e($busSeatArvTot+$busStandArvTot, false); ?></td>
-                        <td><?php echo e($stdDepTot, false); ?></td>
-                        <td><?php echo e($busDepTot, false); ?></td>
-                        <td><?php echo e($busSeatDepTot, false); ?></td>
-                        <td><?php echo e($busStandDepTot, false); ?></td>
-                        <td><?php echo e($busSeatDepTot+$busStandDepTot, false); ?></td>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
                     </tr>
                     </tbody>
                 </table>
@@ -339,13 +346,13 @@
                         <tr>
                             <th>No</th>
                             <th>Route Name</th>
-                            <th>Student No (Arrival)</th>
+                            <th> No of Students (Arrival)</th>
                             <th></th>
                             
-                            <th>Student No (Departure)</th>
+                            <th> No of Students (Departure)</th>
                             <th></th>
                             
-                            
+
                         </tr>
                         </thead>
                         <tbody class="table" align="center">
@@ -486,10 +493,10 @@
                         <tr>
                             <th>No</th>
                             <th>Route Name</th>
-                            <th>Student No (Arrival)</th>
+                            <th> No of Students (Arrival)</th>
                             <th></th>
                             
-                            <th>Student No (Departure)</th>
+                            <th> No of Students (Departure)</th>
                             <th></th>
                             
                         </tr>
@@ -508,7 +515,8 @@
                         $busStandSeatDepTot = 0;
                         ?>
                         <?php $__currentLoopData = $routes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <tr> <?php $bus = 0; $studentSum = 0; $seat = 0;?>
+                            <tr>
+                                <?php $bus = 0; $studentSum = 0; $seat = 0;?>
                                 <td><?php echo e($flag+=1, false); ?></td>
                                 <td>
                                     
@@ -532,37 +540,37 @@
                                 </td>
                                 <td></td>
                                 
-                                    <?php
-                                    // $stdArvTot = $stdArvTot + count($studentSum);
-                                    // $studentSum = count($studentSum);
-                                    // $student = $studentSum;
-                                    // if ($student) {
-                                    //     $bus = 1;
-                                    // } else {
-                                    //     $bus = 0;
-                                    // }
-                                    ?>
-                                    
-                                        <?php
-                                        // $bus += round($studentSum / (60 * 1.15));
-                                        // //$studentSum = $studentSum%75;
-                                        // if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
-                                        //     $bus += 1;
-                                        // }
-                                        // $seat = $bus * 60 * 0.15;
-                                        // if ($student - ($bus * 60) > 60 * 0.35) {
-                                        //     $bus += 1;
-                                        // }
-                                        ?>
-                                        
-                                    <?php 
-                                    // $busArvTot = $busArvTot + $bus; ?>
+                                <?php
+                                // $stdArvTot = $stdArvTot + count($studentSum);
+                                // $studentSum = count($studentSum);
+                                // $student = $studentSum;
+                                // if ($student) {
+                                //     $bus = 1;
+                                // } else {
+                                //     $bus = 0;
+                                // }
+                                ?>
+                                
+                                <?php
+                                // $bus += round($studentSum / (60 * 1.15));
+                                // //$studentSum = $studentSum%75;
+                                // if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
+                                //     $bus += 1;
+                                // }
+                                // $seat = $bus * 60 * 0.15;
+                                // if ($student - ($bus * 60) > 60 * 0.35) {
+                                //     $bus += 1;
+                                // }
+                                ?>
+                                
+                                <?php
+                                // $busArvTot = $busArvTot + $bus; ?>
                                 
                                 
-                                <?php 
+                                <?php
                                 // $busSeatArvTot = $busSeatArvTot + ($bus * 60); ?>
                                 
-                                <?php 
+                                <?php
                                 // $busStandArvTot = $busStandArvTot + $bus * 60 * 0.15; ?>
                                 
 
@@ -579,37 +587,37 @@
                                 </td>
                                 <td></td>
                                 
-                                    <?php
-                                    // $stdDepTot = $stdDepTot + count($studentSum);
-                                    // $studentSum = count($studentSum);
-                                    // $student = $studentSum;
-                                    // if ($student) {
-                                    //     $bus = 1;
-                                    // } else {
-                                    //     $bus = 0;
-                                    // }
-                                    ?>
-                                    
-                                        <?php
-                                        // $bus += round($studentSum / (60 * 1.15));
-                                        // //$studentSum = $studentSum%75;
-                                        // if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
-                                        //     $bus += 1;
-                                        // }
-                                        // $seat = $bus * 60 * 0.15;
-                                        // if ($student - ($bus * 60) > 60 * 0.35) {
-                                        //     $bus += 1;
-                                        // }
-                                        ?>
-                                        
-                                    <?php 
-                                    // $busDepTot = $busDepTot + $bus; ?>
+                                <?php
+                                // $stdDepTot = $stdDepTot + count($studentSum);
+                                // $studentSum = count($studentSum);
+                                // $student = $studentSum;
+                                // if ($student) {
+                                //     $bus = 1;
+                                // } else {
+                                //     $bus = 0;
+                                // }
+                                ?>
+                                
+                                <?php
+                                // $bus += round($studentSum / (60 * 1.15));
+                                // //$studentSum = $studentSum%75;
+                                // if ($studentSum > (60 * 1.15) * $bus && $studentSum % (60 * 1.15) > $bus * 2) {
+                                //     $bus += 1;
+                                // }
+                                // $seat = $bus * 60 * 0.15;
+                                // if ($student - ($bus * 60) > 60 * 0.35) {
+                                //     $bus += 1;
+                                // }
+                                ?>
+                                
+                                <?php
+                                // $busDepTot = $busDepTot + $bus; ?>
                                 
                                 
-                                <?php 
+                                <?php
                                 // $busSeatDepTot = $busSeatDepTot + ($bus * 60); ?>
                                 
-                                <?php 
+                                <?php
                                 // $busStandDepTot = $busStandDepTot + $bus * 60 * 0.15; ?>
                                 
                             </tr>
@@ -626,7 +634,17 @@
         <?php else: ?>
             <p><h4>No Data Found!</h4></p>
         <?php endif; ?>
+        <?php
+        function BusNotAvailable($id)
+        {
+            $change = App\BusInfo::findOrFail($id);
 
+            if ($change) {
+                $change->availability = 0;
+                $change->save();
+            }
+        }
+        ?>
     </section>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('admin::index', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>

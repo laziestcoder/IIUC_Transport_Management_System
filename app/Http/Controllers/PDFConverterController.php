@@ -81,6 +81,10 @@ class PDFConverterController extends Controller
     public function busRequiremenrForTomorrow(Request $request)
     {
         $today = Carbon::tomorrow()->format('l');
+        //$busInfo = BusInfo::all('id','active');
+        // $affected = DB::table('table')->update(array('confirmed' => 1));
+        // $affected = DB::table('table')->where('confirmed', '=', 0)->update(array('confirmed' => 1));
+        $busInfo = DB::table('businfo')->where('availability', '=', 0)->update(array('availability' => 1));
         $data = array(
             'title' => 'Bus Requiremet Print',
             'routes' => BusRoute::orderBy('routename')->where('active',true)->where('routename','!=', 'All Route')->get(),
