@@ -10,6 +10,7 @@ use App\Notice;
 use App\Schedule;
 use App\Time;
 use Carbon\Carbon;
+use App\User;
 use App\AdminDashboard;
 use DB;
 use Illuminate\Http\Request;
@@ -162,8 +163,27 @@ class PagesController extends Controller
         //$males = Schedule::where('male','1');
         //$females = Schedule::where('female','1');
         $emergency = EmergencyContact::where('active', 1)->get();
-
-
+        $user_id = auth()->user()->id;
+        $user = User::find($user_id);
+        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg";
+        $ch = curl_init();
+        $timeout = 5;
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+        $lines_string = curl_exec($ch);
+        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $file2 = $lines_string;
+        $file = $retcode;
+        $verified = false;
+        if ($file == 200 && $file2[0] != '<') {
+            $verified = true;
+            $image = "<img style='max-width:32;max-height:32px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
+        } else {
+            $verified = false;
+            $image = "<img style='max-width:32px;max-height:32px' class='img img-thumbnail' src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
+        }
         $data = array(
             'titile' => $title,
             'noticetitle' => $noticetitle,
@@ -171,6 +191,7 @@ class PagesController extends Controller
             'description' => $description,
             'today' => $today,
             'now' => Carbon::now()->format('g:i A'),
+            'image' => $image,
 
 
             //NEXT BUS Informations
