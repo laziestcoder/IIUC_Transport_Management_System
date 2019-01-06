@@ -14,3 +14,10 @@ foreach($data as $key => $value){
     echo $key . 'x'. $value . '<br>'; 
 }
 ?>
+{{-- <pre>
+@foreach ($data as $item => $value)
+    {{$item}} <br>
+    {{$value}}
+    
+@endforeach
+</pre> --}}

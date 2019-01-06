@@ -67,7 +67,7 @@ class PDFConverterController extends Controller
 
         if ($request->has('download')) {
             // Set extra option
-            PDF::setOptions(['dpi' => 600, 'defaultFont' => 'sans-serif', 'font-size' => 12]);
+            PDF::setOptions(['dpi' => 600, 'defaultFont' => 'sans-serif', 'font-size' => '12']);
             //set paper orientation
             //PDF::setPaper('a4', 'landscape');
             // pass view file
@@ -89,6 +89,7 @@ class PDFConverterController extends Controller
             'today' => $today,
             'todayid' => Day::all()->where('dayname', $today)->first(),
             'datas' => BusStudentInfo::all(),
+            //'bus_available' => BusInfo::orderBy('seat','asc')->where('availability', 1)->get(),
             
         );
 
@@ -97,7 +98,7 @@ class PDFConverterController extends Controller
 
         if ($request->has('download')) {
             // Set extra option
-            PDF::setOptions(['dpi' => 600, 'defaultFont' => 'sans-serif', 'font-size' => 12]);
+            PDF::setOptions(['dpi' => 600, 'defaultFont' => 'sans-serif', 'font-size' => '10']);
             //set paper orientation
             //PDF::setPaper('a4', 'landscape');
             // pass view file
@@ -156,7 +157,7 @@ class PDFConverterController extends Controller
 //            // download pdf
 //            return $pdf->download('pdfview.pdf');
 //        }
-//        return view('test.pdfview');
+//        return view('testpdf.pdfview');
 //    }
 
 }

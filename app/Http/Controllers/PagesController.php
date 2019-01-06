@@ -249,11 +249,13 @@ class PagesController extends Controller
     //Test Page
     public function test()
     {
-        $data = array(
-            'title' => 'Services',
-            'services' => ['Transportation', 'Travelling', 'Picnic']
-        );
-        return view('pages.test')->with($data);
+        // $data = array(
+        //     'title' => 'Services',
+        //     'services' => ['Transportation', 'Travelling', 'Picnic']
+        // );
+        //return view('pages.test')->with($data);
+        return view('pages.test');
+        
     }
 
 

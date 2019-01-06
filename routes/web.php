@@ -47,7 +47,7 @@ Route::get('404', ['as' => 'notfound', 'uses' => 'PagesController@pagenotfound']
 //Route::get('register', ['as'=>'register','uses'=>'RegisterController@index']);
 //Route::get('/about', 'PagesController@index');
 //Route::get('/services', 'PagesController@index');
-//Route::get('/test', ['as'=> 'test page','uses'=>'PagesController@test']);
+Route::get('/test', ['as'=> 'test page','uses'=>'PagesController@test']);
 
 // Report A Problem
 Route::post('/report', ['as' => 'user report to admin', 'uses' => 'PagesController@report']);
@@ -97,5 +97,5 @@ Route::get('/admin/auth/schedule', ['as' => 'admin schedule', 'uses' => 'Schedul
 //Route::get('/admin/auth/notices/create','NoticesController@store');
 
 //PDF Converter Routes
-Route::get('/test', ['as' => 'htmltopdfview', 'uses' => 'PDFConverterController@htmltopdfview']);
+//Route::get('/test', ['as' => 'htmltopdfview', 'uses' => 'PDFConverterController@htmltopdfview']);
 Route::get('generate-pdf', 'PDFConverterController@pdfview')->name('generate-pdf');

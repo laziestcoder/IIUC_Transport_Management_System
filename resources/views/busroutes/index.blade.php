@@ -9,7 +9,7 @@
     </section>
     <section class="content">
         @if($today)
-            <h4 align="center">Tomorrow is <b>{!! $today !!}</b>. Tomorrow's Bus Requirement Information:</h4>
+            <h4 align="center">Tomorrow is <b>{!! $today !!}</b><br> Tomorrow's Bus Requirement Information</h4>
             <br>
             <a class="btn btn-success" target="_blank" href='/tomorrow-bus-requirement'>
                 <i class="fa fa-print"></i> Print

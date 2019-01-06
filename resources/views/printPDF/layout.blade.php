@@ -14,12 +14,12 @@
                                        src="storage/img/logos/iiuc-logo.png"
                                        alt="International Islamic University Chittagong"/>
             International Islamic University Chittagong
-            <h4 style="color: black;"><br>Kumira, Sitakunda, Chittagong</h4>
+            <h5 style="color: black;"><br>Kumira, Sitakunda, Chittagong</h5>
             @yield('headline')
         </h2>
     </div>
 </div>
-<div class="container" style="width: 595px; height: 842px; margin: auto;">
+<div class="container" style="max-width: 600px; max-height: 845px; margin: auto;">
     @yield('content')
 </div>
 </body>
