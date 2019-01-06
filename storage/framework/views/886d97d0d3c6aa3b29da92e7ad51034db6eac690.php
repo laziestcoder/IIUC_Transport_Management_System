@@ -1,6 +1,6 @@
 <?php $__env->startSection('content'); ?>
     <header id="home" class="masthead">
-        <div class="container">
+        <div class="container home-main">
             <div class="intro-text" style="padding-top: 140px; padding-bottom: 200px;">
                 <div class="intro-lead-in" style="font-style: initial"><b>Reset Password</b></div>
                 <div class="">
@@ -8,10 +8,10 @@
                         <div class="row">
                             <div class="col-md-8 col-md-offset-2">
                                 <div class="panel panel-default">
-
+                                    
 
                                     <div class="panel-body" style="background:#212529">
-                                        <?php if (session('status')): ?>
+                                        <?php if(session('status')): ?>
                                             <div class="alert alert-success">
                                                 <?php echo e(session('status'), false); ?>
 
@@ -30,7 +30,7 @@
                                                     <input id="email" type="email" class="form-control" name="email"
                                                            value="<?php echo e(old('email'), false); ?>" required>
 
-                                                    <?php if ($errors->has('email')): ?>
+                                                    <?php if($errors->has('email')): ?>
                                                         <span class="help-block">
                                         <strong><?php echo e($errors->first('email'), false); ?></strong>
                                     </span>
@@ -57,4 +57,4 @@
     </header>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>

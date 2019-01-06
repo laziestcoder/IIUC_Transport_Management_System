@@ -367,7 +367,7 @@ class ManagementController extends Controller
     protected function busroutesdetails()
     {
         $data = array(
-            'busroutes' => BusRoute::orderBy('routename', 'asc')->where('active',true)->get(),
+            'busroutes' => BusRoute::orderBy('routename', 'asc')->get(),
             //'points' => BusPoint::all(),
             'title' => 'Route Information',
         );
