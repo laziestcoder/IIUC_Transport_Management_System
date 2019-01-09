@@ -6,17 +6,14 @@ use Illuminate\Http\Request;
 
 class CaptchaController extends Controller
 {
-    public function index(){
-        if (Request::getMethod() == 'POST')
-        {
+    public function index()
+    {
+        if (Request::getMethod() == 'POST') {
             $rules = ['captcha' => 'required|captcha'];
             $validator = Validator::make(Input::all(), $rules);
-            if ($validator->fails())
-            {
+            if ($validator->fails()) {
                 echo '<p style="color: #ff0000;">Incorrect!</p>';
-            }
-            else
-            {
+            } else {
                 return '<p style="color: #00ff30;">Matched :)</p>';
             }
         }

@@ -174,10 +174,10 @@ class BusInfoController extends Controller
             'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
         ];
         $form->switch('availability', 'Availability')->states($states);
-        $form->select('bustype', 'Bus Type')->options(BusType::all()->where('active',1)->pluck('name', 'id'))->rules('required');
+        $form->select('bustype', 'Bus Type')->options(BusType::all()->where('active', 1)->pluck('name', 'id'))->rules('required');
         $form->text('bus_name', 'Bus Name')->rules('required');
         $form->text('busowner', 'Bus Owner')->rules('required');
-        $form->switch('active','Active')->states($states)->default(1);
+        $form->switch('active', 'Active')->states($states)->default(1);
         $form->text('comments', 'Comments');
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;

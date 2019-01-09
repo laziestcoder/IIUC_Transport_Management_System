@@ -11,7 +11,7 @@
                 @endif
                 @if( $regular && !$holiday  && !$suspend)
                     <div class="nextBus">
-                        <div class="nextBus-info">  
+                        <div class="nextBus-info">
                             <table class="table table-condensed table-responsive-md">
                                 <thead>
                                 <tr>
@@ -93,24 +93,24 @@
         <div id="schedule" class="container">
             @if($holiday == True)
                 <div class="row">
-                        <div class="col-lg-12 text-center">
-                            <h2 class="section-heading text-uppercase">It's Vacation Time! Enjoy the vacation.</h2>
-                        </div>
-                </div>    
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading text-uppercase">It's Vacation Time! Enjoy the vacation.</h2>
+                    </div>
+                </div>
             @elseif($suspend == True)
                 <div class="row">
-                        <div class="col-lg-12 text-center">
-                            <h2 class="section-heading text-uppercase">The Regular Schedule is SUSPENDED!</h2>
-                        </div>
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading text-uppercase">The Regular Schedule is SUSPENDED!</h2>
+                    </div>
                 </div>
-            
+
             @elseif($regular == False)
                 <div class="row">
-                        <div class="col-lg-12 text-center">
-                            <h2 class="section-heading text-uppercase">Regular Bus Schedule is OFF now.</h2>
-                        </div>
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading text-uppercase">Regular Bus Schedule is OFF now.</h2>
+                    </div>
                 </div>
-                 
+
             @elseif($day!= null && $regular == True && $suspend == False)
                 <div class="row">
                     <div class="col-lg-12 text-center">

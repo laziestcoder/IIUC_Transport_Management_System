@@ -25,40 +25,40 @@
                     <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
 
                 @else
-                <?php
-                $user_id = auth()->user();
-        if($user_id){
-        $user = App\User::find($user_id->id);
-        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg";
-        $ch = curl_init();
-        $timeout = 5;
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        $lines_string = curl_exec($ch);
-        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        $file2 = $lines_string;
-        $file = $retcode;
-        $verified = false;
-        if ($file == 200 && $file2[0] != '<') {
-            $verified = true;
-            $image = "<img style='max-width:32;max-height:32px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
-        } else {
-            $verified = false;
-            $image = "<img style='max-width:32px;max-height:32px' class='img img-thumbnail' src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
-        }
-    }else{
-        $image = '';
-    } 
-    
-    $image2 = $image;
-    ?>
+                    <?php
+                    $user_id = auth()->user();
+                    if ($user_id) {
+                        $user = App\User::find($user_id->id);
+                        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg";
+                        $ch = curl_init();
+                        $timeout = 5;
+                        curl_setopt($ch, CURLOPT_URL, $url);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+                        $lines_string = curl_exec($ch);
+                        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                        curl_close($ch);
+                        $file2 = $lines_string;
+                        $file = $retcode;
+                        $verified = false;
+                        if ($file == 200 && $file2[0] != '<') {
+                            $verified = true;
+                            $image = "<img style='max-width:32;max-height:32px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
+                        } else {
+                            $verified = false;
+                            $image = "<img style='max-width:32px;max-height:32px' class='img img-thumbnail' src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
+                        }
+                    } else {
+                        $image = '';
+                    }
+
+                    $image2 = $image;
+                    ?>
                     <li class="nav-item dropdown">
                         <a href="/dashboard" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                            aria-expanded="false" aria-haspopup="true" v-pre>
-                           {!! $image2 !!} {{ Auth::user()->name }} 
-                           
+                            {!! $image2 !!} {{ Auth::user()->name }}
+
                         </a>
 
                         <ul class="dropdown-menu">

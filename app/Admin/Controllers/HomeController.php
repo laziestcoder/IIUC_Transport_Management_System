@@ -2,19 +2,13 @@
 
 namespace App\Admin\Controllers;
 
-use App\AdminDashboard;
 use App\Http\Controllers\Controller;
 use DB;
-use App\Admin\Controllers\Dashboard;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
-use Encore\Admin\Form;
-use Encore\Admin\Grid;
 use Encore\Admin\Layout\Column;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Layout\Row;
-use App\Admin\Controllers\AdminDashboardController;
-use App\Admin\Controllers\EmergencyContactsController;
 
 class HomeController extends Controller
 {
@@ -31,10 +25,10 @@ class HomeController extends Controller
             $content->row('<br><br><br>');
 
             $admin = Admin::user();
-            
+
             if (($admin->id) === 1 && ($admin->name) === 'Towfiqul Islam' && ($admin->username) === 'towfiq') {
-                
-                
+
+
                 $content->row(function (Row $row) {
 
 
@@ -49,10 +43,10 @@ class HomeController extends Controller
                     $row->column(4, function (Column $column) {
                         $column->append(Dashboard::dependencies());
                     });
-                    
+
                 });
-                
-                
+
+
             }
             $content->row('<br><br><br>');
 

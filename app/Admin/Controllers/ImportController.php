@@ -182,10 +182,10 @@ class ImportController extends Controller
             //$entry_data = new BusType();
             //$field_names =  Schema::getColumnListing($entry_data);
             //foreach (config('app.db_fields') as $index => $field) {
-            
+
             if ($flag) {
                 foreach ($field_names as $index => $field) {
-                    if ($field != 'id' && $field != 'created_at' && $field != 'updated_at' ) { 
+                    if ($field != 'id' && $field != 'created_at' && $field != 'updated_at') {
                         if ($data->csv_header) {
                             $entry_data->$field = $row[$request->fields[$field]];
                         } else {

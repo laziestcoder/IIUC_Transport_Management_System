@@ -49,9 +49,9 @@
                                         <label>
                                             <input type="checkbox" name="header" checked> File contains header row?
                                         </label>
-                                        
+
                                     </div>
-                                    
+
                                 </div>
                             </div>
 
@@ -61,7 +61,7 @@
                                         Parse CSV
                                     </button>
                                 </div>
-                               
+
                             </div>
                             <div class="form-group">
                                 <div class="col-md-offset-1">

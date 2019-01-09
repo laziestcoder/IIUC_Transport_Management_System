@@ -190,7 +190,7 @@ class AdminTablesSeed extends Seeder
         Menu::truncate();
         Menu::insert([
 
-            [  
+            [
                 'parent_id' => 0,
                 'order' => 1,
                 'title' => 'Admin Dashboard',
@@ -222,7 +222,7 @@ class AdminTablesSeed extends Seeder
                 'uri' => '/auth/emergency-contact',
             ],
 
-            [ 
+            [
                 'parent_id' => 0,
                 'order' => 5,
                 'title' => 'Admin',
@@ -445,7 +445,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-simplybuilt',
                 'uri' => '/auth/bus-type',
             ],
-            
+
             [
                 'parent_id' => 0,
                 'order' => 33,

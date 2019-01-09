@@ -56,8 +56,8 @@ class ManagementController extends Controller
         }
 
         $user = User::find($user_id);
-        $BusRoutes = BusRoute::orderBy('routename')->where('active',true)->get();
-        $BusPoints = BusPoint::orderBy('pointname')->where('active',true)->get();
+        $BusRoutes = BusRoute::orderBy('routename')->where('active', true)->get();
+        $BusPoints = BusPoint::orderBy('pointname')->where('active', true)->get();
         $days = Day::orderBy('id')->get();
         $pickuptimes = Time::where('toiiuc', 1)->orderBy('time')->get();
         $droptimes = Time::where('fromiiuc', 1)->orderBy('time')->get();
@@ -355,7 +355,7 @@ class ManagementController extends Controller
             'titleinfo' => 'Available Schedule',
             'times' => Time::orderBy('time', 'asc')->get(),
             'days' => Day::where('active', 1)->get(),
-            'points' => BusPoint::orderBy('pointname','asc')->where('active',true)->get(),
+            'points' => BusPoint::orderBy('pointname', 'asc')->where('active', true)->get(),
             'gender' => $user_gender,
             'user_type' => $user->user_type,
             //'days' => $days,

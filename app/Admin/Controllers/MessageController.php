@@ -34,28 +34,13 @@ class MessageController extends Controller
         });
     }
 
-    /**
-     * Create interface.
-     *
-     * @return Content
-     */
-    public function create()
-    {
-        return Admin::content(function (Content $content) {
-            $content->header('New Message');
-            $content->description(' ');
-
-            $content->body($this->form());
-        });
-    }
-
     public function grid()
     {
         return Admin::grid(MessageModel::class, function (Grid $grid) {
             $type = request()->get('type', 'inbox');
 
             $grid->model()->with('sender')->orderBy('id', 'desc')->{$type}();
-            
+
             $grid->sender()->name('From');
             $grid->receiver()->name('To');
             $grid->title('Subject')->display(function ($title) {
@@ -86,11 +71,11 @@ class MessageController extends Controller
                 $actions->disableEdit();
                 $actions->disableView();
 
-                $url = $actions->getResource().'/create?';
+                $url = $actions->getResource() . '/create?';
 
                 $url .= http_build_query([
-                    'title' => 'Re:'.$actions->row->title,
-                    'to'    => $actions->row->from,
+                    'title' => 'Re:' . $actions->row->title,
+                    'to' => $actions->row->from,
                 ]);
 
                 $actions->prepend("<a class=\"btn btn-xs\" href=\"$url\"><i class=\"fa fa-reply\"></i></a>");
@@ -110,32 +95,6 @@ class MessageController extends Controller
                 });
             }
         });
-    }
-
-    public function form()
-    {
-        return Admin::form(MessageModel::class, function (Form $form) {
-            $options = Administrator::where('id', '!=', Admin::user()->id)->get()->pluck('name', 'id');
-            $defaults = [request('to')];
-
-            $form->multipleSelect('to')->options($options)->default($defaults);
-            $form->text('title', 'Subject')->rules('required')->default(request('title'));
-            $form->textarea('message')->rules('required');
-
-            $form->display('created_at');
-        });
-    }
-
-    public function update($id)
-    {
-        $ids = explode(',', $id);
-
-        MessageModel::inbox()->whereIn('id', $ids)->update(['read_at' => Carbon::now()]);
-
-        return [
-            'status'  => true,
-            'message' => 'Update Completed',
-        ];
     }
 
     protected function messageModal()
@@ -215,5 +174,46 @@ SCRIPT;
   </div>
 </div>
 MODAL;
+    }
+
+    /**
+     * Create interface.
+     *
+     * @return Content
+     */
+    public function create()
+    {
+        return Admin::content(function (Content $content) {
+            $content->header('New Message');
+            $content->description(' ');
+
+            $content->body($this->form());
+        });
+    }
+
+    public function form()
+    {
+        return Admin::form(MessageModel::class, function (Form $form) {
+            $options = Administrator::where('id', '!=', Admin::user()->id)->get()->pluck('name', 'id');
+            $defaults = [request('to')];
+
+            $form->multipleSelect('to')->options($options)->default($defaults);
+            $form->text('title', 'Subject')->rules('required')->default(request('title'));
+            $form->textarea('message')->rules('required');
+
+            $form->display('created_at');
+        });
+    }
+
+    public function update($id)
+    {
+        $ids = explode(',', $id);
+
+        MessageModel::inbox()->whereIn('id', $ids)->update(['read_at' => Carbon::now()]);
+
+        return [
+            'status' => true,
+            'message' => 'Update Completed',
+        ];
     }
 }

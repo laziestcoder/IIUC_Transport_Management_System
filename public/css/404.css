@@ -95,7 +95,7 @@ body::after {
     font-size: 30px;
     overflow: hidden;
     display: inline-block;
-    word-wrap:'<a href="/home">Home</a>';
+    word-wrap: '<a href="/home">Home</a>';
     /* white-space: nowrap; */
     /* -webkit-animation: text-show 3s infinite steps(3); */
     /* animation: text-show 3s infinite steps(3); */

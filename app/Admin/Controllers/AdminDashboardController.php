@@ -3,7 +3,6 @@
 namespace App\Admin\Controllers;
 
 use App\AdminDashboard;
-use App\EmergencyContact;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;

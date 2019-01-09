@@ -49,7 +49,7 @@ class UsersController extends Controller
         $grid->updated_at(trans('admin.updated_at'));
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
-            if ($actions->getKey() <= 3 && Admin::user()->id != 1 ) {
+            if ($actions->getKey() <= 3 && Admin::user()->id != 1) {
                 $actions->disableDelete();
                 $actions->disableEdit();
             }

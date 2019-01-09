@@ -42,13 +42,13 @@ class BusRoutesController extends Controller
             'title' => 'Bus Route Info',
             'smallTitle' => 'Here you will get route wise student number and required bus number for the students',
             'titleinfo' => 'Route Wise Bus and Student Information',
-            'routes' => BusRoute::orderBy('routename')->where('active',true)->where('routename','!=', 'All Route')->get(),
+            'routes' => BusRoute::orderBy('routename')->where('active', true)->where('routename', '!=', 'All Route')->get(),
             'days' => Day::where('active', true)->get(),
             'times' => Time::orderBy('time')->get(),
             'today' => $today,
-            'todayid' => Day::all()->where('dayname', $today)->where('active',true)->first(),
+            'todayid' => Day::all()->where('dayname', $today)->where('active', true)->first(),
             'datas' => BusStudentInfo::all(),
-            'busInfo' => BusInfo::where('availability',true)->get(),
+            'busInfo' => BusInfo::where('availability', true)->get(),
         );
         return view('busroutes.index')->with($data);
     }

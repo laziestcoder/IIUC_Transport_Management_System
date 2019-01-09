@@ -2,8 +2,9 @@
 
 //namespace Encore\Admin\Controllers;
 namespace App\Admin\Controllers;
-use Encore\Admin\Admin;
+
 use App\Admin\AdminDashboardController;
+use Encore\Admin\Admin;
 
 class Dashboard
 {
@@ -21,20 +22,20 @@ class Dashboard
     public static function environment()
     {
         $envs = [
-            ['name' => 'PHP version',       'value' => 'PHP/'.PHP_VERSION],
-            ['name' => 'Laravel version',   'value' => app()->version()],
-            ['name' => 'CGI',               'value' => php_sapi_name()],
-            ['name' => 'Uname',             'value' => php_uname()],
-            ['name' => 'Server',            'value' => array_get($_SERVER, 'SERVER_SOFTWARE')],
+            ['name' => 'PHP version', 'value' => 'PHP/' . PHP_VERSION],
+            ['name' => 'Laravel version', 'value' => app()->version()],
+            ['name' => 'CGI', 'value' => php_sapi_name()],
+            ['name' => 'Uname', 'value' => php_uname()],
+            ['name' => 'Server', 'value' => array_get($_SERVER, 'SERVER_SOFTWARE')],
 
-            ['name' => 'Cache driver',      'value' => config('cache.default')],
-            ['name' => 'Session driver',    'value' => config('session.driver')],
-            ['name' => 'Queue driver',      'value' => config('queue.default')],
+            ['name' => 'Cache driver', 'value' => config('cache.default')],
+            ['name' => 'Session driver', 'value' => config('session.driver')],
+            ['name' => 'Queue driver', 'value' => config('queue.default')],
 
-            ['name' => 'Timezone',          'value' => config('app.timezone')],
-            ['name' => 'Locale',            'value' => config('app.locale')],
-            ['name' => 'Env',               'value' => config('app.env')],
-            ['name' => 'URL',               'value' => config('app.url')],
+            ['name' => 'Timezone', 'value' => config('app.timezone')],
+            ['name' => 'Locale', 'value' => config('app.locale')],
+            ['name' => 'Env', 'value' => config('app.env')],
+            ['name' => 'URL', 'value' => config('app.url')],
         ];
 
         return view('admin::dashboard.environment', compact('envs'));
@@ -113,7 +114,8 @@ class Dashboard
         return view('admin::dashboard.dependencies', compact('dependencies'));
     }
 
-    public function schedule(){
+    public function schedule()
+    {
         return AdminDashboardController::grid();
     }
 

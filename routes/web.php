@@ -47,7 +47,7 @@ Route::get('404', ['as' => 'notfound', 'uses' => 'PagesController@pagenotfound']
 //Route::get('register', ['as'=>'register','uses'=>'RegisterController@index']);
 //Route::get('/about', 'PagesController@index');
 //Route::get('/services', 'PagesController@index');
-Route::get('/test', ['as'=> 'test page','uses'=>'PagesController@test']);
+Route::get('/test', ['as' => 'test page', 'uses' => 'PagesController@test']);
 
 // Report A Problem
 Route::post('/report', ['as' => 'user report to admin', 'uses' => 'PagesController@report']);
