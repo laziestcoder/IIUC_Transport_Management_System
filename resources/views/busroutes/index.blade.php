@@ -47,6 +47,9 @@
                     $busSeatDepTot = 0;
                     $busStandDepTot = 0;
                     $busStandSeatDepTot = 0;
+                    $totalStdArr = 0;
+                    $totalStdDep = 0;
+
                     ?>
                     @foreach($routes as $route)
                         <tr>
@@ -68,7 +71,8 @@
                                     ->where('pick_point_route', $route->id)
                                     ->where('day', $todayid->id)
                                     ->where('user_gender', true)
-                                    ->get(); ?>
+                                    ->get();
+                                $totalStdArr = $totalStdArr + count($studentSum); ?>
                                 {!! count($studentSum) !!}
                             </td>
                             <td></td>
@@ -121,7 +125,8 @@
                                     ->where('drop_point_route', $route->id)
                                     ->where('day', $todayid->id)
                                     ->where('user_gender', true)
-                                    ->get(); ?>
+                                    ->get();
+                                $totalStdDep = $totalStdDep + count($studentSum); ?>
                                 {!! count($studentSum) !!}
                             </td>
                             <td></td>
@@ -169,20 +174,20 @@
                             {{-- <td>{{ ($bus*60) .' ('.$student.')'}}</td> --}}
                         </tr>
                     @endforeach
-                    {{--<tr>--}}
-                    {{--<td></td>--}}
-                    {{--<td>Total</td>--}}
-                    {{--<td>{{$stdArvTot}}</td>--}}
-                    {{--<td>{{$busArvTot}}</td>--}}
-                    {{--<td>{{$busSeatArvTot}}</td>--}}
-                    {{--<td>{{$busStandArvTot}}</td>--}}
-                    {{--<td>{{$busSeatArvTot+$busStandArvTot}}</td>--}}
-                    {{--<td>{{$stdDepTot}}</td>--}}
-                    {{--<td>{{$busDepTot}}</td>--}}
-                    {{--<td>{{$busSeatDepTot}}</td>--}}
-                    {{--<td>{{$busStandDepTot}}</td>--}}
-                    {{--<td>{{$busSeatDepTot+$busStandDepTot}}</td>--}}
-                    {{--</tr>--}}
+                    <tr>
+                        <td></td>
+                        <td>Total</td>
+                        <td>{{$totalStdArr}}</td>
+                        <td></td>
+                        <td>{{$totalStdDep}}</td>
+                        <td></td>
+                        {{-- <td>{{$busSeatArvTot+$busStandArvTot}}</td>
+                        <td>{{$stdDepTot}}</td>
+                        <td>{{$busDepTot}}</td>
+                        <td>{{$busSeatDepTot}}</td>
+                        <td>{{$busStandDepTot}}</td>
+                        <td>{{$busSeatDepTot+$busStandDepTot}}</td> --}}
+                    </tr>
                     </tbody>
                 </table>
 
@@ -218,6 +223,8 @@
                     $busSeatDepTot = 0;
                     $busStandDepTot = 0;
                     $busStandSeatDepTot = 0;
+                    $totalStdArr = 0;
+                    $totalStdDep = 0;
                     ?>
                     @foreach($routes as $route)
                         <tr>
@@ -238,7 +245,9 @@
                                     ->where('pick_point_route', $route->id)
                                     ->where('day', $todayid->id)
                                     ->where('user_gender', false)
-                                    ->get(); ?>
+                                    ->get();
+                                $totalStdArr = $totalStdArr + count($studentSum);
+                                ?>
                                 {!! count($studentSum) !!}
                             </td>
                             <td></td>
@@ -289,7 +298,8 @@
                                     ->where('drop_point_route', $route->id)
                                     ->where('day', $todayid->id)
                                     ->where('user_gender', false)
-                                    ->get(); ?>
+                                    ->get();
+                                $totalStdDep = $totalStdDep + count($studentSum);?>
                                 {!! count($studentSum) !!}
                             </td>
                             <td></td>
@@ -335,18 +345,18 @@
                         </tr>
                     @endforeach
                     <tr>
-                        {{--<td></td>--}}
-                        {{--<td>Total</td>--}}
-                        {{--<td>{{$stdArvTot}}</td>--}}
-                        {{--<td>{{$busArvTot}}</td>--}}
-                        {{--<td>{{$busSeatArvTot}}</td>--}}
-                        {{--<td>{{$busStandArvTot}}</td>--}}
-                        {{--<td>{{$busSeatArvTot+$busStandArvTot}}</td>--}}
-                        {{--<td>{{$stdDepTot}}</td>--}}
-                        {{--<td>{{$busDepTot}}</td>--}}
-                        {{--<td>{{$busSeatDepTot}}</td>--}}
-                        {{--<td>{{$busStandDepTot}}</td>--}}
-                        {{--<td>{{$busSeatDepTot+$busStandDepTot}}</td>--}}
+                        <td></td>
+                        <td>Total</td>
+                        <td>{{$totalStdArr}}</td>
+                        <td></td>
+                        <td>{{$totalStdDep}}</td>
+                        <td></td>
+                        {{-- <td>{{$busSeatArvTot+$busStandArvTot}}</td>
+                        <td>{{$stdDepTot}}</td>
+                        <td>{{$busDepTot}}</td>
+                        <td>{{$busSeatDepTot}}</td>
+                        <td>{{$busStandDepTot}}</td>
+                        <td>{{$busSeatDepTot+$busStandDepTot}}</td> --}}
                     </tr>
                     </tbody>
                 </table>
@@ -398,6 +408,8 @@
                         $busSeatDepTot = 0;
                         $busStandDepTot = 0;
                         $busStandSeatDepTot = 0;
+                        $totalStdArr = 0;
+                        $totalStdDep = 0;
                         ?>
                         @foreach($routes as $route )
                             <tr>
@@ -419,7 +431,8 @@
                                         ->where('pick_point_route', $route->id)
                                         ->where('day', $day->id)
                                         ->where('user_gender', true)
-                                        ->get(); ?>
+                                        ->get();
+                                    $totalStdArr = $totalStdArr + count($studentSum);?>
                                     {!! count($studentSum) !!}
                                 </td>
                                 <td></td>
@@ -472,7 +485,9 @@
                                         ->where('drop_point_route', $route->id)
                                         ->where('day', $day->id)
                                         ->where('user_gender', true)
-                                        ->get(); ?>
+                                        ->get();
+                                    $totalStdDep = $totalStdDep + count($studentSum);
+                                    ?>
                                     {!! count($studentSum) !!}
                                 </td>
                                 <td></td>
@@ -520,20 +535,20 @@
                                 {{-- <td>{{ ($bus*60) .' ('.$student.')'}}</td> --}}
                             </tr>
                         @endforeach
-                        {{-- <tr>
+                        <tr>
                             <td></td>
                             <td>Total</td>
-                            <td>{{$stdArvTot}}</td>
-                            <td>{{$busArvTot}}</td>
-                            <td>{{$busSeatArvTot}}</td>
-                            <td>{{$busStandArvTot}}</td>
-                            <td>{{$busSeatArvTot+$busStandArvTot}}</td>
+                            <td>{{$totalStdArr}}</td>
+                            <td></td>
+                            <td>{{$totalStdDep}}</td>
+                            <td></td>
+                            {{-- <td>{{$busSeatArvTot+$busStandArvTot}}</td>
                             <td>{{$stdDepTot}}</td>
                             <td>{{$busDepTot}}</td>
                             <td>{{$busSeatDepTot}}</td>
                             <td>{{$busStandDepTot}}</td>
-                            <td>{{$busSeatDepTot+$busStandDepTot}}</td>
-                        </tr> --}}
+                            <td>{{$busSeatDepTot+$busStandDepTot}}</td> --}}
+                        </tr>
                         </tbody>
                     </table>
 
@@ -589,7 +604,8 @@
                                         ->where('pick_point_route', $route->id)
                                         ->where('day', $day->id)
                                         ->where('user_gender', false)
-                                        ->get(); ?>
+                                        ->get();
+                                    $totalStdArr = $totalStdArr + count($studentSum);?>
                                     {!! count($studentSum) !!}
                                 </td>
                                 <td></td>
@@ -640,7 +656,9 @@
                                         ->where('drop_point_route', $route->id)
                                         ->where('day', $day->id)
                                         ->where('user_gender', false)
-                                        ->get(); ?>
+                                        ->get();
+                                    $totalStdDep = $totalStdDep + count($studentSum);
+                                    ?>
                                     {!! count($studentSum) !!}
                                 </td>
                                 <td></td>
@@ -686,13 +704,13 @@
                             </tr>
                         @endforeach
                         <tr>
-                            {{-- <td></td>
+                            <td></td>
                             <td>Total</td>
-                            <td>{{$stdArvTot}}</td>
-                            <td>{{$busArvTot}}</td>
-                            <td>{{$busSeatArvTot}}</td>
-                            <td>{{$busStandArvTot}}</td>
-                            <td>{{$busSeatArvTot+$busStandArvTot}}</td>
+                            <td>{{$totalStdArr}}</td>
+                            <td></td>
+                            <td>{{$totalStdDep}}</td>
+                            <td></td>
+                            {{-- <td>{{$busSeatArvTot+$busStandArvTot}}</td>
                             <td>{{$stdDepTot}}</td>
                             <td>{{$busDepTot}}</td>
                             <td>{{$busSeatDepTot}}</td>
@@ -708,16 +726,5 @@
         @else
             <p><h4>No Data Found!</h4></p>
         @endif
-        <?php
-        function BusNotAvailable($id)
-        {
-            $change = App\BusInfo::findOrFail($id);
-
-            if ($change) {
-                $change->availability = 0;
-                $change->save();
-            }
-        }
-        ?>
     </section>
 @endsection

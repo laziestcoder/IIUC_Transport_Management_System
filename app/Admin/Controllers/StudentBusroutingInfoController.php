@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\StudentSchedule;
 use App\Time;
 use App\User;
-use App\UserRole;
+use App\UserType;
 use Carbon\Carbon;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -44,10 +44,10 @@ class StudentBusroutingInfoController extends Controller
         $grid = new Grid(new StudentSchedule);
         $grid->model()->where('pickpoint', '!=', false);
 
-        $grid->id('ID')->sortable();
-        $grid->userrole('User')->display(function ($id) {
+        //$grid->id('ID')->sortable();
+        $grid->user_type('User Type')->display(function ($id) {
             if ($id) {
-                $id = UserRole::find($id);
+                $id = UserType::find($id);
                 if ($id) {
                     return $id->name;
                 } else {

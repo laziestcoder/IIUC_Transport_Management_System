@@ -3,7 +3,6 @@
         color: rgba(0, 0, 0, 0.5);
         margin-left: 10px;
     }
-
     .installed {
         color: #00a65a;
         margin-right: 10px;

@@ -49,7 +49,9 @@
                                         <label>
                                             <input type="checkbox" name="header" checked> File contains header row?
                                         </label>
+                                        
                                     </div>
+                                    
                                 </div>
                             </div>
 
@@ -58,6 +60,17 @@
                                     <button type="submit" class="btn btn-primary">
                                         Parse CSV
                                     </button>
+                                </div>
+                               
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-1">
+                                    <label>
+                                        <b>N.B. File name must be same as table name in the list.</b>
+                                    </label>
+                                    <br>
+                                    Example: 'users.csv' where file name and table name both are same as 'users'.
+
                                 </div>
                             </div>
                         </form>

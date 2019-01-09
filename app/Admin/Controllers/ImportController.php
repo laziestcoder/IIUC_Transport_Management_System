@@ -21,7 +21,7 @@ use App\Schedule;
 use App\StudentSchedule;
 use App\Time;
 use App\User;
-use App\UserRole;
+use App\UserType;
 use DB;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -115,6 +115,7 @@ class ImportController extends Controller
         $csv_data = json_decode($data->csv_data, true);
         //$entry_data = new BusType();
         $field_names = DB::getSchemaBuilder()->getColumnListing($table_name);
+        //User::truncate();
         foreach ($csv_data as $row) {
             $flag = True;
             //$model_name = get_class($model_name);
@@ -170,8 +171,8 @@ class ImportController extends Controller
                 case 'User':
                     $entry_data = new User();
                     break;
-                case 'UserRole':
-                    $entry_data = new UserRole();
+                case 'UserType':
+                    $entry_data = new UserType();
                     break;
                 default:
                     $flag = false;
@@ -181,9 +182,10 @@ class ImportController extends Controller
             //$entry_data = new BusType();
             //$field_names =  Schema::getColumnListing($entry_data);
             //foreach (config('app.db_fields') as $index => $field) {
+            
             if ($flag) {
                 foreach ($field_names as $index => $field) {
-                    if ($field != 'id') {
+                    if ($field != 'id' && $field != 'created_at' && $field != 'updated_at' ) { 
                         if ($data->csv_header) {
                             $entry_data->$field = $row[$request->fields[$field]];
                         } else {

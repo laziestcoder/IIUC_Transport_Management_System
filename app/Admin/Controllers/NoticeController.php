@@ -43,7 +43,7 @@ class NoticeController extends Controller
     {
         $grid = new Grid(new Notice);
 
-        $id = $grid->id('ID')->sortable();
+        // $id = $grid->id('ID')->sortable();
         $grid->title('Title')->display(function ($text) {
             return str_limit($text, 50, '...');
         })->sortable();

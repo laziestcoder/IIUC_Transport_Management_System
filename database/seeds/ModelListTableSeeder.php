@@ -84,8 +84,8 @@ class ModelListTableSeeder extends Seeder
                 'table_name' => 'users',
             ],
             [
-                'model_name' => 'UserRole',
-                'table_name' => 'user_role',
+                'model_name' => 'UserType',
+                'table_name' => 'user_type',
             ],
         ]);
     }

@@ -4,7 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\User;
-use App\UserRole;
+use App\UserType;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -37,8 +37,9 @@ class OtherUsersController extends Controller
     protected function grid()
     {
         $grid = new Grid(new User);
-        $grid->model()->where('userrole', '>', 3)->orderBy('jobid', 'asc')->orderBy('created_at', 'asc');
-        $grid->id('ID')->sortable();
+        $grid->model()->where('user_type', '>', 3)->orderBy('jobid', 'asc')->orderBy('created_at', 'asc');
+
+        //$grid->id('ID')->sortable();
         $grid->jobid(trans('Varsity ID'))->sortable()->editable();
 //            $grid->image(trans('admin.avatar'))->display(function ($s) use ($self) {
 //                $file= $self->imageValidate($this->jobid);  //I want to use this $file value
@@ -139,8 +140,8 @@ class OtherUsersController extends Controller
             return $s ? 'Female' : 'Male';
         });
 
-        $show->userrole(trans('Registered As'))->as(function ($s) {
-            return UserRole::find($s)->name;
+        $show->user_type(trans('Registered As'))->as(function ($s) {
+            return UserType::find($s)->name;
         });
 
         $show->confirmed(trans('Activated'))->as(function ($s) {
@@ -198,8 +199,8 @@ class OtherUsersController extends Controller
         $form->email('email', 'Email');
         $form->text('jobid', 'Varsity ID');
         $form->password('password', 'Password');
-        $form->select('userrole', 'Registered As')
-            ->options(UserRole::all()->sortBy('name')->pluck('name', 'id'))
+        $form->select('user_type', 'Registered As')
+            ->options(UserType::all()->sortBy('name')->pluck('name', 'id'))
             ->rules('required');
         $states = [
             'on' => ['value' => 1, 'text' => 'Female', 'color' => 'success'],

@@ -7,7 +7,7 @@ use App\Day;
 use App\Http\Controllers\Controller;
 use App\Schedule;
 use App\Time;
-use App\UserRole;
+use App\UserType;
 use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\HasResourceActions;
@@ -45,7 +45,7 @@ class BusScheduleController extends Controller
     {
         $grid = new Grid(new Schedule);
 
-        $grid->id('ID')->sortable();
+        //$grid->id('ID')->sortable();
         $grid->day('Day')->display(function ($s) {
             if ($s) {
                 $s = Day::all()->find($s);
@@ -84,7 +84,7 @@ class BusScheduleController extends Controller
             ->sortable();
         $grid->bususer('Bus For')->display(function ($s) {
             if ($s) {
-                $s = UserRole::all()->find($s);
+                $s = UserType::all()->find($s);
                 if ($s) {
                     return $s->name;
                 } else {
@@ -176,7 +176,7 @@ class BusScheduleController extends Controller
             return Carbon::parse(Time::all()->find($s)->time)->format("g:i A");
         });
         $show->bususer('Bus For')->as(function ($s) {
-            return UserRole::all()->find($s)->name;
+            return UserType::all()->find($s)->name;
         });
         $show->route('Route')->as(function ($s) {
             return BusRoute::all()->find($s)->routename;
@@ -231,7 +231,7 @@ class BusScheduleController extends Controller
             ->options(Time::all()->sortBy('time')->pluck('time', 'id'))
             ->rules('required');
         $form->select('bususer', 'Bus For')
-            ->options(UserRole::all()->sortBy('name')->pluck('name', 'id'))
+            ->options(UserType::all()->sortBy('name')->pluck('name', 'id'))
             ->rules('required');
         $form->select('route', 'Route')
             ->options(BusRoute::all()->sortBy('routename')->pluck('routename', 'id'))

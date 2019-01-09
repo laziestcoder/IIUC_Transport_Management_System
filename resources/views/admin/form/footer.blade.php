@@ -15,13 +15,20 @@
             @if(in_array('continue_editing', $checkboxes))
                 <label class="pull-right" style="margin: 5px 10px 0 0;">
                     <input type="checkbox" class="after-submit" name="after-save"
-                           value="1"> {{ trans('admin.continue_editing') }}
+                           value="1"> {{ trans('Continue Editing') }}
+                </label>
+            @endif
+
+            @if(in_array('continue_creating', $checkboxes))
+                <label class="pull-right" style="margin: 5px 10px 0 0;">
+                    <input type="checkbox" class="after-submit" name="after-save"
+                           value="2"> {{ trans('Continue Creating') }}
                 </label>
             @endif
 
             @if(in_array('view', $checkboxes))
                 <label class="pull-right" style="margin: 5px 10px 0 0;">
-                    <input type="checkbox" class="after-submit" name="after-save" value="2"> {{ trans('admin.view') }}
+                    <input type="checkbox" class="after-submit" name="after-save" value="3"> {{ trans('admin.view') }}
                 </label>
             @endif
 

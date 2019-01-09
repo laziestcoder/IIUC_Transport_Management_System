@@ -21,10 +21,10 @@
     <!-- Navbar Right Menu -->
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-            <li>
-              {!! Admin::getNavbar()->render() !!}
-            </li>
-            <!-- User Account Menu -->
+                <li>
+                    {!! Admin::getNavbar()->render() !!}
+                </li>
+                <!-- User Account Menu -->
                 <li class="dropdown user user-menu">
                     <!-- Menu Toggle Button -->
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -40,8 +40,9 @@
 
                             <p>
                                 {{ Admin::user()->name }}
-                                {{-- <small>Member Since {{ Admin::user()->created_at }}</small>
-                                <small>Last Updated {{ Admin::user()->updated_at }}</small> --}}
+                                {{-- <small>Role: {{Admin::user()->role}}</small> --}}
+                                {{-- <small>Member Since {!! Admin::user()->created_at !!}</small> --}}
+                                {{-- <small>Last Updated {{ Admin::user()->updated_at }}</small> --}}
                             </p>
                         </li>
                         <li class="user-footer">
@@ -56,10 +57,10 @@
                         </li>
                     </ul>
                 </li>
-            <!-- Control Sidebar Toggle Button -->
-            {{-- <li>
-            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-            </li> --}}
+                <!-- Control Sidebar Toggle Button -->
+                {{-- <li>
+                <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                </li> --}}
             </ul>
         </div>
     </nav>

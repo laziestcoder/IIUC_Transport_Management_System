@@ -37,7 +37,12 @@ class HelperInfoController extends Controller
     {
         $grid = new Grid(new Helper);
 
-        $grid->id('ID')->sortable();
+        //$grid->id('ID')->sortable();
+        $states = [
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
+        ];
+        $grid->active('Published')->switch($states)->sortable();
         $grid->image('Photo')->display(function ($s) {
             return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
         });
@@ -163,6 +168,11 @@ class HelperInfoController extends Controller
         $form->textarea('address', 'Address')->rules('required');
         $form->radio('gender', 'Gender')->options([0 => 'Male', 1 => 'Female'])->stacked()->rules('required');
         $form->date('join_date', 'Join Date');
+        $states = [
+            'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('active', 'Available')->states($states)->default(false);
         return $form;
     }
 

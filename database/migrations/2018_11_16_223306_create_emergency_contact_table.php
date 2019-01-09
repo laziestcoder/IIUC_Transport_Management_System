@@ -18,7 +18,7 @@ class CreateEmergencyContactTable extends Migration
             $table->string('name');
             $table->string('contact', 20);
             $table->string('photo')->nullable()->default('images/defaultAdmin.png');
-            $table->boolean('active')->default(false);
+            $table->boolean('active')->default(false)->nullable();
             $table->timestamps();
         });
     }

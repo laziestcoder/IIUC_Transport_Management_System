@@ -266,10 +266,10 @@
                                 <h4>{!! $notice->title !!}</h4>
                                 <small>
                                     <p class="text-muted">
-                                        Posted By:
+                                        {{-- Posted By:
                                         <i>
                                             {!! DB::table('admin_users')->where('id', $notice->user_id)->first()->name !!}
-                                        </i><br>
+                                        </i><br> --}}
                                         Posted
                                         At: {!!  \Carbon\Carbon::parse($notice->created_at)->format('l, d-M-Y g:i: A') !!}
                                     </p>
@@ -411,8 +411,50 @@
     <!-- Team -->
 
 
-    {{-- Developed By --}}
+
     <section class="bg-light" id="team">
+
+        {{-- Supervised By --}}
+
+        <div id="about-us" class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading text-uppercase">Supervised By</h2>
+                    <h3 class="section-subheading text-muted"> This project is supervised by Professor Mohammed Shamsul
+                        Alam. </h3>
+                </div>
+            </div>
+
+            <div class="">
+                <div class="team-member">
+                    <img class="mx-auto rounded-circle responsive" src="/storage/img/team/3.jpg"
+                         alt="Mohammed Shamsul Alam">
+                    <h4>Mohammed Shamsul Alam</h4>
+                    <span>Professor</span><br><span>Dept. of CSE, IIUC</span>
+                    <p class="text-muted"></p>
+                    <ul class="list-inline social-buttons">
+
+                        <li class="list-inline-item">
+                            <a href="https://www.facebook.com/alam.cse/">
+                                <i class="fa fa-facebook"></i>
+                            </a>
+                        </li>
+
+                        <li class="list-inline-item">
+                            <a href="https://www.linkedin.com/in/shamsul-alam-11575257/">
+                                <i class="fa fa-linkedin"></i>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        <br>
+        <br>
+
+        {{-- Developed By --}}
         <div id="about-us" class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -485,45 +527,6 @@
         <br>
         <br>
 
-        {{-- Supervised By --}}
-
-        <div id="about-us" class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h2 class="section-heading text-uppercase">Supervised By</h2>
-                    <h3 class="section-subheading text-muted"> This project is supervised by Mohammed Shamsul
-                        Alam. </h3>
-                </div>
-            </div>
-
-            <div class="">
-                <div class="team-member">
-                    <img class="mx-auto rounded-circle responsive" src="/storage/img/team/3.jpg"
-                         alt="Mohammed Shamsul Alam">
-                    <h4>Mohammed Shamsul Alam</h4>
-                    <span>Professor</span><br><span>Dept. of CSE, IIUC</span>
-                    <p class="text-muted"></p>
-                    <ul class="list-inline social-buttons">
-
-                        <li class="list-inline-item">
-                            <a href="https://www.facebook.com/alam.cse/">
-                                <i class="fa fa-facebook"></i>
-                            </a>
-                        </li>
-
-                        <li class="list-inline-item">
-                            <a href="https://www.linkedin.com/in/shamsul-alam-11575257/">
-                                <i class="fa fa-linkedin"></i>
-                            </a>
-                        </li>
-
-                    </ul>
-                </div>
-            </div>
-
-        </div>
-        <br>
-        <br>
 
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
@@ -569,8 +572,10 @@
                                         <!-- Project Details Go Here -->
 
                                         <h2 class="text-uppercase">{!! $notice->title !!}</h2>
-                                        <p class="item-intro text-muted">Posted
-                                            By: {!! DB::table('admin_users')->where('id', $notice->user_id)->first()->name !!}</p>
+                                        <p><br></p>
+                                        <p><br></p>
+                                        {{-- <p class="item-intro text-muted">Posted
+                                            By: {!! DB::table('admin_users')->where('id', $notice->user_id)->first()->name !!}</p> --}}
                                         <img class="img-fluid d-block mx-auto"
                                              src="/storage/{!! $notice->cover_image !!}"
                                              alt="{!! $notice->title !!}">

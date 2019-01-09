@@ -13,10 +13,17 @@ Route::group([
     $router->get('/auth/import', 'ImportController@getImport')->name('import');
     $router->post('/auth/import_parse', 'ImportController@parseImport')->name('import_parse');
     $router->post('/auth/import_process', 'ImportController@processImport')->name('import_process');
-    
+
+    //Admin Panel Controllers Routing 
     $router->resource('/auth/users', 'UsersController');
     $router->resource('/auth/messages', 'MessageController');
+    // $router->resource('/auth', 'AuthsController');
+    // $router->resource('/helpers/routes', 'RouteController');
+    // $router->resource('/helpers/terminal/database', 'TerminalController');
+    // $router->resource('/helpers/scaffold', 'ScaffoldController');
 
+
+    // Admin Other Controllers Routing
     $router->resource('/auth/admin-dashboard', 'AdminDashboardController');
     $router->resource('/auth/emergency-contact', 'EmergencyContactsController');
     $router->resource('/auth/students', 'StudentController');
@@ -27,7 +34,7 @@ Route::group([
     $router->resource('/auth/bus', 'BusInfoController');
     $router->resource('/auth/driver', 'DriverInfoController');
     $router->resource('/auth/helper', 'HelperInfoController');
-    $router->resource('/auth/user-role', 'UserRoleController');
+    $router->resource('/auth/user-type', 'UserTypeController');
     $router->resource('/auth/transport-notice', 'NoticeController');
     $router->resource('/auth/bus-type', 'BusTypeController');
     $router->resource('/auth/bus-schedule', 'BusScheduleController');

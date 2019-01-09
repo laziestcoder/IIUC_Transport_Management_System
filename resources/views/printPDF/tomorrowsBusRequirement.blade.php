@@ -58,13 +58,13 @@
                                     ->where('day', $todayid->id)
                                     ->where('user_gender', true)
                                     ->get(); ?>
-                                {!! count($studentSum) ? 645:645 !!}
+                                {!! count($studentSum)!!}
                             </td>
                             <td>
                                 <?php
                                 $stdArvTot = $stdArvTot + count($studentSum);
                                 $studentSum = count($studentSum);
-                                $student = 645; // $studentSum; // 645 ;
+                                $student =   $studentSum; // 645 ;
                                 $totalCapacity = 0;
                                 $enough = true;
                                 $bus_number = array();
@@ -141,7 +141,7 @@
                     <tr>
                         <td></td>
                         <td>Total</td>
-                        <td>{{$stdArvTot? 645*10:645*10}}</td>
+                        <td>{{$stdArvTot}}</td>
                         <td>{{$busArvTot}}</td>
                         <td>{{$busSeatArvTot}}</td>
 
@@ -194,7 +194,7 @@
                                 <?php
                                 $stdDepTot = $stdDepTot + count($studentSum);
                                 $studentSum = count($studentSum);
-                                $student = 645; // $studentSum; // 645;
+                                $student =   $studentSum; // 645;
                                 $totalCapacity = 0;
                                 $enough = true;
                                 $bus_number = array();

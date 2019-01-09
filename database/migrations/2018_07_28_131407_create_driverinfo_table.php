@@ -24,10 +24,10 @@ class CreateDriverinfoTable extends Migration
             $table->string('contactno')->unique();
             $table->string('busno');
             $table->mediumText('address');
-            $table->boolean('gender')->default(false);
+            $table->boolean('gender')->default(false)->nullable();
             $table->string('image')->nullable()->default('defaultAdmin.png');
             $table->date('join_date');
-            $table->boolean('active')->default(false);
+            $table->boolean('active')->default(false)->nullable();
             $table->timestamps();
         });
     }

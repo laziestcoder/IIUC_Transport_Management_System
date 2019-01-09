@@ -99,3 +99,7 @@ Route::get('/admin/auth/schedule', ['as' => 'admin schedule', 'uses' => 'Schedul
 //PDF Converter Routes
 //Route::get('/test', ['as' => 'htmltopdfview', 'uses' => 'PDFConverterController@htmltopdfview']);
 Route::get('generate-pdf', 'PDFConverterController@pdfview')->name('generate-pdf');
+
+
+//captcha
+//Route::any('captcha-test', 'CaptchaController@index');

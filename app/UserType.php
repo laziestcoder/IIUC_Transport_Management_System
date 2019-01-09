@@ -8,12 +8,12 @@ use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
 
-class UserRole extends Model implements AuthenticatableContract
+class UserType extends Model implements AuthenticatableContract
 {
     // table name
     public $timestamps = true;
     // primary key
-    protected $table = 'user_role';
+    protected $table = 'user_type';
     protected $primaryKey = 'id';
 
     use Authenticatable, AdminBuilder, HasPermissions;

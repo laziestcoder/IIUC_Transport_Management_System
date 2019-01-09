@@ -38,7 +38,7 @@ class EmergencyContactsController extends Controller
         $grid = new Grid(new EmergencyContact);
         $grid->setTitle("Emergency Contact");
 
-        $grid->id('ID');
+        //$grid->id('ID');
         $grid->name('Name')->editable();
         $grid->contact('Contact No')->editable();
         $grid->photo('Photo')->image();
@@ -86,7 +86,7 @@ class EmergencyContactsController extends Controller
     {
         $show = new Show(EmergencyContact::findOrFail($id));
 
-        $show->id('ID');
+        //$show->id('ID');
         $show->name('Name');
         $show->contact('Contact No');
         $show->photo('Photo')->image();

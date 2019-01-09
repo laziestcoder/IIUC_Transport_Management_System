@@ -15,11 +15,11 @@ class CreateDashboardTable extends Migration
     {
         Schema::create('dashboard', function (Blueprint $table) {
             $table->increments('id');
-            $table->boolean('special_schedule')->default(0);
-            $table->boolean('regular_schedule')->default(0);
-            $table->boolean('holiday')->default(0);
-            $table->boolean('schedule_suspend')->default(0);
-            $table->boolean('schedule_edit')->default(0);
+            $table->boolean('special_schedule')->default(0)->nullable();
+            $table->boolean('regular_schedule')->default(0)->nullable();
+            $table->boolean('holiday')->default(0)->nullable();
+            $table->boolean('schedule_suspend')->default(0)->nullable();
+            $table->boolean('schedule_edit')->default(0)->nullable();
             $table->integer('editdate')->default(45);
             $table->timestamps();
         });

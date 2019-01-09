@@ -2,7 +2,6 @@
     .nav-tabs > li:hover > i {
         display: inline;
     }
-
     .close-tab {
         position: absolute;
         font-size: 10px;

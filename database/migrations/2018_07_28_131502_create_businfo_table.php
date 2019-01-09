@@ -18,7 +18,7 @@ class CreateBusinfoTable extends Migration
             $table->string('busid')->unique();
             $table->string('registration')->unique();
             $table->integer('seat');
-            $table->boolean('availability')->default(true);
+            $table->boolean('availability')->default(true)->nullable();
             $table->integer('user_id');
             $table->date('insurance_validity');
             $table->date('route_permit_validity');
@@ -27,7 +27,7 @@ class CreateBusinfoTable extends Migration
             $table->string('busowner');
             $table->string('comments')->nullable();
             $table->date('starting_date');
-            $table->boolean('active')->default(false);
+            $table->boolean('active')->default(false)->nullable();
             $table->timestamps();
         });
     }

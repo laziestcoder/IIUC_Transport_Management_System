@@ -1,9 +1,8 @@
 <style>
     .ext-icon {
-        color: rgba(0, 0, 0, 0.5);
+        color: rgba(0,0,0,0.5);
         margin-left: 10px;
     }
-
     .installed {
         color: #00a65a;
         margin-right: 10px;
@@ -23,27 +22,22 @@
     <div class="box-body">
         <ul class="products-list product-list-in-box">
 
-            <?php $__currentLoopData = $extensions;
-            $__env->addLoop($__currentLoopData);
-            foreach ($__currentLoopData as $extension): $__env->incrementLoopIndices();
-                $loop = $__env->getLastLoop(); ?>
-                <li class="item">
-                    <div class="product-img">
-                        <i class="fa fa-<?php echo e($extension['icon'], false); ?> fa-2x ext-icon"></i>
-                    </div>
-                    <div class="product-info">
-                        <a href="<?php echo e($extension['link'], false); ?>" target="_blank" class="product-title">
-                            <?php echo e($extension['name'], false); ?>
+            <?php $__currentLoopData = $extensions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $extension): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <li class="item">
+                <div class="product-img">
+                    <i class="fa fa-<?php echo e($extension['icon'], false); ?> fa-2x ext-icon"></i>
+                </div>
+                <div class="product-info">
+                    <a href="<?php echo e($extension['link'], false); ?>" target="_blank" class="product-title">
+                        <?php echo e($extension['name'], false); ?>
 
-                        </a>
-                        <?php if ($extension['installed']): ?>
-                            <span class="pull-right installed"><i class="fa fa-check"></i></span>
-                        <?php endif; ?>
-                    </div>
-                </li>
-            <?php endforeach;
-            $__env->popLoop();
-            $loop = $__env->getLastLoop(); ?>
+                    </a>
+                    <?php if($extension['installed']): ?>
+                        <span class="pull-right installed"><i class="fa fa-check"></i></span>
+                    <?php endif; ?>
+                </div>
+            </li>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
             <!-- /.item -->
         </ul>

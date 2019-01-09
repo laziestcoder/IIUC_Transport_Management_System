@@ -3,14 +3,14 @@
 namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\UserRole;
+use App\UserType;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 
-class UserRoleController extends Controller
+class UserTypeController extends Controller
 {
     use HasResourceActions;
 
@@ -23,7 +23,7 @@ class UserRoleController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('User Role')
+            ->header('User Type')
             ->description('List')
             ->body($this->grid());
     }
@@ -35,10 +35,10 @@ class UserRoleController extends Controller
      */
     protected function grid()
     {
-        $grid = new Grid(new UserRole);
+        $grid = new Grid(new UserType);
 
-        $grid->id('ID');
-        $grid->name('Role Name')->sortable()->badge("green");
+        //$grid->id('ID');
+        $grid->name('Type Name')->sortable()->badge("green");
         $states = [
             'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
@@ -72,7 +72,7 @@ class UserRoleController extends Controller
     {
         return $content
             ->header('Detail')
-            ->description('')
+            ->description(' ')
             ->body($this->detail($id));
     }
 
@@ -84,11 +84,11 @@ class UserRoleController extends Controller
      */
     protected function detail($id)
     {
-        $show = new Show(UserRole::findOrFail($id));
+        $show = new Show(UserType::findOrFail($id));
         $show->panel()->title('View');
 
-        $show->id('ID');
-        $show->name('Role Name');
+        //$show->id('ID');
+        $show->name('Type Name');
         $show->active(trans('Active'))->as(function ($s) {
             return $s ? 'YES' : 'NO';
         });
@@ -122,7 +122,7 @@ class UserRoleController extends Controller
     {
         return $content
             ->header('Edit')
-            ->description('')
+            ->description(' ')
             ->body($this->form()->edit($id));
     }
 
@@ -133,9 +133,9 @@ class UserRoleController extends Controller
      */
     protected function form()
     {
-        $form = new Form(new UserRole);
+        $form = new Form(new UserType);
 
-        $form->text('name', 'Role Name');
+        $form->text('name', 'Type Name');
         $states = [
             'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
@@ -167,7 +167,7 @@ class UserRoleController extends Controller
     {
         return $content
             ->header('Create')
-            ->description('')
+            ->description(' ')
             ->body($this->form());
     }
 }

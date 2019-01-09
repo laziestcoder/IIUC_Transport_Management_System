@@ -65,7 +65,7 @@ class RoutesController extends Controller
     {
         $grid = new Grid(new BusRoute);
 
-        $grid->id('ID')->sortable();
+        //$grid->id('ID')->sortable();
         $grid->routename('Route Name')->badge('green')->sortable();
         $states = [
             'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],

@@ -37,7 +37,7 @@ class ManagementController extends Controller
 
         $user_id = auth()->user()->id;
         $user_gender = auth()->user()->gender;
-        $user_role = auth()->user()->userrole;
+        $user_role = auth()->user()->user_type;
         $check = StudentSchedule::where('user_id', $user_id)->first();
         $today = Carbon::now();
         if ($check) {
@@ -139,7 +139,7 @@ class ManagementController extends Controller
             $schedule->drop_point_route = BusPoint::find($dropid)->first()->routeid;
             $droptime = $schedule->droptime = $request->input('droptime' . $day->id);
             $schedule->user_id = auth()->user()->id;
-            $schedule->userrole = auth()->user()->userrole;
+            $schedule->user_type = auth()->user()->user_type;
             $gender = $schedule->user_gender = auth()->user()->gender;
             $schedule->entrydate = Carbon::now()->toDateString();
             $schedule->save();
@@ -202,7 +202,7 @@ class ManagementController extends Controller
             $schedule->pick_point_route = BusPoint::find($pickid)->first()->routeid;
             $schedule->drop_point_route = BusPoint::find($dropid)->first()->routeid;
             $schedule->user_id = auth()->user()->id;
-            $schedule->userrole = auth()->user()->userrole;
+            $schedule->user_type = auth()->user()->user_type;
             $gender = $schedule->user_gender = auth()->user()->gender;
             $schedule->entrydate = Carbon::now()->toDateString();
             $schedule->save();
@@ -353,11 +353,11 @@ class ManagementController extends Controller
             'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
             'titlenew' => 'Create New Schedule',
             'titleinfo' => 'Available Schedule',
-            'times' => Time::orderBy('time', 'asc')->where('active',true)->get(),
+            'times' => Time::orderBy('time', 'asc')->get(),
             'days' => Day::where('active', 1)->get(),
             'points' => BusPoint::orderBy('pointname','asc')->where('active',true)->get(),
             'gender' => $user_gender,
-            'userrole' => $user->userrole,
+            'user_type' => $user->user_type,
             //'days' => $days,
             //'times' => $times,
         );
@@ -367,7 +367,7 @@ class ManagementController extends Controller
     protected function busroutesdetails()
     {
         $data = array(
-            'busroutes' => BusRoute::orderBy('routename', 'asc')->get(),
+            'busroutes' => BusRoute::orderBy('routename', 'asc')->where('active', true)->get(),
             //'points' => BusPoint::all(),
             'title' => 'Route Information',
         );

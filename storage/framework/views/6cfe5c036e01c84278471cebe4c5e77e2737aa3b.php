@@ -41,6 +41,9 @@
                     $busSeatDepTot = 0;
                     $busStandDepTot = 0;
                     $busStandSeatDepTot = 0;
+                    $totalStdArr = 0;
+                    $totalStdDep = 0;
+
                     ?>
                     <?php $__currentLoopData = $routes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <tr>
@@ -63,7 +66,8 @@
                                     ->where('pick_point_route', $route->id)
                                     ->where('day', $todayid->id)
                                     ->where('user_gender', true)
-                                    ->get(); ?>
+                                    ->get();
+                                $totalStdArr = $totalStdArr + count($studentSum); ?>
                                 <?php echo count($studentSum); ?>
 
                             </td>
@@ -112,7 +116,8 @@
                                     ->where('drop_point_route', $route->id)
                                     ->where('day', $todayid->id)
                                     ->where('user_gender', true)
-                                    ->get(); ?>
+                                    ->get();
+                                $totalStdDep = $totalStdDep + count($studentSum); ?>
                                 <?php echo count($studentSum); ?>
 
                             </td>
@@ -157,20 +162,15 @@
                             
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
+                    <tr>
+                        <td></td>
+                        <td>Total</td>
+                        <td><?php echo e($totalStdArr, false); ?></td>
+                        <td></td>
+                        <td><?php echo e($totalStdDep, false); ?></td>
+                        <td></td>
+                        
+                    </tr>
                     </tbody>
                 </table>
 
@@ -200,6 +200,8 @@
                     $busSeatDepTot = 0;
                     $busStandDepTot = 0;
                     $busStandSeatDepTot = 0;
+                    $totalStdArr = 0;
+                    $totalStdDep = 0;
                     ?>
                     <?php $__currentLoopData = $routes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <tr>
@@ -221,7 +223,9 @@
                                     ->where('pick_point_route', $route->id)
                                     ->where('day', $todayid->id)
                                     ->where('user_gender', false)
-                                    ->get(); ?>
+                                    ->get();
+                                $totalStdArr = $totalStdArr + count($studentSum);
+                                ?>
                                 <?php echo count($studentSum); ?>
 
                             </td>
@@ -268,7 +272,8 @@
                                     ->where('drop_point_route', $route->id)
                                     ->where('day', $todayid->id)
                                     ->where('user_gender', false)
-                                    ->get(); ?>
+                                    ->get();
+                                $totalStdDep = $totalStdDep + count($studentSum);?>
                                 <?php echo count($studentSum); ?>
 
                             </td>
@@ -310,17 +315,12 @@
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     <tr>
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
+                        <td></td>
+                        <td>Total</td>
+                        <td><?php echo e($totalStdArr, false); ?></td>
+                        <td></td>
+                        <td><?php echo e($totalStdDep, false); ?></td>
+                        <td></td>
                         
                     </tr>
                     </tbody>
@@ -367,6 +367,8 @@
                         $busSeatDepTot = 0;
                         $busStandDepTot = 0;
                         $busStandSeatDepTot = 0;
+                        $totalStdArr = 0;
+                        $totalStdDep = 0;
                         ?>
                         <?php $__currentLoopData = $routes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <tr>
@@ -389,7 +391,8 @@
                                         ->where('pick_point_route', $route->id)
                                         ->where('day', $day->id)
                                         ->where('user_gender', true)
-                                        ->get(); ?>
+                                        ->get();
+                                    $totalStdArr = $totalStdArr + count($studentSum);?>
                                     <?php echo count($studentSum); ?>
 
                                 </td>
@@ -438,7 +441,9 @@
                                         ->where('drop_point_route', $route->id)
                                         ->where('day', $day->id)
                                         ->where('user_gender', true)
-                                        ->get(); ?>
+                                        ->get();
+                                    $totalStdDep = $totalStdDep + count($studentSum);
+                                    ?>
                                     <?php echo count($studentSum); ?>
 
                                 </td>
@@ -483,7 +488,15 @@
                                 
                             </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        
+                        <tr>
+                            <td></td>
+                            <td>Total</td>
+                            <td><?php echo e($totalStdArr, false); ?></td>
+                            <td></td>
+                            <td><?php echo e($totalStdDep, false); ?></td>
+                            <td></td>
+                            
+                        </tr>
                         </tbody>
                     </table>
 
@@ -534,7 +547,8 @@
                                         ->where('pick_point_route', $route->id)
                                         ->where('day', $day->id)
                                         ->where('user_gender', false)
-                                        ->get(); ?>
+                                        ->get();
+                                    $totalStdArr = $totalStdArr + count($studentSum);?>
                                     <?php echo count($studentSum); ?>
 
                                 </td>
@@ -581,7 +595,9 @@
                                         ->where('drop_point_route', $route->id)
                                         ->where('day', $day->id)
                                         ->where('user_gender', false)
-                                        ->get(); ?>
+                                        ->get();
+                                    $totalStdDep = $totalStdDep + count($studentSum);
+                                    ?>
                                     <?php echo count($studentSum); ?>
 
                                 </td>
@@ -623,6 +639,12 @@
                             </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         <tr>
+                            <td></td>
+                            <td>Total</td>
+                            <td><?php echo e($totalStdArr, false); ?></td>
+                            <td></td>
+                            <td><?php echo e($totalStdDep, false); ?></td>
+                            <td></td>
                             
                         </tr>
                         </tbody>
@@ -634,17 +656,6 @@
         <?php else: ?>
             <p><h4>No Data Found!</h4></p>
         <?php endif; ?>
-        <?php
-        function BusNotAvailable($id)
-        {
-            $change = App\BusInfo::findOrFail($id);
-
-            if ($change) {
-                $change->availability = 0;
-                $change->save();
-            }
-        }
-        ?>
     </section>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('admin::index', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>

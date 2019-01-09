@@ -37,7 +37,7 @@
                     <tr>
                         <td>
                             Registered
-                            As: {{$user->userrole == 1 ? 'Student' : ( $user->userrole == 2 ? 'Faculty Member' :($user->userrole == 3 ? 'Officer/Staff' : 'undefined')) }}
+                            As: {{$user->user_type == 1 ? 'Student' : ( $user->user_type == 2 ? 'Faculty Member' :($user->user_type == 3 ? 'Officer/Staff' : 'undefined')) }}
                         </td>
                     </tr>
                     <tr>

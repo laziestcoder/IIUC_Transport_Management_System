@@ -187,6 +187,9 @@ return [
         // PDF Service Provider
         Barryvdh\DomPDF\ServiceProvider::class,
 
+        //Admin Captcha
+        Mews\Captcha\CaptchaServiceProvider::class,
+
     ],
 
     /*
@@ -245,6 +248,9 @@ return [
         //PDF Facades
 
         'PDF' => Barryvdh\DomPDF\Facade::class,
+
+        //Admin Captcha
+        'Captcha' => 'Mews\Captcha\Facades\Captcha',
 
     ],
 

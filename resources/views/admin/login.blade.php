@@ -25,7 +25,12 @@
 <body class="hold-transition login-page"
       @if(config('admin.login_background_image'))style="background: url({{config('admin.login_background_image')}}) no-repeat;background-size: cover;"@endif>
 <div class="login-box">
+
     <div class="login-logo">
+        {{-- Image Added --}}
+        <img src="/storage/img/logos/itms-logo-2.png" style="max-width:200px; max-height:200px;"
+             alt="{{config('app.name')}}"/>
+        <br>
         <a href="{{ admin_base_path('/') }}"><b>{{config('admin.name')}}</b></a>
     </div>
     <!-- /.login-logo -->
@@ -58,8 +63,22 @@
                 <input type="password" class="form-control" placeholder="{{ trans('admin.password') }}" name="password">
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
+            {{-- <div class="row">
+                    <div class="col-xs-4 col-md-offset-4">
+                        <div id="recaptcha" class="g-recaptcha"
+                                data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
+                        @if ($errors->has('recaptcha'))
+                            <span class="help-block">
+                                <strong>{{ $errors->first('recaptcha') }}</strong>
+                            </span>
+                        @endif
+                    </div>
+            </div> --}}
             <div class="row">
-
+                {!! Recaptcha::render()!!}
+                {{-- {!! Captcha::img()!!}          --}}
+            </div>
+            <div class="row">
                 <!-- /.col -->
                 <div class="col-xs-4 col-md-offset-4">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -67,9 +86,11 @@
                 </div>
                 <!-- /.col -->
             </div>
+
         </form>
 
     </div>
+
     <!-- /.login-box-body -->
 </div>
 <!-- /.login-box -->

@@ -49,7 +49,6 @@ class BusRoutesController extends Controller
             'todayid' => Day::all()->where('dayname', $today)->where('active',true)->first(),
             'datas' => BusStudentInfo::all(),
             'busInfo' => BusInfo::where('availability',true)->get(),
-            
         );
         return view('busroutes.index')->with($data);
     }

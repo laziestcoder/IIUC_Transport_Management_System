@@ -37,7 +37,12 @@ class DriverInfoController extends Controller
     {
         $grid = new Grid(new Driver);
 
-        $grid->id('ID')->sortable();
+        //$grid->id('ID')->sortable();
+        $states = [
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
+        ];
+        $grid->active('Available')->switch($states)->sortable();
         $grid->image('Photo')->display(function ($s) {
             return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
         });
@@ -58,7 +63,7 @@ class DriverInfoController extends Controller
 //        $grid->address('Address');
 
         // $grid->created_at('Created At')->sortable();
-        $grid->updated_at('Updated At')->sortable();
+        $grid->updated_at('Last Updated')->sortable();
 
         $grid->filter(function ($filter) {
             // Sets the range query for the created_at field
@@ -165,6 +170,11 @@ class DriverInfoController extends Controller
         $form->textarea('address', 'Address')->rules('required');
         $form->radio('gender', 'Gender')->options([0 => 'Male', 1 => 'Female'])->stacked()->rules('required');
         $form->date('join_date', 'Join Date');
+        $states = [
+            'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
+        ];
+        $form->switch('active', 'Available')->states($states)->default(false);
         return $form;
     }
 

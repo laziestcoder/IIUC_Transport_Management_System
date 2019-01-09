@@ -15,10 +15,10 @@ class CreateTimeTable extends Migration
     {
         Schema::create('time', function (Blueprint $table) {
             $table->increments('id');
-            $table->time('time')->nullable();
+            $table->time('time');
             $table->boolean('toiiuc')->default(false)->nullable();
             $table->boolean('fromiiuc')->default(false)->nullable();
-            $table->boolean('active')->default(false);
+            $table->boolean('active')->default(false)->nullable();
             $table->integer('user_id');
             $table->timestamps();
         });

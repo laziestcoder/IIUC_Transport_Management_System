@@ -64,36 +64,36 @@ class AdminDashboardController extends Controller
         return $form;
     }
 
-    protected function grid2()
-    {
-        $grid = new Grid(new EmergencyContact);
-        $grid->setTitle("Emergency Contact");
+    // protected function grid2()
+    // {
+    //     $grid = new Grid(new EmergencyContact);
+    //     $grid->setTitle("Emergency Contact");
 
-        //$grid->id('ID');
-        $grid->name('Name');
-        $grid->contact('Contact No');
-        $grid->photo('Photo')->image();
-        $states = [
-            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
-            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
-        ];
-        //$grid->active('Active')->using($states);
-        $grid->active('Active')->display(function ($s) {
-            return $s ? "YES" : "NO";
-        });
-        //$grid->created_at('Created At');
-        $grid->updated_at('Last Updated');
-        //$grid->orderable();
+    //     //$grid->id('ID');
+    //     $grid->name('Name');
+    //     $grid->contact('Contact No');
+    //     $grid->photo('Photo')->image();
+    //     $states = [
+    //         'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+    //         'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
+    //     ];
+    //     //$grid->active('Active')->using($states);
+    //     $grid->active('Active')->display(function ($s) {
+    //         return $s ? "YES" : "NO";
+    //     });
+    //     //$grid->created_at('Created At');
+    //     $grid->updated_at('Last Updated');
+    //     //$grid->orderable();
 
-        $grid->disableActions();
-        $grid->disableRowSelector();
-        $grid->disableExport();
-        $grid->disableFilter();
-        $grid->disablePagination();
-        $grid->disableCreateButton();
+    //     $grid->disableActions();
+    //     $grid->disableRowSelector();
+    //     $grid->disableExport();
+    //     $grid->disableFilter();
+    //     $grid->disablePagination();
+    //     $grid->disableCreateButton();
 
-        return $grid;
-    }
+    //     return $grid;
+    // }
 
 }
 

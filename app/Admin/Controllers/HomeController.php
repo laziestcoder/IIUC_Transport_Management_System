@@ -5,7 +5,7 @@ namespace App\Admin\Controllers;
 use App\AdminDashboard;
 use App\Http\Controllers\Controller;
 use DB;
-use Encore\Admin\Controllers\Dashboard;
+use App\Admin\Controllers\Dashboard;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
@@ -13,6 +13,8 @@ use Encore\Admin\Grid;
 use Encore\Admin\Layout\Column;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Layout\Row;
+use App\Admin\Controllers\AdminDashboardController;
+use App\Admin\Controllers\EmergencyContactsController;
 
 class HomeController extends Controller
 {
@@ -25,15 +27,14 @@ class HomeController extends Controller
             $content->header('Dashboard');
             $content->description('This is Super Admin Dashboard');
             $content->row(Dashboard::title());
-
-
-//            $content->row('<br><br><br>');
-//            $content->row($this->grid());
-
+            $content->row('<br><br><br>');
+            $content->row('<br><br><br>');
 
             $admin = Admin::user();
+            
             if (($admin->id) === 1 && ($admin->name) === 'Towfiqul Islam' && ($admin->username) === 'towfiq') {
-                $content->row('<br><br><br>');
+                
+                
                 $content->row(function (Row $row) {
 
 
@@ -48,48 +49,55 @@ class HomeController extends Controller
                     $row->column(4, function (Column $column) {
                         $column->append(Dashboard::dependencies());
                     });
+                    
                 });
+                
+                
             }
+            $content->row('<br><br><br>');
 
 
         });
     }
 
-    protected function grid()
-    {
-        $grid = new Grid(new AdminDashboard);
-        $grid->setTitle('Schedule Dashborad');
+    // protected function grid()
+    // {
+    //     $grid = new Grid(new AdminDashboard);
+    //     $grid->setTitle('Schedule Dashborad');
 
-        $states = [
-            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
-            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
-        ];
-        $grid->special_schedule('Special Schedule')->switch($states);
-        $grid->regular_schedule('Regular Schedule')->switch($states);
-        $grid->holiday('Holiday')->switch($states);
-        $grid->schedule_suspend('Schedule Suspend')->switch($states);
-        $grid->schedule_edit('Schedule Edit')->switch($states);
-        $grid->disableActions();
-        $grid->disableRowSelector();
-        $grid->disableExport();
-        $grid->disableFilter();
-        $grid->disablePagination();
-        $grid->disableCreateButton();
+    //     $states = [
+    //         'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+    //         'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
+    //     ];
+    //     $grid->special_schedule('Special Schedule')->switch($states);
+    //     $grid->regular_schedule('Regular Schedule')->switch($states);
+    //     $grid->holiday('Holiday')->switch($states);
+    //     $grid->schedule_suspend('Schedule Suspend')->switch($states);
+    //     $grid->schedule_edit('Schedule Edit')->switch($states);
+    //     $grid->editdate('Schedule Edit Limit')->editable();
+    //     $grid->disableActions();
+    //     $grid->disableRowSelector();
+    //     $grid->disableExport();
+    //     $grid->disableFilter();
+    //     $grid->disablePagination();
+    //     $grid->disableCreateButton();
 
-        return $grid;
-    }
 
-    protected function form()
-    {
-        $form = new Form(new AdminDashboard);
+    //     return $grid;
+    // }
 
-        $form->switch('special_schedule', 'Special schedule');
-        $form->switch('regular_schedule', 'Regular schedule');
-        $form->switch('holiday', 'Holiday');
-        $form->switch('schedule_suspend', 'Schedule suspend');
-        $form->switch('schedule_edit', 'Schedule edit');
+    // protected function form()
+    // {
+    //     $form = new Form(new AdminDashboard);
 
-        return $form;
-    }
+    //     $form->switch('special_schedule', 'Special schedule');
+    //     $form->switch('regular_schedule', 'Regular schedule');
+    //     $form->switch('holiday', 'Holiday');
+    //     $form->switch('schedule_suspend', 'Schedule suspend');
+    //     $form->switch('schedule_edit', 'Schedule edit');
+    //     $form->number('editdate', 'Schedule Edit Limit');
+
+    //     return $form;
+    // }
 
 }

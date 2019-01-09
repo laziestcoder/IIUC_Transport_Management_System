@@ -19,11 +19,11 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('jobid', 50)->unique();
             $table->string('password');
-            $table->integer('userrole');
-            $table->boolean('gender')->default(false);
+            $table->integer('user_type');
+            $table->boolean('gender')->default(false)->nullable();
             $table->integer('adminrole')->default(1);
             $table->string('image')->nullable()->default('defaultAdmin.png');
-            $table->boolean('confirmation')->default(false);
+            $table->boolean('confirmation')->default(false)->nullable();
             $table->string('token')->nullable();
             $table->rememberToken();
             $table->timestamps();

@@ -27,7 +27,7 @@ class TimesController extends Controller
     {
         return $content
             ->header('Time')
-            ->description('')
+            ->description(' ')
             ->body($this->grid());
     }
 
@@ -40,7 +40,8 @@ class TimesController extends Controller
     {
         $grid = new Grid(new Time);
         $grid->model()->orderBy('time', 'asc');
-        $grid->id('ID')->sortable();
+
+        //$grid->id('ID')->sortable();
         $grid->time('Time')->display(function ($s) {
             return Carbon::parse($s)->format("g:i A") ?: 'n/a';
         })->badge('orange')->sortable();
@@ -82,7 +83,7 @@ class TimesController extends Controller
     {
         return $content
             ->header('Detail')
-            ->description('description')
+            ->description(' ')
             ->body($this->detail($id));
     }
 
@@ -130,7 +131,7 @@ class TimesController extends Controller
     {
         return $content
             ->header('Edit')
-            ->description('description')
+            ->description(' ')
             ->body($this->form()->edit($id));
     }
 
@@ -168,7 +169,7 @@ class TimesController extends Controller
     {
         return $content
             ->header('Create')
-            ->description('description')
+            ->description(' ')
             ->body($this->form());
     }
 }

@@ -127,14 +127,14 @@
                                                 </label>
                                                 <div class="col-md-6">
                                                     <?php $userroles = DB::table('user_role')->where('active', true)->get();?>
-                                                    {{--{!! Form::select('userrole', $userroles, null,--}}
+                                                    {{--{!! Form::select('user_type', $userroles, null,--}}
                                                     {{--['class' => 'form form-control']) !!}--}}
-                                                    <select name="userrole" class="form-control" style="height: 36px"
+                                                    <select name="user_type" class="form-control" style="height: 36px"
                                                             required>
                                                         <option disabled selected>Select Your Role At IIUC</option>
-                                                        @foreach($userroles as $userrole)
-                                                            <option value="{!! $userrole->id !!}">
-                                                                {!! $userrole->name !!}
+                                                        @foreach($userroles as $user_type)
+                                                            <option value="{!! $user_type->id !!}">
+                                                                {!! $user_type->name !!}
                                                             </option>
                                                         @endforeach
                                                     </select>
@@ -145,25 +145,25 @@
                                             {{--As</label>--}}
                                             {{--<div class="col-md-6">--}}
                                             {{--@if(count($userroles))--}}
-                                            {{--@foreach($userroles as $userrole)--}}
+                                            {{--@foreach($userroles as $user_type)--}}
                                             {{--<div class="radio-inline">--}}
                                             {{--<label class="form-check-label">--}}
                                             {{--<input type="radio" class="form-check-input"--}}
-                                            {{--value="{!! $userrole->id !!}"--}}
-                                            {{--name="userrole"--}}
-                                            {{--required>{!! $userrole->name !!}--}}
+                                            {{--value="{!! $user_type->id !!}"--}}
+                                            {{--name="user_type"--}}
+                                            {{--required>{!! $user_type->name !!}--}}
                                             {{--</label>--}}
                                             {{--</div>--}}
                                             {{--<div class="radio-inline">--}}
                                             {{--<label class="form-check-label">--}}
                                             {{--<input type="radio" class="form-check-input" value="2"--}}
-                                            {{--name="userrole" required>Faculty--}}
+                                            {{--name="user_type" required>Faculty--}}
                                             {{--</label>--}}
                                             {{--</div>--}}
                                             {{--<div class="radio-inline">--}}
                                             {{--<label class="form-check-label">--}}
                                             {{--<input type="radio" class="form-check-input" value="3"--}}
-                                            {{--name="userrole" required>Officer/Staff--}}
+                                            {{--name="user_type" required>Officer/Staff--}}
                                             {{--</label>--}}
                                             {{--</div>--}}
                                             {{--@endforeach--}}
@@ -294,17 +294,17 @@
                 <div class="col-md-6">
                 <div class="radio-inline">
                 <label class="form-check-label">
-                <input type="radio" class="form-check-input" value="1" name="userrole" required>Student
+                <input type="radio" class="form-check-input" value="1" name="user_type" required>Student
                 </label>
                 </div>
                 <div class="radio-inline">
                 <label class="form-check-label">
-                <input type="radio" class="form-check-input" value="2" name="userrole" required>Faculty
+                <input type="radio" class="form-check-input" value="2" name="user_type" required>Faculty
                 </label>
                 </div>
                 <div class="radio-inline">
                 <label class="form-check-label">
-                <input type="radio" class="form-check-input" value="3" name="userrole" required>Officer/Staff
+                <input type="radio" class="form-check-input" value="3" name="user_type" required>Officer/Staff
                 </label>
                 </div>
                 </div>

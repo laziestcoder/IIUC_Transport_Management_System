@@ -23,8 +23,8 @@ class CreateSchedulestudentTable extends Migration
             $table->integer('drop_point_route');
             $table->integer('droptime');
             $table->integer('user_id');
-            $table->integer('userrole');
-            $table->boolean('user_gender');
+            $table->integer('user_type');
+            $table->boolean('user_gender')->nullable();
             $table->date('entrydate');
             $table->timestamps();
         });

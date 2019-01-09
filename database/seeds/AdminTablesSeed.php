@@ -4,7 +4,7 @@ namespace Encore\Admin\Auth\Database;
 
 use App\AdminDashboard;
 use App\Day;
-use App\UserRole;
+use App\UserType;
 use Illuminate\Database\Seeder;
 
 class AdminTablesSeed extends Seeder
@@ -108,7 +108,6 @@ class AdminTablesSeed extends Seeder
                 'http_method' => '',
                 'http_path' => "/auth/roles\r\n/auth/permissions\r\n/auth/menu\r\n/auth/logs",
             ],
-            // add more here
             [
                 'name' => 'Media Manager',
                 'slug' => 'ext.media-manager',
@@ -191,14 +190,12 @@ class AdminTablesSeed extends Seeder
         Menu::truncate();
         Menu::insert([
 
-            [
-                //'id' => 1,
+            [  
                 'parent_id' => 0,
                 'order' => 1,
                 'title' => 'Admin Dashboard',
                 'icon' => 'fa-yelp',
                 'uri' => '/auth',
-
             ],
 
             [
@@ -207,7 +204,6 @@ class AdminTablesSeed extends Seeder
                 'title' => 'Index',
                 'icon' => 'fa-bar-chart',
                 'uri' => '/',
-
             ],
 
             [
@@ -226,8 +222,7 @@ class AdminTablesSeed extends Seeder
                 'uri' => '/auth/emergency-contact',
             ],
 
-            [
-                //'id' => 2,
+            [ 
                 'parent_id' => 0,
                 'order' => 5,
                 'title' => 'Admin',
@@ -236,7 +231,6 @@ class AdminTablesSeed extends Seeder
             ],
 
             [
-                //'id' => 3,
                 'parent_id' => 5,
                 'order' => 6,
                 'title' => 'Users',
@@ -245,7 +239,6 @@ class AdminTablesSeed extends Seeder
             ],
 
             [
-                //'id' => 4,
                 'parent_id' => 5,
                 'order' => 7,
                 'title' => 'Roles',
@@ -254,7 +247,6 @@ class AdminTablesSeed extends Seeder
             ],
 
             [
-                //'id' => 5,
                 'parent_id' => 5,
                 'order' => 8,
                 'title' => 'Permission',
@@ -263,7 +255,6 @@ class AdminTablesSeed extends Seeder
             ],
 
             [
-                //'id' => 6,
                 'parent_id' => 5,
                 'order' => 9,
                 'title' => 'Menu',
@@ -272,13 +263,13 @@ class AdminTablesSeed extends Seeder
             ],
 
             [
-                //'id' => 7,
                 'parent_id' => 5,
                 'order' => 10,
                 'title' => 'Operation log',
                 'icon' => 'fa-history',
                 'uri' => '/auth/logs',
             ],
+
             [
                 'parent_id' => 0,
                 'order' => 11,
@@ -286,6 +277,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-gears',
                 'uri' => '/helpers',
             ],
+
             [
                 'parent_id' => 11,
                 'order' => 12,
@@ -293,6 +285,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-bug',
                 'uri' => '/exceptions',
             ],
+
             [
                 'parent_id' => 11,
                 'order' => 13,
@@ -326,21 +319,21 @@ class AdminTablesSeed extends Seeder
             ],
 
             [
-                //'id' => 11,
                 'parent_id' => 0,
                 'order' => 17,
                 'title' => 'Media Manager',
                 'icon' => 'fa-file-photo-o',
                 'uri' => 'media',
             ],
+
             [
-                //'id' => 12,
                 'parent_id' => 0,
                 'order' => 18,
                 'title' => 'Messages',
                 'icon' => 'fa-envelope',
                 'uri' => '/auth/messages',
             ],
+
             [
                 'parent_id' => 18,
                 'order' => 19,
@@ -348,6 +341,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-newspaper-o',
                 'uri' => '/auth/messages/create',
             ],
+
             [
                 'parent_id' => 18,
                 'order' => 20,
@@ -371,6 +365,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-clipboard',
                 'uri' => '/auth/transport-notice',
             ],
+
             [
                 'parent_id' => 21,
                 'order' => 23,
@@ -378,8 +373,8 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-pencil-square-o',
                 'uri' => '/auth/transport-notice/create',
             ],
+
             [
-                //'id' => 9,
                 'parent_id' => 0,
                 'order' => 24,
                 'title' => 'Route Information',
@@ -404,7 +399,6 @@ class AdminTablesSeed extends Seeder
             ],
 
             [
-                //'id' => 8,
                 'parent_id' => 0,
                 'order' => 27,
                 'title' => 'Bus-Routinig',
@@ -413,7 +407,6 @@ class AdminTablesSeed extends Seeder
             ],
 
             [
-                //'id' => 10,
                 'parent_id' => 27,
                 'order' => 28,
                 'title' => 'Bus Route',
@@ -428,6 +421,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-plus-square',
                 'uri' => '/auth/point',
             ],
+
             [
                 'parent_id' => 27,
                 'order' => 30,
@@ -435,6 +429,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-clock-o',
                 'uri' => '/auth/time',
             ],
+
             [
                 'parent_id' => 27,
                 'order' => 31,
@@ -442,6 +437,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-calendar',
                 'uri' => '/auth/day',
             ],
+
             [
                 'parent_id' => 27,
                 'order' => 32,
@@ -449,6 +445,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-simplybuilt',
                 'uri' => '/auth/bus-type',
             ],
+            
             [
                 'parent_id' => 0,
                 'order' => 33,
@@ -456,6 +453,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-bars',
                 'uri' => '/auth/schedule',
             ],
+
             [
                 'parent_id' => 33,
                 'order' => 34,
@@ -463,6 +461,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-bars',
                 'uri' => '/auth/schedule',
             ],
+
             [
                 'parent_id' => 33,
                 'order' => 35,
@@ -486,6 +485,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-bus',
                 'uri' => '/auth',
             ],
+
             [
                 'parent_id' => 37,
                 'order' => 38,
@@ -493,6 +493,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-train',
                 'uri' => '/auth/bus',
             ],
+
             [
                 'parent_id' => 37,
                 'order' => 39,
@@ -500,6 +501,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-odnoklassniki',
                 'uri' => '/auth/driver',
             ],
+
             [
                 'parent_id' => 37,
                 'order' => 40,
@@ -515,6 +517,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-users',
                 'uri' => '/auth/user',
             ],
+
             [
                 'parent_id' => 41,
                 'order' => 42,
@@ -522,6 +525,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-scribd',
                 'uri' => '/auth/students',
             ],
+
             [
                 'parent_id' => 41,
                 'order' => 43,
@@ -529,6 +533,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-facebook-f',
                 'uri' => '/auth/teachers',
             ],
+
             [
                 'parent_id' => 41,
                 'order' => 44,
@@ -536,6 +541,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-circle-o',
                 'uri' => '/auth/officer-staff',
             ],
+
             [
                 'parent_id' => 41,
                 'order' => 45,
@@ -543,13 +549,15 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-users',
                 'uri' => '/auth/other-users',
             ],
+
             [
                 'parent_id' => 41,
                 'order' => 46,
-                'title' => 'User-Role',
+                'title' => 'User-Type',
                 'icon' => 'fa-user-plus',
-                'uri' => '/auth/user-role',
+                'uri' => '/auth/user-type',
             ],
+
             [
                 'parent_id' => 0,
                 'order' => 47,
@@ -557,6 +565,7 @@ class AdminTablesSeed extends Seeder
                 'icon' => 'fa-database',
                 'uri' => '/auth/import',
             ],
+
             // [
             //     'parent_id' => 24,
             //     'order' => 48,
@@ -628,9 +637,9 @@ class AdminTablesSeed extends Seeder
             ],
         ]);
 
-        // create a User Role Table Data.
-        UserRole::truncate();
-        UserRole::insert([
+        // create a User Type Table Data.
+        UserType::truncate();
+        UserType::insert([
             [
                 'name' => 'Student',
                 'active' => 1,

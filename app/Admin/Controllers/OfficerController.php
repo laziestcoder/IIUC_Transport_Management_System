@@ -4,7 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\User;
-use App\UserRole;
+use App\UserType;
 use DB;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -40,8 +40,9 @@ class OfficerController extends Controller
         return User::grid(function (Grid $grid) use ($value, $self) {
 
 
-            $grid->model()->where('userrole', '=', $value);
-            $grid->id('ID')->sortable();
+            $grid->model()->where('user_type', '=', $value);
+
+            //$grid->id('ID')->sortable();
             $grid->jobid(trans('Varsity ID'))->sortable()->editable();
 //            $grid->image(trans('admin.avatar'))->display(function ($s) use ($self) {
 //                $file= $self->imageValidate($this->jobid);  //I want to use this $file value
@@ -128,8 +129,8 @@ class OfficerController extends Controller
         $show->gender(trans('Gender'))->as(function ($s) {
             return $s ? 'Female' : 'Male';
         });
-        $show->userrole(trans('Registered As'))->as(function ($s) {
-            return UserRole::find($s)->name;
+        $show->user_type(trans('Registered As'))->as(function ($s) {
+            return UserType::find($s)->name;
         });
 
         $show->confirmed(trans('Activated'))->as(function ($s) {
@@ -276,8 +277,8 @@ class OfficerController extends Controller
         $form->display('gender', trans('Gender'))->with(function ($s) {
             return $s ? 'Female' : 'Male';
         });
-        $form->select('userrole', 'Registered As')
-            ->options(UserRole::all()->sortBy('name')->pluck('name', 'id'))
+        $form->select('user_type', 'Registered As')
+            ->options(UserType::all()->sortBy('name')->pluck('name', 'id'))
             ->rules('required');
 //        $form->display('confirmed', trans('Activated'))->with(function ($s){
 //            return $s ? "<span class='label label-success'>Yes</span>" : "<span class='label label-danger'>No</span>";

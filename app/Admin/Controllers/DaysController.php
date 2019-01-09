@@ -27,7 +27,7 @@ class DaysController extends Controller
     {
         return $content
             ->header('Day')
-            ->description('')
+            ->description(' ')
             ->body($this->grid());
     }
 
@@ -40,7 +40,7 @@ class DaysController extends Controller
     {
         $grid = new Grid(new Day);
 
-        $grid->id('ID')->sortable();
+        //$grid->id('ID')->sortable();
         $grid->dayname('Day')->badge('green')->sortable();
         $states = [
             'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
@@ -81,7 +81,7 @@ class DaysController extends Controller
     {
         return $content
             ->header('Detail')
-            ->description('')
+            ->description(' ')
             ->body($this->detail($id));
     }
 

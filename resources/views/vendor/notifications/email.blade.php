@@ -12,7 +12,7 @@
 
     {{-- Intro Lines --}}
     @foreach ($introLines as $line)
-        {{ $line }}
+        {!! $line !!}
 
     @endforeach
 
@@ -31,28 +31,28 @@
         }
         ?>
         @component('mail::button', ['url' => $actionUrl, 'color' => $color])
-            {{ $actionText }}
+            {!! $actionText !!}
         @endcomponent
     @endisset
 
     {{-- Outro Lines --}}
     @foreach ($outroLines as $line)
-        {{ $line }}
+        {!! $line !!}
 
     @endforeach
 
     {{-- Salutation --}}
-    @if (! empty($salutation))
-        {{ $salutation }}
+    @if ( !empty($salutation) )
+        {!! $salutation !!}
     @else
-        @lang('Regards'),<br>{{ config('app.name') }}
+        @lang('Regards,') {{ config('app.name') }}
     @endif
 
     {{-- Subcopy --}}
     @isset($actionText)
         @component('mail::subcopy')
             @lang(
-                "If you’re having trouble clicking the \":actionText\" button, copy and paste the URL below\n".
+                'If you’re having trouble clicking the \':actionText\' button, copy and paste the URL below '.
                 'into your web browser: [:actionURL](:actionURL)',
                 [
                     'actionText' => $actionText,

@@ -20,7 +20,7 @@ class CreateBusStudentInformationTable extends Migration
             $table->integer('studentno');
             $table->integer('dayid');
             $table->integer('timeid');
-            $table->boolean('gender')->default(null);
+            $table->boolean('gender')->default(null)->nullable();
             $table->timestamps();
         });
     }

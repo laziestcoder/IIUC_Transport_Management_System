@@ -1,10 +1,11 @@
 <div class="box">
-    <?php if (isset($title)): ?>
-        <div class="box-header with-border">
-            <h3 class="box-title"> <?php echo e($title, false); ?></h3>
-        </div>
+    <?php if(isset($title)): ?>
+    <div class="box-header with-border">
+        <h3 class="box-title"> <?php echo e($title, false); ?></h3>
+    </div>
     <?php endif; ?>
 
+    <?php if( $grid->allowTools() || $grid->allowExport() || $grid->allowCreation() ): ?>
     <div class="box-header with-border">
         <div class="pull-right">
             <?php echo $grid->renderExportButton(); ?>
@@ -12,11 +13,14 @@
             <?php echo $grid->renderCreateButton(); ?>
 
         </div>
+        <?php if( $grid->allowTools() ): ?>
         <span>
             <?php echo $grid->renderHeaderTools(); ?>
 
         </span>
+        <?php endif; ?>
     </div>
+    <?php endif; ?>
 
     <?php echo $grid->renderFilter(); ?>
 
@@ -25,46 +29,32 @@
     <div class="box-body table-responsive no-padding">
         <table class="table table-hover">
             <thead>
-            <tr>
-                <?php $__currentLoopData = $grid->columns();
-                $__env->addLoop($__currentLoopData);
-                foreach ($__currentLoopData as $column): $__env->incrementLoopIndices();
-                    $loop = $__env->getLastLoop(); ?>
+                <tr>
+                    <?php $__currentLoopData = $grid->columns(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $column): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <th><?php echo e($column->getLabel(), false); ?><?php echo $column->sorter(); ?></th>
-                <?php endforeach;
-                $__env->popLoop();
-                $loop = $__env->getLastLoop(); ?>
-            </tr>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </tr>
             </thead>
 
             <tbody>
-            <?php $__currentLoopData = $grid->rows();
-            $__env->addLoop($__currentLoopData);
-            foreach ($__currentLoopData as $row): $__env->incrementLoopIndices();
-                $loop = $__env->getLastLoop(); ?>
+                <?php $__currentLoopData = $grid->rows(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <tr <?php echo $row->getRowAttributes(); ?>>
-                    <?php $__currentLoopData = $grid->columnNames;
-                    $__env->addLoop($__currentLoopData);
-                    foreach ($__currentLoopData as $name): $__env->incrementLoopIndices();
-                        $loop = $__env->getLastLoop(); ?>
-                        <td <?php echo $row->getColumnAttributes($name); ?>>
-                            <?php echo $row->column($name); ?>
+                    <?php $__currentLoopData = $grid->columnNames; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <td <?php echo $row->getColumnAttributes($name); ?>>
+                        <?php echo $row->column($name); ?>
 
-                        </td>
-                    <?php endforeach;
-                    $__env->popLoop();
-                    $loop = $__env->getLastLoop(); ?>
+                    </td>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tr>
-            <?php endforeach;
-            $__env->popLoop();
-            $loop = $__env->getLastLoop(); ?>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
-
-            <?php echo $grid->renderFooter(); ?>
-
-
         </table>
+
     </div>
+
+    <?php echo $grid->renderFooter(); ?>
+
+
     <div class="box-footer clearfix">
         <?php echo $grid->paginator(); ?>
 

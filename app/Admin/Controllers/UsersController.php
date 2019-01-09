@@ -4,12 +4,13 @@ namespace App\Admin\Controllers;
 //namespace Encore\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
+use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
-use Encore\Admin\Controllers\HasResourceActions;
+
 //use Illuminate\Routing\Controller;
 
 class UsersController extends Controller
@@ -40,7 +41,7 @@ class UsersController extends Controller
 
         $grid = new Grid(new $userModel());
 
-        $grid->id('ID')->sortable();
+        //$grid->id('ID')->sortable();
         $grid->username(trans('admin.username'));
         $grid->name(trans('admin.name'));
         $grid->roles(trans('admin.roles'))->pluck('name')->label();
@@ -53,12 +54,12 @@ class UsersController extends Controller
                 $actions->disableEdit();
             }
         });
-
-        $grid->tools(function (Grid\Tools $tools) {
-            $tools->batch(function (Grid\Tools\BatchActions $actions) {
-                $actions->disableDelete();
-            });
-        });
+        $grid->disableRowSelector();
+        // $grid->tools(function (Grid\Tools $tools) {
+        //     $tools->batch(function (Grid\Tools\BatchActions $actions) {
+        //         $actions->disableDelete();
+        //     });
+        // });
 
         return $grid;
     }

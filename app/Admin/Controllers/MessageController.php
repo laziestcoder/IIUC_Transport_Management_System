@@ -3,7 +3,6 @@
 namespace App\Admin\Controllers;
 //namespace Encore\Admin\Controllers;
 
-use Encore\Admin\Message\MessageModel;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
@@ -12,6 +11,7 @@ use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
+use Encore\Admin\Message\MessageModel;
 use Encore\Admin\Message\Widgets\MarkAsRead;
 use Encore\Admin\Message\Widgets\MessageType;
 
@@ -58,7 +58,7 @@ class MessageController extends Controller
             
             $grid->sender()->name('From');
             $grid->receiver()->name('To');
-            $grid->title()->display(function ($title) {
+            $grid->title('Subject')->display(function ($title) {
                 return "<a href='#' data-toggle=\"modal\" data-target=\"#messageModal\" data-id='{$this->id}' data-to='{$this->receiver['name']}' data-from='{$this->sender['name']}' data-title='{$this->title}' data-message='{$this->message}' data-time='{$this->created_at}'>$title</a>";
             });
             $grid->message()->limit(40);
@@ -119,7 +119,7 @@ class MessageController extends Controller
             $defaults = [request('to')];
 
             $form->multipleSelect('to')->options($options)->default($defaults);
-            $form->text('title')->rules('required')->default(request('title'));
+            $form->text('title', 'Subject')->rules('required')->default(request('title'));
             $form->textarea('message')->rules('required');
 
             $form->display('created_at');
@@ -134,7 +134,7 @@ class MessageController extends Controller
 
         return [
             'status'  => true,
-            'message' => '更新成功',
+            'message' => 'Update Completed',
         ];
     }
 

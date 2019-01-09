@@ -37,7 +37,7 @@ class BusTypeController extends Controller
     {
         $grid = new Grid(new BusType);
 
-        $grid->id('ID')->sortable();
+        //$grid->id('ID')->sortable();
         $grid->name('Bus Type')->badge('purple')->sortable();
         $states = [
             'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
