@@ -243,7 +243,7 @@ class AdminTablesSeed extends Seeder
 
         Role::first()->permissions()->save(Permission::first());
         Role::find(2)->permissions()->save(Permission::first());
-        Role::all()->permissions()->save(Permission::find(3));
+        //Role::all()->permissions()->save(Permission::find(3));
         
 
         // add default menus.

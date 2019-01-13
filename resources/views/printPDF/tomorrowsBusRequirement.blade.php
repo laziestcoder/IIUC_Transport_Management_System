@@ -65,7 +65,7 @@
                                 <?php
                                 $stdArvTot = $stdArvTot + count($studentSum);
                                 $studentSum = count($studentSum);
-                                $student = 645;//$studentSum; // 645 ;
+                                $student = $studentSum; // 645 ;
                                 $totalCapacity = 0;
                                 $enough = true;
                                 $bus_number = array();
