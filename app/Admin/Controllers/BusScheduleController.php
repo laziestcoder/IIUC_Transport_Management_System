@@ -46,27 +46,7 @@ class BusScheduleController extends Controller
         $grid = new Grid(new Schedule);
 
         //$grid->id('ID')->sortable();
-        $grid->day('Day')->display(function ($s) {
-            if ($s) {
-                $s = Day::all()->find($s);
-                if ($s) {
-                    return $s->dayname;
-                } else {
-                    return 'n/a';
-                }
-            } else {
-                return 'Not Selected';
-            }
-        })->badge('green')->sortable();
-        $states = [
-            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
-            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
-        ];
-//        $grid->confirmed(trans('Activated'))->switch($states)->sortable();
-        $grid->toiiuc('To IIUC Capmus')->switch($states)->sortable();
-        $grid->fromiiuc('From IIUC Campus')->switch($states)->sortable();
-        $grid->male('Male')->switch($states)->sortable();
-        $grid->female('Female')->switch($states)->sortable();
+        $grid->day('Day')->pluck('dayname')->label()->sortable();
         $grid->time('Time')
             ->options()
             ->select(Time::all()->sortBy('time')->pluck('time', 'id'))
@@ -82,6 +62,16 @@ class BusScheduleController extends Controller
 //                return 'Not Selected';
 //            }})
             ->sortable();
+        $states = [
+            'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
+            'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
+        ];
+//        $grid->confirmed(trans('Activated'))->switch($states)->sortable();
+        $grid->toiiuc('To IIUC')->switch($states)->sortable();
+        $grid->fromiiuc('From IIUC')->switch($states)->sortable();
+        $grid->male('Male')->switch($states)->sortable();
+        $grid->female('Female')->switch($states)->sortable();
+        
         $grid->bususer('Bus For')->display(function ($s) {
             if ($s) {
                 $s = UserType::all()->find($s);
@@ -94,36 +84,23 @@ class BusScheduleController extends Controller
                 return 'Not Selected';
             }
         })->badge('orange')->sortable();
-        $grid->route('Route')
-            ->display(function ($s) {
-                if ($s) {
-                    $s = BusRoute::all()->find($s);
-                    if ($s) {
-                        return $s->routename;
-                    } else {
-                        return 'n/a';
-                    }
-                } else {
-                    return 'Not Selected';
-                }
-            })
-            ->badge('purple')->sortable();
+        $grid->route('Route')->pluck('routename')->label()->sortable();
 
         //$grid->active('Published')->switch($states)->sortable();
-        $grid->user_id('Inputed By')->display(function ($s) {
-            if ($s) {
-                $s = Administrator::all()->find($s);
-                if ($s) {
-                    return $s->name;
-                } else {
-                    return 'n/a';
-                }
-            } else {
-                return 'Not Selected';
-            }
-        })->badge('blue')->sortable();
+        // $grid->user_id('Inputed By')->display(function ($s) {
+        //     if ($s) {
+        //         $s = Administrator::all()->find($s);
+        //         if ($s) {
+        //             return $s->name;
+        //         } else {
+        //             return 'n/a';
+        //         }
+        //     } else {
+        //         return 'Not Selected';
+        //     }
+        // })->badge('blue')->sortable();
         //$grid->created_at('Created At');
-        $grid->updated_at('Last Updated');
+        // $grid->updated_at('Last Updated');
         $grid->disableFilter();
         $grid->paginate(25);
         $grid->perPages([25, 50, 100, 200, 300]);
@@ -157,13 +134,13 @@ class BusScheduleController extends Controller
         $show = new Show(Schedule::findOrFail($id));
 
         $show->id('ID');
-        $show->day('Day')->as(function ($s) {
-            return Day::all()->find($s)->dayname;
-        });
-        $show->toiiuc('To IIUC Campus')->as(function ($s) {
+        $show->day('Day')->as(function ($Day) {
+            return $Day->pluck('dayname');
+        })->label();
+        $show->toiiuc('To IIUC')->as(function ($s) {
             return $s ? 'Yes' : 'No';
         });
-        $show->fromiiuc('From IIUC Campus')->as(function ($s) {
+        $show->fromiiuc('From IIUC')->as(function ($s) {
             return $s ? 'Yes' : 'No';
         });
         $show->male('Male')->as(function ($s) {
@@ -178,9 +155,9 @@ class BusScheduleController extends Controller
         $show->bususer('Bus For')->as(function ($s) {
             return UserType::all()->find($s)->name;
         });
-        $show->route('Route')->as(function ($s) {
-            return BusRoute::all()->find($s)->routename;
-        });
+        $show->route('Route')->as(function ($Route) {
+            return $Route->pluck('routename');
+        })->label();
         $show->user_id('Inputed By')->as(function ($s) {
             return Administrator::all()->find($s)->name;
         });
@@ -215,7 +192,7 @@ class BusScheduleController extends Controller
     {
         $form = new Form(new Schedule);
 
-        $form->select('day', 'Day')
+        $form->listbox('day', 'Day')
             ->options(Day::all()->pluck('dayname', 'id'))
             ->rules('required');
         $states = [
@@ -233,7 +210,7 @@ class BusScheduleController extends Controller
         $form->select('bususer', 'Bus For')
             ->options(UserType::all()->sortBy('name')->pluck('name', 'id'))
             ->rules('required');
-        $form->select('route', 'Route')
+        $form->listbox('route', 'Route')
             ->options(BusRoute::all()->sortBy('routename')->pluck('routename', 'id'))
             ->rules('required');
         //$form->switch('active','Published')->states($states);

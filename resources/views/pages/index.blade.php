@@ -123,7 +123,10 @@
                         <ul class="timeline">
                             <?php $flagSchedules = 0;$sl = 0;?>
                             @foreach($times as $time)
-                                <?php   $schedules = App\Schedule::where('day', $day->id)
+                                <?php
+                                $filter = $day->id; 
+                                  $schedules = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                    $q->where('id', $filter);})
                                     ->where('time', $time->id)
                                     ->first(); ?>
                                 @if($schedules)
@@ -135,11 +138,15 @@
                                                 <br>
                                                 {{--Gender--}}
 
-                                                <?php $male = App\Schedule::where('day', $day->id)
+                                                <?php
+                                                $filter =$day->id; 
+                                                $male = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                                    $q->where('id', $filter);})
                                                     ->where('time', $time->id)
                                                     ->where('male', '1')
                                                     ->get();
-                                                $female = App\Schedule::where('day', $day->id)
+                                                $female = App\Schedule::whereHas('day', function($q) use ($filter) {
+                        $q->where('id', $filter);})
                                                     ->where('time', $time->id)
                                                     ->where('female', '1')
                                                     ->get();?>
@@ -156,11 +163,15 @@
                                                 {{--Direction--}}
                                                 Destination:
                                                 <h4>
-                                                    <?php $toiiuc = App\Schedule::where('day', $day->id)
+                                                    <?php 
+                                                    $filter = $day->id;
+                                                    $toiiuc = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                                        $q->where('id', $filter);})
                                                         ->where('time', $time->id)
                                                         ->where('toiiuc', '1')
                                                         ->get();
-                                                    $fromiiuc = App\Schedule::where('day', $day->id)
+                                                    $fromiiuc = App\Schedule::whereHas('day', function($q) use ($filter) {
+                        $q->where('id', $filter);})
                                                         ->where('time', $time->id)
                                                         ->where('fromiiuc', '1')
                                                         ->get();?>
@@ -174,17 +185,23 @@
                                                 <h4 class="subheading">
 
                                                     {{--Routes--}}
-                                                    <?php $routes = App\Schedule::where('day', $day->id)
+                                                    <?php 
+                                                    $filter = $day->id;
+                                                    $routes = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                                        $q->where('id', $filter);})
                                                         ->where('time', $time->id)
-                                                        ->get();
-                                                    if (count($routes) > 1) {
+                                                        ->first();
+                                                    $routes = $routes->route;
+                                                    if (count($routes) > 0) {
                                                         $routeFlag = count($routes) - 1;
                                                     } else {
                                                         $routeFlag = 0;
-                                                    }?>
+                                                    }
+                                                    ?>
+                                                    
                                                     @foreach($routes as $route)
-                                                        {!! \App\BusRoute::where('id',$route->route)->first()->routename !!}
-                                                        @if($routeFlag)
+                                                        {{$route->routename}}    
+                                                    @if($routeFlag)
                                                             {!! ", " !!}
                                                         @endif
                                                         <?php $routeFlag -= 1;?>

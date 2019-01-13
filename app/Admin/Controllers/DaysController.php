@@ -46,7 +46,7 @@ class DaysController extends Controller
             'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
-        $grid->active(trans('Active'))->switch($states)->sortable();
+        $grid->active(trans('Published'))->switch($states)->sortable();
         $grid->user_id('Created By')->display(function ($s) {
             if ($s) {
                 return Administrator::all()->find($s)->name ?: 'n/a';
@@ -149,7 +149,7 @@ class DaysController extends Controller
             'on' => ['value' => 1, 'text' => 'Yes', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'No', 'color' => 'danger'],
         ];
-        $form->switch('active', 'Active')->states($states);
+        $form->switch('active', 'Published')->states($states);
         $form->hidden('user_id', 'Created By')->default(function () {
             return Admin::user()->id;
         });
@@ -167,7 +167,7 @@ class DaysController extends Controller
     {
         return $content
             ->header('Create')
-            ->description('')
+            ->description(' ')
             ->body($this->form());
     }
 }

@@ -42,7 +42,7 @@ class HelperInfoController extends Controller
             'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
             'off' => ['value' => 0, 'text' => 'NO', 'color' => 'danger'],
         ];
-        $grid->active('Published')->switch($states)->sortable();
+        $grid->active('Available')->switch($states)->sortable();
         $grid->image('Photo')->display(function ($s) {
             return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/" . $s . "' alt='" . $this->name . "'/>";
         });

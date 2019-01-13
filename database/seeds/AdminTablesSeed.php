@@ -19,7 +19,6 @@ class AdminTablesSeed extends Seeder
         // create a user.
         Administrator::truncate();
         Administrator::insert([
-
             [
                 'username' => 'towfiq',
                 'password' => bcrypt('i am boss'),
@@ -35,6 +34,11 @@ class AdminTablesSeed extends Seeder
                 'password' => bcrypt('i am master'),
                 'name' => 'Administrator',
             ],
+            [
+                'username' => 'supervisor',
+                'password' => bcrypt('i am supervisor'),
+                'name' => 'Supervisor',
+            ],
         ]);
 
         // create a role.
@@ -43,6 +47,10 @@ class AdminTablesSeed extends Seeder
             [
                 'name' => 'Administrator',
                 'slug' => 'administrator',
+            ],
+            [
+                'name' => 'Supervisor',
+                'slug' => 'Supervisor',
             ],
             [
                 'name' => 'Media Editor',
@@ -74,6 +82,7 @@ class AdminTablesSeed extends Seeder
         Administrator::find(1)->roles()->save(Role::find(1));
         Administrator::find(2)->roles()->save(Role::find(1));
         Administrator::find(3)->roles()->save(Role::find(1));
+        Administrator::find(4)->roles()->save(Role::find(1));
 
         //create a permission
         Permission::truncate();
@@ -118,31 +127,43 @@ class AdminTablesSeed extends Seeder
                 'name' => 'Admin Messages',
                 'slug' => 'ext.messages',
                 'http_method' => '',
-                'http_path' => '/messages*',
+                'http_path' => '/auth/messages*',
             ],
             [
                 'name' => 'Notice',
                 'slug' => 'notice',
                 'http_method' => '',
-                'http_path' => '/auth/notice*',
+                'http_path' => '/auth/transport-notice*',
             ],
             [
                 'name' => 'Bus Route',
                 'slug' => 'route',
                 'http_method' => '',
-                'http_path' => '/auth/routes*',
+                'http_path' => "/auth/route*\r\n/auth/routes*\r\n/auth/bus-route-info*",
             ],
             [
                 'name' => 'Bus Stop Point',
                 'slug' => 'point',
                 'http_method' => '',
-                'http_path' => '/auth/points*',
+                'http_path' => '/auth/point*',
             ],
             [
                 'name' => 'Bus Time',
                 'slug' => 'time',
                 'http_method' => '',
-                'http_path' => '/auth/addtime',
+                'http_path' => '/auth/time*',
+            ],
+            [
+                'name' => 'Day',
+                'slug' => 'day',
+                'http_method' => '',
+                'http_path' => '/auth/day*',
+            ],
+            [
+                'name' => 'Bus Type',
+                'slug' => 'bus type',
+                'http_method' => '',
+                'http_path' => '/auth/bus-type*',
             ],
             [
                 'name' => 'Bus',
@@ -163,6 +184,42 @@ class AdminTablesSeed extends Seeder
                 'http_path' => '/auth/helper*',
             ],
             [
+                'name' => 'Stydents',
+                'slug' => 'students',
+                'http_method' => '',
+                'http_path' => '/auth/students*',
+            ],
+            [
+                'name' => 'Faculty',
+                'slug' => 'faculty',
+                'http_method' => '',
+                'http_path' => '/auth/teachers*',
+            ],
+            [
+                'name' => 'Officer-Staff',
+                'slug' => 'officer staff',
+                'http_method' => '',
+                'http_path' => '/auth/officer-staff*',
+            ],
+            [
+                'name' => 'Other User',
+                'slug' => 'other user',
+                'http_method' => '',
+                'http_path' => '/auth/other-users*',
+            ],
+            [
+                'name' => 'User Type',
+                'slug' => 'user type',
+                'http_method' => '',
+                'http_path' => '/auth/user-type*',
+            ],
+            [
+                'name' => 'Data Import',
+                'slug' => 'data import',
+                'http_method' => '',
+                'http_path' => '/auth/import*',
+            ],
+            [
                 'name' => 'Schedule',
                 'slug' => 'schedule',
                 'http_method' => '',
@@ -170,13 +227,13 @@ class AdminTablesSeed extends Seeder
             ],
             [
                 'name' => 'Admin helpers',
-                'slug' => 'ext.helpers',
+                'slug' => 'helpers',
                 'http_method' => '',
                 'http_path' => "/helpers*",
             ],
             [
                 'name' => 'Exceptions reporter',
-                'slug' => 'ext.reporter',
+                'slug' => 'reporter',
                 'http_method' => '',
                 'http_path' => '/exceptions*',
             ],
@@ -185,6 +242,9 @@ class AdminTablesSeed extends Seeder
         ]);
 
         Role::first()->permissions()->save(Permission::first());
+        Role::find(2)->permissions()->save(Permission::first());
+        Role::all()->permissions()->save(Permission::find(3));
+        
 
         // add default menus.
         Menu::truncate();

@@ -26,17 +26,19 @@
 
         <?php if( count($days) > 0 ): ?>
             <?php $__currentLoopData = $days; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <h3><b><?php echo e("$day->dayname", false); ?></b></h3>
+                <h3><b><?php echo e($day->dayname, false); ?></b></h3>
 
-                <?php if( $day->id == 7  ): ?>
-                    <a class="btn btn-success" target="_blank" href='/bus-schedule-friday'>
-                        <i class="fa fa-print"></i>Print
-                    </a>
-                <?php elseif($day->id <= 5 && $day->id >= 1 ): ?>
-                    <a class="btn btn-success" target="_blank" href='/bus-schedule-pdf'>
+                
+                
+                    
+                    <form action="/bus-schedule-pdf" target="_blank">
+                    <input type="hidden" name="dayid" value="<?php echo $day->id; ?>"></input>
+                    <button class="btn btn-success"  type="submit" value="Print">
                         <i class="fa fa-print"></i> Print
-                    </a>
-                <?php endif; ?>
+                    </button>
+
+                    </form>
+                
                 <br>
                 <h4><b><?php echo e("Towards IIUC", false); ?></b></h4>
                 <table class="table table-hover table-bordered table-responsive-lg">
@@ -53,7 +55,10 @@
                     <tbody class="table">
                     <?php $sl = 0; ?>
                     <?php $__currentLoopData = $times; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $time): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <?php $schedules = App\Schedule::where('day', $day->id)
+                        <?php 
+                        $filter = $day->id; 
+                                  $schedules = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                    $q->where('id', $filter);})
                             ->where('time', $time->id)
                             ->where('toiiuc', 1)
                             ->get();?>
@@ -63,11 +68,15 @@
                                 <td><?php echo e($sl +=1, false); ?></td>
                                 <td><?php echo e(\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A'), false); ?></td>
 
-                                <?php $male = App\Schedule::where('day', $day->id)
+                                <?php
+                                $filter = $day->id; 
+                                $male = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                  $q->where('id', $filter);})
                                     ->where('time', $time->id)
                                     ->where('male', '1')
                                     ->get();
-                                $female = App\Schedule::where('day', $day->id)
+                                $female = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                    $q->where('id', $filter);})
                                     ->where('time', $time->id)
                                     ->where('female', '1')
                                     ->get();?>
@@ -83,18 +92,23 @@
 
                                 </td>
 
-                                <?php $routes = App\Schedule::where('day', $day->id)
+                                <?php $filter = $day->id; 
+                                $routes = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                  $q->where('id', $filter);})
                                     ->where('time', $time->id)
-                                    ->get();
+                                    ->first();
+                                $routes = $routes->route;
+                                
                                 if (count($routes) > 1) {
                                     $routeFlag = count($routes) - 1;
                                 } else {
                                     $routeFlag = 0;
-                                }?>
+                                }
+                                ?>
 
                                 <td>
                                     <?php $__currentLoopData = $routes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php echo e(\App\BusRoute::where('id',$route->route)->first()->routename, false); ?>
+                                        <?php echo e($route->routename, false); ?>
 
                                         <?php if($routeFlag): ?>
                                             <?php echo e(", ", false); ?>
@@ -103,7 +117,9 @@
                                         <?php $routeFlag -= 1;?>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </td>
-                                <?php $userid = App\Schedule::where('day', $day->id)
+                                <?php $filter = $day->id; 
+                                $userid = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                  $q->where('id', $filter);})
                                     ->where('time', $time->id)
                                     ->first(); ?>
                                 <td><?php echo e(Admin::user()->where('id',$userid->user_id)->first()->name, false); ?></td>
@@ -128,7 +144,10 @@
                     <tbody class="table">
                     <?php $sl = 0; ?>
                     <?php $__currentLoopData = $times; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $time): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <?php $schedules = App\Schedule::where('day', $day->id)
+                        <?php 
+                        $filter = $day->id; 
+                        $schedules = App\Schedule::whereHas('day', function($q) use ($filter) {
+                          $q->where('id', $filter);})
                             ->where('time', $time->id)
                             ->where('fromiiuc', 1)
                             ->get();?>
@@ -138,11 +157,14 @@
                                 <td><?php echo e($sl +=1, false); ?></td>
                                 <td><?php echo e(\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A'), false); ?></td>
 
-                                <?php $male = App\Schedule::where('day', $day->id)
+                                <?php $filter = $day->id; 
+                                $male = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                  $q->where('id', $filter);})
                                     ->where('time', $time->id)
                                     ->where('male', '1')
                                     ->get();
-                                $female = App\Schedule::where('day', $day->id)
+                                $female = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                    $q->where('id', $filter);})
                                     ->where('time', $time->id)
                                     ->where('female', '1')
                                     ->get();?>
@@ -157,9 +179,12 @@
                                     <?php echo e(count($female)? 'Female':'', false); ?>
 
                                 </td>
-                                <?php $routes = App\Schedule::where('day', $day->id)
+                                <?php $filter = $day->id; 
+                                $routes = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                  $q->where('id', $filter);})
                                     ->where('time', $time->id)
-                                    ->get();
+                                    ->first();
+                                $routes = $routes->route;
                                 if (count($routes) > 1) {
                                     $routeFlag = count($routes) - 1;
                                 } else {
@@ -168,7 +193,8 @@
 
                                 <td>
                                     <?php $__currentLoopData = $routes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php echo e(\App\BusRoute::where('id',$route->route)->first()->routename, false); ?>
+                                        
+                                        <?php echo e($route->routename, false); ?>
 
                                         <?php if($routeFlag): ?>
                                             <?php echo e(", ", false); ?>
@@ -177,7 +203,9 @@
                                         <?php $routeFlag -= 1;?>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </td>
-                                <?php $userid = App\Schedule::where('day', $day->id)
+                                <?php $filter = $day->id; 
+                                $userid = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                  $q->where('id', $filter);})
                                     ->where('time', $time->id)
                                     ->first(); ?>
                                 <td><?php echo e(Admin::user()->where('id',$userid->user_id)->first()->name, false); ?></td>

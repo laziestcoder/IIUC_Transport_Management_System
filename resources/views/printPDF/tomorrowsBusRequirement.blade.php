@@ -23,6 +23,7 @@
                         <th> No of Students</th>
                         <th>Bus Needed</th>
                         <th>Seat Capacity</th>
+                        <th>Alloted Bus</th>
                     </tr>
                     </thead>
                     <tbody class="table" align="center">
@@ -64,10 +65,12 @@
                                 <?php
                                 $stdArvTot = $stdArvTot + count($studentSum);
                                 $studentSum = count($studentSum);
-                                $student = $studentSum; // 645 ;
+                                $student = 645;//$studentSum; // 645 ;
                                 $totalCapacity = 0;
                                 $enough = true;
                                 $bus_number = array();
+                                $bus_id = array();
+                                $busIdNo = 0;
                                 $count = 0;
                                 while ($student > 0 && $enough) {
                                     $bus_available = App\BusInfo::orderBy('seat', 'desc')
@@ -83,9 +86,12 @@
                                         $totalCapacity += $bus_available->seat;
                                         if (!isset($bus_number[$bus_available->seat])) {
                                             $bus_number[$bus_available->seat] = 1;
+                                            
                                         } else {
                                             $bus_number[$bus_available->seat] += 1;
                                         }
+                                        $bus_id[$busIdNo] = $bus_available->busid;
+                                        $busIdNo += 1;
                                         $id = $bus_available->id;
                                         BusNotAvailable($id);
                                     } else {
@@ -104,6 +110,8 @@
                                             } else {
                                                 $bus_number[$bus_available->seat] += 1;
                                             }
+                                            $bus_id[$busIdNo] = $bus_available->busid;
+                                        $busIdNo += 1;
                                             $id = $bus_available->id;
                                             BusNotAvailable($id);
                                         } else {
@@ -128,7 +136,23 @@
                             <td>
                                 {{-- seat capacity --}}
                                 {{$totalCapacity}}
-                            </td> <?php
+                            </td>
+                            <td>
+                               {{-- Alloted Bus ID --}}
+                               <?php
+                               $comma = count($bus_id);
+                                   foreach ($bus_id as $busIdNumber)
+                                   {
+                                       echo $busIdNumber;
+                                       $comma--;
+                                       if($comma)
+                                       echo ", ";
+                                       else
+                                       echo ".";
+                                   }                                
+                               ?>
+                        </td> 
+                            <?php
                             $busSeatArvTot = $busSeatArvTot + $totalCapacity;
                             foreach ($bus_number as $seatNo => $busNo) {
                                 $busArvTot = $busArvTot + $busNo;
@@ -144,6 +168,7 @@
                         <td>{{$stdArvTot}}</td>
                         <td>{{$busArvTot}}</td>
                         <td>{{$busSeatArvTot}}</td>
+                        <td></td>
 
                     </tr>
                     </tbody>
@@ -159,9 +184,10 @@
                     <tr>
                         <th>No</th>
                         <th>Route Name</th>
-                        <th> No of Students</th>
+                        <th>No of Students</th>
                         <th>Bus Needed</th>
                         <th>Seat Capacity</th>
+                        <th>Alloted Bus</th>
                     </tr>
                     </thead>
                     <tbody class="table" align="center">
@@ -198,6 +224,8 @@
                                 $totalCapacity = 0;
                                 $enough = true;
                                 $bus_number = array();
+                                $bus_id = array();
+                                $busIdNo = 0;
                                 while ($student > 0 && $enough) {
                                     $bus_available = App\BusInfo::orderBy('seat', ' desc')
                                         ->where('active', 1)
@@ -213,6 +241,8 @@
                                         } else {
                                             $bus_number[$bus_available->seat] += 1;
                                         }
+                                        $bus_id[$busIdNo] = $bus_available->busid;
+                                        $busIdNo += 1;
                                         $id = $bus_available->id;
                                         BusNotAvailable($id);
                                     } else {
@@ -230,6 +260,8 @@
                                             } else {
                                                 $bus_number[$bus_available->seat] += 1;
                                             }
+                                            $bus_id[$busIdNo] = $bus_available->busid;
+                                            $busIdNo += 1;
                                             $id = $bus_available->id;
                                             BusNotAvailable($id);
                                         } else {
@@ -254,7 +286,23 @@
                             <td>
                                 {{-- seat capacity --}}
                                 {{$totalCapacity}}
-                            </td> <?php
+                            </td> 
+                            <td>
+                                {{-- Alloted Bus ID --}}
+                                <?php
+                                $comma = count($bus_id);
+                                    foreach ($bus_id as $busIdNumber)
+                                    {
+                                        echo $busIdNumber;
+                                        $comma--;
+                                        if($comma)
+                                        echo ", ";
+                                        else
+                                        echo ".";
+                                    }                                
+                                ?>
+                            </td> 
+                            <?php
                             $busSeatDepTot = $busSeatDepTot + $totalCapacity;
                             foreach ($bus_number as $seatNo => $busNo) {
                                 $busDepTot = $busDepTot + $busNo;
@@ -270,6 +318,7 @@
                         <td>{{$stdDepTot}}</td>
                         <td>{{$busDepTot}}</td>
                         <td>{{$busSeatDepTot}}</td>
+                        <td></td>
 
                     </tr>
                     </tbody>
@@ -290,6 +339,7 @@
                         <th> No of Students</th>
                         <th>Bus Needed</th>
                         <th>Seat Capacity</th>
+                        <th>Alloted Bus</th>
                     </tr>
                     </thead>
                     <tbody class="table" align="center">
@@ -329,6 +379,8 @@
                                 $totalCapacity = 0;
                                 $enough = true;
                                 $bus_number = array();
+                                $bus_id = array();
+                                $busIdNo = 0;
                                 while ($student > 0 && $enough) {
                                     $bus_available = App\BusInfo::orderBy('seat', ' desc')
                                         ->where('active', 1)
@@ -345,6 +397,8 @@
                                         } else {
                                             $bus_number[$bus_available->seat] += 1;
                                         }
+                                        $bus_id[$busIdNo] = $bus_available->busid;
+                                            $busIdNo += 1;
                                         $id = $bus_available->id;
                                         BusNotAvailable($id);
                                     } else {
@@ -362,6 +416,8 @@
                                             } else {
                                                 $bus_number[$bus_available->seat] += 1;
                                             }
+                                            $bus_id[$busIdNo] = $bus_available->busid;
+                                            $busIdNo += 1;
                                             $id = $bus_available->id;
                                             BusNotAvailable($id);
                                         } else {
@@ -386,6 +442,21 @@
                                 {{-- seat capacity --}}
                                 {{$totalCapacity}}
                             </td>
+                            <td>
+                                  {{-- Alloted Bus ID --}}
+                                <?php
+                                $comma = count($bus_id);
+                                    foreach ($bus_id as $busIdNumber)
+                                    {
+                                        echo $busIdNumber;
+                                        $comma--;
+                                        if($comma)
+                                        echo ", ";
+                                        else
+                                        echo ".";
+                                    }                                
+                                ?>
+                            </td> 
                             <?php
                             $busSeatArvTot = $busSeatArvTot + $totalCapacity;
                             foreach ($bus_number as $seatNo => $busNo) {
@@ -402,6 +473,7 @@
                         <td>{{$stdArvTot}}</td>
                         <td>{{$busArvTot}}</td>
                         <td>{{$busSeatArvTot}}</td>
+                        <td></td>
                     </tr>
                     </tbody>
                 </table>
@@ -419,6 +491,7 @@
                         <th> No of Students</th>
                         <th>Bus Needed</th>
                         <th>Seat Capacity</th>
+                        <th>Alloted Bus</th>
                     </tr>
                     </thead>
                     <tbody class="table" align="center">
@@ -454,6 +527,8 @@
                                 $totalCapacity = 0;
                                 $enough = true;
                                 $bus_number = array();
+                                $bus_id = array();
+                                $busIdNo = 0;
                                 while ($student > 0 && $enough) {
                                     $bus_available = App\BusInfo::orderBy('seat', ' desc')
                                         ->where('active', 1)
@@ -469,6 +544,8 @@
                                         } else {
                                             $bus_number[$bus_available->seat] += 1;
                                         }
+                                        $bus_id[$busIdNo] = $bus_available->busid;
+                                            $busIdNo += 1;
                                         $id = $bus_available->id;
                                         BusNotAvailable($id);
                                     } else {
@@ -486,6 +563,8 @@
                                             } else {
                                                 $bus_number[$bus_available->seat] += 1;
                                             }
+                                            $bus_id[$busIdNo] = $bus_available->busid;
+                                            $busIdNo += 1;
                                             $id = $bus_available->id;
                                             BusNotAvailable($id);
                                         } else {
@@ -510,6 +589,20 @@
                                 {{-- seat capacity --}}
                                 {{$totalCapacity}}
                             </td>
+                            <td>{{-- Alloted Bus ID --}}
+                                    <?php
+                                    $comma = count($bus_id);
+                                        foreach ($bus_id as $busIdNumber)
+                                        {
+                                            echo $busIdNumber;
+                                            $comma--;
+                                            if($comma)
+                                            echo ", ";
+                                            else
+                                            echo ".";
+                                        }                                
+                                    ?>
+                            </td> 
                             <?php
                             $busSeatDepTot = $busSeatDepTot + $totalCapacity;
                             foreach ($bus_number as $seatNo => $busNo) {
@@ -526,6 +619,7 @@
                         <td>{{$stdDepTot}}</td>
                         <td>{{$busDepTot}}</td>
                         <td>{{$busSeatDepTot}}</td>
+                        <td></td>
                     </tr>
                     </tbody>
                 </table>

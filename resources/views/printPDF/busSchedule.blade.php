@@ -6,14 +6,14 @@
     {{--<div id="print-it">--}}
     @if( count($schedules) > 0 )
         {{-- @foreach($days as $day)--}}
-        <b>{!! "Saturday to Wednesday" !!}</b><br><br>
-        <a class="btn btn-default"
-           href="{{ route('bus-schedule-pdf',['download' => 'pdf'],['title' => 'Print Bus Schedule']) }}">
+        {{-- <b>{{$day->dayname}}</b><br><br> --}}
+        <a target="_blank" class="btn btn-default"
+           href="{{ route('bus-schedule-pdf',['download' => 'pdf', 'dayid' => $day->id],['title' => 'Print Bus Schedule']) }}">
             <i class="fa fa-print"></i> PDF/Print </a>
         {{--<a class="btn btn-default" href="#" onclick="window.print()"><i class="fa fa-print"></i>  Print</a>--}}
         <h4><b>Towards IIUC</b></h4>
         <table class="table table-condensed table-responsive table-bordered"
-               style="text-align:center; margin: auto; font-size: 15px;">
+               style="text-align:center; margin: auto; font-size: 11px;">
             <thead class="">
             <tr>
                 <th>{{"No."}}</th>
@@ -25,13 +25,14 @@
             <tbody>
             <?php $sl = 0; ?>
             @foreach($times as $time)
-                <?php $schedules = App\Schedule::where('day', 1)
+                <?php $filter = $day->id; 
+                $schedules = App\Schedule::whereHas('day', function($q) use ($filter) {
+                  $q->where('id', $filter);})
                     ->where('time', $time->id)
                     ->where('toiiuc', 1)
                     ->get();?>
                 @if(count($schedules) > 0)
                     <tr>
-
                         <td>{{$sl +=1}}</td>
                         <td>
                             {{\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A')}}
@@ -55,9 +56,12 @@
                             {{count($female)? 'Female':''}}
                         </td>
 
-                        <?php $routes = App\Schedule::where('day', 1)->//where('day','<=',5)->
-                        where('time', $time->id)
-                            ->get();
+                        <?php $filter = $day->id; 
+                        $routes = App\Schedule::whereHas('day', function($q) use ($filter) {
+                          $q->where('id', $filter);})
+                        ->where('time', $time->id)
+                            ->first();
+                            $routes = $routes->route;
                         if (count($routes) > 1) {
                             $routeFlag = count($routes) - 1;
                         } else {
@@ -69,7 +73,7 @@
                                 <table class="table table-bordered">
                                     @foreach($routes as $route)
                                         <tr>
-                                            <td>{!!  \App\BusRoute::where('id',$route->route)->first()->routename !!}</td>
+                                            <td>  {{$route->routename}}</td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -78,7 +82,7 @@
                         <td>
                             <table class="table table-bordered">
                                 @foreach($routes as $route)
-                                    <?php  $stopPoints = \App\BusPoint::where('routeid', $route->route)->orderBy('weight', 'asc')->get();
+                                    <?php  $stopPoints = \App\BusPoint::where('routeid', $route->id)->orderBy('weight', 'asc')->get();
                                     if (count($stopPoints) > 1) {
                                         $pointFlag = count($stopPoints) - 1;
                                     } else {
@@ -109,7 +113,7 @@
             </tbody>
         </table>
         <h4><b>From IIUC</b></h4>
-        <table class="table table-condensed table-responsive table-bordered" style="font-size: 15px;">
+        <table class="table table-condensed table-responsive table-bordered" style="font-size: 11px;">
             <thead>
             <tr>
                 <th>{{"No."}}</th>
@@ -121,24 +125,29 @@
             <tbody>
             <?php $sl = 0; ?>
             @foreach($times as $time)
-                <?php $schedules = App\Schedule::where('day', 1)
+                <?php $filter = $day->id; 
+                $schedules = App\Schedule::whereHas('day', function($q) use ($filter) {
+                  $q->where('id', $filter);})
                     ->where('time', $time->id)
                     ->where('fromiiuc', 1)
                     ->get();?>
                 @if(count($schedules) > 0)
                     <tr>
-
                         <td>{{$sl +=1}}</td>
                         <td>
                             {{\Carbon\Carbon::parse(App\Time::where('id',$time->id)->first()->time)->format('g:i A')}}
                             {{--</td>--}}
 
-                            <?php $male = App\Schedule:://where('day', $day->id)->
-                            where('time', $time->id)
+                            <?php $filter = $day->id; 
+                            $male = App\Schedule::whereHas('day', function($q) use ($filter) {
+                              $q->where('id', $filter);})
+                            ->where('time', $time->id)
                                 ->where('male', '1')
                                 ->get();
-                            $female = App\Schedule:://where('day', $day->id)->
-                            where('time', $time->id)
+                                
+                            $female = App\Schedule::whereHas('day', function($q) use ($filter) {
+                            $q->where('id', $filter);})
+                            ->where('time', $time->id)
                                 ->where('female', '1')
                                 ->get();?>
 
@@ -151,9 +160,12 @@
                             {{count($female)? 'Female':''}}
                         </td>
 
-                        <?php $routes = App\Schedule::where('day', 1)->//where('day','<=',5)->
-                        where('time', $time->id)
-                            ->get();
+                        <?php $filter = $day->id; 
+                        $routes = App\Schedule::whereHas('day', function($q) use ($filter) {
+                          $q->where('id', $filter);})
+                        ->where('time', $time->id)
+                            ->first();
+                            $routes = $routes->route;
                         if (count($routes) > 1) {
                             $routeFlag = count($routes) - 1;
                         } else {
@@ -165,7 +177,7 @@
                                 <table class="table table-bordered">
                                     @foreach($routes as $route)
                                         <tr>
-                                            <td>{!!  \App\BusRoute::where('id',$route->route)->first()->routename !!}</td>
+                                            <td>{{$route->routename}}</td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -174,7 +186,7 @@
                         <td>
                             <table class="table table-bordered">
                                 @foreach($routes as $route)
-                                    <?php  $stopPoints = \App\BusPoint::where('routeid', $route->route)->orderBy('weight', 'asc')->get();
+                                    <?php  $stopPoints = \App\BusPoint::where('routeid', $route->id)->orderBy('weight', 'asc')->get();
                                     if (count($stopPoints) > 1) {
                                         $pointFlag = count($stopPoints) - 1;
                                     } else {

@@ -1,23 +1,25 @@
-<?php
-$data = array();
-
-for ($i = 0; $i <= 10; $i++) {
-    for ($j = 10; $j <= 50; $j += 10)
-        if (isset($data[$j])) {
-            $data[$j] += 1;
-        } else {
-            $data[$j] = 1;
-        }
-}
-
-foreach ($data as $key => $value) {
-    echo $key . 'x' . $value . '<br>';
-}
-?>
-{{-- <pre>
-@foreach ($data as $item => $value)
-    {{$item}} <br>
-    {{$value}}
-    
+@foreach ($schedule as $item)
+<pre>    
+Result:  
+<br>{{$item}}<br>
+            <br>{{$item->id}}<br>
+         {{" day "}}{{$item->day}}
+         @foreach ($item->day as $routename)
+         {{$routename->id}} {{" "}}{{$routename->dayname}} {{" "}}   
+         @endforeach
+         <br>
+         {{" route "}}{{$item->route}}
+         @foreach ($item->route as $routename)
+         {{$routename->id}} {{" "}}{{$routename->routename}} {{" "}}   
+         @endforeach
+         <br>
+         {{" to iiuc "}}{{$item->toiiuc}}
+         {{" from iiuc "}}{{$item->fromiiuc}}
+         {{" male "}}{{$item->male}}
+         {{" female "}}{{$item->female}}
+         {{" time "}}{{$item->time}}
+         {{" bususer "}}{{$item->bususer}}
+         
+         <br><br>
+</pre>
 @endforeach
-</pre> --}}

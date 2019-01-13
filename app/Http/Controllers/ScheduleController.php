@@ -41,8 +41,8 @@ class ScheduleController extends Controller
             'titlenew' => '',
             'titleinfo' => '',
             'times' => Time::orderBy('time', 'asc')->get(),
-            'days' => Day::all('id', 'dayname'),
-            'points' => BusPoint::all('id', 'pointname'),
+            'days' => Day::where('active',1)->get(),
+            'points' => BusPoint::orderBy('pointname', 'asc')->where('active',1)->get(),
             //'days' => $days,
             //'times' => $times,
         );

@@ -9,7 +9,7 @@
                 <?php endif; ?>
                 <?php if( $regular && !$holiday  && !$suspend): ?>
                     <div class="nextBus">
-                        <div class="nextBus-info">  
+                        <div class="nextBus-info">
                             <table class="table table-condensed table-responsive-md">
                                 <thead>
                                 <tr>
@@ -91,24 +91,24 @@
         <div id="schedule" class="container">
             <?php if($holiday == True): ?>
                 <div class="row">
-                        <div class="col-lg-12 text-center">
-                            <h2 class="section-heading text-uppercase">It's Vacation Time! Enjoy the vacation.</h2>
-                        </div>
-                </div>    
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading text-uppercase">It's Vacation Time! Enjoy the vacation.</h2>
+                    </div>
+                </div>
             <?php elseif($suspend == True): ?>
                 <div class="row">
-                        <div class="col-lg-12 text-center">
-                            <h2 class="section-heading text-uppercase">The Regular Schedule is SUSPENDED!</h2>
-                        </div>
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading text-uppercase">The Regular Schedule is SUSPENDED!</h2>
+                    </div>
                 </div>
-            
+
             <?php elseif($regular == False): ?>
                 <div class="row">
-                        <div class="col-lg-12 text-center">
-                            <h2 class="section-heading text-uppercase">Regular Bus Schedule is OFF now.</h2>
-                        </div>
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading text-uppercase">Regular Bus Schedule is OFF now.</h2>
+                    </div>
                 </div>
-                 
+
             <?php elseif($day!= null && $regular == True && $suspend == False): ?>
                 <div class="row">
                     <div class="col-lg-12 text-center">
@@ -121,7 +121,10 @@
                         <ul class="timeline">
                             <?php $flagSchedules = 0;$sl = 0;?>
                             <?php $__currentLoopData = $times; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $time): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <?php   $schedules = App\Schedule::where('day', $day->id)
+                                <?php
+                                $filter = $day->id; 
+                                  $schedules = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                    $q->where('id', $filter);})
                                     ->where('time', $time->id)
                                     ->first(); ?>
                                 <?php if($schedules): ?>
@@ -134,11 +137,15 @@
                                                 <br>
                                                 
 
-                                                <?php $male = App\Schedule::where('day', $day->id)
+                                                <?php
+                                                $filter =$day->id; 
+                                                $male = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                                    $q->where('id', $filter);})
                                                     ->where('time', $time->id)
                                                     ->where('male', '1')
                                                     ->get();
-                                                $female = App\Schedule::where('day', $day->id)
+                                                $female = App\Schedule::whereHas('day', function($q) use ($filter) {
+                        $q->where('id', $filter);})
                                                     ->where('time', $time->id)
                                                     ->where('female', '1')
                                                     ->get();?>
@@ -158,11 +165,15 @@
                                                 
                                                 Destination:
                                                 <h4>
-                                                    <?php $toiiuc = App\Schedule::where('day', $day->id)
+                                                    <?php 
+                                                    $filter = $day->id;
+                                                    $toiiuc = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                                        $q->where('id', $filter);})
                                                         ->where('time', $time->id)
                                                         ->where('toiiuc', '1')
                                                         ->get();
-                                                    $fromiiuc = App\Schedule::where('day', $day->id)
+                                                    $fromiiuc = App\Schedule::whereHas('day', function($q) use ($filter) {
+                        $q->where('id', $filter);})
                                                         ->where('time', $time->id)
                                                         ->where('fromiiuc', '1')
                                                         ->get();?>
@@ -179,18 +190,23 @@
                                                 <h4 class="subheading">
 
                                                     
-                                                    <?php $routes = App\Schedule::where('day', $day->id)
+                                                    <?php 
+                                                    $filter = $day->id;
+                                                    $routes = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                                        $q->where('id', $filter);})
                                                         ->where('time', $time->id)
-                                                        ->get();
-                                                    if (count($routes) > 1) {
+                                                        ->first();
+                                                    $routes = $routes->route;
+                                                    if (count($routes) > 0) {
                                                         $routeFlag = count($routes) - 1;
                                                     } else {
                                                         $routeFlag = 0;
-                                                    }?>
+                                                    }
+                                                    ?>
+                                                    
                                                     <?php $__currentLoopData = $routes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $route): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                        <?php echo \App\BusRoute::where('id',$route->route)->first()->routename; ?>
-
-                                                        <?php if($routeFlag): ?>
+                                                        <?php echo e($route->routename, false); ?>    
+                                                    <?php if($routeFlag): ?>
                                                             <?php echo ", "; ?>
 
                                                         <?php endif; ?>

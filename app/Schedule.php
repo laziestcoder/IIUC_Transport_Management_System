@@ -17,4 +17,12 @@ class Schedule extends Model
         //return $this->belongsTo('Encore\Admin\Facades\Admin');
         //return $this->belongsTo('Encore\Admin\Auth\Database\Administrator');
     }
+    public function day()
+    {
+        return $this->belongsToMany(Day::class);
+    }
+    public function route()
+    {
+        return $this->belongsToMany(BusRoute::class);
+    }
 }

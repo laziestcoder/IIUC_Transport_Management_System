@@ -23,7 +23,10 @@ class PDFConverterController extends Controller
 
     public function busSchedulePdf(Request $request)
     {
+        $dayId = $request->dayid;
+        $day = Day::where('id',$dayId)->first();
         $data = array(
+            'day' => $day,
             'schedules' => Schedule::all(),
             'title' => 'Bus Schedule Print',
             'description' => 'Here you will get available bus schedule information. You can also remove and edit Bus Schedules.',
@@ -38,7 +41,7 @@ class PDFConverterController extends Controller
 
         if ($request->has('download')) {
             // Set extra option
-            //PDF::setOptions(['dpi' => 45, 'defaultFont' => 'sans-serif']);
+            PDF::setOptions(['dpi' => 600, 'defaultFont' => 'sans-serif', 'font-size' => '10']);
             //set paper orientation
             //PDF::setPaper('a4', 'landscape');
             // pass view file

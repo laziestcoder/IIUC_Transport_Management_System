@@ -63,7 +63,9 @@ class PagesController extends Controller
 //                    $check = Time::where('id', $time->id)->where($direction,1)->get();
 //                    if($check) {
                     $nowid = $time->id;
-                    $route = Schedule::where('day', $todayid)
+                    $filter = $todayid;
+                    $route = Schedule::whereHas('day', function($q) use ($filter) {
+                        $q->where('id', $filter);})
                         ->where('time', $nowid)
                         ->where($direction, 1)
                         ->where($gender, 1)
@@ -82,7 +84,18 @@ class PagesController extends Controller
         //Route Name Retrive From Table
         function getBusRouteName($id)
         {
-            return BusRoute::where('id', $id)->first()->routename;
+            $name = '';
+            $flag = count($id)-1;
+            foreach($id as $routename){
+                $name .= $routename->routename;
+                if($flag){
+                    $name .= ', ';
+                    $flag = $flag -1;
+                }
+            }
+            return $name;
+            
+            //return BusRoute::where('id', $id)->first()->routename;
         }
 
         // Time Retreive From Table
@@ -154,7 +167,9 @@ class PagesController extends Controller
         $day = Day::where('dayname', $today)->where('active', 1)->get()->first();
         $timeAll = Time::orderBy('time')->get();
         if ($day) {
-            $schedules = Schedule::where('day', $day->id)->get();
+            $filter = $day->id;
+            $schedules = Schedule::whereHas('day', function($q) use ($filter) {
+                $q->where('id', $filter);})->get();
         } else {
             $schedules = null;
         }
@@ -248,12 +263,19 @@ class PagesController extends Controller
     //Test Page
     public function test()
     {
-        // $data = array(
-        //     'title' => 'Services',
-        //     'services' => ['Transportation', 'Travelling', 'Picnic']
-        // );
-        //return view('pages.test')->with($data);
-        return view('pages.test');
+        $filters = 7;
+        $filters2 = 2;
+        $data = array(
+            'schedule' => Schedule::whereHas('day', function($q) 
+            use ($filters) {
+            $q->where('id', $filters);
+        })->whereHas('route', function($q) 
+        use ($filters2) {
+        $q->where('id', $filters2);
+    })->get(),
+            
+        );
+        return view('pages.test')->with($data);
 
     }
 

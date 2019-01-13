@@ -26,14 +26,18 @@
                             @foreach($times as $time)
                                 <?php
                                 if ($gender == 0) {
-                                    $schedules = App\Schedule::where('bususer', '=', $user_type)
-                                        ->where('day', $day->id)
+                                    $filter = $day->id; 
+                                  $schedules = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                    $q->where('id', $filter);})
+                                    ->where('bususer', '=', $user_type)
                                         ->where('time', $time->id)
                                         ->where('male', '1')
                                         ->get();
                                 } else {
-                                    $schedules = App\Schedule::where('bususer', '=', $user_type)
-                                        ->where('day', $day->id)
+                                    $filter = $day->id; 
+                                  $schedules = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                    $q->where('id', $filter);})
+                                    ->where('bususer', '=', $user_type)
                                         ->where('time', $time->id)
                                         ->where('female', '1')
                                         ->get();
@@ -47,7 +51,9 @@
                                         <td>
                                             <?php
                                             if ($gender == 0) {
-                                                $male = App\Schedule::where('day', $day->id)
+                                                $filter = $day->id; 
+                                  $male = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                    $q->where('id', $filter);})
                                                     ->where('time', $time->id)
                                                     ->where('male', '1')
                                                     ->get();
@@ -57,7 +63,9 @@
                                                 //$female = 0;
                                             } else {
                                                 //$male = 0;
-                                                $female = App\Schedule::where('day', $day->id)
+                                                $filter = $day->id; 
+                                  $female = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                    $q->where('id', $filter);})
                                                     ->where('time', $time->id)
                                                     ->where('female', '1')
                                                     ->get();
@@ -68,11 +76,15 @@
                                             ?>
                                         </td>
 
-                                        <?php $toiiuc = App\Schedule::where('day', $day->id)
+                                        <?php $filter = $day->id; 
+                                        $toiiuc = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                          $q->where('id', $filter);})
                                             ->where('time', $time->id)
                                             ->where('toiiuc', '1')
                                             ->get();
-                                        $fromiiuc = App\Schedule::where('day', $day->id)
+                                            $filter = $day->id; 
+                                  $fromiiuc = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                    $q->where('id', $filter);})
                                             ->where('time', $time->id)
                                             ->where('fromiiuc', '1')
                                             ->get();?>
@@ -85,9 +97,12 @@
                                             {{count($fromiiuc)? 'From IIUC Campus':''}}
                                         </td>
 
-                                        <?php $routes = App\Schedule::where('day', $day->id)
+                                        <?php $filter = $day->id; 
+                                        $routes = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                          $q->where('id', $filter);})
                                             ->where('time', $time->id)
-                                            ->get();
+                                            ->first();
+                                            $routes = $routes->route;
                                         if (count($routes) > 1) {
                                             $routeFlag = count($routes) - 1;
                                         } else {
@@ -96,14 +111,16 @@
 
                                         <td>
                                             @foreach($routes as $route)
-                                                {{\App\BusRoute::where('id',$route->route)->first()->routename}}
+                                            {{$route->routename}}
                                                 @if($routeFlag)
                                                     {{", "}}
                                                 @endif
                                                 <?php $routeFlag -= 1;?>
                                             @endforeach
                                         </td>
-                                        <?php $userid = App\Schedule::where('day', $day->id)
+                                        <?php $filter = $day->id; 
+                                        $userid = App\Schedule::whereHas('day', function($q) use ($filter) {
+                                          $q->where('id', $filter);})
                                             ->where('time', $time->id)
                                             ->first(); ?>
                                     </tr>
