@@ -5,10 +5,13 @@ namespace App;
 use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Encore\Admin\Auth\Database\HasPermissions;
+use Illuminate\Database\Eloquent\Model;
+
 
 class User extends Authenticatable
 {
-    use Notifiable, AdminBuilder; //HasPermissions;
+    use Notifiable, AdminBuilder;//HasPermissions;
 
     /**
      * The attributes that are mass assignable.
@@ -16,7 +19,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'jobid', 'password', 'gender', 'user_type', 'adminrole', 'confirmation', 'token'
+        'name', 'email', 'varsity_id', 'password', 'gender', 'user_type', 'adminrole', 'confirmation', 'token'
     ];
 
     /**
@@ -24,8 +27,13 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    // protected $hidden = [
+    //     'password', 'remember_token',
+    // ];
+
+    // public function user_type()
+    // {
+    //     return $this->hasOne(UserType::class);
+    // }
 
 }

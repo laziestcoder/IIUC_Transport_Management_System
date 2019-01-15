@@ -57,7 +57,7 @@ class RegisterController extends Controller
             'user_type' => 'required|integer',
             'gender' => 'required|boolean',
             'image' => 'image|nullable|max:1999',
-            'jobid' => 'required|string|max:50|unique:users',
+            'varsity_id' => 'required|string|max:50|unique:users',
             'g-recaptcha-response' => 'required|recaptcha',
 
         ]);
@@ -97,11 +97,11 @@ class RegisterController extends Controller
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'jobid' => $data['jobid'],
+            'varsity_id' => $data['varsity_id'],
             'password' => bcrypt($data['password']),
             'user_type' => $data['user_type'],
             'gender' => $data['gender'],
-            'image' => $data['jobid'] . ".jpg",
+            'image' => $data['varsity_id'] . ".jpg",
             'token' => base64_encode($data['email']) . str_random(5),
         ]);
     }

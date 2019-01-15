@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\BusInfo;
 use App\BusPoint;
 use App\BusRoute;
-use App\BusStudentInfo;
 use App\Day;
 use App\StudentSchedule;
 use App\Time;
@@ -47,7 +46,7 @@ class BusRoutesController extends Controller
             'times' => Time::orderBy('time')->get(),
             'today' => $today,
             'todayid' => Day::all()->where('dayname', $today)->where('active', true)->first(),
-            'datas' => BusStudentInfo::all(),
+            // 'datas' => BusStudentInfo::all(),
             'busInfo' => BusInfo::where('availability', true)->get(),
         );
         return view('busroutes.index')->with($data);

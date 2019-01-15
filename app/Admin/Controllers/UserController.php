@@ -13,7 +13,7 @@ use Encore\Admin\Show;
 
 //use Illuminate\Routing\Controller;
 
-class UsersController extends Controller
+class UserController extends Controller
 {
     use HasResourceActions;
 

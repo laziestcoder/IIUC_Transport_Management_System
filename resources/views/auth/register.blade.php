@@ -38,18 +38,18 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group{{ $errors->has('jobid') ? ' has-error' : '' }}">
-                                                <label for="jobid" class="col-md-4 control-label">ID</label>
+                                            <div class="form-group{{ $errors->has('varsity_id') ? ' has-error' : '' }}">
+                                                <label for="varsity_id" class="col-md-4 control-label">ID</label>
 
                                                 <div class="col-md-6">
-                                                    <input id="jobid" type="text" class="form-control" name="jobid"
+                                                    <input id="varsity_id" type="text" class="form-control" name="varsity_id"
                                                            placeholder=" Enter Your Varsity ID "
-                                                           value="{{ old('jobid') }}" required>
+                                                           value="{{ old('varsity_id') }}" required>
 
-                                                    @if ($errors->has('jobid'))
+                                                    @if ($errors->has('varsity_id'))
                                                         <span class="help-block">
 
-                                                            <strong>{{ $errors->first('jobid') }}</strong>
+                                                            <strong>{{ $errors->first('varsity_id') }}</strong>
 
                                                         </span>
                                                     @endif
@@ -126,12 +126,12 @@
                                                     Register As
                                                 </label>
                                                 <div class="col-md-6">
-                                                    <?php $userroles = DB::table('user_role')->where('active', true)->get();?>
+                                                    <?php $userroles = DB::table('user_type')->where('active', true)->get();?>
                                                     {{--{!! Form::select('user_type', $userroles, null,--}}
                                                     {{--['class' => 'form form-control']) !!}--}}
                                                     <select name="user_type" class="form-control" style="height: 36px"
                                                             required>
-                                                        <option disabled selected>Select Your Role At IIUC</option>
+                                                        <option disabled selected>Select from the list</option>
                                                         @foreach($userroles as $user_type)
                                                             <option value="{!! $user_type->id !!}">
                                                                 {!! $user_type->name !!}
@@ -179,12 +179,12 @@
                                             </div>--}}
                                             <div class="form-group">
                                                 <div class="col-md-6 col-md-offset-4">
-                                                    <div class="g-recaptcha"
-                                                         data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
-                                                    @if ($errors->has('recaptcha'))
+                                                    <div id='recaptcha' class="g-recaptcha"
+                                                         data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb" aria-required="true"></div>
+                                                    @if ($errors->has('g-recaptcha-response'))
                                                         <span class="help-block">
 
-                                                            <strong>{{ $errors->first('recaptcha') }}</strong>
+                                                            <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
 
                                                         </span>
                                                     @endif

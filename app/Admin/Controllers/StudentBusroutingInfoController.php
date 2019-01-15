@@ -60,7 +60,7 @@ class StudentBusroutingInfoController extends Controller
         $grid->user_id('Varsity ID')->display(function ($id) {
             $id = User::find($id);
             if ($id) {
-                return $id->jobid;
+                return $id->varsity_id;
             } else {
                 return 'n/a';
             }

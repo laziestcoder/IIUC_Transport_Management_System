@@ -29,7 +29,7 @@
                     $user_id = auth()->user();
                     if ($user_id) {
                         $user = App\User::find($user_id->id);
-                        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg";
+                        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->varsity_id . ".jpg";
                         $ch = curl_init();
                         $timeout = 5;
                         curl_setopt($ch, CURLOPT_URL, $url);
@@ -43,7 +43,7 @@
                         $verified = false;
                         if ($file == 200 && $file2[0] != '<') {
                             $verified = true;
-                            $image = "<img style='max-width:32;max-height:32px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
+                            $image = "<img style='max-width:32;max-height:32px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->varsity_id . ".jpg' alt='" . $user->name . "'/>";
                         } else {
                             $verified = false;
                             $image = "<img style='max-width:32px;max-height:32px' class='img img-thumbnail' src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";

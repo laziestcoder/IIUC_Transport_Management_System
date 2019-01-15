@@ -44,11 +44,11 @@ class FacultyController extends Controller
             $grid->model()->where('user_type', '=', $value);
 
             //$grid->id('ID')->sortable();
-            $grid->jobid(trans('Varsity ID'))->sortable()->editable();
+            $grid->varsity_id(trans('Varsity ID'))->sortable()->editable();
 //            $grid->image(trans('admin.avatar'))->display(function ($s) use ($self) {
-//                $file= $self->imageValidate($this->jobid);  //I want to use this $file value
+//                $file= $self->imageValidate($this->varsity_id);  //I want to use this $file value
 //                if($file){ // here I want to access $file
-//                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
+//                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->varsity_id . ".jpg' alt='" . $this->name . "'/>";
 //                } else {
 //                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
 //                }
@@ -87,7 +87,7 @@ class FacultyController extends Controller
             $grid->filter(function ($filter) {
                 // Sets the range query for the created_at field
                 $filter->disableIdFilter();
-                $filter->like('jobid', 'Varsity ID');
+                $filter->like('varsity_id', 'Varsity ID');
             });
 
             $grid->disableCreateButton();
@@ -113,13 +113,13 @@ class FacultyController extends Controller
 
         //$show->id('ID');
         $show->name('Name');
-        $show->jobid(trans('Varsity ID'));
+        $show->varsity_id(trans('Varsity ID'));
         $show->divider();
         $show->image(trans('admin.avatar'))
             ->as(function () use ($self) {
-                $file = $self->imageValidate($this->jobid);  //I want to use this $file value
+                $file = $self->imageValidate($this->varsity_id);  //I want to use this $file value
                 if ($file) { // here I want to access $file
-                    return "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
+                    return "http://upanel.iiuc.ac.bd:81/Picture/" . $this->varsity_id . ".jpg";
                 } else {
                     return "/image/user/" . $this->image;
                 }
@@ -205,9 +205,9 @@ class FacultyController extends Controller
         $form = new Form(new User);
 
         //$form->display('id', 'ID');
-        $form->text('jobid', 'Varsity ID');
+        $form->text('varsity_id', 'Varsity ID');
         $form->display('avatar', trans('admin.avatar'))->with(function ($s) {
-            $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
+            $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $this->varsity_id . ".jpg";
             $ch = curl_init();
             $timeout = 5;
             curl_setopt($ch, CURLOPT_URL, $url);
@@ -220,9 +220,9 @@ class FacultyController extends Controller
             $file2 = $lines_string;
             $file = $retcode;
             if ($file == 200 && $file2[0] != '<') {
-//            $file = $this->imageValidate($this->jobid);
+//            $file = $this->imageValidate($this->varsity_id);
 //            if($file){
-                return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
+                return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->varsity_id . ".jpg' alt='" . $this->name . "'/>";
             } else {
                 return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
             }

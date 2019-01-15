@@ -6,7 +6,6 @@ use App\AdminDashboard;
 use App\BusInfo;
 use App\BusPoint;
 use App\BusRoute;
-use App\BusStudentInfo;
 use App\BusType;
 use App\CsvData;
 use App\Day;
@@ -131,9 +130,6 @@ class ImportController extends Controller
                     break;
                 case 'BusRoute':
                     $entry_data = new BusRoute();
-                    break;
-                case 'BusStudentInfo':
-                    $entry_data = new BusStudentInfo();
                     break;
                 case 'BusType':
                     $entry_data = new BusType();

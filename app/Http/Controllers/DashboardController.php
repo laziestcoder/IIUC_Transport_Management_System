@@ -47,7 +47,7 @@ class DashboardController extends Controller
         //$studentSchedules = StudentSchedule::where('user_id',$user_id)->get();
         //$times = Time::orderBy('time')->get();
 
-        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg";
+        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->varsity_id . ".jpg";
         $ch = curl_init();
         $timeout = 5;
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -61,7 +61,7 @@ class DashboardController extends Controller
         $verified = false;
         if ($file == 200 && $file2[0] != '<') {
             $verified = true;
-            $image = "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
+            $image = "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->varsity_id . ".jpg' alt='" . $user->name . "'/>";
         } else {
             $verified = false;
             $image = "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";

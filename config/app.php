@@ -188,7 +188,7 @@ return [
         Barryvdh\DomPDF\ServiceProvider::class,
 
         //Admin Captcha
-        Mews\Captcha\CaptchaServiceProvider::class,
+        // Mews\Captcha\CaptchaServiceProvider::class,
 
     ],
 
@@ -250,7 +250,7 @@ return [
         'PDF' => Barryvdh\DomPDF\Facade::class,
 
         //Admin Captcha
-        'Captcha' => 'Mews\Captcha\Facades\Captcha',
+        // 'Captcha' => 'Mews\Captcha\Facades\Captcha',
 
     ],
 

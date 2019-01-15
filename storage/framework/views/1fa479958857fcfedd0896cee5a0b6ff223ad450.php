@@ -74,10 +74,10 @@
                                             <div class="form-group">
                                                 <div class="col-md-6 col-md-offset-4">
                                                     <div id="recaptcha" class="g-recaptcha"
-                                                         data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
-                                                    <?php if($errors->has('recaptcha')): ?>
+                                                         data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb" aria-required="true"></div>
+                                                    <?php if($errors->has('g-recaptcha-response')): ?>
                                                         <span class="help-block">
-                                                        <strong><?php echo e($errors->first('recaptcha'), false); ?></strong>
+                                                        <strong><?php echo e($errors->first('g-recaptcha-response'), false); ?></strong>
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>

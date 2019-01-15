@@ -25,7 +25,7 @@
                     </tr>
                     <tr>
                         <td>
-                            ID: {{$user->jobid}} {!! $verified? '<i style="font-size:20px; color:green;" class="fa fa-check-circle"></i>': '<i style="font-size:20px; color:red;" class="fa fa-close"></i>' !!}
+                            ID: {{$user->varsity_id}} {!! $verified? '<i style="font-size:20px; color:green;" class="fa fa-check-circle"></i>': '<i style="font-size:20px; color:red;" class="fa fa-close"></i>' !!}
                         </td>
 
                     </tr>

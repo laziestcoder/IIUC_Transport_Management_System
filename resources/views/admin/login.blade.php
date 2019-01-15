@@ -14,13 +14,14 @@
     <link rel="stylesheet" href="{{ admin_asset("/vendor/laravel-admin/AdminLTE/dist/css/AdminLTE.min.css") }}">
     <!-- iCheck -->
     <link rel="stylesheet" href="{{ admin_asset("/vendor/laravel-admin/AdminLTE/plugins/iCheck/square/blue.css") }}">
-
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
     <script src="//oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
 </head>
 <body class="hold-transition login-page"
       @if(config('admin.login_background_image'))style="background: url({{config('admin.login_background_image')}}) no-repeat;background-size: cover;"@endif>
@@ -35,7 +36,7 @@
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
-        <p class="login-box-msg">{{ trans('admin.login') }}</p>
+        {{-- <p class="login-box-msg">{{ trans('admin.login') }}</p> --}}
 
         <form action="{{ admin_base_path('auth/login') }}" method="post">
             <div class="form-group has-feedback {!! !$errors->has('username') ?: 'has-error' !!}">
@@ -63,20 +64,16 @@
                 <input type="password" class="form-control" placeholder="{{ trans('admin.password') }}" name="password">
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
-            {{-- <div class="row">
-                    <div class="col-xs-4 col-md-offset-4">
-                        <div id="recaptcha" class="g-recaptcha"
-                                data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
-                        @if ($errors->has('recaptcha'))
-                            <span class="help-block">
-                                <strong>{{ $errors->first('recaptcha') }}</strong>
-                            </span>
-                        @endif
-                    </div>
-            </div> --}}
-            <div class="row">
+            <div class="form-group has-feedback {!! !$errors->has('g-recaptcha-response') ?: 'has-error' !!}">
                 {!! Recaptcha::render()!!}
-                {{-- {!! Captcha::img()!!}          --}}
+                {{-- <div id="recaptcha" class="g-recaptcha" name="recaptcha"
+                                data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div> --}}
+                                @if($errors->has('g-recaptcha-response'))
+                    @foreach($errors->get('g-recaptcha-response') as $message)
+                        <label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>{{$message}}
+                        </label><br>
+                    @endforeach
+                @endif
             </div>
             <div class="row">
                 <!-- /.col -->

@@ -37,14 +37,14 @@ class OtherUsersController extends Controller
     protected function grid()
     {
         $grid = new Grid(new User);
-        $grid->model()->where('user_type', '>', 3)->orderBy('jobid', 'asc')->orderBy('created_at', 'asc');
+        $grid->model()->where('user_type', '>', 3)->orderBy('varsity_id', 'asc')->orderBy('created_at', 'asc');
 
         //$grid->id('ID')->sortable();
-        $grid->jobid(trans('Varsity ID'))->sortable()->editable();
+        $grid->varsity_id(trans('Varsity ID'))->sortable()->editable();
 //            $grid->image(trans('admin.avatar'))->display(function ($s) use ($self) {
-//                $file= $self->imageValidate($this->jobid);  //I want to use this $file value
+//                $file= $self->imageValidate($this->varsity_id);  //I want to use this $file value
 //                if($file){ // here I want to access $file
-//                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg' alt='" . $this->name . "'/>";
+//                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $this->varsity_id . ".jpg' alt='" . $this->name . "'/>";
 //                } else {
 //                    return "<img style='max-width:100px;max-height:100px' class='img img-thumbnail' src='/storage/image/user/" . $this->image . "' alt='" . $this->name . "'/>";
 //                }
@@ -83,7 +83,7 @@ class OtherUsersController extends Controller
         $grid->filter(function ($filter) {
             // Sets the range query for the created_at field
             $filter->disableIdFilter();
-            $filter->like('jobid', 'Varsity ID');
+            $filter->like('varsity_id', 'Varsity ID');
         });
 
         $grid->disableCreateButton();
@@ -123,13 +123,13 @@ class OtherUsersController extends Controller
 
         //$show->id('ID');
         $show->name('Name');
-        $show->jobid(trans('Varsity ID'));
+        $show->varsity_id(trans('Varsity ID'));
         $show->divider();
         $show->image(trans('admin.avatar'))
             ->as(function () use ($self) {
-                $file = $self->imageValidate($this->jobid);  //I want to use this $file value
+                $file = $self->imageValidate($this->varsity_id);  //I want to use this $file value
                 if ($file) { // here I want to access $file
-                    return "http://upanel.iiuc.ac.bd:81/Picture/" . $this->jobid . ".jpg";
+                    return "http://upanel.iiuc.ac.bd:81/Picture/" . $this->varsity_id . ".jpg";
                 } else {
                     return "/image/user/" . $this->image;
                 }
@@ -197,7 +197,7 @@ class OtherUsersController extends Controller
 
         $form->text('name', 'Name');
         $form->email('email', 'Email');
-        $form->text('jobid', 'Varsity ID');
+        $form->text('varsity_id', 'Varsity ID');
         $form->password('password', 'Password');
         $form->select('user_type', 'Registered As')
             ->options(UserType::all()->sortBy('name')->pluck('name', 'id'))

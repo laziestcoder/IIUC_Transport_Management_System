@@ -12,7 +12,6 @@ class ModelListTableSeeder extends Seeder
      */
     public function run()
     {
-
         ModelList::truncate();
         ModelList::insert([
             [
@@ -30,10 +29,6 @@ class ModelListTableSeeder extends Seeder
             [
                 'model_name' => 'BusRoute',
                 'table_name' => 'routes',
-            ],
-            [
-                'model_name' => 'BusStudentInfo',
-                'table_name' => 'bus_student_information',
             ],
             [
                 'model_name' => 'BusType',

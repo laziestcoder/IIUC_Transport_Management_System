@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 
 use App\BusPoint;
 use App\BusRoute;
-use App\BusStudentInfo;
 use App\Day;
 use App\Schedule;
 use App\Time;
@@ -94,7 +93,7 @@ class PDFConverterController extends Controller
             'times' => Time::orderBy('time')->get(),
             'today' => $today,
             'todayid' => Day::all()->where('dayname', $today)->first(),
-            'datas' => BusStudentInfo::all(),
+            // 'datas' => BusStudentInfo::all(),
             //'bus_available' => BusInfo::orderBy('seat','asc')->where('availability', 1)->get(),
 
         );

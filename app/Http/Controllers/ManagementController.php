@@ -40,8 +40,9 @@ class ManagementController extends Controller
         $user_role = auth()->user()->user_type;
         $check = StudentSchedule::where('user_id', $user_id)->first();
         $today = Carbon::now();
+        $datelimit = AdminDashboard::all()->first();
+        $editOn = $datelimit->schedule_edit ? 0 : 1;
         if ($check) {
-            $datelimit = AdminDashboard::all()->first();
             $datelimit = $datelimit->editdate;
             $entrydate = Carbon::parse($check->entrydate);
             $expiredate = $entrydate->addDays($datelimit);
@@ -62,7 +63,7 @@ class ManagementController extends Controller
         $pickuptimes = Time::where('toiiuc', 1)->orderBy('time')->get();
         $droptimes = Time::where('fromiiuc', 1)->orderBy('time')->get();
         //account verification
-        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg";
+        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->varsity_id . ".jpg";
         $ch = curl_init();
         $timeout = 5;
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -77,13 +78,16 @@ class ManagementController extends Controller
         $adminVerification = $user->confirmation;
         if ($file == 200 && $file2[0] != '<') {
             $verified = true;
-            $image = "<img src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
+            $image = "<img src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->varsity_id . ".jpg' alt='" . $user->name . "'/>";
         } else {
             //$verified = false;
             $image = "<img src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
         }
-        if (!$verified && !$adminVerification) {
+        if (!$verified && !$adminVerification ) {
             return redirect('/dashboard')->with('error', 'Your account is not verified. Please check your \'Varsity ID\' and \'Name\' or contact with an administrative person. Thank you.');
+        }
+        if($editOn){
+            return redirect('/dashboard')->with('error', 'Transport Schedule Edit is now closed. Thank you.');
         }
         $data = array(
             //'BusRoutes' => $BusRoutes,
@@ -92,7 +96,8 @@ class ManagementController extends Controller
             'droptimes' => $droptimes,
             'days' => $days,
             'user' => $user,
-            "gender" => $user_gender,
+            'gender' => $user_gender,
+            'editOn' =>$editOn,
         );
         return view('user.management')->with($data);
     }
@@ -312,7 +317,7 @@ class ManagementController extends Controller
     {
         //account verification
         $user = User::find(auth()->user()->id);
-        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg";
+        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->varsity_id . ".jpg";
         $ch = curl_init();
         $timeout = 5;
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -327,7 +332,7 @@ class ManagementController extends Controller
         $adminVerification = $user->confirmation;
         if ($file == 200 && $file2[0] != '<') {
             $verified = true;
-            $image = "<img src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->jobid . ".jpg' alt='" . $user->name . "'/>";
+            $image = "<img src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->varsity_id . ".jpg' alt='" . $user->name . "'/>";
         } else {
             $verified = false;
             $image = "<img src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";

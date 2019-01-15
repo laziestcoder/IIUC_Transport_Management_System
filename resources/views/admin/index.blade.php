@@ -8,7 +8,7 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
     {!! Admin::css() !!}
-    <script src='https://www.google.com/recaptcha/api.js'></script>
+   
 
     <script src="{{ Admin::jQuery() }}"></script>
 

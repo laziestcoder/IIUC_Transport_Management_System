@@ -77,10 +77,10 @@
                                             <div class="form-group">
                                                 <div class="col-md-6 col-md-offset-4">
                                                     <div id="recaptcha" class="g-recaptcha"
-                                                         data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
-                                                    @if ($errors->has('recaptcha'))
+                                                         data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb" aria-required="true"></div>
+                                                    @if ($errors->has('g-recaptcha-response'))
                                                         <span class="help-block">
-                                                        <strong>{{ $errors->first('recaptcha') }}</strong>
+                                                        <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
                                                         </span>
                                                     @endif
                                                 </div>

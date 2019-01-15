@@ -9,18 +9,31 @@ Route::group([
     'namespace' => config('admin.route.namespace'),
     'middleware' => config('admin.route.middleware'),
 ], function (Router $router) {
-    $router->get('/', 'HomeController@index');
+    $router->get('/', 'HomeController@index')->name('admin.index');
     $router->get('/auth/import', 'ImportController@getImport')->name('import');
     $router->post('/auth/import_parse', 'ImportController@parseImport')->name('import_parse');
     $router->post('/auth/import_process', 'ImportController@processImport')->name('import_process');
 
     //Admin Panel Controllers Routing 
-    $router->resource('/auth/users', 'UsersController');
+    // $router->resource('users', UserController::class);
+    $router->resource('/auth/users', 'UserController');
     $router->resource('/auth/messages', 'MessageController');
-    // $router->resource('/auth', 'AuthsController');
+
+    //Other Admin Controllers 
+    // $router->resource('/auth', AuthController::class);
     // $router->resource('/helpers/routes', 'RouteController');
     // $router->resource('/helpers/terminal/database', 'TerminalController');
     // $router->resource('/helpers/scaffold', 'ScaffoldController');
+
+    // Admin Auth Controller
+    $authController = config('admin.auth.controller', AuthController::class);
+
+    /* @var \Illuminate\Routing\Router $router */
+    $router->get('auth/login', $authController.'@getLogin')->name('login');
+    $router->post('auth/login', $authController.'@postLogin')->name('post.login');
+    $router->get('auth/logout', $authController.'@getLogout')->name('get.logout');
+    $router->get('auth/setting', $authController.'@getSetting')->name('get.Setting');
+    $router->put('auth/setting', $authController.'@putSetting')->name('put.Setting');
 
 
     // Admin Other Controllers Routing

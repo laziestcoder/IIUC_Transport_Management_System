@@ -48,6 +48,9 @@ return [
      * Laravel-admin auth setting.
      */
     'auth' => [
+        // The below line is written by developers
+        // 'controller' => App\Admin\Controllers\AuthController::class,
+
         'guards' => [
             'admin' => [
                 'driver' => 'session',
@@ -160,6 +163,17 @@ return [
     |---------------------------------------------------------|
      */
     'layout' => ['sidebar-mini', 'sidebar-collapse',],
+
+      /*
+    |--------------------------------------------------------------------------
+    | Login page background image
+    |--------------------------------------------------------------------------
+    |
+    | This value is used to set the background image of login page.
+    |
+    */
+    'login_background_image' => ' ',
+
 
     /*
      * Version displayed in footer.

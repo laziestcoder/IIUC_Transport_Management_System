@@ -1,7 +1,7 @@
 <?php $__env->startSection('content'); ?>
     <script src='https://www.google.com/recaptcha/api.js'></script>
     <header id="home" class="masthead">
-        <div class="container">
+        <div class="container home-main">
             <div class="intro-text" style="padding-top: 140px; padding-bottom: 200px;">
                 <div class="intro-lead-in" style="font-style: initial"><b>REGISTRATION</b></div>
                 <!-- <div class="intro-heading text-uppercase">It's Nice To Meet You</div> -->
@@ -11,7 +11,7 @@
                             <div class="panel panel-default">
                                 <!-- <div class="panel-heading">Register</div> -->
                                 <div class="panel-body" style="padding-top: 50px; background:#212529">
-                                    <?php if (session('confirmation-success')): ?>
+                                    <?php if(session('confirmation-success')): ?>
                                         <div class="alert alert-success">
                                             <?php echo e(session('confirmation-success'), false); ?>
 
@@ -28,10 +28,9 @@
                                                 <div class="col-md-6">
                                                     <input id="name" type="text" class="form-control" name="name"
                                                            placeholder=" Enter Your Full Name "
-                                                           value="<?php echo e(old('name'), false); ?>" required
-                                                           autofocus>
+                                                           value="<?php echo e(old('name'), false); ?>" required autofocus>
 
-                                                    <?php if ($errors->has('name')): ?>
+                                                    <?php if($errors->has('name')): ?>
                                                         <span class="help-block">
                                                             <strong><?php echo e($errors->first('name'), false); ?></strong>
                                                         </span>
@@ -39,18 +38,18 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group<?php echo e($errors->has('jobid') ? ' has-error' : '', false); ?>">
-                                                <label for="jobid" class="col-md-4 control-label">ID</label>
+                                            <div class="form-group<?php echo e($errors->has('varsity_id') ? ' has-error' : '', false); ?>">
+                                                <label for="varsity_id" class="col-md-4 control-label">ID</label>
 
                                                 <div class="col-md-6">
-                                                    <input id="jobid" type="text" class="form-control" name="jobid"
+                                                    <input id="varsity_id" type="text" class="form-control" name="varsity_id"
                                                            placeholder=" Enter Your Varsity ID "
-                                                           value="<?php echo e(old('jobid'), false); ?>" required>
+                                                           value="<?php echo e(old('varsity_id'), false); ?>" required>
 
-                                                    <?php if ($errors->has('jobid')): ?>
+                                                    <?php if($errors->has('varsity_id')): ?>
                                                         <span class="help-block">
 
-                                                            <strong><?php echo e($errors->first('jobid'), false); ?></strong>
+                                                            <strong><?php echo e($errors->first('varsity_id'), false); ?></strong>
 
                                                         </span>
                                                     <?php endif; ?>
@@ -65,7 +64,7 @@
                                                            placeholder=" Enter Your Valid Email ID "
                                                            value="<?php echo e(old('email'), false); ?>" required>
 
-                                                    <?php if ($errors->has('email')): ?>
+                                                    <?php if($errors->has('email')): ?>
                                                         <span class="help-block">
 
                                                             <strong><?php echo e($errors->first('email'), false); ?></strong>
@@ -83,7 +82,7 @@
                                                            placeholder=" Enter Password Atleast Six Characters "
                                                            name="password" required>
 
-                                                    <?php if ($errors->has('password')): ?>
+                                                    <?php if($errors->has('password')): ?>
                                                         <span class="help-block">
 
                                                             <strong><?php echo e($errors->first('password'), false); ?></strong>
@@ -127,33 +126,59 @@
                                                     Register As
                                                 </label>
                                                 <div class="col-md-6">
-                                                    <?php $userroles = DB::table('user_role')->where('active', true)->get(); ?>
-
-
-                                                    <select name="userrole" class="form-control" style="height: 36px"
+                                                    <?php $userroles = DB::table('user_type')->where('active', true)->get();?>
+                                                    
+                                                    
+                                                    <select name="user_type" class="form-control" style="height: 36px"
                                                             required>
-                                                        <option disabled selected>Select Your Role At IIUC</option>
-                                                        <?php $__currentLoopData = $userroles;
-                                                        $__env->addLoop($__currentLoopData);
-                                                        foreach ($__currentLoopData as $userrole): $__env->incrementLoopIndices();
-                                                            $loop = $__env->getLastLoop(); ?>
-                                                            <option value="<?php echo $userrole->id; ?>">
-                                                                <?php echo $userrole->name; ?>
+                                                        <option disabled selected>Select from the list</option>
+                                                        <?php $__currentLoopData = $userroles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user_type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                            <option value="<?php echo $user_type->id; ?>">
+                                                                <?php echo $user_type->name; ?>
 
                                                             </option>
-                                                        <?php endforeach;
-                                                        $__env->popLoop();
-                                                        $loop = $__env->getLastLoop(); ?>
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                     </select>
                                                 </div>
                                             </div>
-
-
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
                                             <div class="form-group">
                                                 <div class="col-md-6 col-md-offset-4">
-                                                    <div class="g-recaptcha"
+                                                    <div id='recaptcha' class="g-recaptcha"
                                                          data-sitekey="6LcV-ngUAAAAAJqAknZhDgpgysYKlMJ9YSuKxWyb"></div>
-                                                    <?php if ($errors->has('recaptcha')): ?>
+                                                    <?php if($errors->has('recaptcha')): ?>
                                                         <span class="help-block">
 
                                                             <strong><?php echo e($errors->first('recaptcha'), false); ?></strong>
@@ -187,7 +212,7 @@
 <div class="panel panel-default">
 <div class="panel-heading">Register</div>
 <div class="panel-body">
-<?php if (session('confirmation-success')): ?>
+<?php if(session('confirmation-success')): ?>
         <div class="alert alert-success">
 <?php echo e(session('confirmation-success'), false); ?>
 
@@ -203,7 +228,7 @@
 <div class="col-md-6">
 <input id="name" type="text" class="form-control" name="name" value="<?php echo e(old('name'), false); ?>" required autofocus>
 
-<?php if ($errors->has('name')): ?>
+<?php if($errors->has('name')): ?>
             <span class="help-block">
             <strong><?php echo e($errors->first('name'), false); ?></strong>
 </span>
@@ -217,7 +242,7 @@
 <div class="col-md-6">
 <input id="email" type="email" class="form-control" name="email" value="<?php echo e(old('email'), false); ?>" required>
 
-<?php if ($errors->has('email')): ?>
+<?php if($errors->has('email')): ?>
             <span class="help-block">
             <strong><?php echo e($errors->first('email'), false); ?></strong>
 </span>
@@ -231,7 +256,7 @@
 <div class="col-md-6">
 <input id="password" type="password" class="form-control" name="password" required>
 
-<?php if ($errors->has('password')): ?>
+<?php if($errors->has('password')): ?>
             <span class="help-block">
             <strong><?php echo e($errors->first('password'), false); ?></strong>
 </span>
@@ -268,17 +293,17 @@
                 <div class="col-md-6">
                 <div class="radio-inline">
                 <label class="form-check-label">
-                <input type="radio" class="form-check-input" value="1" name="userrole" required>Student
+                <input type="radio" class="form-check-input" value="1" name="user_type" required>Student
                 </label>
                 </div>
                 <div class="radio-inline">
                 <label class="form-check-label">
-                <input type="radio" class="form-check-input" value="2" name="userrole" required>Faculty
+                <input type="radio" class="form-check-input" value="2" name="user_type" required>Faculty
                 </label>
                 </div>
                 <div class="radio-inline">
                 <label class="form-check-label">
-                <input type="radio" class="form-check-input" value="3" name="userrole" required>Officer/Staff
+                <input type="radio" class="form-check-input" value="3" name="user_type" required>Officer/Staff
                 </label>
                 </div>
                 </div>
@@ -299,6 +324,7 @@
             </div>
             </div> -->
 <?php $__env->stopSection(); ?>
+
 
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>

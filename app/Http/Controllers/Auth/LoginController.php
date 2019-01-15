@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Bestmomo\LaravelEmailConfirmation\Traits\AuthenticatesUsers;
+use Illuminate\Foundation\Auth\AuthenticatesUsers as AuthenticatesUsersBase;
 
-//use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
@@ -20,7 +20,7 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    use AuthenticatesUsers;// AuthenticatesUsersBase;
 
     /**
      * Where to redirect users after login.
@@ -76,5 +76,14 @@ class LoginController extends Controller
     //     ];
 
     // } 
+    protected function validateLogin($request)
+    {
+        $request->validate([
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+            'g-recaptcha-response' => 'required|recaptcha',
+        ]);
+    }
+
 
 }

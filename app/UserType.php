@@ -20,8 +20,8 @@ class UserType extends Model implements AuthenticatableContract
 
     protected $fillable = ['name'];
 
-    public function user()
-    {
-        return $this->belongsTo('Encore\Admin\Facades\Admin');
-    }
+    // public function user()
+    // {
+    //     return $this->belongsTo('App\User');
+    // }
 }
