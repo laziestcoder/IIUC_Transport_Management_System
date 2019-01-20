@@ -4,7 +4,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
 
     <div class="panel-body backGround">
-        <h1>Edit Schedule</h1>
+        <h1>Edit Profile</h1>
     </div>
     <hr>
     <div class="panel-body ">
@@ -15,7 +15,7 @@
         @endif
         <div class="container">
             <div class="userrouteinfo">
-                <b><h3>Transport Schedule</h3></b>
+                <b><h3>Edit Personal Bus Requirement</h3></b>
                 <hr>
                 {!! Form :: open(['action' => 'ManagementController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data' ]) !!}
                 {{ csrf_field() }}

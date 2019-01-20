@@ -26,7 +26,7 @@ class AdminDashboardController extends Controller
     protected function grid()
     {
         $grid = new Grid(new AdminDashboard);
-        $grid->setTitle('Schedule Dashborad');
+        $grid->setTitle('Schedule Controller');
 
         $states = [
             'on' => ['value' => 1, 'text' => 'YES', 'color' => 'success'],
@@ -36,8 +36,8 @@ class AdminDashboardController extends Controller
         $grid->regular_schedule('Regular Schedule')->switch($states);
         $grid->holiday('Holiday')->switch($states);
         $grid->schedule_suspend('Schedule Suspend')->switch($states);
-        $grid->schedule_edit('Schedule Edit')->switch($states);
-        $grid->editdate('Schedule Edit Limit')->editable();
+        $grid->schedule_edit('User Bus Requirement Edit')->switch($states);
+        $grid->editdate('Bus Requirement Edit Date Limit')->editable();
         $grid->disableActions();
         $grid->disableRowSelector();
         $grid->disableExport();

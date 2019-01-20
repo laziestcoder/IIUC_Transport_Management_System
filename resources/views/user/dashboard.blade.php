@@ -72,7 +72,7 @@
         <br><br>
         <div id='transport' class="container">
             <div class="userrouteinfo">
-                <b><h3>Transport Schedule:</h3></b>
+                <b><h3>Personal Bus Requirement:</h3></b>
                 <hr>
 
                 @if(Session::has('transport_message'))

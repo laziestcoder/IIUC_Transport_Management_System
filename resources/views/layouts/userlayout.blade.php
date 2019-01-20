@@ -19,7 +19,7 @@
                                         </div>
                                     @endif
                                     <a href="/dashboard" class="btn btn-info">Profile</a>
-                                    <a href="/management" class="btn btn-success">Edit Schedule</a>
+                                    <a href="/management" class="btn btn-success">Edit Profile</a>
                                     <a href="/bus-schedules" class="btn btn-warning">Bus Schedules</a>
                                     <a href="/bus-routes" class="btn btn-default">Bus Routes</a>
                                     <a href="{{ route('logout') }}"

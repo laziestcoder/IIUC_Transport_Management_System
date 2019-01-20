@@ -269,7 +269,7 @@ class AdminTablesSeed extends Seeder
             [
                 'parent_id' => 1,
                 'order' => 3,
-                'title' => 'Schedule Dashboard',
+                'title' => 'Schedule Controller',
                 'icon' => 'fa-android',
                 'uri' => '/auth/admin-dashboard',
             ],
@@ -285,7 +285,7 @@ class AdminTablesSeed extends Seeder
             [
                 'parent_id' => 0,
                 'order' => 5,
-                'title' => 'Admin',
+                'title' => 'Admin User',
                 'icon' => 'fa-tasks',
                 'uri' => '/admin',
             ],
@@ -333,7 +333,7 @@ class AdminTablesSeed extends Seeder
             [
                 'parent_id' => 0,
                 'order' => 11,
-                'title' => 'Helpers',
+                'title' => 'Admin Helpers',
                 'icon' => 'fa-gears',
                 'uri' => '/helpers',
             ],
@@ -437,7 +437,7 @@ class AdminTablesSeed extends Seeder
             [
                 'parent_id' => 0,
                 'order' => 24,
-                'title' => 'Route Information',
+                'title' => 'Bus Requirement Info',
                 'icon' => 'fa-info-circle',
                 'uri' => '/auth/bus-route-info',
             ],
@@ -445,7 +445,7 @@ class AdminTablesSeed extends Seeder
             [
                 'parent_id' => 24,
                 'order' => 25,
-                'title' => 'Route-Student-Bus',
+                'title' => 'Bus-User-Requirement',
                 'icon' => 'fa-check-square-o',
                 'uri' => '/auth/routes',
             ],
@@ -453,7 +453,7 @@ class AdminTablesSeed extends Seeder
             [
                 'parent_id' => 24,
                 'order' => 26,
-                'title' => 'Student Individual Info',
+                'title' => 'User Individual Info',
                 'icon' => 'fa-check-square',
                 'uri' => '/auth/bus-route-info',
             ],

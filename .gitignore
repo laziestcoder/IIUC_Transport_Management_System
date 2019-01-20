@@ -6,5 +6,6 @@
 /public/hot
 /storage/*.key
 /vendor/
+/resources/views/admin_edited_files*
 /.vagrant
 .env
