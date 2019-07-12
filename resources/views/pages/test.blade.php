@@ -1,25 +1,33 @@
-@foreach ($schedule as $item)
-<pre>    
-Result:  
-<br>{{$item}}<br>
-            <br>{{$item->id}}<br>
-         {{" day "}}{{$item->day}}
-         @foreach ($item->day as $routename)
-         {{$routename->id}} {{" "}}{{$routename->dayname}} {{" "}}   
-         @endforeach
-         <br>
-         {{" route "}}{{$item->route}}
-         @foreach ($item->route as $routename)
-         {{$routename->id}} {{" "}}{{$routename->routename}} {{" "}}   
-         @endforeach
-         <br>
-         {{" to iiuc "}}{{$item->toiiuc}}
-         {{" from iiuc "}}{{$item->fromiiuc}}
-         {{" male "}}{{$item->male}}
-         {{" female "}}{{$item->female}}
-         {{" time "}}{{$item->time}}
-         {{" bususer "}}{{$item->bususer}}
-         
-         <br><br>
-</pre>
-@endforeach
+<?php
+                    $user_id = auth()->user();
+                    if ($user_id) {
+                        $user = App\User::find($user_id->id);
+                        $url = "http://upanel.iiuc.ac.bd:81/Picture/" . $user->varsity_id . ".jpg";
+                        echo "<img style='max-width:32;max-height:32px' class='img img-thumbnail' src='".$url."' alt='" . $user->name . "'/>"."<br>";
+                        $ch = curl_init();
+                        $timeout = 5;
+                        curl_setopt($ch, CURLOPT_URL, $url);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+                        $lines_string = curl_exec($ch);
+                        echo $lines_string." =>  LS<br>";
+                        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                        echo $retcode." => RT<br>";
+                        curl_close($ch);
+                        $file2 = $lines_string;
+                        $file = $retcode;
+                        $verified = false;
+                        if ($file != 200 && $file2[0] != '<') {
+                            $verified = true;
+                            $image = "<img style='max-width:32;max-height:32px' class='img img-thumbnail' src='http://upanel.iiuc.ac.bd:81/Picture/" . $user->varsity_id . ".jpg' alt='" . $user->name . "'/>";
+                        } else {
+                            $verified = false;
+                            $image = "<img style='max-width:32px;max-height:32px' class='img img-thumbnail' src='/storage/image/user/" . $user->image . "' alt='" . $user->name . "'/>";
+                        }
+                    } else {
+                        $image = '';
+                    }
+
+                    $image2 = $image;
+                    echo $image2." <br> " . $file . "<br>" . $file2[0];
+                    ?>
